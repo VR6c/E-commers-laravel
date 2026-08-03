@@ -35,7 +35,7 @@
             </div>
             <div class="user-panel-info">
                 <span class="user-panel-name">{{ auth()->user()->name }}</span>
-                <span class="user-panel-status"><i class="fas fa-circle"></i> Online</span>
+                <span class="user-panel-status"><span class="user-status-dot"></span> Active Session</span>
             </div>
         </div>
 
@@ -43,7 +43,7 @@
         <div class="sidebar-search-wrapper" id="sidebarSearch">
             <div class="sidebar-search-inner">
                 <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Search…" autocomplete="off">
+                <input type="text" id="searchInput" placeholder="Search menu… (⌘K)" autocomplete="off" aria-label="Search sidebar menu">
             </div>
         </div>
 

@@ -12,7 +12,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("ALTER TABLE vendors MODIFY COLUMN status ENUM('active', 'inactive', 'banned', 'pending') DEFAULT 'pending'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE vendors MODIFY COLUMN status ENUM('active', 'inactive', 'banned', 'pending') DEFAULT 'pending'");
+        }
     }
 
     /**
@@ -20,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE vendors MODIFY COLUMN status ENUM('active', 'inactive', 'banned') DEFAULT 'active'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE vendors MODIFY COLUMN status ENUM('active', 'inactive', 'banned') DEFAULT 'active'");
+        }
     }
 };

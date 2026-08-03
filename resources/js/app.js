@@ -1,10 +1,15 @@
 import './bootstrap';
-// If you're using jQuery and DataTables, make sure those are also included
 import $ from 'jquery';
 import 'datatables.net';
-import './admin/sidebar';
+import { initLanguageSwitcher } from './admin/sidebar';
+import { initCommandMenu } from './modules/command-menu';
 
-// If you want the DataTables default styling, you can import the CSS file
-// import 'datatables.net-dt/css/jquery.dataTables.min.css'; // Uncomment if you need DataTables CSS
+// Make jQuery globally accessible for legacy plugins if required
+window.$ = window.jQuery = $;
 
+// Initialize modern JavaScript modules
+document.addEventListener('DOMContentLoaded', () => {
+    initLanguageSwitcher();
+    initCommandMenu();
+});
 

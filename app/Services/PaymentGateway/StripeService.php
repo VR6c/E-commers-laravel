@@ -5,7 +5,7 @@ namespace App\Services\PaymentGateway;
 use App\Models\PaymentGateway;
 use Stripe\StripeClient;
 
-class StripeService
+class StripeService implements PaymentGatewayInterface
 {
     protected $environment;
 
@@ -44,5 +44,15 @@ class StripeService
             'amount' => $amount,
             'currency' => $currency,
         ]);
+    }
+
+    public function getGatewayCode(): string
+    {
+        return 'stripe';
+    }
+
+    public function isConfigured(): bool
+    {
+        return !empty($this->client);
     }
 }

@@ -1,7 +1,6 @@
 @extends('admin.layouts.admin')
 
 @section('css')
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css"
     rel="stylesheet">
 @endsection
@@ -31,11 +30,13 @@
     </div>
 </x-admin.data-card>
 
+@push('modals')
 <x-admin.delete-modal id="deleteProductModal" confirm-id="confirmDeleteProduct"
     :title="'Confirm Delete'"
     :message="'Are you sure you want to delete this product?'"
     :confirm-label="'Delete'"
     :cancel-label="'Cancel'" />
+@endpush
 
 @endsection
 
@@ -93,7 +94,7 @@ $datatableLang = null;
                     render: function(data, type, row) {
                         var isChecked = data ? 'checked' : '';
                         return `<label class="switch">
-                                    <input type="checkbox" class="toggle-status" data-id="${row.id}" ${isChecked}>
+                                    <input type="checkbox" class="toggle-status" data-id="${row.id}" ${isChecked} aria-label="Toggle product status">
                                     <span class="slider round"></span>
                                 </label>`;
                     }
@@ -105,10 +106,10 @@ $datatableLang = null;
                     searchable: false,
                     render: function(data, type, row) {
                         return `<div class="dt-actions">
-                                    <a href="/admin/products/${row.id}/edit" class="btn-action btn-action-edit" title="Edit">
+                                    <a href="/admin/products/${row.id}/edit" class="btn-action btn-action-edit" title="Edit" aria-label="Edit product ${row.id}">
                                         <i class="bi bi-pencil-fill"></i>
                                     </a>
-                                    <button type="button" class="btn-action btn-action-delete" onclick="deleteProduct(${row.id})" title="Delete">
+                                    <button type="button" class="btn-action btn-action-delete" onclick="deleteProduct(${row.id})" title="Delete" aria-label="Delete product ${row.id}">
                                         <i class="bi bi-trash-fill"></i>
                                     </button>
                                 </div>`;
@@ -131,7 +132,9 @@ $datatableLang = null;
 
     function deleteProduct(id) {
         productToDeleteId = id;
-        $('#deleteProductModal').modal('show');
+        var modalEl = document.getElementById('deleteProductModal');
+        var modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modalInstance.show();
 
         $('#confirmDeleteProduct').off('click').on('click', function() {
             if (productToDeleteId !== null) {
@@ -145,14 +148,14 @@ $datatableLang = null;
                         if (response.success) {
                             $('#products-table').DataTable().ajax.reload();
                             showToast('success', response.message);
-                            $('#deleteProductModal').modal('hide');
+                            modalInstance.hide();
                         } else {
                             showToast('error', response.message);
                         }
                     },
                     error: function(xhr) {
                         showToast('error', 'Error deleting product!');
-                        $('#deleteProductModal').modal('hide');
+                        modalInstance.hide();
                     }
                 });
             }

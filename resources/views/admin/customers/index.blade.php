@@ -52,7 +52,7 @@ $(document).ready(function() {
                 data: 'action', name: 'action', orderable: false, searchable: false,
                 render: function(data, type, row) {
                     return `<div class="dt-actions">
-                        <button type="button" class="btn-action btn-action-delete" onclick="deleteCustomer(${row.id})" title="Delete"><i class="bi bi-trash-fill"></i></button>
+                        <button type="button" class="btn-action btn-action-delete" onclick="deleteCustomer(${row.id})" title="Delete" aria-label="Delete customer ${row.id}"><i class="bi bi-trash-fill"></i></button>
                     </div>`;
                 }
             }

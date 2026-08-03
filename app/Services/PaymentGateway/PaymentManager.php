@@ -4,6 +4,8 @@ namespace App\Services\PaymentGateway;
 
 use App\Models\PaymentGateway;
 use App\Services\PaymentGateway\ABAPayWayService;
+use App\Services\PaymentGateway\PayPalService;
+use App\Services\PaymentGateway\StripeService;
 use InvalidArgumentException;
 
 class PaymentManager
@@ -11,11 +13,9 @@ class PaymentManager
     /**
      * Create a payment service instance for the given gateway code.
      *
-     * @return mixed
-     *
      * @throws \InvalidArgumentException
      */
-    public static function make(string $gatewayCode, string $environment = 'sandbox')
+    public static function make(string $gatewayCode, string $environment = 'sandbox'): PaymentGatewayInterface
     {
         // Check if gateway exists & active
         $gateway = PaymentGateway::where('code', $gatewayCode)
@@ -31,7 +31,6 @@ class PaymentManager
             'paypal' => PayPalService::class,
             'stripe' => StripeService::class,
             'abapayway' => ABAPayWayService::class,
-            // 'razorpay' => RazorpayService::class,
         ];
 
         if (! array_key_exists($gatewayCode, $services)) {

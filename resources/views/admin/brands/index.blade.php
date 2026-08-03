@@ -63,7 +63,7 @@ $(document).ready(function() {
                 render: function(data, type, row) {
                     var isChecked = data ? 'checked' : '';
                     return `<label class="switch">
-                        <input type="checkbox" class="toggle-status" data-id="${row.id}" ${isChecked}>
+                        <input type="checkbox" class="toggle-status" data-id="${row.id}" ${isChecked} aria-label="Toggle brand status">
                         <span class="slider round"></span>
                     </label>`;
                 }
@@ -72,8 +72,8 @@ $(document).ready(function() {
                 data: 'action', orderable: false, searchable: false,
                 render: function(data, type, row) {
                     return `<div class="dt-actions">
-                        <a href="/admin/brands/${row.id}/edit" class="btn-action btn-action-edit" title="Edit"><i class="bi bi-pencil-fill"></i></a>
-                        <button type="button" class="btn-action btn-action-delete" onclick="deleteBrand(${row.id})" title="Delete"><i class="bi bi-trash-fill"></i></button>
+                        <a href="/admin/brands/${row.id}/edit" class="btn-action btn-action-edit" title="Edit" aria-label="Edit brand ${row.id}"><i class="bi bi-pencil-fill"></i></a>
+                        <button type="button" class="btn-action btn-action-delete" onclick="deleteBrand(${row.id})" title="Delete" aria-label="Delete brand ${row.id}"><i class="bi bi-trash-fill"></i></button>
                     </div>`;
                 }
             }

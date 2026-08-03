@@ -219,6 +219,18 @@
             animation-delay: 0.05s;
         }
 
+        /* ── Accessible Focus Rings (a11y) ─────────────────────── */
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible,
+        .btn:focus-visible {
+            outline: 2px solid #6366f1 !important;
+            outline-offset: 2px !important;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15) !important;
+        }
+
         /* ── Respect user motion preference ─────────────────────── */
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
@@ -251,15 +263,21 @@
 {{-- ─────────────────────────────────────────────────────────────────
      CONTENT AREA
 ──────────────────────────────────────────────────────────────────── --}}
-<div id="content" class="w-100">
+<div id="content" class="content-wrapper d-flex flex-column min-vh-100">
+
 
     {{-- ── TOPBAR ────────────────────────────────────────────────── --}}
-    <nav class="navbar navbar-expand navbar-light p-0" aria-label="Top navigation">
+    <nav class="navbar navbar-expand navbar-light p-0 main-header" aria-label="Top navigation">
 
-        {{-- Left: sidebar toggle + breadcrumb/page title slot --}}
+        {{-- Left: sidebar toggle + Command Menu search trigger --}}
         <div class="d-flex align-items-center gap-3 ps-3">
             <button class="btn btn-outline-secondary border-0 p-2" id="sidebarToggle" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="sidebar">
                 <i class="fas fa-bars" style="font-size:1.1rem;"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-light border d-flex align-items-center gap-2 px-3 py-1-5 text-muted rounded-pill shadow-xs" onclick="window.openCmdk()" style="font-size:0.85rem; font-weight:500;">
+                <i class="bi bi-search text-primary"></i>
+                <span class="d-none d-sm-inline">Search or command...</span>
+                <kbd class="bg-white border text-dark ms-2 shadow-xs" style="font-size:0.68rem; padding: 2px 6px; border-radius: 4px;">⌘K</kbd>
             </button>
         </div>
 
@@ -343,22 +361,45 @@
     {{-- ── END TOPBAR ───────────────────────────────────────────── --}}
 
     {{-- ── MAIN CONTENT ─────────────────────────────────────────── --}}
-    <div class="container-fluid px-4 mt-4" id="main-content">
-        @yield('content')
+    <div class="container-fluid px-4 mt-4 flex-grow-1 d-flex flex-column" id="main-content">
+        <div class="flex-grow-1">
+            @yield('content')
+        </div>
+
+        {{-- ── MAIN FOOTER ────────────────────────────────────────────── --}}
+        <footer class="main-footer bg-white border py-3 px-4 mt-4 mb-4 rounded-3 d-flex align-items-center justify-content-between text-muted shadow-sm" style="font-size:0.875rem;">
+            <div>
+                <strong>Copyright &copy; {{ date('Y') }} <a href="{{ route('admin.dashboard') }}" class="text-primary text-decoration-none">{{ config('app.name', 'E-Commerce') }}</a>.</strong> All rights reserved.
+            </div>
+            <div class="d-none d-sm-block">
+                <b>Version</b> 3.2.0
+            </div>
+        </footer>
     </div>
 
 </div>
 {{-- ── END CONTENT AREA ─────────────────────────────────────────── --}}
 
+
+
 {{-- ─────────────────────────────────────────────────────────────────
      SCRIPTS
 ──────────────────────────────────────────────────────────────────── --}}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 @if (!App::environment('testing'))
     @vite(['resources/js/app.js'])
 @endif
+
+{{-- Ensure modals are appended to <body> so parent container stacking contexts do not trap/block modals with backdrops --}}
+<script>
+$(document).on('show.bs.modal', '.modal', function () {
+    if ($(this).parent().is(':not(body)')) {
+        $(this).appendTo('body');
+    }
+});
+</script>
 
 {{-- Sidebar toggle --}}
 <script>
@@ -520,6 +561,30 @@ document.addEventListener('DOMContentLoaded', function () {
     @elseif (session('info'))
         window.addEventListener('DOMContentLoaded', () => showToast('info', '{{ addslashes(session('info')) }}'));
     @endif
+
+    // Listen for custom JS events: window.dispatchEvent(new CustomEvent('toast', { detail: { type: 'success', message: '...' } }))
+    window.addEventListener('toast', (e) => {
+        const { type = 'info', message = '' } = e.detail || {};
+        if (message) window.showToast(type, message);
+    });
+
+    // Listen for Livewire 3 events
+    document.addEventListener('livewire:init', () => {
+        Livewire.on('toast', (event) => {
+            const data = Array.isArray(event) ? event[0] : event;
+            const type = data?.type || 'info';
+            const message = data?.message || (typeof data === 'string' ? data : '');
+            if (message) window.showToast(type, message);
+        });
+    });
+
+    // Alias for Sonner-style API calls: toast.success('...'), toast.error('...'), etc.
+    window.sonner = window.toast = {
+        success: (msg) => window.showToast('success', msg),
+        error:   (msg) => window.showToast('error', msg),
+        warning: (msg) => window.showToast('warning', msg),
+        info:    (msg) => window.showToast('info', msg),
+    };
 })();
 </script>
 
@@ -527,6 +592,10 @@ document.addEventListener('DOMContentLoaded', function () {
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.6.1/dist/js/tom-select.complete.min.js"></script>
 <script src="{{ asset('js/admin-select.js') }}?v=3"></script>
 <script src="{{ asset('js/admin-combobox.js') }}?v=3"></script>
+
+@include('components.command-menu')
+
+@stack('modals')
 
 @yield('js')
 </body>

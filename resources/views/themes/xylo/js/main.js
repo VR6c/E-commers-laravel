@@ -1,101 +1,118 @@
-document.addEventListener('DOMContentLoaded', function () {
+/**
+ * Storefront Main Interactive Logic
+ * Modernized using ES2023+ standards, arrow functions, optional chaining, 
+ * IntersectionObserver API, and safe DOM manipulation.
+ *
+ * @module storefront-main
+ */
+
+/**
+ * Initializes hero banner mouse movement parallax effect.
+ *
+ * @returns {void}
+ */
+export function initBannerParallax() {
     const bannerArea = document.querySelector('.banner-area');
+    if (!bannerArea) return;
 
-    if (bannerArea) {
-        // Variables to hold target and current positions
-        let targetX = 0,
-            targetY = 0,
-            currentX = 0,
-            currentY = 0;
-        const ease = 0.1; // Smoothing factor
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    const ease = 0.1;
+    const moveFactor = 0.05;
 
-        bannerArea.addEventListener('mousemove', (e) => {
-            // Find the currently active slide
-            const activeSlide = bannerArea.querySelector('.slick-active');
-            if (!activeSlide) return;
+    bannerArea.addEventListener('mousemove', (e) => {
+        const activeSlide = bannerArea.querySelector('.slick-active');
+        if (!activeSlide) return;
 
-            // Find the container holding the shoe image inside the active slide
-            const container = activeSlide.querySelector('.rightimg-banner1 img, .rightimg-banner2 img');
-            if (!container) return;
+        const container = activeSlide.querySelector('.rightimg-banner1 img, .rightimg-banner2 img');
+        if (!container) return;
 
-            // Get container dimensions and position
-            const rect = container.getBoundingClientRect();
+        const rect = container.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
 
-            // Calculate mouse position relative to the container
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+        targetX = (x - centerX) * moveFactor;
+        targetY = (y - centerY) * moveFactor;
+    });
 
-            // Calculate center of container
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
+    const animate = () => {
+        currentX += (targetX - currentX) * ease;
+        currentY += (targetY - currentY) * ease;
 
-            // Adjust movement sensitivity (tweak moveFactor as needed)
-            const moveFactor = 0.05;
-
-            // Update target translation values based on mouse position
-            targetX = (x - centerX) * moveFactor;
-            targetY = (y - centerY) * moveFactor;
-        });
-
-        function animate() {
-            // Smoothly interpolate current position toward target position
-            currentX += (targetX - currentX) * ease;
-            currentY += (targetY - currentY) * ease;
-
-            // Apply transform to the shoe image in the active slide
-            const activeSlide = bannerArea.querySelector('.slick-active');
-            if (activeSlide) {
-                const shoeImage = activeSlide.querySelector('.rightimg-banner img');
-                if (shoeImage) {
-                    shoeImage.style.transform = `translate(${currentX}px, ${currentY}px)`;
-                }
-            }
-            requestAnimationFrame(animate);
+        const activeSlide = bannerArea.querySelector('.slick-active');
+        const shoeImage = activeSlide?.querySelector('.rightimg-banner img');
+        if (shoeImage) {
+            shoeImage.style.transform = `translate(${currentX}px, ${currentY}px)`;
         }
-        animate();
-    }
-});
+        requestAnimationFrame(animate);
+    };
 
-$(document).ready(function () {
-    var currentIndex = 0;
-    var slides = $(".blog-img");
-    var titles = $(".blog-title");
-    var totalSlides = slides.length;
+    animate();
+}
 
-    function updateSlide() {
-        // Stop any current animations and fade out all slides
+/**
+ * Initializes custom blog slider controls.
+ *
+ * @returns {void}
+ */
+export function initBlogSlider() {
+    if (typeof window.$ === 'undefined') return;
+
+    const $ = window.$;
+    const slides = $('.blog-img');
+    const titles = $('.blog-title');
+    const totalSlides = slides.length;
+    if (totalSlides === 0) return;
+
+    let currentIndex = 0;
+
+    const updateSlide = () => {
         slides.stop(true, true).fadeOut(300);
-        // Fade in the current slide and mark it as active
-        slides.removeClass("active").addClass("deactive");
-        slides.eq(currentIndex).stop(true, true).fadeIn(300).removeClass("deactive").addClass("active");
+        slides.removeClass('active').addClass('deactive');
+        slides.eq(currentIndex).stop(true, true).fadeIn(300).removeClass('deactive').addClass('active');
 
-        // Update Titles: remove "active" from all and add "deactive"
-        titles.removeClass("active").addClass("deactive");
-        // Mark the current title as active and remove "deactive"
-        titles.eq(currentIndex).removeClass("deactive").addClass("active");
-    }
+        titles.removeClass('active').addClass('deactive');
+        titles.eq(currentIndex).removeClass('deactive').addClass('active');
+    };
 
-    $(".nnext").click(function () {
+    $('.nnext').on('click', () => {
         currentIndex = (currentIndex + 1) % totalSlides;
         updateSlide();
     });
 
-    $(".pprev").click(function () {
+    $('.pprev').on('click', () => {
         currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
         updateSlide();
     });
 
-    // Clicking a title moves to that slide
-    titles.click(function () {
-        currentIndex = titles.index($(this));
-        updateSlide();
+    titles.on('click', function () {
+        const clickedIndex = titles.index($(this));
+        if (clickedIndex !== -1) {
+            currentIndex = clickedIndex;
+            updateSlide();
+        }
     });
 
-    updateSlide(); // Initialize the first slide correctly
-});
+    updateSlide();
+}
 
-$(document).ready(function () {
-    $('.client-slider').slick({
+/**
+ * Initializes client logo carousel with Slick Slider.
+ *
+ * @returns {void}
+ */
+export function initClientSlider() {
+    if (typeof window.$ === 'undefined') return;
+
+    const $ = window.$;
+    const $clientSlider = $('.client-slider');
+    if ($clientSlider.length === 0 || !$.fn?.slick) return;
+
+    $clientSlider.slick({
         slidesToShow: 3,
         slidesToScroll: 1,
         infinite: true,
@@ -107,38 +124,52 @@ $(document).ready(function () {
         nextArrow: $('.next'),
         responsive: [
             {
-                breakpoint: 992, // Tablet
-                settings: {
-                    slidesToShow: 1
-                }
+                breakpoint: 992,
+                settings: { slidesToShow: 1 }
             },
             {
-                breakpoint: 576, // Mobile
-                settings: {
-                    slidesToShow: 1
-                }
+                breakpoint: 576,
+                settings: { slidesToShow: 1 }
             }
         ]
     });
-});
+}
 
-document.addEventListener("DOMContentLoaded", function () {
+/**
+ * Initializes IntersectionObserver scroll animations.
+ *
+ * @returns {void}
+ */
+export function initScrollAnimations() {
     const elements = document.querySelectorAll('.animate-on-scroll');
+    if (elements.length === 0) return;
 
-    const observerOptions = {
-        threshold: 0.5 // Trigger when 50% of the element is visible
-    };
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate__animated', 'animate__fadeIn');
+                    observer.unobserve(entry.target);
+                }
+            });
+        },
+        { threshold: 0.3 }
+    );
 
-    const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                // Add animate.css classes to trigger animation
-                entry.target.classList.add('animate__animated', 'animate__fadeIn');
-                // Unobserve so it doesn't animate again
-                observer.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
+    elements.forEach((el) => observer.observe(el));
+}
 
-    elements.forEach(el => observer.observe(el));
-});
+// Auto-run when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        initBannerParallax();
+        initBlogSlider();
+        initClientSlider();
+        initScrollAnimations();
+    });
+} else {
+    initBannerParallax();
+    initBlogSlider();
+    initClientSlider();
+    initScrollAnimations();
+}

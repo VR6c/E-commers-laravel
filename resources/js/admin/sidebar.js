@@ -1,25 +1,62 @@
-document.querySelectorAll('.language-select').forEach(item => {
-    item.addEventListener('click', function (e) {
-        e.preventDefault();
-        const selectedLang = this.getAttribute('data-lang');
+import { postApi } from '../modules/api';
 
-        const modal = new bootstrap.Modal(document.getElementById('languageChangeModal'));
-        modal.show();
+/**
+ * Initializes language switching listeners on sidebar items.
+ *
+ * @returns {void}
+ */
+export function initLanguageSwitcher() {
+    const languageItems = document.querySelectorAll('.language-select');
+    if (languageItems.length === 0) return;
 
-        document.getElementById('confirmChange').onclick = function () {
-            modal.hide();
+    languageItems.forEach((item) => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const selectedLang = item.getAttribute('data-lang');
+            if (!selectedLang) return;
 
-            axios.post('/admin/change-language', {
-                _token: document.querySelector('meta[name="csrf-token"]').content,
-                lang: selectedLang
-            })
-                .then(response => {
-                    console.log(response.data);
-                    window.location.reload();
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-        };
+            const modalElement = document.getElementById('languageChangeModal');
+            if (!modalElement) return;
+
+            const modal = window.bootstrap?.Modal?.getOrCreateInstance(modalElement) 
+                       ?? new window.bootstrap.Modal(modalElement);
+            modal.show();
+
+            const confirmBtn = document.getElementById('confirmChange');
+            if (!confirmBtn) return;
+
+            // Remove existing listener to prevent duplicate triggers
+            const handleConfirm = async () => {
+                confirmBtn.disabled = true;
+                confirmBtn.setAttribute('data-loading', 'true');
+
+                try {
+                    modal.hide();
+                    const result = await postApi('/admin/change-language', { lang: selectedLang });
+
+                    if (result.success) {
+                        window.location.reload();
+                    } else {
+                        console.error('[Language Switch Error]:', result.error);
+                        alert(result.error ?? 'Failed to update language preference.');
+                    }
+                } catch (err) {
+                    console.error('[Language Switch Exception]:', err);
+                } finally {
+                    confirmBtn.disabled = false;
+                    confirmBtn.removeAttribute('data-loading');
+                    confirmBtn.removeEventListener('click', handleConfirm);
+                }
+            };
+
+            confirmBtn.addEventListener('click', handleConfirm, { once: true });
+        });
     });
-});
+}
+
+// Auto-initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLanguageSwitcher);
+} else {
+    initLanguageSwitcher();
+}

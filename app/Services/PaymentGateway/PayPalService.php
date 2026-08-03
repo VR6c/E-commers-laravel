@@ -6,7 +6,7 @@ use App\Models\PaymentGateway;
 use App\Models\PaymentGatewayConfig;
 use Illuminate\Support\Facades\Http;
 
-class PayPalService
+class PayPalService implements PaymentGatewayInterface
 {
     protected $clientId;
 
@@ -77,5 +77,15 @@ class PayPalService
             ->post("{$this->baseUrl}/v2/checkout/orders/{$orderId}/capture");
 
         return $response->json();
+    }
+
+    public function getGatewayCode(): string
+    {
+        return 'paypal';
+    }
+
+    public function isConfigured(): bool
+    {
+        return !empty($this->clientId) && !empty($this->secret);
     }
 }

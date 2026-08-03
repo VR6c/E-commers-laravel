@@ -2,366 +2,418 @@
 
 @section('content')
 
-{{-- Page Title --}}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h4 class="mb-1 fw-bold">{{ 'Edit Product' }}</h4>
-        <p class="text-muted small mb-0">
-            <i class="bi bi-hash me-1"></i>{{ $product->id }}
-            &nbsp;&middot;&nbsp;
-            {{ $product->getTranslation('name', 'en') }}
-        </p>
-    </div>
-    <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary btn-sm shadow-sm">
-        <i class="bi bi-arrow-left me-1"></i>{{ 'Back' }}
-    </a>
-</div>
+{{-- Page header --}}
+<x-admin.page-header
+    :title="'Edit Product'"
+    icon="bi bi-box-seam"
+    :subtitle="'#' . $product->id . ' · ' . $product->getTranslation('name', 'en')"
+    :breadcrumbs="['Products' => route('admin.products.index'), 'Edit' => '#']">
+    <x-slot:actions>
+        <a href="{{ route('admin.products.index') }}" class="vp-btn-primary"
+           style="background: var(--vp-surface); color: var(--vp-text) !important; border: 1.5px solid var(--vp-border); box-shadow: var(--vp-sh-xs);"
+           id="back-to-products-btn">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i> Back
+        </a>
+    </x-slot:actions>
+</x-admin.page-header>
 
-<form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('admin.products.update', $product->id) }}"
+      method="POST"
+      enctype="multipart/form-data"
+      id="edit-product-form"
+      novalidate>
     @csrf
     @method('PUT')
 
-    <div class="row">
+    <div class="row g-4">
 
-        {{-- ── Left: main content ── --}}
+        {{-- ── Left column: main content ───────────────────────────────────── --}}
         <div class="col-lg-8">
 
-            {{-- Product Info --}}
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <h6 class="fw-bold mb-4 pb-2 border-bottom">
-                        <i class="bi bi-box-seam text-primary me-2"></i>{{ 'Product Info' }}
-                    </h6>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">{{ 'Product Name' }}</label>
-                        <input type="text"
-                            name="name"
-                            class="form-control bg-light border-0 @error('name') is-invalid @enderror"
-                            value="{{ old('name', $product->name) }}"
-                            placeholder="e.g. Wireless Headphones">
-                        @error('name')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">{{ 'Description' }}</label>
-                        <textarea
-                            name="description"
-                            class="form-control bg-light border-0 ck-editor @error('description') is-invalid @enderror"
-                            rows="8">{{ old('description', $product->description) }}</textarea>
-                        @error('description')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-0">
-                        <label class="form-label fw-semibold">{{ 'Short Description' }}</label>
-                        <textarea
-                            name="short_description"
-                            class="form-control bg-light border-0"
-                            rows="3"
-                            placeholder="{{ 'Brief product summary...' }}">{{ old('short_description', $product->short_description) }}</textarea>
-                    </div>
+            {{-- Product Info Card --}}
+            <x-admin.form-card title="Product Info" icon="bi bi-box-seam" class="mb-4 vp-anim-slide-up">
+                <div class="vp-form-group">
+                    <label class="vp-label" for="product-name">
+                        Product Name <span class="required">*</span>
+                    </label>
+                    <input type="text"
+                           id="product-name"
+                           name="name"
+                           class="vp-input @error('name') is-invalid @enderror"
+                           value="{{ old('name', $product->name) }}"
+                           placeholder="e.g. Wireless Headphones"
+                           autocomplete="off">
+                    @error('name')
+                        <p class="vp-error"><i class="bi bi-exclamation-circle-fill" aria-hidden="true"></i>{{ $message }}</p>
+                    @enderror
                 </div>
-            </div>
 
-            {{-- Variants --}}
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
-                        <h6 class="fw-bold mb-0">
-                            <i class="bi bi-layers text-warning me-2"></i>{{ 'Variants' }}
-                            <span class="badge bg-light text-secondary fw-semibold ms-1" id="variant-count">{{ count($product->variants) }}</span>
-                        </h6>
-                        <button type="button" id="add-variant-btn" class="btn btn-primary btn-sm">
-                            <i class="bi bi-plus-lg me-1"></i>{{ 'Add Variant' }}
-                        </button>
-                    </div>
+                <div class="vp-form-group">
+                    <label class="vp-label" for="product-description">Description</label>
+                    <textarea id="product-description"
+                              name="description"
+                              class="vp-textarea ck-editor @error('description') is-invalid @enderror"
+                              rows="8"
+                              placeholder="Full product description…">{{ old('description', $product->description) }}</textarea>
+                    @error('description')
+                        <p class="vp-error"><i class="bi bi-exclamation-circle-fill" aria-hidden="true"></i>{{ $message }}</p>
+                    @enderror
+                </div>
 
-                    <div id="variants-wrapper">
+                <div class="vp-form-group" style="margin-bottom:0;">
+                    <label class="vp-label" for="product-short-desc">Short Description</label>
+                    <textarea id="product-short-desc"
+                              name="short_description"
+                              class="vp-textarea"
+                              rows="3"
+                              placeholder="Brief product summary…">{{ old('short_description', $product->short_description) }}</textarea>
+                </div>
+            </x-admin.form-card>
+
+            {{-- Variants Card --}}
+            <div class="vp-card mb-4 vp-anim-slide-up" style="animation-delay:.08s;" role="region" aria-label="Product Variants">
+                <div class="vp-card-header">
+                    <h5 class="vp-card-header__title">
+                        <span class="vp-card-header__icon" aria-hidden="true"><i class="bi bi-layers-fill"></i></span>
+                        Variants
+                        <span class="vp-variant-badge ms-1" id="variant-count">{{ count($product->variants) }}</span>
+                    </h5>
+                    <button type="button" id="add-variant-btn" class="vp-btn-primary" style="padding: 7px 14px; font-size: .8rem;" aria-label="Add a new variant">
+                        <i class="bi bi-plus-lg" aria-hidden="true"></i> Add Variant
+                    </button>
+                </div>
+
+                <div class="vp-card-body">
+                    <div id="variants-wrapper" class="vp-stagger">
+
                         @foreach ($product->variants as $index => $variant)
-                        @php $enTranslation = $variant; @endphp
-
-                        <div class="variant-block bg-light rounded-3 p-3 mb-3" data-index="{{ $index }}">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <span class="badge bg-primary">
-                                    <i class="bi bi-tag-fill me-1"></i>{{ 'Variant #' . $index + 1 }}
-                                </span>
-                                <button type="button" class="btn btn-sm btn-outline-danger remove-variant-item"
-                                    onclick="removeVariant({{ $variant->id ?? 'null' }}, this)">
-                                    <i class="bi bi-trash3 me-1"></i>{{ 'Remove' }}
-                                </button>
+                        <div class="vp-variant-block vp-anim-slide-up" data-index="{{ $index }}" style="animation-delay: {{ $index * 60 }}ms;">
+                            <div class="vp-variant-header">
+                                <div class="vp-variant-title">
+                                    <i class="bi bi-tag-fill" aria-hidden="true"></i>
+                                    Variant
+                                    <span class="vp-variant-badge">{{ '#' . ($index + 1) }}</span>
+                                </div>
+                                <div class="vp-variant-controls">
+                                    <button type="button"
+                                            class="vp-variant-remove remove-variant-item"
+                                            onclick="removeVariant({{ $variant->id ?? 'null' }}, this)"
+                                            aria-label="Remove variant {{ $index + 1 }}">
+                                        <i class="bi bi-x-lg" aria-hidden="true"></i>
+                                    </button>
+                                </div>
                             </div>
 
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold small">{{ 'Variant Name' }}</label>
-                                    <input type="text" name="variants[{{ $index }}][name]"
-                                        class="form-control bg-white border-0"
-                                        value="{{ old("variants.{$index}.name", $variant->name) }}"
-                                        placeholder="e.g. XL / Red" />
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold small">{{ 'Price' }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-white border-0 text-muted">$</span>
-                                        <input type="number" step="0.01" name="variants[{{ $index }}][price]"
-                                            class="form-control bg-white border-0"
-                                            value="{{ old("variants.{$index}.price", $variant->price) }}" />
+                                    <div class="vp-form-group" style="margin-bottom:0;">
+                                        <label class="vp-label">Variant Name</label>
+                                        <input type="text" name="variants[{{ $index }}][name]"
+                                               class="vp-input"
+                                               value="{{ old("variants.{$index}.name", $variant->name) }}"
+                                               placeholder="e.g. XL / Red">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label fw-semibold small">{{ 'Discount Price' }}</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-white border-0 text-muted">$</span>
-                                        <input type="number" step="0.01" name="variants[{{ $index }}][discount_price]"
-                                            class="form-control bg-white border-0"
-                                            value="{{ old("variants.{$index}.discount_price", $variant->discount_price) }}" />
+                                    <div class="vp-form-group" style="margin-bottom:0;">
+                                        <label class="vp-label">Price</label>
+                                        <div class="vp-input-group">
+                                            <span class="vp-input-group-icon">$</span>
+                                            <input type="number" step="0.01" name="variants[{{ $index }}][price]"
+                                                   class="vp-input"
+                                                   value="{{ old("variants.{$index}.price", $variant->price) }}">
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label fw-semibold small">{{ 'Stock' }}</label>
-                                    <input type="number" name="variants[{{ $index }}][stock]"
-                                        class="form-control bg-white border-0"
-                                        value="{{ old("variants.{$index}.stock", $variant->stock) }}" />
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold small">{{ 'SKU' }}</label>
-                                    <input type="text" name="variants[{{ $index }}][SKU]"
-                                        class="form-control bg-white border-0"
-                                        value="{{ old("variants.{$index}.SKU", $variant->SKU) }}" />
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold small">{{ 'Barcode' }}</label>
-                                    <input type="text" name="variants[{{ $index }}][barcode]"
-                                        class="form-control bg-white border-0"
-                                        value="{{ old("variants.{$index}.barcode", $variant->barcode) }}" />
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold small">{{ 'Weight' }}</label>
-                                    <input type="text" name="variants[{{ $index }}][weight]"
-                                        class="form-control bg-white border-0"
-                                        value="{{ old("variants.{$index}.weight", $variant->weight) }}" />
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold small">{{ 'Dimensions' }}</label>
-                                    <input type="text" name="variants[{{ $index }}][dimensions]"
-                                        class="form-control bg-white border-0"
-                                        value="{{ old("variants.{$index}.dimensions", $variant->dimensions) }}" />
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold small">{{ 'Size' }}</label>
-                                    <select name="variants[{{ $index }}][size_id]" class="form-select bg-white border-0">
-                                        <option value="">{{ 'No Size' }}</option>
-                                        @foreach($sizes as $size)
-                                        <option value="{{ $size->id }}" {{ old("variants.{$index}.size_id", $variant->size_id) == $size->id ? 'selected' : '' }}>{{ $size->value }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold small">{{ 'Color' }}</label>
-                                    <select name="variants[{{ $index }}][color_id]" class="form-select bg-white border-0">
-                                        <option value="">{{ 'No Color' }}</option>
-                                        @foreach($colors as $color)
-                                        <option value="{{ $color->id }}" {{ old("variants.{$index}.color_id", $variant->color_id) == $color->id ? 'selected' : '' }}>{{ $color->value }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-3 d-flex align-items-end">
-                                    <div class="form-check form-switch mb-1">
-                                        <input class="form-check-input" type="radio" name="primary_variant"
-                                            value="{{ $index }}" id="primary_{{ $index }}"
-                                            {{ $variant->is_primary ? 'checked' : '' }}>
-                                        <label class="form-check-label small fw-semibold" for="primary_{{ $index }}">
-                                            {{ 'Primary' }}
-                                        </label>
+                                    <div class="vp-form-group" style="margin-bottom:0;">
+                                        <label class="vp-label">Discount Price</label>
+                                        <div class="vp-input-group">
+                                            <span class="vp-input-group-icon">$</span>
+                                            <input type="number" step="0.01" name="variants[{{ $index }}][discount_price]"
+                                                   class="vp-input"
+                                                   value="{{ old("variants.{$index}.discount_price", $variant->discount_price) }}">
+                                        </div>
                                     </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="vp-form-group" style="margin-bottom:0;">
+                                        <label class="vp-label">Stock</label>
+                                        <input type="number" name="variants[{{ $index }}][stock]"
+                                               class="vp-input"
+                                               value="{{ old("variants.{$index}.stock", $variant->stock) }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="vp-form-group" style="margin-bottom:0;">
+                                        <label class="vp-label">SKU</label>
+                                        <input type="text" name="variants[{{ $index }}][SKU]"
+                                               class="vp-input"
+                                               value="{{ old("variants.{$index}.SKU", $variant->SKU) }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="vp-form-group" style="margin-bottom:0;">
+                                        <label class="vp-label">Barcode</label>
+                                        <input type="text" name="variants[{{ $index }}][barcode]"
+                                               class="vp-input"
+                                               value="{{ old("variants.{$index}.barcode", $variant->barcode) }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="vp-form-group" style="margin-bottom:0;">
+                                        <label class="vp-label">Weight</label>
+                                        <input type="text" name="variants[{{ $index }}][weight]"
+                                               class="vp-input"
+                                               value="{{ old("variants.{$index}.weight", $variant->weight) }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="vp-form-group" style="margin-bottom:0;">
+                                        <label class="vp-label">Dimensions</label>
+                                        <input type="text" name="variants[{{ $index }}][dimensions]"
+                                               class="vp-input"
+                                               value="{{ old("variants.{$index}.dimensions", $variant->dimensions) }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="vp-form-group" style="margin-bottom:0;">
+                                        <label class="vp-label">Size</label>
+                                        <select name="variants[{{ $index }}][size_id]" class="vp-select">
+                                            <option value="">No Size</option>
+                                            @foreach($sizes as $size)
+                                            <option value="{{ $size->id }}"
+                                                {{ old("variants.{$index}.size_id", $variant->size_id) == $size->id ? 'selected' : '' }}>
+                                                {{ $size->value }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="vp-form-group" style="margin-bottom:0;">
+                                        <label class="vp-label">Color</label>
+                                        <select name="variants[{{ $index }}][color_id]" class="vp-select">
+                                            <option value="">No Color</option>
+                                            @foreach($colors as $color)
+                                            <option value="{{ $color->id }}"
+                                                {{ old("variants.{$index}.color_id", $variant->color_id) == $color->id ? 'selected' : '' }}>
+                                                {{ $color->value }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 d-flex align-items-center" style="padding-top: 22px;">
+                                    <label class="d-flex align-items-center gap-2" style="cursor:pointer; font-size:.82rem; font-weight:600; color: var(--vp-text-2);">
+                                        <span class="switch" style="margin:0;">
+                                            <input type="radio"
+                                                   name="primary_variant"
+                                                   value="{{ $index }}"
+                                                   id="primary_{{ $index }}"
+                                                   {{ $variant->is_primary ? 'checked' : '' }}>
+                                            <span class="slider round"></span>
+                                        </span>
+                                        Primary
+                                    </label>
                                 </div>
                             </div>
                         </div>
                         @endforeach
-                    </div>
 
-                    <div id="no-variants-msg" class="text-center py-5" style="{{ count($product->variants) > 0 ? 'display:none' : '' }}">
-                        <i class="bi bi-layers text-muted opacity-25" style="font-size:2.5rem;"></i>
-                        <p class="text-muted small mt-2 mb-0">{{ 'Click \'Add Variant\' to add product variants.' }}</p>
+                    </div>{{-- /variants-wrapper --}}
+
+                    {{-- Empty state --}}
+                    <div id="no-variants-msg" class="vp-empty-state" style="{{ count($product->variants) > 0 ? 'display:none' : '' }}">
+                        <div class="vp-empty-state__icon"><i class="bi bi-layers"></i></div>
+                        <p class="vp-empty-state__text">Click <strong>Add Variant</strong> to add product options.</p>
                     </div>
                 </div>
             </div>
 
         </div>{{-- /col-lg-8 --}}
 
-        {{-- ── Right: sidebar ── --}}
+        {{-- ── Right sidebar ──────────────────────────────────────────────── --}}
         <div class="col-lg-4">
 
-            {{-- Organization --}}
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <h6 class="fw-bold mb-3 pb-2 border-bottom">
-                        <i class="bi bi-diagram-3 text-success me-2"></i>{{ 'Organization' }}
-                    </h6>
+            {{-- Save card --}}
+            <x-admin.form-card class="mb-4 vp-anim-slide-up" style="animation-delay:.04s;" role="region" aria-label="Save actions">
+                <button type="submit" id="save-product-btn" class="vp-btn-save w-100" aria-label="Save product changes">
+                    <i class="bi bi-check-circle-fill" aria-hidden="true"></i> Save Product
+                </button>
+                <p style="font-size: .73rem; color: var(--vp-text-muted); text-align: center; margin: 10px 0 0;">
+                    Changes will be saved immediately.
+                </p>
+            </x-admin.form-card>
 
-                    <x-admin.combobox
-                        name="category_id"
-                        wrapper-class="mb-3"
-                        :label="'Category'"
-                        :selected="$product->category_id"
-                        :options="$categories"
-                        option-label="name" />
+            {{-- Organisation card --}}
+            <x-admin.form-card title="Organization" icon="bi bi-diagram-3-fill" class="mb-4 vp-anim-slide-up" style="animation-delay:.1s;">
+                <x-admin.combobox
+                    name="category_id"
+                    wrapper-class="vp-form-group"
+                    :label="'Category'"
+                    :selected="$product->category_id"
+                    :options="$categories"
+                    option-label="name" />
 
-                    <x-admin.combobox
-                        name="brand_id"
-                        wrapper-class="mb-3"
-                        :label="'Brand'"
-                        :selected="$product->brand_id"
-                        :placeholder="'No Brand'"
-                        :options="$brands"
-                        option-label="name" />
+                <x-admin.combobox
+                    name="brand_id"
+                    wrapper-class="vp-form-group"
+                    :label="'Brand'"
+                    :selected="$product->brand_id"
+                    :placeholder="'No Brand'"
+                    :options="$brands"
+                    option-label="name" />
 
-                    <x-admin.combobox
-                        name="vendor_id"
-                        wrapper-class="mb-0"
-                        :label="'Vendor'"
-                        :selected="$product->vendor_id"
-                        :placeholder="'Select Vendor'"
-                        :options="$vendors" />
-                </div>
-            </div>
+                <x-admin.combobox
+                    name="vendor_id"
+                    wrapper-class="vp-form-group"
+                    :label="'Vendor'"
+                    :selected="$product->vendor_id"
+                    :placeholder="'Select Vendor'"
+                    :options="$vendors" />
+            </x-admin.form-card>
 
-            {{-- Images --}}
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <h6 class="fw-bold mb-3 pb-2 border-bottom">
-                        <i class="bi bi-images text-info me-2"></i>{{ 'Images' }}
-                    </h6>
+            {{-- Images card --}}
+            <x-admin.form-card title="Images" icon="bi bi-images" class="mb-4 vp-anim-slide-up" style="animation-delay:.16s;" role="region" aria-label="Product images">
 
-                    @if ($product->images->count())
-                    <div class="row g-2 mb-3">
-                        @foreach ($product->images as $image)
-                        <div class="col-4" id="existing_image_{{ $image->id }}">
-                            <div class="position-relative">
-                                <img src="{{ asset('storage/' . $image->image_url) }}"
-                                    class="img-fluid rounded border"
-                                    style="height:72px; width:100%; object-fit:cover;"
-                                    alt="product image">
-                                <button type="button"
-                                    class="btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 m-1 p-0 d-flex align-items-center justify-content-center"
-                                    style="width:20px; height:20px; font-size:.6rem;"
-                                    onclick="removeExistingImage({{ $image->id }})">
-                                    <i class="bi bi-x"></i>
-                                </button>
-                            </div>
-                        </div>
-                        @endforeach
+                {{-- Existing images --}}
+                @if ($product->images->count())
+                <div class="vp-image-grid mb-3" id="existing-images-grid" aria-label="Existing product images">
+                    @foreach ($product->images as $image)
+                    <div class="vp-image-thumb" id="existing_image_{{ $image->id }}" role="img" aria-label="Product image">
+                        <img src="{{ asset('storage/' . $image->image_url) }}" alt="Product image {{ $loop->iteration }}">
+                        <button type="button"
+                                class="vp-image-thumb__remove"
+                                onclick="removeExistingImage({{ $image->id }})"
+                                aria-label="Remove image {{ $loop->iteration }}">
+                            <i class="bi bi-x" aria-hidden="true"></i>
+                        </button>
                     </div>
-                    @endif
-
-                    <div id="image-previews" class="row g-2 mb-3"></div>
-
-                    <label class="btn btn-outline-light border-dashed text-primary w-100 py-3 d-flex flex-column align-items-center gap-1"
-                        for="product-images"
-                        style="border-style:dashed !important; border-color:#cbd5e1 !important; background:#f8fafc; border-radius:10px; cursor:pointer;">
-                        <i class="bi bi-cloud-arrow-up fs-4"></i>
-                        <span class="fw-semibold small">{{ 'Upload Images' }}</span>
-                        <span class="text-muted" style="font-size:.72rem;">{{ 'PNG, JPG, GIF up to 10MB' }}</span>
-                        <input type="file" name="images[]" multiple class="d-none" id="product-images">
-                    </label>
-
-                    <div id="removedImagesInputs"></div>
+                    @endforeach
                 </div>
-            </div>
+                @endif
 
-            {{-- Save --}}
-            <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #1d4ed8, #3b82f6);">
-                <div class="card-body p-4">
-                    <button type="submit" class="btn btn-light w-100 py-2 fw-bold text-primary shadow-sm">
-                        <i class="bi bi-check-circle-fill me-2"></i>{{ 'Save Product' }}
-                    </button>
-                    <p class="text-white opacity-75 small text-center mt-2 mb-0">
-                        {{ 'Changes will be saved immediately.' }}
-                    </p>
-                </div>
-            </div>
+                {{-- New image previews --}}
+                <div class="vp-image-grid mb-3" id="image-previews" aria-label="New image previews"></div>
+
+                {{-- Upload zone --}}
+                <label class="vp-upload-zone" for="product-images" role="button" aria-label="Upload product images">
+                    <div class="vp-upload-icon" aria-hidden="true">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                    </div>
+                    <p class="vp-upload-label">Upload Images</p>
+                    <p class="vp-upload-hint">PNG, JPG, GIF up to 10MB</p>
+                    <input type="file" name="images[]" multiple class="d-none" id="product-images" accept="image/*">
+                </label>
+
+                <div id="removedImagesInputs" aria-hidden="true"></div>
+            </x-admin.form-card>
 
         </div>{{-- /col-lg-4 --}}
     </div>{{-- /row --}}
 </form>
 
-{{-- Variant template --}}
+{{-- Variant template (injected by JS) --}}
 <template id="variant-template">
-    <div class="variant-block bg-light rounded-3 p-3 mb-3" data-index="__INDEX__">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-            <span class="badge bg-primary">
-                <i class="bi bi-tag-fill me-1"></i>{{ 'Variant #' . '__NUM__' }}
-            </span>
-            <button type="button" class="btn btn-sm btn-outline-danger remove-variant-item">
-                <i class="bi bi-trash3 me-1"></i>{{ 'Remove' }}
-            </button>
+    <div class="vp-variant-block vp-anim-pop-in" data-index="__INDEX__">
+        <div class="vp-variant-header">
+            <div class="vp-variant-title">
+                <i class="bi bi-tag-fill" aria-hidden="true"></i>
+                Variant
+                <span class="vp-variant-badge">#__NUM__</span>
+            </div>
+            <div class="vp-variant-controls">
+                <button type="button" class="vp-variant-remove remove-variant-item" aria-label="Remove this variant">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i>
+                </button>
+            </div>
         </div>
         <div class="row g-3">
             <div class="col-md-6">
-                <label class="form-label fw-semibold small">{{ 'Variant Name' }}</label>
-                <input type="text" name="variants[__INDEX__][name]" class="form-control bg-white border-0" placeholder="e.g. XL / Red" />
-            </div>
-            <div class="col-md-3">
-                <label class="form-label fw-semibold small">{{ 'Price' }}</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-0 text-muted">$</span>
-                    <input type="number" step="0.01" name="variants[__INDEX__][price]" class="form-control bg-white border-0" value="0.00" />
+                <div class="vp-form-group" style="margin-bottom:0;">
+                    <label class="vp-label">Variant Name</label>
+                    <input type="text" name="variants[__INDEX__][name]" class="vp-input" placeholder="e.g. XL / Red">
                 </div>
             </div>
             <div class="col-md-3">
-                <label class="form-label fw-semibold small">{{ 'Discount Price' }}</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-0 text-muted">$</span>
-                    <input type="number" step="0.01" name="variants[__INDEX__][discount_price]" class="form-control bg-white border-0" />
+                <div class="vp-form-group" style="margin-bottom:0;">
+                    <label class="vp-label">Price</label>
+                    <div class="vp-input-group">
+                        <span class="vp-input-group-icon">$</span>
+                        <input type="number" step="0.01" name="variants[__INDEX__][price]" class="vp-input" value="0.00">
+                    </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <label class="form-label fw-semibold small">{{ 'Stock' }}</label>
-                <input type="number" name="variants[__INDEX__][stock]" class="form-control bg-white border-0" value="0" />
-            </div>
-            <div class="col-md-3">
-                <label class="form-label fw-semibold small">{{ 'SKU' }}</label>
-                <input type="text" name="variants[__INDEX__][SKU]" class="form-control bg-white border-0" />
-            </div>
-            <div class="col-md-3">
-                <label class="form-label fw-semibold small">{{ 'Barcode' }}</label>
-                <input type="text" name="variants[__INDEX__][barcode]" class="form-control bg-white border-0" />
-            </div>
-            <div class="col-md-3">
-                <label class="form-label fw-semibold small">{{ 'Weight' }}</label>
-                <input type="text" name="variants[__INDEX__][weight]" class="form-control bg-white border-0" />
-            </div>
-            <div class="col-md-3">
-                <label class="form-label fw-semibold small">{{ 'Dimensions' }}</label>
-                <input type="text" name="variants[__INDEX__][dimensions]" class="form-control bg-white border-0" />
-            </div>
-            <div class="col-md-3">
-                <label class="form-label fw-semibold small">{{ 'Size' }}</label>
-                <select name="variants[__INDEX__][size_id]" class="form-select bg-white border-0">
-                    <option value="">{{ 'No Size' }}</option>
-                    @foreach($sizes as $size)
-                    <option value="{{ $size->id }}">{{ $size->value }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label fw-semibold small">{{ 'Color' }}</label>
-                <select name="variants[__INDEX__][color_id]" class="form-select bg-white border-0">
-                    <option value="">{{ 'No Color' }}</option>
-                    @foreach($colors as $color)
-                    <option value="{{ $color->id }}">{{ $color->value }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <div class="form-check form-switch mb-1">
-                    <input class="form-check-input" type="radio" name="primary_variant" value="__INDEX__" id="primary___INDEX__">
-                    <label class="form-check-label small fw-semibold" for="primary___INDEX__">{{ 'Primary' }}</label>
+                <div class="vp-form-group" style="margin-bottom:0;">
+                    <label class="vp-label">Discount Price</label>
+                    <div class="vp-input-group">
+                        <span class="vp-input-group-icon">$</span>
+                        <input type="number" step="0.01" name="variants[__INDEX__][discount_price]" class="vp-input">
+                    </div>
                 </div>
+            </div>
+            <div class="col-md-3">
+                <div class="vp-form-group" style="margin-bottom:0;">
+                    <label class="vp-label">Stock</label>
+                    <input type="number" name="variants[__INDEX__][stock]" class="vp-input" value="0">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="vp-form-group" style="margin-bottom:0;">
+                    <label class="vp-label">SKU</label>
+                    <input type="text" name="variants[__INDEX__][SKU]" class="vp-input">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="vp-form-group" style="margin-bottom:0;">
+                    <label class="vp-label">Barcode</label>
+                    <input type="text" name="variants[__INDEX__][barcode]" class="vp-input">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="vp-form-group" style="margin-bottom:0;">
+                    <label class="vp-label">Weight</label>
+                    <input type="text" name="variants[__INDEX__][weight]" class="vp-input">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="vp-form-group" style="margin-bottom:0;">
+                    <label class="vp-label">Dimensions</label>
+                    <input type="text" name="variants[__INDEX__][dimensions]" class="vp-input">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="vp-form-group" style="margin-bottom:0;">
+                    <label class="vp-label">Size</label>
+                    <select name="variants[__INDEX__][size_id]" class="vp-select">
+                        <option value="">No Size</option>
+                        @foreach($sizes as $size)
+                        <option value="{{ $size->id }}">{{ $size->value }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="vp-form-group" style="margin-bottom:0;">
+                    <label class="vp-label">Color</label>
+                    <select name="variants[__INDEX__][color_id]" class="vp-select">
+                        <option value="">No Color</option>
+                        @foreach($colors as $color)
+                        <option value="{{ $color->id }}">{{ $color->value }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 d-flex align-items-center" style="padding-top:22px;">
+                <label class="d-flex align-items-center gap-2" style="cursor:pointer; font-size:.82rem; font-weight:600; color: var(--vp-text-2);">
+                    <span class="switch" style="margin:0;">
+                        <input type="radio" name="primary_variant" value="__INDEX__" id="primary___INDEX__">
+                        <span class="slider round"></span>
+                    </span>
+                    Primary
+                </label>
             </div>
         </div>
     </div>
@@ -375,62 +427,79 @@ $(document).ready(function () {
     const template = $('#variant-template').html();
     let variantIndex = {{ count($product->variants) }};
 
+    /* ── Count badge ── */
     function updateCount() {
-        const n = $('#variants-wrapper .variant-block').length;
+        const n = $('#variants-wrapper .vp-variant-block').length;
         $('#variant-count').text(n);
         n > 0 ? $('#no-variants-msg').hide() : $('#no-variants-msg').show();
     }
 
+    /* ── Add variant ── */
     function addVariant(data = {}) {
         const index = variantIndex++;
         let html = template
             .replace(/__INDEX__/g, index)
-            .replace(/__NUM__/g, index + 1);
+            .replace(/__NUM__/g,   index + 1);
         const $v = $(html);
         if (data.size_id)    $v.find(`select[name="variants[${index}][size_id]"]`).val(data.size_id);
         if (data.color_id)   $v.find(`select[name="variants[${index}][color_id]"]`).val(data.color_id);
         if (data.is_primary) $v.find('input[name="primary_variant"]').prop('checked', true);
         $('#variants-wrapper').append($v);
         updateCount();
+        // Focus first input in new variant for a11y
+        $v.find('.vp-input').first().trigger('focus');
     }
 
     $('#add-variant-btn').on('click', () => addVariant());
 
     $(document).on('click', '.remove-variant-item', function () {
-        $(this).closest('.variant-block').remove();
+        $(this).closest('.vp-variant-block').remove();
         reindex();
         updateCount();
     });
 
     window.removeVariant = (id, btn) => {
-        $(btn).closest('.variant-block').remove();
+        $(btn).closest('.vp-variant-block').remove();
         reindex();
         updateCount();
     };
 
     function reindex() {
-        $('#variants-wrapper .variant-block').each(function (i) {
-            $(this).find('.variant-number').text(i + 1);
+        $('#variants-wrapper .vp-variant-block').each(function (i) {
+            $(this).find('.vp-variant-badge').first().text('#' + (i + 1));
         });
     }
 
+    /* ── Image preview ── */
     $('#product-images').on('change', function () {
         const container = $('#image-previews').empty();
         Array.from(this.files).forEach(file => {
             const reader = new FileReader();
-            reader.onload = e => container.append(`
-                <div class="col-4">
-                    <img src="${e.target.result}" class="img-fluid rounded border" style="height:72px;width:100%;object-fit:cover;">
-                </div>`);
+            reader.onload = e => {
+                const thumb = $('<div class="vp-image-thumb vp-anim-pop-in"></div>');
+                thumb.append(`<img src="${e.target.result}" alt="New image preview">`);
+                container.append(thumb);
+            };
             reader.readAsDataURL(file);
         });
     });
 
+    /* ── Remove existing image ── */
     window.removeExistingImage = id => {
         if (!confirm('Remove this image?')) return;
-        $(`#existing_image_${id}`).remove();
+        $(`#existing_image_${id}`).addClass('vp-anim-fade-in').css('opacity', 0).remove();
         $('#removedImagesInputs').append(`<input type="hidden" name="remove_images[]" value="${id}">`);
     };
+
+    /* ── Upload zone drag-over state ── */
+    const $zone = $('.vp-upload-zone');
+    $zone.on('dragover', e => { e.preventDefault(); $zone.addClass('drag-over'); });
+    $zone.on('dragleave drop', () => $zone.removeClass('drag-over'));
+
+    /* ── Save button loading state (frontend-patterns: loading state) ── */
+    $('#edit-product-form').on('submit', function () {
+        $('#save-product-btn').addClass('vp-btn-save--loading').prop('disabled', true);
+    });
 
     updateCount();
 });
@@ -447,7 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
           .catch(err => console.error(err));
     });
 
-    document.querySelector('form').addEventListener('submit', () => {
+    document.getElementById('edit-product-form').addEventListener('submit', () => {
         ckEditors.forEach(({ editor, el }) => { el.value = editor.getData(); });
     });
 });

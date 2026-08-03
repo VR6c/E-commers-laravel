@@ -453,3 +453,136 @@
 // =====================================================================
 .trend-up   { color: $success-500; font-size: $font-size-xs; font-weight: $font-weight-semibold; }
 .trend-down { color: $danger-500;  font-size: $font-size-xs; font-weight: $font-weight-semibold; }
+
+// =====================================================================
+//  ADMINLTE 3 SMALL BOX & INFO BOX
+// =====================================================================
+.small-box {
+    border-radius: $radius-lg;
+    position: relative;
+    display: block;
+    margin-bottom: 20px;
+    box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+    color: #fff;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0,0,0,.15);
+        color: #fff;
+        text-decoration: none;
+
+        .icon > i {
+            transform: scale(1.1);
+        }
+    }
+
+    > .inner {
+        padding: 20px;
+    }
+
+    h3 {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin: 0 0 10px 0;
+        white-space: nowrap;
+        padding: 0;
+    }
+
+    p {
+        font-size: 1rem;
+        margin-bottom: 0;
+    }
+
+    .icon {
+        color: rgba(0,0,0,.15);
+        z-index: 0;
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        transition: transform 0.3s ease;
+
+        > i {
+            font-size: 70px;
+            transition: transform 0.3s ease;
+        }
+    }
+
+    > .small-box-footer {
+        background-color: rgba(0,0,0,.1);
+        color: rgba(255,255,255,.8);
+        display: block;
+        padding: 6px 0;
+        position: relative;
+        text-align: center;
+        text-decoration: none;
+        z-index: 10;
+        font-size: 0.875rem;
+
+        &:hover {
+            background-color: rgba(0,0,0,.15);
+            color: #fff;
+        }
+    }
+
+    &.bg-info    { background-color: #17a2b8 !important; }
+    &.bg-success { background-color: #28a745 !important; }
+    &.bg-warning { background-color: #ffc107 !important; color: #1f2937 !important; h3, p, .small-box-footer { color: #1f2937 !important; } }
+    &.bg-danger  { background-color: #dc3545 !important; }
+    &.bg-primary { background-color: #007bff !important; }
+    &.bg-indigo  { background-color: #6366f1 !important; }
+}
+
+.info-box {
+    box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+    border-radius: $radius-md;
+    background-color: #fff;
+    display: flex;
+    margin-bottom: 1rem;
+    min-height: 80px;
+    padding: .5rem;
+    position: relative;
+    width: 100%;
+
+    .info-box-icon {
+        border-radius: $radius-md;
+        align-items: center;
+        display: flex;
+        font-size: 1.875rem;
+        justify-content: center;
+        text-align: center;
+        width: 70px;
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    .info-box-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        line-height: 1.2;
+        flex-grow: 1;
+        padding: 0 10px;
+    }
+
+    .info-box-text {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-transform: uppercase;
+        font-size: .75rem;
+        font-weight: 600;
+        color: #6b7280;
+    }
+
+    .info-box-number {
+        display: block;
+        margin-top: .25rem;
+        font-weight: 700;
+        font-size: 1.4rem;
+        color: #111827;
+    }
+}
+

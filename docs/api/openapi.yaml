@@ -1,0 +1,621 @@
+openapi: 3.1.0
+info:
+  title: E-Commerce REST API
+  description: Official OpenAPI 3.1 specification for the E-Commerce platform API.
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: api-support@example.com
+servers:
+  - url: http://localhost:8000/api
+    description: Local Development Server
+
+paths:
+  /customer/register:
+    post:
+      summary: Register a new customer account
+      operationId: registerCustomer
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+                - password_confirmation
+              properties:
+                name:
+                  type: string
+                  example: Jane Doe
+                email:
+                  type: string
+                  format: email
+                  example: jane@example.com
+                password:
+                  type: string
+                  format: password
+                  minLength: 6
+                  example: secret123
+                password_confirmation:
+                  type: string
+                  format: password
+                  example: secret123
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Registration successful
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: 1|qwert12345yuiop
+                      customer:
+                        $ref: '#/components/schemas/Customer'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /customer/login:
+    post:
+      summary: Authenticate customer and issue Sanctum token
+      operationId: loginCustomer
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: customer@example.com
+                password:
+                  type: string
+                  format: password
+                  example: secret123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Login successful
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: 2|asdfghjkl12345
+                      customer:
+                        $ref: '#/components/schemas/Customer'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /customer/profile:
+    get:
+      summary: Get current authenticated customer profile
+      operationId: getCustomerProfile
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Customer profile details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Customer profile retrieved
+                  data:
+                    $ref: '#/components/schemas/Customer'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /customer/logout:
+    post:
+      summary: Revoke access token for authenticated customer
+      operationId: logoutCustomer
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successfully logged out
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Logged out successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /products:
+    get:
+      summary: Search and filter catalog products with pagination
+      operationId: listProducts
+      tags:
+        - Catalog
+      parameters:
+        - name: search
+          in: query
+          description: Keyword search for product name, description, or tags
+          schema:
+            type: string
+        - name: category_id
+          in: query
+          description: Filter by category ID
+          schema:
+            type: integer
+        - name: brand_id
+          in: query
+          description: Filter by brand ID
+          schema:
+            type: integer
+        - name: min_price
+          in: query
+          description: Minimum price filter
+          schema:
+            type: number
+        - name: max_price
+          in: query
+          description: Maximum price filter
+          schema:
+            type: number
+        - name: sort
+          in: query
+          description: Sort field and order
+          schema:
+            type: string
+            enum: [latest, price_asc, price_desc, name_asc, name_desc]
+            default: latest
+        - name: per_page
+          in: query
+          description: Number of items per page (max 100)
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: Paginated list of products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+
+  /products/{slug}:
+    get:
+      summary: Retrieve full details for a single product by slug
+      operationId: getProductBySlug
+      tags:
+        - Catalog
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: Product URL slug
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detailed product information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/ProductDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /products/{slug}/reviews:
+    get:
+      summary: List reviews for a product
+      operationId: listProductReviews
+      tags:
+        - Reviews
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of product reviews
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductReview'
+    post:
+      summary: Submit a review for a product
+      operationId: submitProductReview
+      tags:
+        - Reviews
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - rating
+                - comment
+              properties:
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                  example: 5
+                comment:
+                  type: string
+                  example: Excellent build quality and fast shipping!
+      responses:
+        '201':
+          description: Review created successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /orders:
+    get:
+      summary: List all orders for the authenticated customer
+      operationId: listCustomerOrders
+      tags:
+        - Orders
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of customer orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /orders/{id}:
+    get:
+      summary: Retrieve order details by order ID
+      operationId: getCustomerOrder
+      tags:
+        - Orders
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/OrderDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    ValidationError:
+      description: RFC 7807 Validation Error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+
+    Unauthorized:
+      description: RFC 7807 Authentication Required / Invalid Token
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+
+    NotFound:
+      description: RFC 7807 Resource Not Found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+
+  schemas:
+    ProblemDetails:
+      type: object
+      required:
+        - type
+        - title
+        - status
+        - detail
+      properties:
+        type:
+          type: string
+          format: uri
+          example: https://api.example.com/errors/validation-error
+        title:
+          type: string
+          example: Validation Error
+        status:
+          type: integer
+          example: 422
+        detail:
+          type: string
+          example: The given data was invalid.
+        instance:
+          type: string
+          example: /api/customer/register
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Jane Doe
+        email:
+          type: string
+          format: email
+          example: jane@example.com
+        status:
+          type: string
+          example: active
+        created_at:
+          type: string
+          format: date-time
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 12
+        slug:
+          type: string
+          example: wireless-noise-canceling-headphones
+        name:
+          type: string
+          example: Wireless Noise-Canceling Headphones
+        short_description:
+          type: string
+          example: Premium over-ear headphones with active noise cancellation.
+        price:
+          type: number
+          example: 249.99
+        thumbnail:
+          type: string
+          nullable: true
+          example: http://localhost:8000/storage/products/headphones.jpg
+        category:
+          type: string
+          example: Electronics
+        category_id:
+          type: integer
+          example: 3
+        brand:
+          type: string
+          nullable: true
+          example: AudioPro
+        brand_id:
+          type: integer
+          nullable: true
+          example: 5
+        rating:
+          type: number
+          example: 4.8
+        reviews_count:
+          type: integer
+          example: 34
+
+    ProductDetail:
+      allOf:
+        - $ref: '#/components/schemas/Product'
+        - type: object
+          properties:
+            description:
+              type: string
+              example: Full detailed overview of the product specifications...
+            gallery:
+              type: array
+              items:
+                type: string
+            tags:
+              type: string
+              nullable: true
+            sku:
+              type: string
+              nullable: true
+
+    ProductReview:
+      type: object
+      properties:
+        id:
+          type: integer
+        rating:
+          type: integer
+          example: 5
+        comment:
+          type: string
+          example: Excellent product!
+        created_at:
+          type: string
+          format: date-time
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1001
+        status:
+          type: string
+          example: completed
+        total:
+          type: number
+          example: 299.99
+        created_at:
+          type: string
+          format: date-time
+
+    OrderDetail:
+      allOf:
+        - $ref: '#/components/schemas/Order'
+        - type: object
+          properties:
+            subtotal:
+              type: number
+            discount_amount:
+              type: number
+            coupon_code:
+              type: string
+              nullable: true
+            gateway:
+              type: string
+              example: stripe
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  product_id:
+                    type: integer
+                  product_name:
+                    type: string
+                  quantity:
+                    type: integer
+                  price:
+                    type: number
+
+    PaginationMeta:
+      type: object
+      required:
+        - current_page
+        - last_page
+        - per_page
+        - total
+      properties:
+        current_page:
+          type: integer
+          example: 1
+        last_page:
+          type: integer
+          example: 5
+        per_page:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 95

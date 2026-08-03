@@ -39,6 +39,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     /* Dashboard */
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/chart-data', [AdminDashboardController::class, 'chartData'])->name('dashboard.chart-data');
 
     /* Categories */
     Route::resource('categories', CategoryController::class)->except(['show']);

@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class CustomerAuthController extends Controller
 {
+    use ApiResponse;
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -19,7 +22,14 @@ class CustomerAuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return $this->problemResponse(
+                'https://api.example.com/errors/validation-error',
+                'Validation Error',
+                422,
+                'The given data was invalid.',
+                $request->path(),
+                $validator->errors()->toArray()
+            );
         }
 
         $customer = Customer::create([
@@ -31,11 +41,10 @@ class CustomerAuthController extends Controller
 
         $token = $customer->createToken('CustomerToken')->plainTextToken;
 
-        return response()->json([
-            'message' => 'Registration successful',
-            'token' => $token,
+        return $this->successResponse([
+            'token'    => $token,
             'customer' => $customer,
-        ], 201);
+        ], 'Registration successful', 201);
     }
 
     public function login(Request $request)
@@ -43,27 +52,32 @@ class CustomerAuthController extends Controller
         $customer = Customer::where('email', $request->email)->first();
 
         if (! $customer || ! Hash::check($request->password, $customer->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return $this->problemResponse(
+                'https://api.example.com/errors/unauthorized',
+                'Unauthorized',
+                401,
+                'Invalid login credentials provided.',
+                $request->path()
+            );
         }
 
         $token = $customer->createToken('CustomerToken')->plainTextToken;
 
-        return response()->json([
-            'message' => 'Login successful',
-            'token' => $token,
+        return $this->successResponse([
+            'token'    => $token,
             'customer' => $customer,
-        ]);
+        ], 'Login successful');
     }
 
     public function profile(Request $request)
     {
-        return response()->json($request->user());
+        return $this->successResponse($request->user(), 'Customer profile retrieved');
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logged out']);
+        return $this->successResponse(null, 'Logged out successfully');
     }
 }

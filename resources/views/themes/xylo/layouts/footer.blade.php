@@ -55,8 +55,8 @@
                                class="xsf-footer__newsletter-input"
                                placeholder="your@email.com"
                                aria-label="Newsletter email">
-                        <button type="button" class="xsf-footer__newsletter-btn">
-                            <i class="fas fa-paper-plane"></i>
+                        <button type="button" class="xsf-footer__newsletter-btn" aria-label="Subscribe to newsletter">
+                            <i class="fas fa-paper-plane" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>

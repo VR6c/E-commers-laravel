@@ -6,7 +6,7 @@ use App\Models\PaymentGateway;
 use App\Models\PaymentGatewayConfig;
 use Illuminate\Support\Facades\Http;
 
-class ABAPayWayService
+class ABAPayWayService implements PaymentGatewayInterface
 {
     protected $merchantId;
     protected $apiKey;
@@ -124,5 +124,15 @@ class ABAPayWayService
         ]);
 
         return $response->json() ?? [];
+    }
+
+    public function getGatewayCode(): string
+    {
+        return 'abapayway';
+    }
+
+    public function isConfigured(): bool
+    {
+        return !empty($this->merchantId) && !empty($this->apiKey);
     }
 }

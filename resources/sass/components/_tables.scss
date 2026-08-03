@@ -1,5 +1,5 @@
 // =====================================================================
-//  TABLES — premium redesign incl. DataTables overrides
+//  TABLES — modern redesign incl. DataTables overrides & accessibility
 // =====================================================================
 @use 'variables' as *;
 
@@ -54,7 +54,7 @@
 }
 
 // =====================================================================
-//  DATATABLES OVERRIDES
+//  DATATABLES OVERRIDES  — Ultra-Modern & Accessible Redesign
 // =====================================================================
 table.dataTable {
     border-collapse: separate !important;
@@ -63,57 +63,83 @@ table.dataTable {
     margin: 0 !important;
 
     thead th {
-        background-color: $surface-muted !important;
-        color: $text-muted !important;
-        font-weight: $font-weight-bold !important;
+        background-color: #f8fafc !important;
+        color: #64748b !important;
+        font-weight: 700 !important;
         text-transform: uppercase;
         font-size: 0.70rem !important;
-        letter-spacing: 0.07em;
-        padding: $space-3 + 0.15rem $space-5 !important;
-        border-bottom: 2px solid $border-subtle !important;
+        letter-spacing: 0.08em;
+        padding: 12px 20px !important;
+        border-bottom: 2px solid #e2e8f0 !important;
         border-top: none !important;
         white-space: nowrap;
+        transition: background-color 0.18s ease, color 0.18s ease;
 
-        // DataTables sort icons – subtle
+        &.sorting {
+            cursor: pointer;
+            &:hover { color: #1e293b !important; background-color: #f1f5f9 !important; }
+            &:focus-visible {
+                outline: none;
+                background-color: #e0e7ff !important;
+                box-shadow: inset 0 0 0 2px #6366f1;
+            }
+        }
+
+        &.sorting_asc,
+        &.sorting_desc {
+            color: #4f46e5 !important;
+            background-color: #e0e7ff !important;
+        }
+
+        // DataTables sort icons
         &.dt-ordering-asc .dt-column-order::before,
         &.dt-ordering-desc .dt-column-order::after {
-            color: $color-primary !important;
+            color: #4f46e5 !important;
             opacity: 1;
         }
     }
 
     tbody td {
-        padding: $space-3 + 0.15rem $space-5 !important;
+        padding: 13px 20px !important;
         vertical-align: middle !important;
-        border-bottom: 1px solid $border-subtle !important;
-        color: $text-secondary;
-        font-size: $font-size-sm;
+        border-bottom: 1px solid #f1f5f9 !important;
+        color: #334155;
+        font-size: 0.85rem;
         background: transparent !important;
+        transition: background-color 0.15s ease;
     }
 
     tbody tr:last-child td { border-bottom: none !important; }
 
     tbody tr:hover td {
-        background-color: $surface-muted !important;
+        background-color: rgba(99, 102, 241, 0.05) !important;
+    }
+
+    tbody td.dataTables_empty {
+        text-align: center;
+        padding: 40px 20px !important;
+        color: #94a3b8;
+        font-size: 0.9rem;
+        font-weight: 500;
     }
 
     // Card shell applied by DataTables wrapper
     &.rounded-table {
-        border: 1px solid $border-subtle !important;
-        border-radius: $radius-2xl !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 16px !important;
         overflow: hidden !important;
     }
 }
 
 // ---- Wrapper chrome ----
-// NOTE: .admin-data-card provides its own card shell and overrides these.
-// This global rule handles standalone DataTables used outside a data-card.
+// Global rule handling standalone DataTables used outside a data-card
 .dataTables_wrapper:not(.admin-data-card .dataTables_wrapper) {
-    background: $neutral-0;
-    border: 1px solid $border-subtle;
-    border-radius: $radius-2xl;
-    box-shadow: $shadow-sm;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05);
     overflow: hidden;
+    position: relative;
 
     // Top bar: length + filter
     .dt-layout-row:first-child {
@@ -121,10 +147,10 @@ table.dataTable {
         align-items: center;
         justify-content: space-between;
         flex-wrap: wrap;
-        gap: $space-3;
-        padding: $space-4 $space-5;
-        border-bottom: 1px solid $border-subtle;
-        background: $surface-muted;
+        gap: 12px;
+        padding: 16px 22px;
+        border-bottom: 1px solid #e2e8f0;
+        background: #f8fafc;
     }
 
     // Bottom bar: info + paginate
@@ -133,33 +159,33 @@ table.dataTable {
         align-items: center;
         justify-content: space-between;
         flex-wrap: wrap;
-        gap: $space-3;
-        padding: $space-3 $space-5;
-        border-top: 1px solid $border-subtle;
-        background: $surface-muted;
+        gap: 12px;
+        padding: 14px 22px;
+        border-top: 1px solid #e2e8f0;
+        background: #f8fafc;
     }
 
     .dataTables_length,
     .dataTables_filter {
         padding: 0;
-        color: $text-muted;
-        font-size: $font-size-sm;
+        color: #64748b;
+        font-size: 0.82rem;
 
         label {
             display: flex;
             align-items: center;
-            gap: $space-2;
+            gap: 8px;
             margin: 0;
-            font-weight: $font-weight-medium;
-            color: $text-muted;
+            font-weight: 500;
+            color: #64748b;
         }
     }
 
     .dataTables_info {
         padding: 0;
-        color: $text-muted;
-        font-size: $font-size-xs;
-        font-weight: $font-weight-medium;
+        color: #64748b;
+        font-size: 0.78rem;
+        font-weight: 500;
     }
 
     .dataTables_paginate { padding: 0; }
@@ -167,84 +193,149 @@ table.dataTable {
 
 // ---- Search input ----
 .dataTables_filter input {
-    border: 1px solid $border-color !important;
-    border-radius: $radius-lg !important;
-    padding: $space-2 $space-3 !important;
-    font-size: $font-size-sm !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 10px !important;
+    padding: 7px 14px 7px 34px !important;
+    font-size: 0.8125rem !important;
     font-family: var(--font-family-base) !important;
-    background: $neutral-0 !important;
-    color: $text-primary !important;
+    background-color: #ffffff !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.099zM6.5 12a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: 12px center !important;
+    color: #1e293b !important;
     outline: none !important;
-    transition: border-color $transition-fast, box-shadow $transition-fast !important;
-    min-width: 200px;
+    transition: all 0.18s ease !important;
+    min-width: 240px;
 
-    &:focus {
-        border-color: $primary-400 !important;
-        box-shadow: $shadow-focus !important;
+    &:focus,
+    &:focus-visible {
+        border-color: #6366f1 !important;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.20) !important;
     }
 
-    &::placeholder { color: $text-muted; }
+    &::placeholder { color: #94a3b8; }
 }
 
 // ---- Page-length select ----
 .dataTables_length select {
-    border: 1px solid $border-color !important;
-    border-radius: $radius-md !important;
-    padding: $space-1 + 0.1rem $space-3 !important;
-    font-size: $font-size-sm !important;
-    background: $neutral-0 !important;
-    color: $text-primary !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    padding: 6px 28px 6px 12px !important;
+    font-size: 0.8125rem !important;
+    background-color: #ffffff !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2364748b'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 9px center !important;
+    color: #1e293b !important;
+    min-width: 72px;
+    cursor: pointer;
 
-    &:focus {
-        border-color: $primary-400 !important;
+    &:focus,
+    &:focus-visible {
+        border-color: #6366f1 !important;
         outline: none !important;
-        box-shadow: $shadow-focus !important;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.20) !important;
     }
 }
 
 // ---- Pagination ----
 .dataTables_paginate {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
     .paginate_button {
-        border-radius: $radius-md !important;
-        padding: $space-1 + 0.1rem $space-3 !important;
-        margin: 0 2px !important;
-        color: $text-secondary !important;
-        background: $neutral-0 !important;
-        border: 1px solid $border-color !important;
-        font-size: $font-size-xs !important;
-        font-weight: $font-weight-semibold !important;
-        transition: all $transition-fast;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 36px;
+        height: 36px;
+        padding: 0 12px !important;
+        margin: 0 !important;
+        border-radius: 8px !important;
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        color: #475569 !important;
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        transition: all 0.18s ease;
         cursor: pointer;
         user-select: none;
+        line-height: 1 !important;
+        text-decoration: none !important;
 
         &:hover {
-            color: $color-primary !important;
-            background: $primary-50 !important;
-            border-color: $primary-200 !important;
+            color: #4f46e5 !important;
+            background: #e0e7ff !important;
+            border-color: #a5b4fc !important;
+            text-decoration: none !important;
         }
 
-        &.current {
-            color: #fff !important;
-            background: $color-primary !important;
-            border-color: $color-primary !important;
-            box-shadow: $shadow-primary;
+        &.current,
+        &.current:hover {
+            color: #ffffff !important;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+            border-color: #4f46e5 !important;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35) !important;
         }
 
-        &.disabled {
-            color: $neutral-300 !important;
-            background: $surface-muted !important;
-            border-color: $border-subtle !important;
-            cursor: not-allowed;
+        &.disabled,
+        &.disabled:hover {
+            color: #94a3b8 !important;
+            background: #f1f5f9 !important;
+            border-color: #e2e8f0 !important;
+            cursor: default;
+            box-shadow: none !important;
         }
 
         &:focus-visible {
             outline: none;
-            box-shadow: $shadow-focus;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
         }
     }
+}
+
+// ---- Processing Backdrop Overlay ----
+.dataTables_processing {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+    padding: 14px 28px !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12) !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    color: #4f46e5 !important;
+    backdrop-filter: blur(6px);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    &::before {
+        content: '';
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #a5b4fc;
+        border-top-color: #4f46e5;
+        border-radius: 50%;
+        animation: dt-spinner 0.6s linear infinite;
+    }
+}
+
+@keyframes dt-spinner {
+    to { transform: rotate(360deg); }
 }
 
 // Prevent Bootstrap override on transparent rows
 .table > :not(caption) > * > * {
     background-color: transparent !important;
 }
+

@@ -60,8 +60,8 @@ $(document).ready(function() {
                 data: 'action', name: 'action', orderable: false, searchable: false,
                 render: function(data, type, row) {
                     return `<div class="dt-actions">
-                        <a href="/admin/banners/${row.id}/edit" class="btn-action btn-action-edit" title="Edit"><i class="bi bi-pencil-fill"></i></a>
-                        <button type="button" class="btn-action btn-action-delete" onclick="deleteBanner(${row.id})" title="Delete"><i class="bi bi-trash-fill"></i></button>
+                        <a href="/admin/banners/${row.id}/edit" class="btn-action btn-action-edit" title="Edit" aria-label="Edit banner ${row.id}"><i class="bi bi-pencil-fill"></i></a>
+                        <button type="button" class="btn-action btn-action-delete" onclick="deleteBanner(${row.id})" title="Delete" aria-label="Delete banner ${row.id}"><i class="bi bi-trash-fill"></i></button>
                     </div>`;
                 }
             }
