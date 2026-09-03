@@ -957,6 +957,78 @@
     @media (prefers-reduced-motion: reduce) {
         .fade-in-up { opacity: 1; transform: none; transition: none; }
     }
+
+    /* ---------- RESPONSIVE MOBILE OPTIMIZATIONS ---------- */
+    @media (max-width: 991.98px) {
+        .dash-hero { padding: 1.1rem 1.25rem; }
+        .dash-card-header { padding: 1rem 1.15rem; }
+        .dash-card-body { padding: 1.15rem; }
+    }
+
+    @media (max-width: 767.98px) {
+        .dash-hero { padding: 1rem; }
+        .dash-hero-title { font-size: 1.25rem; }
+        .dash-hero-subtitle { font-size: .82rem; }
+        .dash-hero-avatar { width: 42px; height: 42px; font-size: 1.1rem; border-radius: 12px; }
+
+        .kpi-card { padding: 1rem; }
+        .kpi-value { font-size: 1.5rem; }
+        .kpi-label { font-size: .75rem; }
+        .kpi-icon-wrap { width: 40px; height: 40px; font-size: 1.05rem; }
+
+        .dash-card-header { flex-direction: column; align-items: flex-start !important; gap: .75rem !important; }
+        .time-range-selector { width: 100%; display: flex; }
+        .time-tab { flex: 1; text-align: center; }
+
+        .chart-wrap { height: 230px; }
+        .doughnut-wrap { max-width: 160px; }
+        .doughnut-center-value { font-size: 1.4rem; }
+
+        .modern-table thead th, .modern-table tbody td { padding: .75rem .85rem; }
+        .user-email { max-width: 120px; display: inline-block; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+    }
+
+    @media (max-width: 575.98px) {
+        .dash-hero { padding: .85rem; border-radius: 12px; }
+        .dash-hero-title { font-size: 1.15rem; }
+        .dash-hero-avatar { width: 36px; height: 36px; font-size: 1rem; border-radius: 10px; }
+        .dash-date-pill, .btn-dash-action { font-size: .75rem; padding: .35rem .65rem; width: 100%; text-align: center; justify-content: center; }
+
+        .dash-alert-banner { padding: .85rem; border-radius: 12px; }
+        .dash-alert-icon { width: 32px; height: 32px; font-size: .95rem; }
+        .btn-alert-action { width: 100%; margin-top: .5rem; text-align: center; }
+
+        .kpi-card { padding: .85rem; border-radius: 12px; }
+        .kpi-value { font-size: 1.35rem; margin-bottom: .2rem; }
+        .kpi-icon-wrap { width: 36px; height: 36px; font-size: .95rem; border-radius: 10px; }
+        .kpi-trend { font-size: .7rem; padding: .15rem .45rem; }
+        .kpi-meta { font-size: .78rem; margin-bottom: .5rem; }
+        .kpi-footer { font-size: .75rem; padding-top: .6rem; }
+
+        .dash-card { border-radius: 12px; }
+        .header-icon-box { width: 32px; height: 32px; font-size: .9rem; border-radius: 8px; }
+        .dash-card-title { font-size: .95rem; }
+        .dash-card-subtitle { font-size: .75rem; }
+
+        .chart-wrap { height: 190px; }
+        .doughnut-wrap { max-width: 140px; }
+        .doughnut-center-value { font-size: 1.2rem; }
+        .doughnut-center-label { font-size: .65rem; }
+
+        .modern-table thead th { font-size: .68rem; padding: .6rem .65rem; }
+        .modern-table tbody td { padding: .6rem .65rem; font-size: .82rem; }
+        .order-code { font-size: .78rem; padding: .2rem .4rem; }
+        .user-avatar { width: 30px; height: 30px; font-size: .78rem; }
+        .user-name { font-size: .8rem; }
+        .user-email { display: none; } /* Hide email on tiny mobile screens for max space */
+        .order-amount { font-size: .82rem; }
+        .badge-status { font-size: .7rem; padding: .2rem .5rem; }
+
+        .action-card { padding: .65rem .75rem; border-radius: 10px; }
+        .action-icon { width: 34px; height: 34px; font-size: .88rem; border-radius: 8px; }
+        .action-title { font-size: .82rem; }
+        .action-desc { font-size: .7rem; }
+    }
 </style>
 @endsection
 
