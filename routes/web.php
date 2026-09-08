@@ -52,6 +52,11 @@ Route::get('/migrate', function () {
             }
         }
 
+        // Explicitly create migrations repository table in public schema
+        try {
+            \Illuminate\Support\Facades\Artisan::call('migrate:install', ['--force' => true]);
+        } catch (\Throwable $t) {}
+
         \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
         \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
