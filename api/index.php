@@ -22,5 +22,9 @@ $_ENV['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
 putenv('APP_STORAGE=/tmp/storage');
 putenv('VIEW_COMPILED_PATH=/tmp/storage/framework/views');
 
+// Prevent Laravel Symfony Request from stripping '/api' prefix as script base path on Vercel
+$_SERVER['SCRIPT_NAME'] = '/index.php';
+$_SERVER['SCRIPT_FILENAME'] = __DIR__ . '/../public/index.php';
+
 // Forward Vercel request to Laravel public/index.php
 require __DIR__ . '/../public/index.php';

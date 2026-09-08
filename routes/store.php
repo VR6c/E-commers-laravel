@@ -83,4 +83,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
 
 Route::get('/stripe/checkout', [StripeController::class, 'checkout'])->name('stripe.checkout.process');
 
-Route::get('/{slug}', [StoreController::class, 'showPage'])->name('store.page');
+Route::get('/{slug}', [StoreController::class, 'showPage'])
+    ->where('slug', '^(?!api|admin|checkout).*$')
+    ->name('store.page');
+
