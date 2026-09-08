@@ -35,10 +35,11 @@ Route::get('/login', function () {
 
 Route::get('/migrate', function () {
     try {
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        $command = request()->has('fresh') ? 'migrate:fresh' : 'migrate';
+        \Illuminate\Support\Facades\Artisan::call($command, ['--force' => true]);
         return response()->json([
             'status' => 'success',
-            'message' => 'Database migrated successfully!',
+            'message' => "Database {$command} completed successfully!",
             'output' => \Illuminate\Support\Facades\Artisan::output(),
         ]);
     } catch (\Throwable $e) {
@@ -50,6 +51,7 @@ Route::get('/migrate', function () {
         ], 200);
     }
 });
+
 
 Route::get('/test-db', function () {
     try {
