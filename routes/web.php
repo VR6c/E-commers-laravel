@@ -35,17 +35,25 @@ Route::get('/login', function () {
 
 Route::get('/migrate', function () {
     try {
-        try { \Illuminate\Support\Facades\DB::statement('ROLLBACK;'); } catch (\Throwable $t) {}
+        $pdo = \Illuminate\Support\Facades\DB::connection()->getPdo();
+
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
 
         if (request()->has('fresh')) {
             if (\Illuminate\Support\Facades\DB::getDriverName() === 'pgsql') {
-                \Illuminate\Support\Facades\DB::statement('DROP SCHEMA public CASCADE;');
-                \Illuminate\Support\Facades\DB::statement('CREATE SCHEMA public;');
+                $pdo->exec('DROP SCHEMA IF EXISTS public CASCADE;');
+                $pdo->exec('CREATE SCHEMA public;');
+                $pdo->exec('GRANT ALL ON SCHEMA public TO public;');
+                $pdo->exec('GRANT ALL ON SCHEMA public TO neondb_owner;');
             } else {
                 \Illuminate\Support\Facades\Schema::dropAllTables();
             }
         }
+
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+
         return response()->json([
             'status' => 'success',
             'message' => 'Database migrated successfully!',
@@ -60,6 +68,7 @@ Route::get('/migrate', function () {
         ], 200);
     }
 });
+
 
 
 
