@@ -18,9 +18,8 @@ class VendorProductSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::transaction(function () {
-            $sizeAttr  = Attribute::firstOrCreate(['name' => 'Size']);
-            $colorAttr = Attribute::firstOrCreate(['name' => 'Color']);
+        $sizeAttr  = Attribute::firstOrCreate(['name' => 'Size']);
+        $colorAttr = Attribute::firstOrCreate(['name' => 'Color']);
 
             foreach (['Small', 'Medium', 'Large', 'XL'] as $size) {
                 AttributeValue::firstOrCreate(['attribute_id' => $sizeAttr->id, 'value' => $size]);
@@ -187,6 +186,5 @@ class VendorProductSeeder extends Seeder
             }
 
             $this->command->info('VendorProductSeeder: 1 vendor + ' . count($products) . ' products seeded successfully.');
-        });
     }
 }

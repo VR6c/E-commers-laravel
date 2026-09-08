@@ -20,62 +20,61 @@ class ProductSeeder extends Seeder
     {
         $url = "https://images.unsplash.com/photo-{$unsplashId}?w=600&h=600&fit=crop&auto=format&q=75";
         try {
-            $ctx = stream_context_create(['http' => ['timeout' => 15]]);
-            $data = file_get_contents($url, false, $ctx);
+            $ctx = stream_context_create(['http' => ['timeout' => 3]]);
+            $data = @file_get_contents($url, false, $ctx);
             if ($data !== false) {
                 Storage::disk('public')->put($localPath, $data);
                 return $localPath;
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
         }
         try {
             $fallback = 'https://placehold.co/600x600/EEE/31343C/png?text=' . urlencode($productName);
-            $ctx  = stream_context_create(['http' => ['timeout' => 8]]);
-            $data = file_get_contents($fallback, false, $ctx);
+            $ctx  = stream_context_create(['http' => ['timeout' => 2]]);
+            $data = @file_get_contents($fallback, false, $ctx);
             if ($data !== false) {
                 Storage::disk('public')->put($localPath, $data);
                 return $localPath;
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
         }
         return $localPath;
     }
 
     public function run(): void
     {
-        DB::transaction(function () {
-            $sizeAttr  = Attribute::firstOrCreate(['name' => 'Size']);
-            $colorAttr = Attribute::firstOrCreate(['name' => 'Color']);
+        $sizeAttr  = Attribute::firstOrCreate(['name' => 'Size']);
+        $colorAttr = Attribute::firstOrCreate(['name' => 'Color']);
 
-            foreach (['Small', 'Medium', 'Large', 'XL'] as $size) {
-                AttributeValue::firstOrCreate(['attribute_id' => $sizeAttr->id, 'value' => $size]);
-            }
-            foreach (['Red', 'Blue', 'Black', 'White', 'Green'] as $color) {
-                AttributeValue::firstOrCreate(['attribute_id' => $colorAttr->id, 'value' => $color]);
-            }
-            $vendor = Vendor::first() ?? Vendor::create([
-                'name'     => 'Default Vendor',
-                'email'    => 'vendor@example.com',
-                'password' => bcrypt('password'),
-                'status'   => 1,
-            ]);
+        foreach (['Small', 'Medium', 'Large', 'XL'] as $size) {
+            AttributeValue::firstOrCreate(['attribute_id' => $sizeAttr->id, 'value' => $size]);
+        }
+        foreach (['Red', 'Blue', 'Black', 'White', 'Green'] as $color) {
+            AttributeValue::firstOrCreate(['attribute_id' => $colorAttr->id, 'value' => $color]);
+        }
+        $vendor = Vendor::first() ?? Vendor::create([
+            'name'     => 'Default Vendor',
+            'email'    => 'vendor@example.com',
+            'password' => bcrypt('password'),
+            'status'   => 1,
+        ]);
 
-            $shop = \App\Models\Shop::first() ?? \App\Models\Shop::create([
-                'vendor_id'   => $vendor->id,
-                'name'        => 'Default Shop',
-                'description' => 'The default store shop.',
-                'status'      => 'active',
-            ]);
-            $categories  = Category::whereIn('slug', ['electronics','fashion','smartphones','t-shirts'])->get()->keyBy('slug');
-            $electronics = $categories->get('electronics') ?? Category::first();
-            $fashion     = $categories->get('fashion')     ?? Category::first();
-            $smartphones = $categories->get('smartphones') ?? $electronics;
-            $tshirts     = $categories->get('t-shirts')    ?? $fashion;
+        $shop = \App\Models\Shop::first() ?? \App\Models\Shop::create([
+            'vendor_id'   => $vendor->id,
+            'name'        => 'Default Shop',
+            'description' => 'The default store shop.',
+            'status'      => 'active',
+        ]);
+        $categories  = Category::whereIn('slug', ['electronics','fashion','smartphones','t-shirts'])->get()->keyBy('slug');
+        $electronics = $categories->get('electronics') ?? Category::first();
+        $fashion     = $categories->get('fashion')     ?? Category::first();
+        $smartphones = $categories->get('smartphones') ?? $electronics;
+        $tshirts     = $categories->get('t-shirts')    ?? $fashion;
 
-            $brand = Brand::first();
+        $brand = Brand::first();
 
-            $sizeValues  = AttributeValue::where('attribute_id', $sizeAttr->id)->get();
-            $colorValues = AttributeValue::where('attribute_id', $colorAttr->id)->get();
+        $sizeValues  = AttributeValue::where('attribute_id', $sizeAttr->id)->get();
+        $colorValues = AttributeValue::where('attribute_id', $colorAttr->id)->get();
             $products = [
                 [
                     'name' => 'Wireless Headphones Pro',
@@ -465,8 +464,8 @@ class ProductSeeder extends Seeder
                     'image_url' => $localPath,
                     'type'      => 'thumb',
                 ]);
-                $sizeSample  = $sizeValues->random(min(2, $sizeValues->count()));
-                $colorSample = $colorValues->random(min(2, $colorValues->count()));
+                $sizeSample  = $sizeValues->count() > 0 ? $sizeValues->random(min(2, $sizeValues->count())) : collect();
+                $colorSample = $colorValues->count() > 0 ? $colorValues->random(min(2, $colorValues->count())) : collect();
                 $isPrimary   = true;
 
                 foreach ($sizeSample as $size) {
@@ -504,6 +503,5 @@ class ProductSeeder extends Seeder
                     }
                 }
             }
-        });
     }
 }
