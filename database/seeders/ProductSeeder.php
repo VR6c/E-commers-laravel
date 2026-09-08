@@ -431,33 +431,34 @@ class ProductSeeder extends Seeder
             ];
             foreach ($products as $item) {
                 $slug = Str::slug($item['name']);
-                $existing = Product::where('slug', $slug)->first();
 
                 $imageName = $slug . '.jpg';
                 $localPath = 'products/' . $imageName;
                 $this->downloadImage($item['photo'], $localPath, $item['name']);
 
-                if ($existing) {
-                    $existing->images()->updateOrCreate(
+                $product = Product::firstOrCreate(
+                    ['slug' => $slug],
+                    [
+                        'shop_id'           => $shop->id,
+                        'vendor_id'         => $vendor->id,
+                        'name'              => $item['name'],
+                        'description'       => $item['short'],
+                        'short_description' => $item['short'],
+                        'tags'              => $item['tags'],
+                        'category_id'       => $item['category']->id,
+                        'brand_id'          => $brand?->id,
+                        'product_type'      => 'variable',
+                        'status'            => 1,
+                    ]
+                );
+
+                if (!$product->wasRecentlyCreated) {
+                    $product->images()->updateOrCreate(
                         ['type' => 'thumb'],
                         ['name' => $imageName, 'image_url' => $localPath]
                     );
                     continue;
                 }
-
-                $product = Product::create([
-                    'shop_id'           => $shop->id,
-                    'vendor_id'         => $vendor->id,
-                    'slug'              => $slug,
-                    'name'              => $item['name'],
-                    'description'       => $item['short'],
-                    'short_description' => $item['short'],
-                    'tags'              => $item['tags'],
-                    'category_id'       => $item['category']->id,
-                    'brand_id'          => $brand?->id,
-                    'product_type'      => 'variable',
-                    'status'            => 1,
-                ]);
 
                 $product->images()->create([
                     'name'      => $imageName,

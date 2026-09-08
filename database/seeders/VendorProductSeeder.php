@@ -113,17 +113,23 @@ class VendorProductSeeder extends Seeder
             foreach ($products as $index => $item) {
                 $slug = Str::slug($item['name']) . '-' . ($index + 1);
 
-                $product = Product::create([
-                    'shop_id'      => $shopId,
-                    'vendor_id'    => $vendor->id,
-                    'slug'         => $slug,
-                    'name'         => $item['name'],
-                    'description'  => "Premium quality {$item['name']}. Great value for money with fast delivery.",
-                    'category_id'  => $category->id,
-                    'brand_id'     => $brand?->id,
-                    'product_type' => $item['type'],
-                    'status'       => 1,
-                ]);
+                $product = Product::firstOrCreate(
+                    ['slug' => $slug],
+                    [
+                        'shop_id'      => $shopId,
+                        'vendor_id'    => $vendor->id,
+                        'name'         => $item['name'],
+                        'description'  => "Premium quality {$item['name']}. Great value for money with fast delivery.",
+                        'category_id'  => $category->id,
+                        'brand_id'     => $brand?->id,
+                        'product_type' => $item['type'],
+                        'status'       => 1,
+                    ]
+                );
+
+                if (!$product->wasRecentlyCreated) {
+                    continue;
+                }
 
                 $imageUrl  = $imagePool[$index % count($imagePool)];
                 $imageName = 'product-' . ($index + 1) . '-' . basename($imageUrl);
