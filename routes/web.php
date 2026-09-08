@@ -35,6 +35,8 @@ Route::get('/login', function () {
 
 Route::get('/migrate', function () {
     try {
+        try { \Illuminate\Support\Facades\DB::statement('ROLLBACK;'); } catch (\Throwable $t) {}
+
         if (request()->has('fresh')) {
             if (\Illuminate\Support\Facades\DB::getDriverName() === 'pgsql') {
                 \Illuminate\Support\Facades\DB::statement('DROP SCHEMA public CASCADE;');
@@ -58,6 +60,7 @@ Route::get('/migrate', function () {
         ], 200);
     }
 });
+
 
 
 
