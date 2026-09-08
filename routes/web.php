@@ -100,6 +100,11 @@ Route::get('/test-db', function () {
 
 Route::get('/db-seed', function () {
     try {
+        $pdo = \Illuminate\Support\Facades\DB::connection()->getPdo();
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
         return response()->json([
             'status' => 'success',
@@ -115,6 +120,7 @@ Route::get('/db-seed', function () {
         ], 200);
     }
 });
+
 
 
 
