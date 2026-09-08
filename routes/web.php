@@ -41,13 +41,33 @@ Route::get('/migrate', function () {
             'message' => 'Database migrated successfully!',
             'output' => \Illuminate\Support\Facades\Artisan::output(),
         ]);
-    } catch (\Exception $e) {
+    } catch (\Throwable $e) {
         return response()->json([
             'status' => 'error',
             'message' => $e->getMessage(),
-        ], 500);
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ], 200);
     }
 });
+
+Route::get('/test-db', function () {
+    try {
+        \Illuminate\Support\Facades\DB::connection()->getPdo();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Connected successfully to ' . \Illuminate\Support\Facades\DB::connection()->getDatabaseName(),
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ], 200);
+    }
+});
+
 
 
 Auth::routes();
