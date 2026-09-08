@@ -56,7 +56,7 @@ class ProductSeeder extends Seeder
             'name'     => 'Default Vendor',
             'email'    => 'vendor@example.com',
             'password' => bcrypt('password'),
-            'status'   => 1,
+            'status'   => 'active',
         ]);
 
         $shop = \App\Models\Shop::first() ?? \App\Models\Shop::create([
