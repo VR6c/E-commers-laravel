@@ -2,7 +2,7 @@
 //  BASE / RESET — token-driven foundational styles
 //  Layered on top of Bootstrap's reboot; safe for both storefront & admin.
 // =====================================================================
-@use 'variables' as *;
+@use '../variables' as *;
 
 *,
 *::before,
