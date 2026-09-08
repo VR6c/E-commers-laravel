@@ -35,11 +35,13 @@ Route::get('/login', function () {
 
 Route::get('/migrate', function () {
     try {
-        $command = request()->has('fresh') ? 'migrate:fresh' : 'migrate';
-        \Illuminate\Support\Facades\Artisan::call($command, ['--force' => true]);
+        if (request()->has('fresh')) {
+            \Illuminate\Support\Facades\Schema::dropAllTables();
+        }
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
         return response()->json([
             'status' => 'success',
-            'message' => "Database {$command} completed successfully!",
+            'message' => 'Database migrated successfully!',
             'output' => \Illuminate\Support\Facades\Artisan::output(),
         ]);
     } catch (\Throwable $e) {
@@ -51,6 +53,7 @@ Route::get('/migrate', function () {
         ], 200);
     }
 });
+
 
 
 Route::get('/test-db', function () {
