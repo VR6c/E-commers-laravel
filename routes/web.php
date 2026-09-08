@@ -36,7 +36,12 @@ Route::get('/login', function () {
 Route::get('/migrate', function () {
     try {
         if (request()->has('fresh')) {
-            \Illuminate\Support\Facades\Schema::dropAllTables();
+            if (\Illuminate\Support\Facades\DB::getDriverName() === 'pgsql') {
+                \Illuminate\Support\Facades\DB::statement('DROP SCHEMA public CASCADE;');
+                \Illuminate\Support\Facades\DB::statement('CREATE SCHEMA public;');
+            } else {
+                \Illuminate\Support\Facades\Schema::dropAllTables();
+            }
         }
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
         return response()->json([
@@ -53,6 +58,7 @@ Route::get('/migrate', function () {
         ], 200);
     }
 });
+
 
 
 
