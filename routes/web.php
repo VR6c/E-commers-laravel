@@ -52,7 +52,9 @@ Route::get('/migrate', function () {
             }
         }
 
+        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
 
         return response()->json([
             'status' => 'success',
