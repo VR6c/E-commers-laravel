@@ -85,8 +85,9 @@ Route::get('/seed-products', function () {
     try {
         $count = (int) request()->get('count', 100);
         $pdo = \Illuminate\Support\Facades\DB::connection()->getPdo();
-        if ($pdo->inTransaction()) {
-            $pdo->rollBack();
+        try {
+            $pdo->exec('ROLLBACK;');
+        } catch (\Throwable $t) {
         }
 
         $seeder = new \Database\Seeders\BulkProductSeeder();

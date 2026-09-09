@@ -29,6 +29,11 @@ class BulkProductSeeder extends Seeder
 
     public function seedProducts(int $count = 100): int
     {
+        try {
+            DB::connection()->getPdo()->exec('ROLLBACK;');
+        } catch (\Throwable $t) {
+        }
+
         // 1. Ensure Attributes (Size & Color) exist
         $sizeAttr  = Attribute::firstOrCreate(['name' => 'Size']);
         $colorAttr = Attribute::firstOrCreate(['name' => 'Color']);
@@ -165,26 +170,27 @@ class BulkProductSeeder extends Seeder
         ];
 
         $createdCount = 0;
+        $categoriesBySlug = collect($categories)->keyBy('slug');
 
-        DB::beginTransaction();
-        try {
-            for ($i = 1; $i <= $count; $i++) {
-                // Select a template cyclically and append index to ensure uniqueness
-                $templateIndex = ($i - 1) % count($productTemplates);
-                $template      = $productTemplates[$templateIndex];
+        for ($i = 1; $i <= $count; $i++) {
+            // Select a template cyclically and append index to ensure uniqueness
+            $templateIndex = ($i - 1) % count($productTemplates);
+            $template      = $productTemplates[$templateIndex];
 
-                // Variations in name for uniqueness when creating 100 items
-                $suffixNumber  = ceil($i / count($productTemplates));
-                $productName   = $template['name'] . ($suffixNumber > 1 ? " - Edition {$suffixNumber}" : "");
-                $productSlug   = Str::slug($productName) . '-' . Str::random(5);
+            // Variations in name for uniqueness when creating 100 items
+            $suffixNumber  = ceil($i / count($productTemplates));
+            $productName   = $template['name'] . ($suffixNumber > 1 ? " - Edition {$suffixNumber}" : "");
+            $productSlug   = Str::slug($productName) . '-' . Str::random(5);
 
-                $categorySlug  = $template['cat'];
-                $categoryObj   = Category::where('slug', $categorySlug)->first() ?? $categories[array_rand($categories)];
-                $brandObj      = $brands[array_rand($brands)];
+            $categorySlug  = $template['cat'];
+            $categoryObj   = $categoriesBySlug->get($categorySlug) ?? $categories[array_rand($categories)];
+            $brandObj      = $brands[array_rand($brands)];
 
-                $photoId   = $template['photo'];
-                $imageUrl  = "https://images.unsplash.com/photo-{$photoId}?w=600&h=600&fit=crop&auto=format&q=75";
+            $photoId   = $template['photo'];
+            $imageUrl  = "https://images.unsplash.com/photo-{$photoId}?w=600&h=600&fit=crop&auto=format&q=75";
 
+            DB::beginTransaction();
+            try {
                 // Create Product
                 $product = Product::create([
                     'shop_id'           => $shop->id,
@@ -279,13 +285,12 @@ class BulkProductSeeder extends Seeder
                     ]);
                 }
 
+                DB::commit();
                 $createdCount++;
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                throw $e;
             }
-
-            DB::commit();
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            throw $e;
         }
 
         return $createdCount;
