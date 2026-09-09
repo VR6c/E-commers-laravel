@@ -202,6 +202,7 @@ class BulkProductSeeder extends Seeder
                     $sampleSizes  = $sizeValues->random(min(2, $sizeValues->count()));
                     $sampleColors = $colorValues->random(min(2, $colorValues->count()));
                     $isPrimary    = true;
+                    $variantAttrBatch = [];
 
                     foreach ($sampleSizes as $size) {
                         foreach ($sampleColors as $color) {
@@ -223,20 +224,31 @@ class BulkProductSeeder extends Seeder
                             $isPrimary = false;
 
                             foreach ([$size->id, $color->id] as $attrValId) {
-                                DB::table('product_variant_attribute_values')->insert([
+                                $variantAttrBatch[] = [
                                     'product_id'         => $product->id,
                                     'product_variant_id' => $variant->id,
                                     'attribute_value_id' => $attrValId,
                                     'created_at'         => now(),
                                     'updated_at'         => now(),
-                                ]);
-
-                                ProductAttributeValue::firstOrCreate([
-                                    'product_id'         => $product->id,
-                                    'attribute_value_id' => $attrValId,
-                                ]);
+                                ];
                             }
                         }
+                    }
+
+                    if (!empty($variantAttrBatch)) {
+                        DB::table('product_variant_attribute_values')->insert($variantAttrBatch);
+                    }
+
+                    // Attach attribute values to product once
+                    $prodAttrBatch = [];
+                    foreach ($sampleSizes->pluck('id')->merge($sampleColors->pluck('id'))->unique() as $attrValId) {
+                        $prodAttrBatch[] = [
+                            'product_id'         => $product->id,
+                            'attribute_value_id' => $attrValId,
+                        ];
+                    }
+                    if (!empty($prodAttrBatch)) {
+                        DB::table('product_attribute_values')->insertOrIgnore($prodAttrBatch);
                     }
                 } else {
                     // Simple product single primary variant
