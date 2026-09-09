@@ -56,6 +56,7 @@
                     @php $siteLogo = \App\Models\SiteSetting::first()?->logo ?? null; @endphp
                     @php $siteLogo = $siteLogo ?: 'logo_icon/shopping.png'; @endphp
                     <img src="{{ \Illuminate\Support\Str::startsWith($siteLogo, ['http://','https://']) ? $siteLogo : asset('storage/' . $siteLogo) }}"
+                         onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode(config('app.name', 'Store')) }}&background=6366f1&color=fff&size=100';"
                          alt="{{ config('app.name') }} logo" class="xsf-brand__img">
                 </a>
 
@@ -222,6 +223,7 @@
     <div class="offcanvas-header xsf-mobile-nav__header">
         @php $siteLogo = $siteLogo ?? 'logo_icon/shopping.png'; @endphp
         <img src="{{ \Illuminate\Support\Str::startsWith($siteLogo, ['http://','https://']) ? $siteLogo : asset('storage/' . $siteLogo) }}"
+             onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode(config('app.name', 'Store')) }}&background=6366f1&color=fff&size=100';"
              alt="{{ config('app.name') }}" id="xsfMobileNavLabel" style="max-height:40px;">
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>

@@ -22,6 +22,7 @@
                             <div class="col-lg-6">
                                 <div class="xsf-hero__media">
                                     <img src="{{ Storage::url($banner->image_url ?? 'default.jpg') }}"
+                                        onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=800&auto=format&fit=crop&q=80';"
                                         class="img-fluid" alt="{{ $banner->title }}">
                                 </div>
                             </div>
@@ -44,6 +45,7 @@
                         <a href="{{ route('category.show', $category->slug) }}" class="xsf-category-card">
                             <span class="xsf-category-card__img">
                                 <img src="{{ Storage::url($category->image_url ?? 'default.jpg') }}"
+                                    onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&auto=format&fit=crop&q=80';"
                                     loading="lazy" alt="{{ $category->name ?? 'Category' }}">
                             </span>
                             <span class="xsf-category-card__name">{{ $category->name ?? 'Category' }}</span>
