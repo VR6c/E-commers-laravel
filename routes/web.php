@@ -121,6 +121,31 @@ Route::get('/db-seed', function () {
     }
 });
 
+Route::get('/seed-products', function () {
+    try {
+        $count = (int) request()->get('count', 100);
+        $pdo = \Illuminate\Support\Facades\DB::connection()->getPdo();
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+
+        $seeder = new \Database\Seeders\BulkProductSeeder();
+        $seeded = $seeder->seedProducts($count);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => "Successfully seeded {$seeded} products to production database!",
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ], 500);
+    }
+});
+
 
 
 
