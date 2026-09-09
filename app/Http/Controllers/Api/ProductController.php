@@ -17,6 +17,8 @@ class ProductController extends Controller
                 'primaryVariant',
                 'variants.attributeValues.attribute',
             ])
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
             ->where('status', 1);
 
         // Search by name or description
