@@ -74,5 +74,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         error_reporting(E_ALL & ~E_DEPRECATED);
+
+        if ($this->app->environment('production') || isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
     }
 }
