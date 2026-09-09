@@ -58,38 +58,49 @@ class BulkProductSeeder extends Seeder
         $shop = Shop::first() ?? Shop::create([
             'vendor_id'   => $vendor->id,
             'name'        => 'Official Store',
+            'slug'        => 'official-store',
             'description' => 'Official verified shop.',
             'status'      => 'active',
         ]);
 
         // 3. Ensure Categories exist
-        $categoriesData = [
-            ['name' => 'Electronics & Gadgets', 'slug' => 'electronics-gadgets'],
-            ['name' => 'Fashion & Apparel',     'slug' => 'fashion-apparel'],
-            ['name' => 'Home & Kitchen',        'slug' => 'home-kitchen'],
-            ['name' => 'Health & Beauty',       'slug' => 'health-beauty'],
-            ['name' => 'Sports & Outdoors',     'slug' => 'sports-outdoors'],
-            ['name' => 'Smartphones & Mobile',  'slug' => 'smartphones-mobile'],
-            ['name' => 'Footwear & Shoes',      'slug' => 'footwear-shoes'],
-            ['name' => 'Accessories & Jewelry', 'slug' => 'accessories-jewelry'],
-        ];
+        $existingCategories = Category::where('status', true)->get();
+        if ($existingCategories->isNotEmpty()) {
+            $categories = $existingCategories->all();
+        } else {
+            $categoriesData = [
+                ['name' => 'Electronics & Gadgets', 'slug' => 'electronics-gadgets'],
+                ['name' => 'Fashion & Apparel',     'slug' => 'fashion-apparel'],
+                ['name' => 'Home & Kitchen',        'slug' => 'home-kitchen'],
+                ['name' => 'Health & Beauty',       'slug' => 'health-beauty'],
+                ['name' => 'Sports & Outdoors',     'slug' => 'sports-outdoors'],
+                ['name' => 'Smartphones & Mobile',  'slug' => 'smartphones-mobile'],
+                ['name' => 'Footwear & Shoes',      'slug' => 'footwear-shoes'],
+                ['name' => 'Accessories & Jewelry', 'slug' => 'accessories-jewelry'],
+            ];
 
-        $categories = [];
-        foreach ($categoriesData as $cData) {
-            $categories[] = Category::firstOrCreate(
-                ['slug' => $cData['slug']],
-                ['name' => $cData['name'], 'status' => true]
-            );
+            $categories = [];
+            foreach ($categoriesData as $cData) {
+                $categories[] = Category::firstOrCreate(
+                    ['slug' => $cData['slug']],
+                    ['name' => $cData['name'], 'status' => true]
+                );
+            }
         }
 
-        // 4. Ensure Brands exist
-        $brandsData = ['TechNova', 'ApexStyle', 'UrbanLiving', 'FitPulse', 'LuxeGear', 'AuraBeauty', 'EcoPrime', 'Vanguard'];
-        $brands = [];
-        foreach ($brandsData as $bName) {
-            $brands[] = Brand::firstOrCreate(
-                ['slug' => Str::slug($bName)],
-                ['name' => $bName, 'status' => true]
-            );
+        // 4. Ensure Brands exist (status must be 'active' for PostgreSQL constraint)
+        $existingBrands = Brand::where('status', 'active')->get();
+        if ($existingBrands->isNotEmpty()) {
+            $brands = $existingBrands->all();
+        } else {
+            $brandsData = ['TechNova', 'ApexStyle', 'UrbanLiving', 'FitPulse', 'LuxeGear', 'AuraBeauty', 'EcoPrime', 'Vanguard'];
+            $brands = [];
+            foreach ($brandsData as $bName) {
+                $brands[] = Brand::firstOrCreate(
+                    ['slug' => Str::slug($bName)],
+                    ['name' => $bName, 'status' => 'active']
+                );
+            }
         }
 
         // 5. Product definitions templates
@@ -218,7 +229,7 @@ class BulkProductSeeder extends Seeder
                                 'SKU'            => strtoupper(Str::random(3)) . rand(1000, 9999),
                                 'weight'         => round(rand(2, 30) / 10, 1),
                                 'dimensions'     => rand(10, 30) . 'x' . rand(10, 30) . 'x' . rand(2, 10) . ' cm',
-                                'is_primary'     => $isPrimary ? 1 : 0,
+                                'is_primary'     => (bool) $isPrimary,
                             ]);
 
                             $isPrimary = false;
@@ -264,7 +275,7 @@ class BulkProductSeeder extends Seeder
                         'SKU'            => strtoupper(Str::random(3)) . rand(1000, 9999),
                         'weight'         => round(rand(2, 30) / 10, 1),
                         'dimensions'     => rand(10, 30) . 'x' . rand(10, 30) . 'x' . rand(2, 10) . ' cm',
-                        'is_primary'     => 1,
+                        'is_primary'     => true,
                     ]);
                 }
 
