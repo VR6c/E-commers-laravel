@@ -57,7 +57,7 @@ class Product extends Model
 
     public function primaryVariant()
     {
-        return $this->hasOne(ProductVariant::class)->where('is_primary', true);
+        return $this->hasOne(ProductVariant::class)->whereRaw('is_primary is true');
     }
 
     public function attributeValues()
@@ -82,12 +82,12 @@ class Product extends Model
 
     public function getPriceAttribute()
     {
-        return $this->primaryVariant?->price ?? $this->variants->first()?->price ?? 0;
+        return $this->primaryVariant?->price ?? $this->variants->firstWhere('is_primary', true)?->price ?? $this->variants->first()?->price ?? 0;
     }
 
     public function getDiscountPriceAttribute()
     {
-        return $this->primaryVariant?->discount_price ?? $this->variants->first()?->discount_price ?? null;
+        return $this->primaryVariant?->discount_price ?? $this->variants->firstWhere('is_primary', true)?->discount_price ?? $this->variants->first()?->discount_price ?? null;
     }
 
     public function getConvertedPriceAttribute()

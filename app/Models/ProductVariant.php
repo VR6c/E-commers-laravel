@@ -23,6 +23,13 @@ class ProductVariant extends Model
         'dimensions',
     ];
 
+    protected $casts = [
+        'is_primary'     => 'boolean',
+        'price'          => 'decimal:2',
+        'discount_price' => 'decimal:2',
+        'stock'          => 'integer',
+    ];
+
     protected $appends = ['converted_price', 'converted_discount_price'];
 
     public function product()

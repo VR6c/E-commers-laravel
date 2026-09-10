@@ -49,14 +49,14 @@ class CategoryController extends Controller
             switch ($request->sort) {
                 case 'price_asc':
                     $query->join('product_variants', 'products.id', '=', 'product_variants.product_id')
-                        ->where('product_variants.is_primary', 1)
+                        ->whereRaw('product_variants.is_primary is true')
                         ->orderBy('product_variants.price', 'asc')
                         ->select('products.*');
                     break;
 
                 case 'price_desc':
                     $query->join('product_variants', 'products.id', '=', 'product_variants.product_id')
-                        ->where('product_variants.is_primary', 1)
+                        ->whereRaw('product_variants.is_primary is true')
                         ->orderBy('product_variants.price', 'desc')
                         ->select('products.*');
                     break;

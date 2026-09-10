@@ -28,7 +28,7 @@ class CartController extends Controller
 
         $variant = null;
         if ($product->product_type == 'simple') {
-            $variant = $product->variants()->where('is_primary', 1)->first();
+            $variant = $product->variants()->whereRaw('is_primary is true')->first();
         } else {
             $variant = $this->matchVariant($productId, $attributeValueIds);
         }
@@ -79,7 +79,7 @@ class CartController extends Controller
     private function matchVariant($productId, array $attributeValueIds)
     {
         if (empty($attributeValueIds)) {
-            return ProductVariant::where('product_id', $productId)->where('is_primary', true)->first();
+            return ProductVariant::where('product_id', $productId)->whereRaw('is_primary is true')->first();
         }
 
         $variants = ProductVariant::with('attributeValues')

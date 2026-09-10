@@ -20,7 +20,7 @@ class ProductService
     {
         $vendorId = auth()->guard('vendor')->id();
 
-        $products = Product::with(['variants' => fn ($q) => $q->where('is_primary', 1)])
+        $products = Product::with(['variants' => fn ($q) => $q->whereRaw('is_primary is true')])
             ->where('vendor_id', $vendorId);
 
         return DataTables::of($products)

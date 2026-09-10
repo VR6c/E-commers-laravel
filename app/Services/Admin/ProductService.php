@@ -21,7 +21,7 @@ class ProductService
         $products = Product::with([
             'images',
             'category',
-            'primaryVariant' => fn ($q) => $q->where('is_primary', 1),
+            'primaryVariant' => fn ($q) => $q->whereRaw('is_primary is true'),
         ]);
 
         return DataTables::of($products)

@@ -27,7 +27,7 @@ trait SyncsProductVariants
                 'barcode'        => $variantData['barcode'] ?? null,
                 'weight'         => $variantData['weight'] ?? null,
                 'dimensions'     => $variantData['dimensions'] ?? null,
-                'is_primary'     => 1,
+                'is_primary'     => true,
             ]);
 
             foreach (['size_id', 'color_id'] as $attrType) {

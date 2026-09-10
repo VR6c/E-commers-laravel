@@ -141,11 +141,11 @@ final class ProductSearch extends Component
         match ($this->sort_by) {
             'price_asc'  => $query->select('products.*')
                                   ->join('product_variants', 'products.id', '=', 'product_variants.product_id')
-                                  ->where('product_variants.is_primary', true)
+                                  ->whereRaw('product_variants.is_primary is true')
                                   ->orderBy('product_variants.price', 'asc'),
             'price_desc' => $query->select('products.*')
                                   ->join('product_variants', 'products.id', '=', 'product_variants.product_id')
-                                  ->where('product_variants.is_primary', true)
+                                  ->whereRaw('product_variants.is_primary is true')
                                   ->orderBy('product_variants.price', 'desc'),
             'name_asc'   => $query->orderBy('name', 'asc'),
             default      => $query->latest('products.created_at'),

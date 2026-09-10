@@ -1,5 +1,12 @@
 @extends('themes.xylo.layouts.master')
 
+@section('preload')
+    @php $mainImg = optional($product->images->first())->image_url ?: optional($product->thumbnail)->image_url; @endphp
+    @if ($mainImg)
+        <link rel="preload" as="image" href="{{ product_image_url($mainImg) }}" fetchpriority="high">
+    @endif
+@endsection
+
 @section('content')
     @php $currency = activeCurrency(); @endphp
 
@@ -27,11 +34,28 @@
                         <div class="xsf-gallery">
                             @forelse ($product->images as $image)
                                 <div class="xsf-gallery__slide">
-                                    <img src="{{ Storage::url($image['image_url']) }}" alt="{{ $image['name'] ?? $product->name }}" />
+                                    <img src="{{ product_image_url($image['image_url']) }}"
+                                         alt="{{ $image['name'] ?? $product->name }}"
+                                         width="600" height="600"
+                                         style="aspect-ratio: 1/1; object-fit: contain;"
+                                         @if ($loop->first)
+                                             fetchpriority="high"
+                                             loading="eager"
+                                         @else
+                                             loading="lazy"
+                                             decoding="async"
+                                         @endif
+                                    />
                                 </div>
                             @empty
                                 <div class="xsf-gallery__slide">
-                                    <img src="{{ product_image_url(optional($product->thumbnail)->image_url) }}" alt="{{ $product->name }}" />
+                                    <img src="{{ product_image_url(optional($product->thumbnail)->image_url) }}"
+                                         alt="{{ $product->name }}"
+                                         width="600" height="600"
+                                         style="aspect-ratio: 1/1; object-fit: contain;"
+                                         fetchpriority="high"
+                                         loading="eager"
+                                    />
                                 </div>
                             @endforelse
                         </div>

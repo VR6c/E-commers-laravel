@@ -18,8 +18,12 @@ use App\Http\Controllers\Store\WishlistController;
 use App\Http\Controllers\StoreController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [StoreController::class, 'index'])->name('xylo.home');
-Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
+Route::middleware('optimize.response')->group(function () {
+    Route::get('/', [StoreController::class, 'index'])->name('xylo.home');
+    Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
+    Route::get('/products', [ShopController::class, 'index'])->name('shop.index');
+    Route::get('/category/{slug}', [CategoryController::class, 'show'])->name('category.show');
+});
 Route::post('/change-currency', [CurrencyController::class, 'changeCurrency'])->name('change.currency');
 
 Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
@@ -30,8 +34,6 @@ Route::post('/cart/remove', [CartController::class, 'removeFromCart'])->name('ca
 Route::post('/cart/apply-coupon', [CartController::class, 'applyCoupon'])->name('cart.applyCoupon');
 Route::post('/cart/remove-coupon', [CartController::class, 'removeCoupon'])->name('cart.removeCoupon');
 
-Route::get('/products', [ShopController::class, 'index'])->name('shop.index');
-
 Route::get('/search-suggestions', [SearchController::class, 'suggestions']);
 Route::get('/search', [SearchController::class, 'searchResults']);
 
@@ -41,9 +43,6 @@ Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.in
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/checkout/countries', [CheckoutController::class, 'countries'])->name('checkout.countries');
 Route::get('/checkout/states/{countryCode}', [CheckoutController::class, 'states'])->name('checkout.states');
-
-// Category page
-Route::get('/category/{slug}', [CategoryController::class, 'show'])->name('category.show');
 
 // Review submit — requires customer to be authenticated
 Route::middleware('auth.customer')->group(function () {
@@ -85,5 +84,6 @@ Route::get('/stripe/checkout', [StripeController::class, 'checkout'])->name('str
 
 Route::get('/{slug}', [StoreController::class, 'showPage'])
     ->where('slug', '^(?!api|admin|checkout).*$')
+    ->middleware('optimize.response')
     ->name('store.page');
 

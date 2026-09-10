@@ -53,11 +53,9 @@
 
                 {{-- Logo --}}
                 <a href="{{ route('xylo.home') }}" class="xsf-header__brand" aria-label="{{ config('app.name') }}">
-                    @php $siteLogo = \App\Models\SiteSetting::first()?->logo ?? null; @endphp
-                    @php $siteLogo = $siteLogo ?: 'logo_icon/shopping.png'; @endphp
-                    <img src="{{ \Illuminate\Support\Str::startsWith($siteLogo, ['http://','https://']) ? $siteLogo : asset('storage/' . $siteLogo) }}"
+                    <img src="{{ getSiteLogo() }}"
                          onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode(config('app.name', 'Store')) }}&background=6366f1&color=fff&size=100';"
-                         alt="{{ config('app.name') }} logo" class="xsf-brand__img">
+                         alt="{{ config('app.name') }} logo" class="xsf-brand__img" width="160" height="40" style="aspect-ratio: 4/1; object-fit: contain;">
                 </a>
 
                 {{-- Search (desktop) --}}
@@ -221,10 +219,9 @@
 {{-- ── Mobile navigation offcanvas ──────────────────────────── --}}
 <div class="offcanvas offcanvas-start xsf-mobile-nav" tabindex="-1" id="xsfMobileNav" aria-labelledby="xsfMobileNavLabel">
     <div class="offcanvas-header xsf-mobile-nav__header">
-        @php $siteLogo = $siteLogo ?? 'logo_icon/shopping.png'; @endphp
-        <img src="{{ \Illuminate\Support\Str::startsWith($siteLogo, ['http://','https://']) ? $siteLogo : asset('storage/' . $siteLogo) }}"
+        <img src="{{ getSiteLogo() }}"
              onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode(config('app.name', 'Store')) }}&background=6366f1&color=fff&size=100';"
-             alt="{{ config('app.name') }}" id="xsfMobileNavLabel" style="max-height:40px;">
+             alt="{{ config('app.name') }}" id="xsfMobileNavLabel" width="140" height="38" style="max-height:40px; aspect-ratio: 4/1; object-fit: contain;">
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body p-0">

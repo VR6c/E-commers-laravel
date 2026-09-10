@@ -42,17 +42,29 @@ class CheckoutApiController extends Controller
             ], 422);
         }
 
+        // Clear any lingering aborted transaction state on pooled connections (e.g. Supabase / Neon / PgBouncer)
+        try {
+            $pdo = DB::connection()->getPdo();
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+        } catch (\Throwable $t) {
+            try {
+                DB::connection()->getPdo()->exec('ROLLBACK;');
+            } catch (\Throwable $t2) {
+            }
+        }
+
         $gateway = $request->input('gateway');
         $cartItems = $request->input('cart');
-        $customer = $request->user(); // Sanctum authenticated customer
+        $customer = $request->user('sanctum') ?? $request->user();
 
-        DB::beginTransaction();
         try {
-            // 1. Calculate total and verify prices from DB
+            // 1. Calculate total and verify prices from DB (Read-only, outside transaction)
             $subtotal = 0;
             $itemsWithDetails = [];
             foreach ($cartItems as $item) {
-                $product = Product::findOrFail($item['product_id']);
+                $product = Product::with(['variants'])->findOrFail($item['product_id']);
                 $price = $product->getConvertedPriceAttribute();
                 $quantity = $item['quantity'];
 
@@ -83,7 +95,10 @@ class CheckoutApiController extends Controller
             $firstProduct = $itemsWithDetails[0]['product'];
             $vendorId = $firstProduct->vendor_id;
 
-            // 4. Create Order
+            // 4. Begin transaction ONLY for database persistence
+            DB::beginTransaction();
+
+            // 5. Create Order
             $order = Order::create([
                 'vendor_id'       => $vendorId,
                 'customer_id'     => $customer ? $customer->id : null,
@@ -95,7 +110,7 @@ class CheckoutApiController extends Controller
                 'payment_method'  => $gateway,
             ]);
 
-            // 5. Create Order Details
+            // 6. Create Order Details
             foreach ($itemsWithDetails as $detail) {
                 OrderDetail::create([
                     'order_id' => $order->id,
@@ -105,7 +120,7 @@ class CheckoutApiController extends Controller
                 ]);
             }
 
-            // 6. Create Shipping Address
+            // 7. Create Shipping Address
             ShippingAddress::create([
                 'order_id' => $order->id,
                 'customer_id' => $customer ? $customer->id : null,
@@ -215,9 +230,13 @@ class CheckoutApiController extends Controller
                 ]);
             }
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('API Checkout creation failed: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+            Log::error('API Checkout creation failed: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
             return response()->json([
                 'status' => false,
                 'message' => 'Failed to process checkout: ' . $e->getMessage()

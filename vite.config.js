@@ -13,6 +13,11 @@ export default defineConfig({
             },
         },
     },
+    build: {
+        cssCodeSplit: true,
+        minify: 'esbuild',
+        chunkSizeWarningLimit: 1000,
+    },
     plugins: [
         laravel({
             input: [

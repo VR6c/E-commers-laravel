@@ -14,22 +14,28 @@ class StoreController extends Controller
 
     public function index()
     {
-        $banners = Banner::where('status', 1)
-            ->orderBy('id', 'desc')
-            ->take(3)
-            ->get();
+        $banners = \Illuminate\Support\Facades\Cache::remember('storefront_home_banners', 600, function () {
+            return Banner::where('status', 1)
+                ->orderBy('id', 'desc')
+                ->take(3)
+                ->get();
+        });
 
-        $categories = Category::where('status', 1)
-            ->orderBy('id', 'desc')
-            ->take(10)
-            ->get();
+        $categories = \Illuminate\Support\Facades\Cache::remember('storefront_home_categories', 600, function () {
+            return Category::where('status', 1)
+                ->orderBy('id', 'desc')
+                ->take(10)
+                ->get();
+        });
 
-        $products = Product::where('status', 1)
-            ->with(['thumbnail', 'primaryVariant'])
-            ->withCount('reviews')
-            ->orderBy('id', 'desc')
-            ->take(10)
-            ->get();
+        $products = \Illuminate\Support\Facades\Cache::remember('storefront_home_products', 300, function () {
+            return Product::where('status', 1)
+                ->with(['thumbnail', 'primaryVariant'])
+                ->withCount('reviews')
+                ->orderBy('id', 'desc')
+                ->take(10)
+                ->get();
+        });
 
         $wishlistIds = $this->getWishlistIds();
 

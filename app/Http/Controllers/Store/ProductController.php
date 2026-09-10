@@ -36,7 +36,7 @@ class ProductController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
-        $primaryVariant = $product->variants()->where('is_primary', true)->first();
+        $primaryVariant = $product->primaryVariant ?? $product->variants->firstWhere('is_primary', true) ?? $product->variants->first();
         $inStock = $primaryVariant && $primaryVariant->stock > 0;
 
         $variantMap = $product->variants->map(function ($variant) {

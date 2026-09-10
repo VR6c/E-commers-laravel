@@ -4,14 +4,12 @@
 
             {{-- Brand + blurb + social --}}
             <div class="col-12 col-lg-4">
-                @php $siteLogo = \App\Models\SiteSetting::first()?->logo ?? null; @endphp
-                @if($siteLogo)
-                    <img src="{{ \Illuminate\Support\Str::startsWith($siteLogo, ['http://','https://']) ? $siteLogo : asset('storage/' . $siteLogo) }}"
-                         alt="{{ config('app.name') }} logo"
-                         class="xsf-footer__logo">
-                @else
-                    <span class="xsf-footer__wordmark">{{ config('app.name') }}</span>
-                @endif
+                <img src="{{ getSiteLogo() }}"
+                     onerror="this.onerror=null; this.style.display='none';"
+                     alt="{{ config('app.name') }} logo"
+                     class="xsf-footer__logo"
+                     width="160" height="40"
+                     style="aspect-ratio: 4/1; object-fit: contain;">
                 <p class="xsf-footer__blurb">{{ 'Quality products, delivered with care.' }}</p>
 
                 {{-- Social --}}

@@ -1,4 +1,11 @@
 @extends('themes.xylo.layouts.master')
+
+@section('preload')
+    @if ($banners->isNotEmpty())
+        <link rel="preload" as="image" href="{{ optimized_image_url($banners->first()->image_url) }}" fetchpriority="high">
+    @endif
+@endsection
+
 @section('content')
     @php $currency = activeCurrency(); @endphp
 
@@ -6,7 +13,7 @@
     <section class="xsf-hero">
         <div class="container">
             <div class="banner-slider xsf-hero__slider">
-                @foreach ($banners as $banner)
+                @foreach ($banners as $index => $banner)
                     <div>
                         <div class="row align-items-center xsf-hero__slide">
                             <div class="col-lg-6">
@@ -21,9 +28,20 @@
                             </div>
                             <div class="col-lg-6">
                                 <div class="xsf-hero__media">
-                                    <img src="{{ Storage::url($banner->image_url ?? 'default.jpg') }}"
+                                    <img src="{{ optimized_image_url($banner->image_url ?? 'default.jpg') }}"
                                         onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=800&auto=format&fit=crop&q=80';"
-                                        class="img-fluid" alt="{{ $banner->title }}">
+                                        class="img-fluid"
+                                        width="600"
+                                        height="420"
+                                        style="aspect-ratio: 10/7; object-fit: contain;"
+                                        @if ($index === 0)
+                                            fetchpriority="high"
+                                            loading="eager"
+                                        @else
+                                            loading="lazy"
+                                            decoding="async"
+                                        @endif
+                                        alt="{{ $banner->title }}">
                                 </div>
                             </div>
                         </div>
@@ -44,9 +62,14 @@
                     <div>
                         <a href="{{ route('category.show', $category->slug) }}" class="xsf-category-card">
                             <span class="xsf-category-card__img">
-                                <img src="{{ Storage::url($category->image_url ?? 'default.jpg') }}"
+                                <img src="{{ optimized_image_url($category->image_url ?? 'default.jpg') }}"
                                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&auto=format&fit=crop&q=80';"
-                                    loading="lazy" alt="{{ $category->name ?? 'Category' }}">
+                                    loading="lazy"
+                                    decoding="async"
+                                    width="100"
+                                    height="100"
+                                    style="aspect-ratio: 1/1; object-fit: contain;"
+                                    alt="{{ $category->name ?? 'Category' }}">
                             </span>
                             <span class="xsf-category-card__name">{{ $category->name ?? 'Category' }}</span>
                         </a>
@@ -114,7 +137,7 @@
                     <div class="col-6 col-lg-3">
                         <div class="xsf-feature">
                             <div class="xsf-feature__icon">
-                                <img src="{{ $feature['img'] }}" alt="" aria-hidden="true">
+                                <img src="{{ $feature['img'] }}" alt="" aria-hidden="true" width="48" height="48" loading="lazy" decoding="async" style="aspect-ratio: 1/1; object-fit: contain;">
                             </div>
                             <h3 class="xsf-feature__title">{{ $feature['title'] }}</h3>
                             <p class="xsf-feature__text">{{ $feature['text'] }}</p>

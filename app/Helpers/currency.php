@@ -100,6 +100,36 @@ if (! function_exists('activeCurrency')) {
     }
 }
 
+if (! function_exists('getSiteSettings')) {
+    function getSiteSettings()
+    {
+        static $cached = null;
+        if ($cached !== null) {
+            return $cached;
+        }
+
+        return $cached = Cache::remember('store_site_settings', 86400, function () {
+            try {
+                return \App\Models\SiteSetting::first();
+            } catch (\Throwable $e) {
+                return null;
+            }
+        });
+    }
+}
+
+if (! function_exists('getSiteLogo')) {
+    function getSiteLogo(): string
+    {
+        $setting = getSiteSettings();
+        $logo = $setting?->logo ?: 'logo_icon/shopping.png';
+        if (\Illuminate\Support\Str::startsWith($logo, ['http://', 'https://'])) {
+            return $logo;
+        }
+        return asset('storage/' . $logo);
+    }
+}
+
 if (! function_exists('product_image_url')) {
     function product_image_url(?string $imageUrl): string
     {
@@ -111,6 +141,46 @@ if (! function_exists('product_image_url')) {
             return $imageUrl;
         }
 
+        // If an optimized .webp version exists on disk, serve the lighter WebP format
+        $webpPath = preg_replace('/\.(png|jpe?g)$/i', '.webp', $imageUrl);
+        if ($webpPath !== $imageUrl) {
+            static $checkedWebp = [];
+            if (!isset($checkedWebp[$webpPath])) {
+                $diskPath = public_path('storage/' . $webpPath);
+                $checkedWebp[$webpPath] = file_exists($diskPath);
+            }
+            if ($checkedWebp[$webpPath]) {
+                return \Illuminate\Support\Facades\Storage::url($webpPath);
+            }
+        }
+
         return \Illuminate\Support\Facades\Storage::url($imageUrl);
     }
 }
+
+if (! function_exists('optimized_image_url')) {
+    function optimized_image_url(?string $path, ?string $fallback = null): string
+    {
+        if (empty($path)) {
+            return $fallback ?: asset('images/no-product.png');
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        $webpPath = preg_replace('/\.(png|jpe?g)$/i', '.webp', $path);
+        if ($webpPath !== $path) {
+            static $checked = [];
+            if (!isset($checked[$webpPath])) {
+                $checked[$webpPath] = file_exists(public_path('storage/' . $webpPath));
+            }
+            if ($checked[$webpPath]) {
+                return \Illuminate\Support\Facades\Storage::url($webpPath);
+            }
+        }
+
+        return \Illuminate\Support\Facades\Storage::url($path);
+    }
+}
+

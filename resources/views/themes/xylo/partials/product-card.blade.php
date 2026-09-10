@@ -47,6 +47,10 @@
             <img src="{{ product_image_url(optional($product->thumbnail)->image_url) }}"
                  onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&auto=format&fit=crop&q=80';"
                  loading="lazy"
+                 decoding="async"
+                 width="280"
+                 height="280"
+                 style="aspect-ratio: 1/1; object-fit: contain;"
                  alt="{{ $product->name ?? 'Product image' }}">
         </a>
 

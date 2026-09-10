@@ -56,11 +56,11 @@ class ProductController extends Controller
         match ($sort) {
             'price_asc'  => $query->join('product_variants as pv_sort', function ($join) {
                                 $join->on('pv_sort.product_id', '=', 'products.id')
-                                     ->where('pv_sort.is_primary', true);
+                                     ->whereRaw('pv_sort.is_primary is true');
                             })->orderBy('pv_sort.price', 'asc')->select('products.*'),
             'price_desc' => $query->join('product_variants as pv_sort', function ($join) {
                                 $join->on('pv_sort.product_id', '=', 'products.id')
-                                     ->where('pv_sort.is_primary', true);
+                                     ->whereRaw('pv_sort.is_primary is true');
                             })->orderBy('pv_sort.price', 'desc')->select('products.*'),
             'name_asc'   => $query->orderBy('name', 'asc'),
             'name_desc'  => $query->orderBy('name', 'desc'),
