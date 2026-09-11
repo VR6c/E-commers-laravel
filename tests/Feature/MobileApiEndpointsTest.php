@@ -130,6 +130,43 @@ class MobileApiEndpointsTest extends TestCase
         // Test Products List
         $this->getJson('/api/products')->assertStatus(200);
 
+        // Test Product Suggestions
+        $sugResponse = $this->getJson('/api/products/suggestions');
+        $sugResponse->assertStatus(200)
+            ->assertJsonStructure([
+                'status',
+                'data' => [
+                    '*' => [
+                        'id',
+                        'slug',
+                        'name',
+                        'price',
+                        'thumbnail',
+                        'category',
+                        'category_id',
+                        'brand',
+                        'rating',
+                        'reviews_count',
+                    ],
+                ],
+                'keywords',
+                'categories',
+            ])
+            ->assertJson(['status' => true]);
+
+        $searchSugResponse = $this->getJson('/api/products/suggestions?q=mobile');
+        $searchSugResponse->assertStatus(200)
+            ->assertJson(['status' => true]);
+
+        $relatedResponse = $this->getJson('/api/products/mobile-smartphone/suggestions');
+        $relatedResponse->assertStatus(200)
+            ->assertJsonStructure([
+                'status',
+                'product' => ['id', 'name', 'slug'],
+                'data',
+            ])
+            ->assertJson(['status' => true]);
+
         // Test Single Product Detail
         $this->getJson('/api/products/mobile-smartphone')->assertStatus(200);
     }

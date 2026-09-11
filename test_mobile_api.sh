@@ -76,6 +76,8 @@ test_endpoint "GET" "/api/brands" "" "" 200 "Get Brands List"
 test_endpoint "GET" "/api/categories" "" "" 200 "Get Categories List"
 test_endpoint "GET" "/api/social-media-links" "" "" 200 "Get Social Media Links"
 test_endpoint "GET" "/api/products" "" "" 200 "Get Products List"
+test_endpoint "GET" "/api/products/suggestions" "" "" 200 "Get Product Suggestions (Recommended)"
+test_endpoint "GET" "/api/products/suggestions?q=mobile" "" "" 200 "Get Product Suggestions (Live Search Autocomplete)"
 
 echo ""
 

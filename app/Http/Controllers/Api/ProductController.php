@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -82,6 +83,181 @@ class ProductController extends Controller
                 'per_page'     => $paginated->perPage(),
                 'total'        => $paginated->total(),
             ],
+        ]);
+    }
+
+    /**
+     * GET /api/products/suggestions
+     * Suggestions for mobile: live search autocomplete, recommended items, and matching keywords/categories.
+     */
+    public function suggestions(Request $request)
+    {
+        $search = trim((string) ($request->input('q') ?? $request->input('search') ?? ''));
+        $categoryId = $request->input('category_id');
+        $brandId = $request->input('brand_id');
+        $excludeId = $request->input('exclude_id');
+        $type = $request->input('type', $search !== '' ? 'search' : 'recommended');
+        $limit = min(max((int) $request->input('limit', 10), 1), 50);
+
+        $query = Product::with([
+                'category',
+                'brand',
+                'thumbnail',
+                'primaryVariant',
+                'variants',
+            ])
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
+            ->where('status', 1);
+
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+
+        if ($brandId) {
+            $query->where('brand_id', $brandId);
+        }
+
+        $keywords = [];
+        $matchingCategories = [];
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('short_description', 'like', "%{$search}%")
+                  ->orWhere('tags', 'like', "%{$search}%");
+            });
+
+            // Extract matching categories for search pill navigation
+            $matchingCategories = Category::where('status', true)
+                ->where('name', 'like', "%{$search}%")
+                ->limit(5)
+                ->get(['id', 'name', 'slug'])
+                ->map(fn ($cat) => [
+                    'id'   => $cat->id,
+                    'name' => $cat->name,
+                    'slug' => $cat->slug,
+                ])
+                ->values()
+                ->all();
+        }
+
+        // Sorting strategy
+        if ($search !== '') {
+            $query->orderBy('name', 'asc');
+        } elseif ($type === 'trending') {
+            $query->orderByDesc('reviews_count')->orderByDesc('id');
+        } else {
+            // Default recommended: latest active products
+            $query->latest();
+        }
+
+        $products = $query->limit($limit)->get();
+
+        // Extract keywords from matching products or categories
+        if ($search !== '') {
+            $collectedKeywords = collect();
+            foreach ($products as $prod) {
+                $collectedKeywords->push($prod->name);
+                if (! empty($prod->tags)) {
+                    $tagParts = array_map('trim', explode(',', (string) $prod->tags));
+                    foreach ($tagParts as $tp) {
+                        if (stripos($tp, $search) !== false) {
+                            $collectedKeywords->push($tp);
+                        }
+                    }
+                }
+            }
+            foreach ($matchingCategories as $mCat) {
+                $collectedKeywords->push($mCat['name']);
+            }
+            $keywords = $collectedKeywords->unique()->values()->take(8)->all();
+        }
+
+        $data = $products->map(fn ($p) => $this->formatSuggestionProduct($p))->values()->all();
+
+        return response()->json([
+            'status'     => true,
+            'data'       => $data,
+            'keywords'   => $keywords,
+            'categories' => $matchingCategories,
+        ]);
+    }
+
+    /**
+     * GET /api/products/{slug}/suggestions
+     * Related product suggestions for single product view on mobile.
+     */
+    public function related(string $slug, Request $request)
+    {
+        $product = Product::where('slug', $slug)
+            ->where('status', 1)
+            ->first();
+
+        if (! $product) {
+            return response()->json(['status' => false, 'message' => 'Product not found.'], 404);
+        }
+
+        $limit = min(max((int) $request->input('limit', 10), 1), 50);
+
+        // Fetch related products prioritizing same category, then same brand
+        $relatedQuery = Product::with([
+                'category',
+                'brand',
+                'thumbnail',
+                'primaryVariant',
+                'variants',
+            ])
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
+            ->where('status', 1)
+            ->where('id', '!=', $product->id);
+
+        if ($product->category_id) {
+            $relatedQuery->where('category_id', $product->category_id);
+        } elseif ($product->brand_id) {
+            $relatedQuery->where('brand_id', $product->brand_id);
+        }
+
+        $relatedProducts = $relatedQuery->latest()->limit($limit)->get();
+
+        // If not enough in category/brand, supplement with latest active products
+        if ($relatedProducts->count() < $limit) {
+            $existingIds = $relatedProducts->pluck('id')->push($product->id)->all();
+            $fillCount = $limit - $relatedProducts->count();
+
+            $fallback = Product::with([
+                    'category',
+                    'brand',
+                    'thumbnail',
+                    'primaryVariant',
+                    'variants',
+                ])
+                ->withCount('reviews')
+                ->withAvg('reviews', 'rating')
+                ->where('status', 1)
+                ->whereNotIn('id', $existingIds)
+                ->latest()
+                ->limit($fillCount)
+                ->get();
+
+            $relatedProducts = $relatedProducts->concat($fallback);
+        }
+
+        $data = $relatedProducts->map(fn ($p) => $this->formatSuggestionProduct($p))->values()->all();
+
+        return response()->json([
+            'status'  => true,
+            'product' => [
+                'id'   => $product->id,
+                'name' => $product->name,
+                'slug' => $product->slug,
+            ],
+            'data'    => $data,
         ]);
     }
 
@@ -166,5 +342,23 @@ class ProductController extends Controller
         }
 
         return $base;
+    }
+
+    private function formatSuggestionProduct(Product $p): array
+    {
+        return [
+            'id'             => $p->id,
+            'slug'           => $p->slug,
+            'name'           => $p->name,
+            'price'          => $p->getConvertedPriceAttribute(),
+            'discount_price' => $p->getConvertedDiscountPriceAttribute(),
+            'thumbnail'      => $p->thumbnail ? product_image_url($p->thumbnail->image_url) : null,
+            'category'       => $p->category?->name ?? '',
+            'category_id'    => $p->category_id,
+            'brand'          => $p->brand?->name ?? null,
+            'brand_id'       => $p->brand_id,
+            'rating'         => round((float) ($p->reviews_avg_rating ?? $p->averageRating()), 1),
+            'reviews_count'  => (int) ($p->reviews_count ?? 0),
+        ];
     }
 }

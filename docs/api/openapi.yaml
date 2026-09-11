@@ -171,6 +171,115 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /products/suggestions:
+    get:
+      summary: Retrieve live search autocomplete suggestions or recommended products
+      operationId: getProductSuggestions
+      tags:
+        - Catalog
+      parameters:
+        - name: q
+          in: query
+          description: Live search query term for typeahead suggestions
+          schema:
+            type: string
+        - name: category_id
+          in: query
+          description: Filter suggestions to a specific category
+          schema:
+            type: integer
+        - name: type
+          in: query
+          description: Suggestion mode (search, recommended, trending)
+          schema:
+            type: string
+            enum: [search, recommended, trending]
+        - name: limit
+          in: query
+          description: Number of suggestions to return (max 50)
+          schema:
+            type: integer
+            default: 10
+            maximum: 50
+      responses:
+        '200':
+          description: Product suggestions list with matching keywords and categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductSuggestion'
+                  keywords:
+                    type: array
+                    items:
+                      type: string
+                    example: ["iPhone 15 Pro", "Apple Phone"]
+                  categories:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        slug:
+                          type: string
+
+  /products/{slug}/suggestions:
+    get:
+      summary: Retrieve contextual related suggestions for a specific product
+      operationId: getRelatedProductSuggestions
+      tags:
+        - Catalog
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: Product slug
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of suggestions to return (max 50)
+          schema:
+            type: integer
+            default: 10
+            maximum: 50
+      responses:
+        '200':
+          description: Related product suggestions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  product:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      slug:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductSuggestion'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /products:
     get:
       summary: Search and filter catalog products with pagination
@@ -517,6 +626,50 @@ components:
         reviews_count:
           type: integer
           example: 34
+
+    ProductSuggestion:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        slug:
+          type: string
+          example: apple-iphone-15-pro
+        name:
+          type: string
+          example: Apple iPhone 15 Pro
+        price:
+          type: number
+          example: 999.00
+        discount_price:
+          type: number
+          nullable: true
+          example: 949.00
+        thumbnail:
+          type: string
+          nullable: true
+          example: http://localhost:8000/storage/products/iphone.jpg
+        category:
+          type: string
+          example: Smartphones
+        category_id:
+          type: integer
+          example: 4
+        brand:
+          type: string
+          nullable: true
+          example: Apple
+        brand_id:
+          type: integer
+          nullable: true
+          example: 2
+        rating:
+          type: number
+          example: 4.9
+        reviews_count:
+          type: integer
+          example: 38
 
     ProductDetail:
       allOf:

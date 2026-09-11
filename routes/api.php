@@ -50,9 +50,11 @@ Route::apiResource('brands',    BrandController::class);
 Route::get('/categories',       [CategoryController::class, 'index']);
 Route::get('/social-media-links', [SocialMediaLinkController::class, 'index']);
 
-// Products — list (with search/filter) and detail
-Route::get('/products',          [ProductController::class, 'index']);
-Route::get('/products/{slug}',   [ProductController::class, 'show']);
+// Products — suggestions, list (with search/filter) and detail
+Route::get('/products/suggestions',        [ProductController::class, 'suggestions']);
+Route::get('/products/{slug}/suggestions', [ProductController::class, 'related']);
+Route::get('/products',                    [ProductController::class, 'index']);
+Route::get('/products/{slug}',             [ProductController::class, 'show']);
 
 // Product reviews — read is public, write requires auth
 Route::get('/products/{slug}/reviews', [ProductReviewController::class, 'index']);

@@ -267,6 +267,51 @@
           }
         },
         {
+          "name": "Get Product Suggestions (Autocomplete / Recommended)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/products/suggestions?q=phone&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "suggestions"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "phone"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Related Product Suggestions",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/products/sample-product-slug/suggestions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "sample-product-slug",
+                "suggestions"
+              ]
+            }
+          }
+        },
+        {
           "name": "Get Product Detail",
           "request": {
             "method": "GET",
