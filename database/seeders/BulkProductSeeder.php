@@ -27,7 +27,7 @@ class BulkProductSeeder extends Seeder
         $this->seedProducts($count);
     }
 
-    public function seedProducts(int $count = 100): int
+    public function seedProducts(int $count = 100, ?callable $onProgress = null): int
     {
         try {
             DB::connection()->getPdo()->exec('ROLLBACK;');
@@ -94,19 +94,14 @@ class BulkProductSeeder extends Seeder
         }
 
         // 4. Ensure Brands exist (status must be 'active' for PostgreSQL constraint)
-        $existingBrands = Brand::where('status', 'active')->get();
-        if ($existingBrands->isNotEmpty()) {
-            $brands = $existingBrands->all();
-        } else {
-            $brandsData = ['TechNova', 'ApexStyle', 'UrbanLiving', 'FitPulse', 'LuxeGear', 'AuraBeauty', 'EcoPrime', 'Vanguard'];
-            $brands = [];
-            foreach ($brandsData as $bName) {
-                $brands[] = Brand::firstOrCreate(
-                    ['slug' => Str::slug($bName)],
-                    ['name' => $bName, 'status' => 'active']
-                );
-            }
+        $brandsData = ['TechNova', 'ApexStyle', 'UrbanLiving', 'FitPulse', 'LuxeGear', 'AuraBeauty', 'EcoPrime', 'Vanguard', 'Apple', 'Sony', 'Samsung', 'Nike', 'Adidas'];
+        foreach ($brandsData as $bName) {
+            Brand::firstOrCreate(
+                ['slug' => Str::slug($bName)],
+                ['name' => $bName, 'status' => 'active']
+            );
         }
+        $brands = Brand::where('status', 'active')->get()->all();
 
         // 5. Product definitions templates
         $productTemplates = [
@@ -180,7 +175,7 @@ class BulkProductSeeder extends Seeder
             // Variations in name for uniqueness when creating 100 items
             $suffixNumber  = ceil($i / count($productTemplates));
             $productName   = $template['name'] . ($suffixNumber > 1 ? " - Edition {$suffixNumber}" : "");
-            $productSlug   = Str::slug($productName) . '-' . Str::random(5);
+            $productSlug   = Str::slug($productName) . '-' . Str::lower(Str::random(6));
 
             $categorySlug  = $template['cat'];
             $categoryObj   = $categoriesBySlug->get($categorySlug) ?? $categories[array_rand($categories)];
@@ -232,7 +227,7 @@ class BulkProductSeeder extends Seeder
                                 'price'          => $price,
                                 'discount_price' => $discountPrice,
                                 'stock'          => rand(10, 150),
-                                'SKU'            => strtoupper(Str::random(3)) . rand(1000, 9999),
+                                'SKU'            => strtoupper(Str::random(4)) . rand(10000, 99999),
                                 'weight'         => round(rand(2, 30) / 10, 1),
                                 'dimensions'     => rand(10, 30) . 'x' . rand(10, 30) . 'x' . rand(2, 10) . ' cm',
                                 'is_primary'     => (bool) $isPrimary,
@@ -278,7 +273,7 @@ class BulkProductSeeder extends Seeder
                         'price'          => $price,
                         'discount_price' => $discountPrice,
                         'stock'          => rand(20, 200),
-                        'SKU'            => strtoupper(Str::random(3)) . rand(1000, 9999),
+                        'SKU'            => strtoupper(Str::random(4)) . rand(10000, 99999),
                         'weight'         => round(rand(2, 30) / 10, 1),
                         'dimensions'     => rand(10, 30) . 'x' . rand(10, 30) . 'x' . rand(2, 10) . ' cm',
                         'is_primary'     => true,
@@ -287,6 +282,9 @@ class BulkProductSeeder extends Seeder
 
                 DB::commit();
                 $createdCount++;
+                if ($onProgress) {
+                    $onProgress($createdCount, $count, $productName);
+                }
             } catch (\Throwable $e) {
                 DB::rollBack();
                 throw $e;
