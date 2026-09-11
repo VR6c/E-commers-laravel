@@ -65,6 +65,7 @@ class MobileProductSuggestionTest extends TestCase
         ProductVariant::create([
             'product_id'   => $iphone15->id,
             'variant_slug' => 'apple-iphone-15-pro-default',
+            'SKU'          => 'SKU-IP15P',
             'name'         => 'Default',
             'price'        => 999.00,
             'stock'        => 10,
@@ -86,6 +87,7 @@ class MobileProductSuggestionTest extends TestCase
         ProductVariant::create([
             'product_id'   => $iphone14->id,
             'variant_slug' => 'apple-iphone-14-default',
+            'SKU'          => 'SKU-IP14',
             'name'         => 'Default',
             'price'        => 799.00,
             'stock'        => 5,
@@ -107,6 +109,7 @@ class MobileProductSuggestionTest extends TestCase
         ProductVariant::create([
             'product_id'   => $macbook->id,
             'variant_slug' => 'macbook-pro-16-default',
+            'SKU'          => 'SKU-MBP16',
             'name'         => 'Default',
             'price'        => 2499.00,
             'stock'        => 3,
