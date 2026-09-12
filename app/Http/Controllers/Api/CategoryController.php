@@ -39,6 +39,7 @@ class CategoryController extends Controller
                 ]),
             ]);
 
-        return response()->json(['status' => true, 'data' => $categories]);
+        return response()->json(['status' => true, 'data' => $categories])
+            ->header('Cache-Control', 'public, max-age=1800, s-maxage=86400, stale-while-revalidate=86400');
     }
 }

@@ -39,14 +39,9 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            // \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            // EnsureFrontendRequestsAreStateful is for SPA cookie-based auth only.
-            // Mobile API clients use Bearer tokens — keeping this here causes 302
-            // redirects on requests that don't carry a Sanctum session cookie.
-            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            \App\Http\Middleware\OptimizeResponseMiddleware::class,
         ],
     ];
 

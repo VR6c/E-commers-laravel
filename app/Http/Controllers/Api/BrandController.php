@@ -19,6 +19,7 @@ class BrandController extends Controller
             'description' => $b->description,
         ]);
 
-        return response()->json(['status' => true, 'data' => $brands]);
+        return response()->json(['status' => true, 'data' => $brands])
+            ->header('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400');
     }
 }

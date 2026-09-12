@@ -16,7 +16,7 @@ class OrderApiController extends Controller
     {
         $customer = $request->user();
 
-        $orders = Order::with(['details.product', 'shippingAddress'])
+        $orders = Order::with(['details.product.thumbnail', 'shippingAddress'])
             ->where('customer_id', $customer->id)
             ->orderByDesc('created_at')
             ->get();
@@ -30,7 +30,9 @@ class OrderApiController extends Controller
 
             $items = $order->details->map(function ($detail) {
                 $product = $detail->product;
-                $thumbnailUrl = $product?->thumbnail()?->value('image_url') ?? $product?->image_url ?? null;
+                $thumbnailUrl = $product?->thumbnail?->image_url
+                    ? product_image_url($product->thumbnail->image_url)
+                    : ($product?->image_url ? product_image_url($product->image_url) : null);
                 return [
                     'id'                => $detail->id,
                     'product_id'        => $detail->product_id,

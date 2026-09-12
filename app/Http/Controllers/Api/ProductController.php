@@ -43,13 +43,17 @@ class ProductController extends Controller
 
         // Filter by min/max price (based on primary variant price)
         if ($minPrice = $request->input('min_price')) {
-            $query->whereHas('primaryVariant', fn ($q) => $q->where('price', '>=', $minPrice))
-                  ->orWhereHas('variants', fn ($q) => $q->where('price', '>=', $minPrice));
+            $query->where(function ($q) use ($minPrice) {
+                $q->whereHas('primaryVariant', fn ($sub) => $sub->where('price', '>=', $minPrice))
+                  ->orWhereHas('variants', fn ($sub) => $sub->where('price', '>=', $minPrice));
+            });
         }
 
         if ($maxPrice = $request->input('max_price')) {
-            $query->whereHas('primaryVariant', fn ($q) => $q->where('price', '<=', $maxPrice))
-                  ->orWhereHas('variants', fn ($q) => $q->where('price', '<=', $maxPrice));
+            $query->where(function ($q) use ($maxPrice) {
+                $q->whereHas('primaryVariant', fn ($sub) => $sub->where('price', '<=', $maxPrice))
+                  ->orWhereHas('variants', fn ($sub) => $sub->where('price', '<=', $maxPrice));
+            });
         }
 
         // Sorting
@@ -83,7 +87,7 @@ class ProductController extends Controller
                 'per_page'     => $paginated->perPage(),
                 'total'        => $paginated->total(),
             ],
-        ]);
+        ])->header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
     }
 
     /**
@@ -185,7 +189,7 @@ class ProductController extends Controller
             'data'       => $data,
             'keywords'   => $keywords,
             'categories' => $matchingCategories,
-        ]);
+        ])->header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
     }
 
     /**
@@ -258,7 +262,7 @@ class ProductController extends Controller
                 'slug' => $product->slug,
             ],
             'data'    => $data,
-        ]);
+        ])->header('Cache-Control', 'public, max-age=120, s-maxage=600, stale-while-revalidate=1200');
     }
 
     /**
@@ -288,7 +292,7 @@ class ProductController extends Controller
         return response()->json([
             'status' => true,
             'data'   => $this->formatProduct($product, true),
-        ]);
+        ])->header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
     }
 
     // ── Private helpers ──────────────────────────────────────────────
@@ -307,7 +311,7 @@ class ProductController extends Controller
             'category_id'       => $p->category_id,
             'brand'             => $p->brand?->name ?? null,
             'brand_id'          => $p->brand_id,
-            'rating'            => round((float) ($p->reviews_avg_rating ?? $p->averageRating()), 1),
+            'rating'            => round((float) ($p->reviews_avg_rating ?? 0), 1),
             'reviews_count'     => $p->reviews_count ?? 0,
             'variants'          => $p->variants->map(fn ($v) => [
                 'id'             => $v->id,
@@ -357,7 +361,7 @@ class ProductController extends Controller
             'category_id'    => $p->category_id,
             'brand'          => $p->brand?->name ?? null,
             'brand_id'       => $p->brand_id,
-            'rating'         => round((float) ($p->reviews_avg_rating ?? $p->averageRating()), 1),
+            'rating'         => round((float) ($p->reviews_avg_rating ?? 0), 1),
             'reviews_count'  => (int) ($p->reviews_count ?? 0),
         ];
     }

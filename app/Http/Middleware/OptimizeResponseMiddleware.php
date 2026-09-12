@@ -22,34 +22,48 @@ class OptimizeResponseMiddleware
             return $response;
         }
 
-        // Do not cache JSON or API responses here
         $contentType = $response->headers->get('Content-Type', '');
-        if (str_contains($contentType, 'application/json')) {
-            return $response;
+        $isJson = str_contains($contentType, 'application/json');
+
+        // Cache headers handling
+        $isCustomerAuthed = false;
+        try {
+            if (function_exists('auth') && app()->bound('auth')) {
+                $isCustomerAuthed = (bool) (auth('customer')->check() || auth()->check());
+            }
+        } catch (\Throwable $e) {
+            $isCustomerAuthed = false;
         }
 
-        // Cache headers for storefront guest requests
-        $isCustomerAuthed = auth('customer')->check() || auth()->check();
-        if (! $isCustomerAuthed) {
-            // Enable public browser caching with stale-while-revalidate
-            $response->headers->set('Cache-Control', 'public, max-age=120, stale-while-revalidate=300');
+        if ($isJson) {
+            // If authenticated, always ensure private no-store
+            if ($isCustomerAuthed) {
+                $response->headers->set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+            }
+        } else {
+            // Storefront HTML guest requests
+            if (! $isCustomerAuthed) {
+                $response->headers->set('Cache-Control', 'public, max-age=120, stale-while-revalidate=300');
+            } else {
+                $response->headers->set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+            }
+        }
 
-            // Generate ETag for 304 Not Modified validation
+        // Generate ETag for 304 Not Modified validation if response has public caching
+        $cacheControl = $response->headers->get('Cache-Control', '');
+        if (str_contains($cacheControl, 'public')) {
             $content = $response->getContent();
             if ($content) {
                 $etag = md5($content);
                 $response->setEtag($etag);
 
-                if ($request->getETags() && in_array($etag, $request->getETags())) {
-                    $response->setNotModified();
+                if ($response->isNotModified($request)) {
                     return $response;
                 }
             }
-        } else {
-            $response->headers->set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
         }
 
-        // Gzip compression for HTML responses if supported by client and not already compressed
+        // Gzip compression for HTML and JSON if supported by client and not already compressed
         $acceptEncoding = $request->header('Accept-Encoding', '');
         if (str_contains($acceptEncoding, 'gzip') && function_exists('gzencode') && ! $response->headers->has('Content-Encoding')) {
             $content = $response->getContent();
