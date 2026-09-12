@@ -32,7 +32,7 @@ class BannerRepository implements BannerRepositoryInterface
 
     public function deleteBanner(Banner $banner): bool
     {
-        if ($banner->image_url && Storage::disk('public')->exists($banner->image_url)) {
+        if ($banner->image_url && !\Illuminate\Support\Str::startsWith($banner->image_url, ['http://', 'https://']) && Storage::disk('public')->exists($banner->image_url)) {
             Storage::disk('public')->delete($banner->image_url);
         }
         return $banner->delete();

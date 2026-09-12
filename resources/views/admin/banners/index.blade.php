@@ -51,7 +51,7 @@ $(document).ready(function() {
                 data: 'image', name: 'image', orderable: false, searchable: false,
                 render: function(data) {
                     if (!data) return '<span class="text-muted">—</span>';
-                    return `<img src="${data}" class="dt-product-thumb" alt="banner">`;
+                    return `<img src="${data}" class="dt-product-thumb" alt="banner" onerror="this.onerror=null;this.src='/images/no-product.png';">`;
                 }
             },
             { data: 'title', name: 'title' },

@@ -34,9 +34,13 @@ class BannerController extends Controller
 
         return DataTables::of($banners)
             ->addColumn('image', function ($banner) {
-                return $banner->image_url
-                    ? Storage::disk('public')->url($banner->image_url)
-                    : null;
+                if (!$banner->image_url) {
+                    return null;
+                }
+                if (\Illuminate\Support\Str::startsWith($banner->image_url, ['http://', 'https://'])) {
+                    return $banner->image_url;
+                }
+                return Storage::disk('public')->url($banner->image_url);
             })
             ->addColumn('title', function ($banner) {
                 return $banner->title ?? '';

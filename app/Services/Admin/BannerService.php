@@ -34,7 +34,7 @@ class BannerService
 
         $imageUrl = null;
         if ($request->hasFile('languages.en.image')) {
-            $imageUrl = $request->file('languages.en.image')->store('banner_images', 'public');
+            $imageUrl = \App\Services\ImageUploadService::upload($request->file('languages.en.image'), 'banner_images');
         }
 
         $banner->update([
@@ -58,10 +58,10 @@ class BannerService
 
         $imageUrl = $banner->image_url;
         if ($request->hasFile('languages.en.image')) {
-            if ($imageUrl && Storage::disk('public')->exists($imageUrl)) {
+            if ($imageUrl && !\Illuminate\Support\Str::startsWith($imageUrl, ['http://', 'https://']) && Storage::disk('public')->exists($imageUrl)) {
                 Storage::disk('public')->delete($imageUrl);
             }
-            $imageUrl = $request->file('languages.en.image')->store('banner_images', 'public');
+            $imageUrl = \App\Services\ImageUploadService::upload($request->file('languages.en.image'), 'banner_images');
         }
 
         $banner->update([

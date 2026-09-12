@@ -82,12 +82,16 @@
 
                     <div class="image-preview mb-3 bg-light rounded py-4 border-2 border-dashed" id="image_preview_en">
                         @php
-                            $imgSrc = !empty($banner->image_url)
-                                ? Storage::disk('public')->url($banner->image_url)
-                                : asset('images/placeholder.png');
+                            $imgSrc = asset('images/no-product.png');
+                            if (!empty($banner->image_url)) {
+                                $imgSrc = \Illuminate\Support\Str::startsWith($banner->image_url, ['http://', 'https://'])
+                                    ? $banner->image_url
+                                    : Storage::disk('public')->url($banner->image_url);
+                            }
                         @endphp
                         <img id="image_preview_img_en" src="{{ $imgSrc }}"
-                            class="img-fluid rounded shadow-sm" style="max-height: 150px; display: block; margin: 0 auto;">
+                            class="img-fluid rounded shadow-sm" style="max-height: 150px; display: block; margin: 0 auto;"
+                            onerror="this.onerror=null;this.src='{{ asset('images/no-product.png') }}';">
                     </div>
                     <p id="image_filename_en" class="text-muted small mb-2" style="display:none;"></p>
 
