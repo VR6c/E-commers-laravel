@@ -93,7 +93,7 @@ class ProductController extends Controller
 
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
-                    $path = $image->store('products', 'public');
+                    $path = \App\Services\ImageUploadService::upload($image, 'products');
                     $product->images()->create(['name' => $image->getClientOriginalName(), 'image_url' => $path, 'type' => 'thumb']);
                 }
             }
@@ -157,7 +157,9 @@ class ProductController extends Controller
                 foreach ($request->remove_images as $imageId) {
                     $image = $product->images()->find($imageId);
                     if ($image) {
-                        Storage::disk('public')->delete($image->image_url);
+                        if (!\Illuminate\Support\Str::startsWith($image->image_url, ['http://', 'https://'])) {
+                            Storage::disk('public')->delete($image->image_url);
+                        }
                         $image->delete();
                     }
                 }
@@ -165,7 +167,7 @@ class ProductController extends Controller
 
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
-                    $path = $image->store('products', 'public');
+                    $path = \App\Services\ImageUploadService::upload($image, 'products');
                     $product->images()->create(['name' => $image->getClientOriginalName(), 'image_url' => $path, 'type' => 'thumb']);
                 }
             }

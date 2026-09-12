@@ -24,11 +24,11 @@ class ProfileController extends Controller
 
         // Handle profile image upload
         if ($request->hasFile('profile_image')) {
-            if ($customer->profile_image && Storage::disk('public')->exists($customer->profile_image)) {
+            if ($customer->profile_image && !\Illuminate\Support\Str::startsWith($customer->profile_image, ['http://', 'https://']) && Storage::disk('public')->exists($customer->profile_image)) {
                 Storage::disk('public')->delete($customer->profile_image);
             }
 
-            $path = $request->file('profile_image')->store('customer_profiles', 'public');
+            $path = \App\Services\ImageUploadService::upload($request->file('profile_image'), 'customer_profiles');
             $data['profile_image'] = $path;
         }
 

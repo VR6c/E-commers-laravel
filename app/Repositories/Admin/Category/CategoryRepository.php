@@ -23,7 +23,7 @@ class CategoryRepository implements CategoryRepositoryInterface
 
         $imagePath = null;
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
-            $imagePath = $data['image']->store('categories', 'public');
+            $imagePath = \App\Services\ImageUploadService::upload($data['image'], 'categories');
         }
 
         return Category::create([
@@ -41,7 +41,10 @@ class CategoryRepository implements CategoryRepositoryInterface
 
         $imagePath = $category->image_url;
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
-            $imagePath = $data['image']->store('categories', 'public');
+            if ($imagePath && !\Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://'])) {
+                \Storage::disk('public')->delete($imagePath);
+            }
+            $imagePath = \App\Services\ImageUploadService::upload($data['image'], 'categories');
         }
 
         $category->update([
@@ -58,7 +61,7 @@ class CategoryRepository implements CategoryRepositoryInterface
     {
         $category = $this->find($id);
 
-        if ($category->image_url) {
+        if ($category->image_url && !\Illuminate\Support\Str::startsWith($category->image_url, ['http://', 'https://'])) {
             \Storage::disk('public')->delete($category->image_url);
         }
 
@@ -73,7 +76,7 @@ class CategoryRepository implements CategoryRepositoryInterface
 
         $imagePath = null;
         if (isset($en['image']) && $en['image'] instanceof \Illuminate\Http\UploadedFile) {
-            $imagePath = $en['image']->store('categories', 'public');
+            $imagePath = \App\Services\ImageUploadService::upload($en['image'], 'categories');
         }
 
         return Category::create([
@@ -94,7 +97,10 @@ class CategoryRepository implements CategoryRepositoryInterface
 
         $imagePath = $category->image_url;
         if (isset($en['image']) && $en['image'] instanceof \Illuminate\Http\UploadedFile) {
-            $imagePath = $en['image']->store('categories', 'public');
+            if ($imagePath && !\Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://'])) {
+                \Storage::disk('public')->delete($imagePath);
+            }
+            $imagePath = \App\Services\ImageUploadService::upload($en['image'], 'categories');
         }
 
         $category->update([

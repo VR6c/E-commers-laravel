@@ -12,13 +12,17 @@ class ImageService
      */
     public function uploadImage(UploadedFile $image, string $folder): string
     {
-        $path = $image->store($folder, 'public');
+        $uploaded = \App\Services\ImageUploadService::upload($image, $folder);
 
-        // Automatically create WebP optimized version
-        $fullPath = Storage::disk('public')->path($path);
+        if (\Illuminate\Support\Str::startsWith($uploaded, ['http://', 'https://'])) {
+            return $uploaded;
+        }
+
+        // Automatically create WebP optimized version for local files
+        $fullPath = Storage::disk('public')->path($uploaded);
         $this->convertToWebp($fullPath);
 
-        return $path;
+        return $uploaded;
     }
 
     /**
@@ -70,6 +74,10 @@ class ImageService
      */
     public function deleteImage(string $imageUrl): bool
     {
+        if (\Illuminate\Support\Str::startsWith($imageUrl, ['http://', 'https://'])) {
+            return true;
+        }
+
         $imagePath = str_replace('storage/', '', $imageUrl);
 
         // Also clean up any WebP sibling

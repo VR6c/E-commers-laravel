@@ -41,8 +41,9 @@
                                 <div class="col-md-4 text-center">
                                     <div class="xsf-account-avatar">
                                         <img id="profilePreview"
-                                            src="{{ $customer->profile_image ? asset('storage/' . $customer->profile_image) : 'https://ui-avatars.com/api/?name=' . urlencode($customer->name) . '&background=0D8ABC&color=fff&size=120' }}"
-                                            alt="Profile">
+                                            src="{{ $customer->profile_image ? (\Illuminate\Support\Str::startsWith($customer->profile_image, ['http://', 'https://']) ? $customer->profile_image : asset('storage/' . $customer->profile_image)) : 'https://ui-avatars.com/api/?name=' . urlencode($customer->name) . '&background=0D8ABC&color=fff&size=120' }}"
+                                            alt="Profile"
+                                            onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($customer->name) }}&background=0D8ABC&color=fff&size=120';">
                                         <label for="profile_image" class="xsf-account-avatar__btn" title="{{ 'Change Photo' }}">
                                             <i class="fa-solid fa-camera" aria-hidden="true"></i>
                                         </label>

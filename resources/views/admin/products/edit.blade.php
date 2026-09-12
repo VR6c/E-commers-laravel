@@ -282,7 +282,7 @@
                 <div class="vp-image-grid mb-3" id="existing-images-grid" aria-label="Existing product images">
                     @foreach ($product->images as $image)
                     <div class="vp-image-thumb" id="existing_image_{{ $image->id }}" role="img" aria-label="Product image">
-                        <img src="{{ asset('storage/' . $image->image_url) }}" alt="Product image {{ $loop->iteration }}">
+                        <img src="{{ \Illuminate\Support\Str::startsWith($image->image_url, ['http://', 'https://']) ? $image->image_url : asset('storage/' . $image->image_url) }}" alt="Product image {{ $loop->iteration }}" onerror="this.onerror=null;this.src='{{ asset('images/no-product.png') }}';">
                         <button type="button"
                                 class="vp-image-thumb__remove"
                                 onclick="removeExistingImage({{ $image->id }})"

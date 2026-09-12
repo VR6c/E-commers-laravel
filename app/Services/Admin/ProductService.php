@@ -29,8 +29,10 @@ class ProductService
             ->addColumn('image', function ($product) {
                 $image = $product->images->first();
                 if ($image) {
-                    $url = asset('storage/' . $image->image_url);
-                    return '<img src="' . $url . '" alt="product" class="dt-product-thumb">';
+                    $url = \Illuminate\Support\Str::startsWith($image->image_url, ['http://', 'https://'])
+                        ? $image->image_url
+                        : asset('storage/' . $image->image_url);
+                    return '<img src="' . $url . '" alt="product" class="dt-product-thumb" onerror="this.onerror=null;this.src=\'/images/no-product.png\';">';
                 }
                 return '<div class="dt-product-thumb dt-product-thumb--placeholder"><i class="bi bi-image"></i></div>';
             })

@@ -21,7 +21,7 @@ class BrandService
 
         $logoPath = null;
         if (isset($data['logo_url']) && $data['logo_url'] instanceof \Illuminate\Http\UploadedFile) {
-            $logoPath = $data['logo_url']->store('brands/logos', 'public');
+            $logoPath = \App\Services\ImageUploadService::upload($data['logo_url'], 'brands/logos');
         }
 
         return $this->brandRepository->store([
@@ -38,10 +38,10 @@ class BrandService
         $brand = $this->brandRepository->find($id);
 
         if (isset($data['logo_url']) && $data['logo_url'] instanceof \Illuminate\Http\UploadedFile) {
-            if ($brand->logo_url && Storage::exists('public/' . $brand->logo_url)) {
+            if ($brand->logo_url && !\Illuminate\Support\Str::startsWith($brand->logo_url, ['http://', 'https://']) && Storage::exists('public/' . $brand->logo_url)) {
                 Storage::delete('public/' . $brand->logo_url);
             }
-            $brand->logo_url = $data['logo_url']->store('brands/logos', 'public');
+            $brand->logo_url = \App\Services\ImageUploadService::upload($data['logo_url'], 'brands/logos');
         }
 
         $brand->slug        = Str::slug($data['name'] ?? $brand->slug);

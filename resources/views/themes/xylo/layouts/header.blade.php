@@ -97,7 +97,7 @@
                            aria-label="{{ 'Account' }}">
                             @auth('customer')
                                 @php $customer = Auth::guard('customer')->user(); @endphp
-                                <img src="{{ $customer->profile_image ? asset('storage/' . $customer->profile_image) : 'https://ui-avatars.com/api/?name=' . urlencode($customer->name) . '&background=6366f1&color=fff&size=40' }}"
+                                <img src="{{ $customer->profile_image ? (\Illuminate\Support\Str::startsWith($customer->profile_image, ['http://', 'https://']) ? $customer->profile_image : asset('storage/' . $customer->profile_image)) : 'https://ui-avatars.com/api/?name=' . urlencode($customer->name) . '&background=6366f1&color=fff&size=40' }}"
                                      alt="{{ $customer->name }}"
                                      class="xsf-action__avatar">
                             @else
@@ -128,7 +128,7 @@
                             @else
                                 <li>
                                     <div class="xsf-account__user-header">
-                                        <img src="{{ $customer->profile_image ? asset('storage/' . $customer->profile_image) : 'https://ui-avatars.com/api/?name=' . urlencode($customer->name) . '&background=6366f1&color=fff&size=64' }}"
+                                        <img src="{{ $customer->profile_image ? (\Illuminate\Support\Str::startsWith($customer->profile_image, ['http://', 'https://']) ? $customer->profile_image : asset('storage/' . $customer->profile_image)) : 'https://ui-avatars.com/api/?name=' . urlencode($customer->name) . '&background=6366f1&color=fff&size=64' }}"
                                              alt="{{ $customer->name }}"
                                              class="xsf-account__user-avatar">
                                         <div>
@@ -254,7 +254,7 @@
                 </a>
             @else
                 <div class="d-flex align-items-center gap-3 mb-3">
-                    <img src="{{ auth('customer')->user()->profile_image ? asset('storage/' . auth('customer')->user()->profile_image) : 'https://ui-avatars.com/api/?name=' . urlencode(auth('customer')->user()->name) . '&background=6366f1&color=fff&size=40' }}"
+                    <img src="{{ auth('customer')->user()->profile_image ? (\Illuminate\Support\Str::startsWith(auth('customer')->user()->profile_image, ['http://', 'https://']) ? auth('customer')->user()->profile_image : asset('storage/' . auth('customer')->user()->profile_image)) : 'https://ui-avatars.com/api/?name=' . urlencode(auth('customer')->user()->name) . '&background=6366f1&color=fff&size=40' }}"
                          alt="{{ auth('customer')->user()->name }}"
                          class="rounded-circle" width="42" height="42" style="object-fit:cover;">
                     <div>

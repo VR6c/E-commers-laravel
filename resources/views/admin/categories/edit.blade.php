@@ -46,8 +46,9 @@
                             <div id="image_preview_en" class="mb-3"
                                 style="{{ ($category->image_url) ? '' : 'display:none;' }}">
                                 <img id="image_preview_img_en"
-                                    src="{{ ($category->image_url) ? asset('storage/' . $category->image_url) : '#' }}"
-                                    alt="Preview" class="img-thumbnail shadow-sm" style="max-height: 150px;">
+                                    src="{{ ($category->image_url) ? (\Illuminate\Support\Str::startsWith($category->image_url, ['http://', 'https://']) ? $category->image_url : asset('storage/' . $category->image_url)) : '#' }}"
+                                    alt="Preview" class="img-thumbnail shadow-sm" style="max-height: 150px;"
+                                    onerror="this.onerror=null;this.src='{{ asset('images/no-product.png') }}';">
                             </div>
                             <div class="upload-controls">
                                 <label class="btn btn-outline-primary shadow-sm" for="image_file_en">
