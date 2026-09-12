@@ -32,6 +32,7 @@ class CheckoutApiController extends Controller
             'cart' => 'required|array|min:1',
             'cart.*.product_id' => 'required|integer|exists:products,id',
             'cart.*.quantity' => 'required|integer|min:1',
+            'cart.*.variant_id' => 'nullable|integer',
         ]);
 
         if ($validator->fails()) {
@@ -65,14 +66,43 @@ class CheckoutApiController extends Controller
             $itemsWithDetails = [];
             foreach ($cartItems as $item) {
                 $product = Product::with(['variants'])->findOrFail($item['product_id']);
-                $price = $product->getConvertedPriceAttribute();
-                $quantity = $item['quantity'];
+
+                // Find variant if variant_id passed, else primary variant, else first variant
+                $variant = null;
+                if (!empty($item['variant_id'])) {
+                    $variant = $product->variants->firstWhere('id', (int) $item['variant_id']);
+                }
+                $variant ??= $product->primaryVariant
+                    ?? $product->variants->firstWhere('is_primary', true)
+                    ?? $product->variants->first();
+
+                // Determine effective unit price (respecting discount_price)
+                if ($variant) {
+                    if ($variant->discount_price !== null && (float) $variant->discount_price > 0) {
+                        $price = $variant->getConvertedDiscountPriceAttribute();
+                    } elseif ($variant->price !== null && (float) $variant->price > 0) {
+                        $price = $variant->getConvertedPriceAttribute();
+                    } else {
+                        $price = $product->getConvertedPriceAttribute();
+                    }
+                } else {
+                    $discountPrice = $product->getConvertedDiscountPriceAttribute();
+                    if ($discountPrice !== null && (float) $discountPrice > 0) {
+                        $price = $discountPrice;
+                    } else {
+                        $price = $product->getConvertedPriceAttribute();
+                    }
+                }
+
+                $price = (float) $price;
+                $quantity = (int) $item['quantity'];
 
                 $subtotal += $price * $quantity;
                 $itemsWithDetails[] = [
-                    'product' => $product,
-                    'price' => $price,
-                    'quantity' => $quantity
+                    'product'  => $product,
+                    'variant'  => $variant,
+                    'price'    => $price,
+                    'quantity' => $quantity,
                 ];
             }
 
@@ -146,10 +176,15 @@ class CheckoutApiController extends Controller
                 // Build items
                 $itemsData = [];
                 foreach ($itemsWithDetails as $detail) {
+                    $name = $detail['product']->name ?? 'Product';
+                    $variantName = $detail['variant']->name ?? null;
+                    if ($variantName && !in_array(strtolower($variantName), ['default', 'standard'])) {
+                        $name .= ' (' . $variantName . ')';
+                    }
                     $itemsData[] = [
-                        'name' => $detail['product']->name ?? 'Product',
+                        'name'     => $name,
                         'quantity' => $detail['quantity'],
-                        'price' => number_format($detail['price'], 2, '.', ''),
+                        'price'    => number_format($detail['price'], 2, '.', ''),
                     ];
                 }
                 $itemsBase64 = base64_encode(json_encode($itemsData));
