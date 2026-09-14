@@ -128,7 +128,6 @@ class VendorPanelTest extends TestCase
         } finally {
             $product->variants()->delete();
             $product->delete();
-            $shop->delete();
             $vendor->delete();
         }
     }
@@ -207,8 +206,6 @@ class VendorPanelTest extends TestCase
             $order->delete();
             $prodA->delete();
             $prodB->delete();
-            $shopA->delete();
-            $shopB->delete();
             $vendorA->delete();
             $vendorB->delete();
         }
