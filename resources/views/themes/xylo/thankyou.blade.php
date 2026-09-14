@@ -331,7 +331,7 @@
                                 <i class="fa fa-bag-shopping me-2"></i>{{ 'Continue Shopping' }}
                             </a>
                             @auth('customer')
-                                <a href="{{ route('customer.profile.edit') }}" class="btn btn-outline-secondary btn-pill">
+                                <a href="{{ route('customer.orders.index') }}" class="btn btn-outline-secondary btn-pill">
                                     <i class="fa fa-list-check me-2"></i>{{ 'View Orders' }}
                                 </a>
                             @endauth

@@ -145,18 +145,22 @@
                                 </div>
                                 <hr class="dropdown-divider">
                                 <a class="dropdown-item" href="{{ route('customer.profile.edit') }}">
-                                    <i class="bi bi-person-circle me-2"></i>
+                                    <i class="fa-solid fa-user me-2 text-muted"></i>
                                     {{ 'My Profile' }}
                                 </a>
+                                <a class="dropdown-item" href="{{ route('customer.orders.index') }}">
+                                    <i class="fa-solid fa-box-archive me-2 text-muted"></i>
+                                    {{ 'My Orders' }}
+                                </a>
                                 <a class="dropdown-item" href="{{ route('customer.wishlist.index') }}">
-                                    <i class="bi bi-heart me-2"></i>
+                                    <i class="fa-regular fa-heart me-2 text-muted"></i>
                                     {{ 'Wishlist' }}
                                 </a>
                                 <hr class="dropdown-divider">
                                 <a class="dropdown-item xsf-account__logout text-danger"
                                    href="#"
                                    onclick="event.preventDefault(); document.getElementById('customer-logout-form').submit();">
-                                    <i class="bi bi-box-arrow-right me-2"></i>
+                                    <i class="fa-solid fa-arrow-right-from-bracket me-2"></i>
                                     {{ 'Logout' }}
                                 </a>
                                 <form id="customer-logout-form" action="{{ route('customer.logout') }}" method="POST" class="d-none">

@@ -45,6 +45,11 @@ class Customer extends Authenticatable
         return $this->hasMany(ProductReview::class);
     }
 
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public function getAvatarUrlAttribute(): string
     {
         if ($this->profile_image) {

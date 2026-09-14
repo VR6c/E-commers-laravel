@@ -14,6 +14,9 @@
                     <a href="{{ route('customer.profile.edit') }}" class="xsf-account-nav__link is-active">
                         <i class="fa-solid fa-user-gear" aria-hidden="true"></i> {{ 'My Profile' }}
                     </a>
+                    <a href="{{ route('customer.orders.index') }}" class="xsf-account-nav__link">
+                        <i class="fa-solid fa-box-archive" aria-hidden="true"></i> {{ 'My Orders' }}
+                    </a>
                     <a href="{{ route('customer.wishlist.index') }}" class="xsf-account-nav__link">
                         <i class="fa-regular fa-heart" aria-hidden="true"></i> {{ 'Wishlist' }}
                     </a>

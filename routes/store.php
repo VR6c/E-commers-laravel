@@ -8,6 +8,7 @@ use App\Http\Controllers\Store\CartController;
 use App\Http\Controllers\Store\CategoryController;
 use App\Http\Controllers\Store\CheckoutController;
 use App\Http\Controllers\Store\CurrencyController;
+use App\Http\Controllers\Store\Customer\OrderController as CustomerOrderController;
 use App\Http\Controllers\Store\Customer\ProfileController;
 use App\Http\Controllers\Store\PaymentGateway\StripeController;
 use App\Http\Controllers\Store\ProductController;
@@ -84,6 +85,10 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+        // Customer Order History Routes
+        Route::get('/orders', [CustomerOrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{id}', [CustomerOrderController::class, 'show'])->name('orders.show');
     });
 });
 
