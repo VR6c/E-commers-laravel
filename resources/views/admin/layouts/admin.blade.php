@@ -545,6 +545,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 @stack('modals')
 
+{{-- DataTables Hybrid Loading UX Enhancer --}}
+<script src="{{ asset('js/admin-datatables.js') }}?v=1"></script>
+
 @yield('js')
 @stack('js')
 </body>

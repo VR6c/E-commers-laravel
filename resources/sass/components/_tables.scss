@@ -356,44 +356,216 @@ select.dt-input,
     }
 }
 
-// ---- Processing Backdrop Overlay ----
+// =====================================================================
+//  DATATABLES MODERN HYBRID LOADING (Skeletons + Frosted Glass)
+// =====================================================================
+
+// Top glowing progress bar during processing
+.dataTables_wrapper,
+.dt-container {
+    position: relative !important;
+
+    &::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 3px !important;
+        background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #3b82f6 100%) !important;
+        background-size: 200% 100% !important;
+        opacity: 0 !important;
+        transform: scaleX(0) !important;
+        transform-origin: left !important;
+        transition: opacity 0.25s ease, transform 0.3s ease !important;
+        z-index: 60 !important;
+        pointer-events: none !important;
+    }
+
+    &.dt-is-processing::before {
+        opacity: 1 !important;
+        transform: scaleX(1) !important;
+        animation: dtProgressPulse 1.5s ease-in-out infinite alternate !important;
+    }
+}
+
+@keyframes dtProgressPulse {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+// Row dimming during processing
+.dataTables_wrapper.dt-is-processing tbody tr:not(.dt-skeleton-row) {
+    opacity: 0.35 !important;
+    filter: blur(0.4px) !important;
+    transition: opacity 0.22s ease, filter 0.22s ease !important;
+    pointer-events: none !important;
+}
+
+// Modern Frosted Glass Processing Indicator Overlay
 .dt-processing,
-.dataTables_processing {
+.dataTables_processing,
+.dataTables_wrapper .dataTables_processing,
+.dt-container .dt-processing {
     position: absolute !important;
     top: 50% !important;
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
     margin: 0 !important;
-    padding: 12px 28px !important;
-    background: rgba(255, 255, 255, 0.96) !important;
-    border: 1px solid #cbd5e1 !important;
-    border-radius: 12px !important;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12) !important;
-    font-size: 0.85rem !important;
-    font-weight: 600 !important;
-    color: #4f46e5 !important;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    padding: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    z-index: 100 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    pointer-events: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 
-    &::before {
-        content: '';
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        border: 2px solid #a5b4fc;
-        border-top-color: #4f46e5;
-        border-radius: 50%;
-        animation: dt-spinner 0.6s linear infinite;
+    &::before { display: none !important; }
+}
+
+// Hide any default DataTables nested spinner div
+.dataTables_wrapper .dataTables_processing > div:not(.dt-loader-card),
+.dt-container .dt-processing > div:not(.dt-loader-card) {
+    display: none !important;
+}
+
+.dt-loader-card {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 10px 22px !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(203, 213, 225, 0.9) !important;
+    border-radius: 9999px !important;
+    box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.14),
+                0 4px 10px -2px rgba(99, 102, 241, 0.10) !important;
+    animation: dtCardPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+    pointer-events: auto !important;
+}
+
+@keyframes dtCardPop {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
     }
 }
 
-@keyframes dt-spinner {
+.dt-spinner-ring {
+    position: relative !important;
+    width: 20px !important;
+    height: 20px !important;
+    flex-shrink: 0 !important;
+
+    &::before {
+        content: '' !important;
+        position: absolute !important;
+        inset: 0 !important;
+        border-radius: 50% !important;
+        border: 2px solid #e0e7ff !important;
+    }
+
+    &::after {
+        content: '' !important;
+        position: absolute !important;
+        inset: 0 !important;
+        border-radius: 50% !important;
+        border: 2px solid transparent !important;
+        border-top-color: #6366f1 !important;
+        border-right-color: #a855f7 !important;
+        animation: dtSpin 0.75s cubic-bezier(0.42, 0, 0.58, 1) infinite !important;
+        filter: drop-shadow(0 1px 3px rgba(99, 102, 241, 0.35)) !important;
+    }
+}
+
+@keyframes dtSpin {
     to { transform: rotate(360deg); }
 }
+
+.dt-spinner-inner {
+    position: absolute !important;
+    inset: 5px !important;
+    border-radius: 50% !important;
+    background: radial-gradient(circle, #6366f1 35%, transparent 70%) !important;
+    opacity: 0.7 !important;
+    animation: dtPulseDot 1.4s ease-in-out infinite !important;
+}
+
+@keyframes dtPulseDot {
+    0%, 100% { transform: scale(0.7); opacity: 0.4; }
+    50%      { transform: scale(1.15); opacity: 0.95; }
+}
+
+.dt-loader-text {
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
+    color: #334155 !important;
+    letter-spacing: 0.01em !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 1px !important;
+    user-select: none !important;
+}
+
+.dt-loader-dots span {
+    display: inline-block !important;
+    animation: dtDotBlink 1.4s infinite !important;
+    opacity: 0 !important;
+    font-weight: 700 !important;
+    color: #6366f1 !important;
+
+    &:nth-child(1) { animation-delay: 0s !important; }
+    &:nth-child(2) { animation-delay: 0.2s !important; }
+    &:nth-child(3) { animation-delay: 0.4s !important; }
+}
+
+@keyframes dtDotBlink {
+    0%, 20%   { opacity: 0; transform: translateY(0); }
+    50%       { opacity: 1; transform: translateY(-2px); }
+    80%, 100% { opacity: 0; transform: translateY(0); }
+}
+
+// =====================================================================
+//  SKELETON SHIMMER LOADING ROWS
+// =====================================================================
+@keyframes dtShimmerWave {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.dt-skeleton-row td {
+    padding: 15px 20px !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    background: transparent !important;
+    vertical-align: middle !important;
+}
+
+.dt-skeleton-bar {
+    height: 16px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 40%, #f8fafc 60%, #f1f5f9 100%);
+    background-size: 200% 100%;
+    animation: dtShimmerWave 1.8s ease-in-out infinite;
+}
+
+.dt-skeleton-bar-1 { width: 52px; height: 20px; border-radius: 6px; }
+.dt-skeleton-bar-2 { width: 70%; max-width: 170px; height: 16px; }
+.dt-skeleton-bar-3 { width: 95px; height: 16px; }
+.dt-skeleton-bar-4 { width: 82px; height: 24px; border-radius: 9999px; }
+.dt-skeleton-bar-5 { width: 68px; height: 18px; }
+.dt-skeleton-bar-6 { width: 64px; height: 28px; margin-left: auto; border-radius: 8px; }
+
 
 // =====================================================================
 //  LARAVEL & BOOTSTRAP 5 PAGINATION

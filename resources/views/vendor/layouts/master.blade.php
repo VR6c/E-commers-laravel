@@ -35,7 +35,7 @@
     {{-- Tom Select --}}
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.6.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
     <link href="{{ asset('css/admin-select.css') }}?v=4" rel="stylesheet">
-    <link href="{{ asset('css/vendor-panel.css') }}?v=8" rel="stylesheet">
+    <link href="{{ asset('css/vendor-panel.css') }}?v=9" rel="stylesheet">
 
     {{-- Toastr --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
@@ -463,6 +463,9 @@ document.addEventListener('DOMContentLoaded', function () {
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.6.1/dist/js/tom-select.complete.min.js"></script>
 <script src="{{ asset('js/admin-select.js') }}?v=5"></script>
 <script src="{{ asset('js/admin-combobox.js') }}?v=3"></script>
+
+{{-- DataTables Hybrid Loading UX Enhancer --}}
+<script src="{{ asset('js/admin-datatables.js') }}?v=1"></script>
 
 @yield('js')
 </body>
