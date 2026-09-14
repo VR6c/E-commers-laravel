@@ -8,14 +8,8 @@
     {{-- ── Brand / Logo ──────────────────────────────────────────── --}}
     <a href="{{ route('admin.dashboard') }}" class="brand-link" id="sidebarBrand">
         <div class="brand-image-wrap">
-            @php $logoPath = \App\Models\SiteSetting::first()?->logo ?? null; @endphp
-            @if($logoPath)
-                <img src="{{ \Illuminate\Support\Str::startsWith($logoPath, ['http://', 'https://']) ? $logoPath : asset('storage/' . $logoPath) }}"
-                     alt="{{ config('app.name') }}" class="brand-image">
-            @else
-                <img src="{{ asset('storage/logo_icon/shopping.png') }}"
-                     alt="{{ config('app.name') }}" class="brand-image">
-            @endif
+            <img src="{{ getSiteLogo() }}"
+                 alt="{{ config('app.name') }}" class="brand-image">
         </div>
         <span class="brand-text">{{ config('app.name', 'Admin Panel') }}</span>
     </a>

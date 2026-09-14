@@ -126,6 +126,9 @@ if (! function_exists('getSiteLogo')) {
         if (\Illuminate\Support\Str::startsWith($logo, ['http://', 'https://'])) {
             return $logo;
         }
+        if ($logo === 'logo_icon/shopping.png' && ! file_exists(public_path('storage/' . $logo))) {
+            return 'https://i.ibb.co/jkrX65dY/shop.png';
+        }
         return asset('storage/' . $logo);
     }
 }

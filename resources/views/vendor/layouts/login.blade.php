@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Vendor Login') — {{ config('app.name', 'TVR') }}</title>
-    <link rel="icon" type="image/png" href="{{ asset('storage/logo_icon/shopping.png') }}">
+    <link rel="icon" type="image/png" href="{{ getSiteLogo() }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -262,7 +262,7 @@
         <div class="vl-card">
             <div class="vl-card-header">
                 <div class="vl-logo-wrap">
-                    <img src="{{ asset('storage/logo_icon/shopping.png') }}" alt="{{ config('app.name') }}">
+                    <img src="{{ getSiteLogo() }}" alt="{{ config('app.name') }}">
                 </div>
                 <h1>@yield('form-title', 'Vendor Portal')</h1>
                 <p>@yield('form-subtitle', 'Sign in to manage your store')</p>

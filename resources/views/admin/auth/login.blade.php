@@ -8,14 +8,8 @@
 
         {{-- Logo --}}
         <div class="auth-logo-wrap">
-            @php $logoPath = \App\Models\SiteSetting::first()?->logo ?? null; @endphp
-            @if($logoPath)
-                <img src="{{ \Illuminate\Support\Str::startsWith($logoPath, ['http://','https://']) ? $logoPath : asset('storage/' . $logoPath) }}"
-                     alt="{{ config('app.name') }}" class="auth-logo-img">
-            @else
-                <img src="{{ asset('storage/logo_icon/shopping.png') }}"
-                     alt="{{ config('app.name') }}" class="auth-logo-img">
-            @endif
+            <img src="{{ getSiteLogo() }}"
+                 alt="{{ config('app.name') }}" class="auth-logo-img">
         </div>
 
         {{-- Heading --}}

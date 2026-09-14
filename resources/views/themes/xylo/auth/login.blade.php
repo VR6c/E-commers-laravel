@@ -16,7 +16,7 @@
         {{-- Form --}}
         <div class="auth-card__form">
             <div class="auth-card__brand">
-                <img src="{{ asset('storage/logo_icon/shopping.png') }}" alt="{{ config('app.name') }}">
+                <img src="{{ getSiteLogo() }}" alt="{{ config('app.name') }}">
             </div>
             <h1 class="auth-card__title">{{ 'Sign In' }}</h1>
             <p class="auth-card__subtitle">{{ 'Enter your credentials below.' }}</p>
