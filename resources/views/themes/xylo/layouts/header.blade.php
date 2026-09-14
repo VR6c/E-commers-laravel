@@ -53,9 +53,12 @@
 
                 {{-- Logo --}}
                 <a href="{{ route('xylo.home') }}" class="xsf-header__brand" aria-label="{{ config('app.name') }}">
-                    <img src="{{ getSiteLogo() }}"
-                         onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode(config('app.name', 'Store')) }}&background=6366f1&color=fff&size=100';"
-                         alt="{{ config('app.name') }} logo" class="xsf-brand__img" width="160" height="40" style="aspect-ratio: 4/1; object-fit: contain;">
+                    <div class="xsf-brand__wrapper">
+                        <img src="{{ getSiteLogo() }}"
+                             onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode(config('app.name', 'Store')) }}&background=6366f1&color=fff&size=100';"
+                             alt="{{ config('app.name') }} logo" class="xsf-brand__img" width="38" height="38">
+                        <span class="xsf-brand__name">{{ config('app.name', 'Store') }}</span>
+                    </div>
                 </a>
 
                 {{-- Search (desktop) --}}
@@ -67,11 +70,14 @@
                                id="search-input"
                                name="q"
                                autocomplete="off"
-                               placeholder="{{ 'Search premium products...' }}"
+                               placeholder="{{ 'Search premium products, brands...' }}"
                                aria-label="{{ 'Search products' }}">
-                        <button type="submit" class="xsf-search__btn">
-                            {{ 'Search' }}
-                        </button>
+                        <div class="xsf-search__addon">
+                            <kbd class="xsf-search__kbd" title="Press ⌘K to search">⌘K</kbd>
+                            <button type="submit" class="xsf-search__btn" aria-label="{{ 'Search' }}">
+                                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                            </button>
+                        </div>
                         <div id="search-suggestions" class="xsf-search__suggestions d-none"></div>
                     </div>
                 </form>
@@ -104,66 +110,60 @@
                                 <i class="fa-regular fa-user" aria-hidden="true"></i>
                             @endauth
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end xsf-account__menu">
+                        <div class="dropdown-menu dropdown-menu-end xsf-account__menu">
                             @guest('customer')
-                                <li>
-                                    <div class="xsf-account__guest-header">
-                                        <i class="fa-regular fa-user-circle xsf-account__guest-icon"></i>
-                                        <span>{{ 'My Account' }}</span>
-                                    </div>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ route('customer.login') }}">
-                                        <i class="bi bi-box-arrow-in-right me-2"></i>
-                                        {{ 'Sign In' }}
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ route('customer.register') }}">
-                                        <i class="bi bi-person-plus me-2"></i>
-                                        {{ 'Sign Up' }}
-                                    </a>
-                                </li>
-                            @else
-                                <li>
-                                    <div class="xsf-account__user-header">
-                                        <img src="{{ $customer->avatar_url }}"
-                                             alt="{{ $customer->name }}"
-                                             class="xsf-account__user-avatar">
-                                        <div>
-                                            <p class="xsf-account__user-name">{{ $customer->name }}</p>
-                                            <p class="xsf-account__user-email">{{ $customer->email }}</p>
+                                <div class="xsf-account__guest-card">
+                                    <div class="xsf-account__guest-head">
+                                        <div class="xsf-account__guest-avatar">
+                                            <i class="fa-regular fa-user"></i>
+                                        </div>
+                                        <div class="xsf-account__guest-text">
+                                            <p class="xsf-account__guest-title">{{ 'My Account' }}</p>
+                                            <p class="xsf-account__guest-sub">{{ 'Sign in for orders & wishlist' }}</p>
                                         </div>
                                     </div>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ route('customer.profile.edit') }}">
-                                        <i class="bi bi-person-circle me-2"></i>
-                                        {{ 'My Profile' }}
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ route('customer.wishlist.index') }}">
-                                        <i class="bi bi-heart me-2"></i>
-                                        {{ 'Wishlist' }}
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item xsf-account__logout"
-                                       href="#"
-                                       onclick="event.preventDefault(); document.getElementById('customer-logout-form').submit();">
-                                        <i class="bi bi-box-arrow-right me-2"></i>
-                                        {{ 'Logout' }}
-                                    </a>
-                                    <form id="customer-logout-form" action="{{ route('customer.logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </li>
+                                    <div class="xsf-account__guest-actions">
+                                        <a class="btn btn-primary btn-sm w-100 mb-2" href="{{ route('customer.login') }}">
+                                            <i class="bi bi-box-arrow-in-right me-1"></i>
+                                            {{ 'Sign In' }}
+                                        </a>
+                                        <a class="btn btn-outline-secondary btn-sm w-100" href="{{ route('customer.register') }}">
+                                            <i class="bi bi-person-plus me-1"></i>
+                                            {{ 'Create Account' }}
+                                        </a>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="xsf-account__user-header">
+                                    <img src="{{ $customer->avatar_url }}"
+                                         alt="{{ $customer->name }}"
+                                         class="xsf-account__user-avatar">
+                                    <div class="xsf-account__user-meta">
+                                        <p class="xsf-account__user-name">{{ $customer->name }}</p>
+                                        <p class="xsf-account__user-email">{{ $customer->email }}</p>
+                                    </div>
+                                </div>
+                                <hr class="dropdown-divider">
+                                <a class="dropdown-item" href="{{ route('customer.profile.edit') }}">
+                                    <i class="bi bi-person-circle me-2"></i>
+                                    {{ 'My Profile' }}
+                                </a>
+                                <a class="dropdown-item" href="{{ route('customer.wishlist.index') }}">
+                                    <i class="bi bi-heart me-2"></i>
+                                    {{ 'Wishlist' }}
+                                </a>
+                                <hr class="dropdown-divider">
+                                <a class="dropdown-item xsf-account__logout text-danger"
+                                   href="#"
+                                   onclick="event.preventDefault(); document.getElementById('customer-logout-form').submit();">
+                                    <i class="bi bi-box-arrow-right me-2"></i>
+                                    {{ 'Logout' }}
+                                </a>
+                                <form id="customer-logout-form" action="{{ route('customer.logout') }}" method="POST" class="d-none">
+                                    @csrf
+                                </form>
                             @endguest
-                        </ul>
+                        </div>
                     </div>
 
                     {{-- Cart --}}
@@ -188,8 +188,8 @@
                            autocomplete="off"
                            placeholder="{{ 'Search premium products...' }}"
                            aria-label="{{ 'Search products' }}">
-                    <button type="submit" class="xsf-search__btn">
-                        {{ 'Search' }}
+                    <button type="submit" class="xsf-search__btn" aria-label="{{ 'Search' }}">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
                     </button>
                 </div>
             </form>

@@ -218,6 +218,19 @@ function initLiveSearch() {
             suggestionsBox.classList.add('d-none');
         }
     });
+
+    // Global Cmd+K / Ctrl+K shortcut to focus search
+    document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            searchInput.focus();
+            searchInput.select();
+        }
+        if (e.key === 'Escape' && document.activeElement === searchInput) {
+            suggestionsBox.classList.add('d-none');
+            searchInput.blur();
+        }
+    });
 }
 
 /**
