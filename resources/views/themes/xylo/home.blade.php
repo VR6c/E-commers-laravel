@@ -12,46 +12,78 @@
     {{-- Hero / Banner Slider --}}
     <section class="xsf-hero">
         <div class="container">
-            <div class="banner-slider xsf-hero__slider">
-                @foreach ($banners as $index => $banner)
-                    <div>
-                        <div class="row align-items-center xsf-hero__slide">
-                            <div class="col-lg-6">
-                                <span class="xsf-hero__eyebrow">
-                                    <i class="fa-solid fa-sparkles me-1"></i> {{ 'New Collection' }}
-                                </span>
-                                <h1 class="xsf-hero__title">
-                                    {{ $banner->title }}
-                                </h1>
-                                <p class="xsf-hero__text">{{ 'Discover our latest collection of premium products, designed for your lifestyle.' }}</p>
-                                <div class="xsf-hero__cta-row">
-                                    <a href="{{ route('shop.index') }}" class="btn btn-primary btn-pill btn-lg">
-                                        <span>{{ 'Shop Now' }}</span>
-                                        <i class="fa-solid fa-arrow-right ms-2"></i>
-                                    </a>
+            <div class="xsf-hero__card">
+                <div class="banner-slider xsf-hero__slider">
+                    @foreach ($banners as $index => $banner)
+                        <div class="xsf-hero__slide-wrapper">
+                            <div class="row align-items-center xsf-hero__slide">
+                                <div class="col-lg-6 xsf-hero__content">
+                                    <span class="xsf-hero__eyebrow">
+                                        <i class="fa-solid fa-bolt me-1" aria-hidden="true"></i> {{ 'New Collection' }}
+                                    </span>
+                                    <h1 class="xsf-hero__title">
+                                        {{ $banner->title }}
+                                    </h1>
+                                    <p class="xsf-hero__text">{{ $banner->description ?: 'Discover our latest collection of premium products, designed for your lifestyle.' }}</p>
+                                    <div class="xsf-hero__cta-row">
+                                        <a href="{{ route('shop.index') }}" class="btn btn-primary btn-pill btn-lg">
+                                            <span>{{ 'Shop Now' }}</span>
+                                            <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i>
+                                        </a>
+                                        <a href="{{ route('shop.index') }}" class="btn btn-glass btn-pill btn-lg">
+                                            <span>{{ 'Explore Deals' }}</span>
+                                        </a>
+                                    </div>
+                                    <div class="xsf-hero__trust">
+                                        <div class="xsf-hero__trust-item">
+                                            <i class="fa-solid fa-truck-fast" aria-hidden="true"></i>
+                                            <span>Free Delivery Over $50</span>
+                                        </div>
+                                        <div class="xsf-hero__trust-item">
+                                            <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+                                            <span>Official Warranty</span>
+                                        </div>
+                                        <div class="xsf-hero__trust-item">
+                                            <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+                                            <span>Easy Returns</span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="xsf-hero__media">
-                                    <img src="{{ optimized_image_url($banner->image_url ?? 'default.jpg') }}"
-                                        onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=800&auto=format&fit=crop&q=80';"
-                                        class="img-fluid"
-                                        width="600"
-                                        height="420"
-                                        style="aspect-ratio: 10/7; object-fit: cover;"
-                                        @if ($index === 0)
-                                            fetchpriority="high"
-                                            loading="eager"
-                                        @else
-                                            loading="lazy"
-                                            decoding="async"
-                                        @endif
-                                        alt="{{ $banner->title }}">
+                                <div class="col-lg-6 xsf-hero__visual">
+                                    <div class="xsf-hero__media-stage">
+                                        <div class="xsf-hero__media">
+                                            <span class="xsf-hero__badge">
+                                                <i class="fa-solid fa-fire me-1" aria-hidden="true"></i> Featured
+                                            </span>
+                                            <img src="{{ optimized_image_url($banner->image_url ?? 'default.jpg') }}"
+                                                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=800&auto=format&fit=crop&q=80';"
+                                                class="img-fluid"
+                                                width="600"
+                                                height="420"
+                                                @if ($index === 0)
+                                                    fetchpriority="high"
+                                                    loading="eager"
+                                                @else
+                                                    loading="lazy"
+                                                    decoding="async"
+                                                @endif
+                                                alt="{{ $banner->title }}">
+                                            <div class="xsf-hero__floating-card">
+                                                <div class="xsf-hero__floating-icon">
+                                                    <i class="fa-solid fa-star" aria-hidden="true"></i>
+                                                </div>
+                                                <div class="xsf-hero__floating-info">
+                                                    <span class="xsf-hero__floating-title">Top Rated Choice</span>
+                                                    <span class="xsf-hero__floating-sub">Verified Quality Product</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
             </div>
         </div>
     </section>

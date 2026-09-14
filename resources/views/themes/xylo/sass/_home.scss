@@ -86,48 +86,95 @@
 }
 
 // =====================================================================
-//  HERO / BANNER
+//  HERO / BANNER — Modern Inset Showcase Card
 // =====================================================================
 .xsf-hero {
-    background: $gradient-hero;
-    padding: $space-10 0 $space-16;
-    overflow: hidden;
-    position: relative;
+    background: transparent;
+    padding: $space-6 0 $space-8;
 
-    // Large blurred orb — top right
-    &::before {
-        content: '';
-        position: absolute;
-        top: -80px;
-        right: -80px;
-        width: 480px;
-        height: 480px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(99,102,241,0.14) 0%, transparent 70%);
-        pointer-events: none;
+    @include bp-down('md') {
+        padding: $space-4 0 $space-6;
     }
 
-    // Bottom-left orb
-    &::after {
-        content: '';
-        position: absolute;
-        bottom: -40px;
-        left: -60px;
-        width: 360px;
-        height: 360px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(168,85,247,0.10) 0%, transparent 70%);
-        pointer-events: none;
+    &__card {
+        position: relative;
+        background: radial-gradient(120% 120% at 75% 20%, rgba(99, 102, 241, 0.28) 0%, rgba(30, 27, 75, 0.5) 45%, rgba(11, 15, 25, 0.98) 100%), #090d16;
+        border-radius: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05);
+        overflow: hidden;
+
+        // Subtle ambient decorative backlight orbs
+        &::before {
+            content: '';
+            position: absolute;
+            top: -120px;
+            right: -80px;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(168, 85, 247, 0.12) 45%, transparent 70%);
+            filter: blur(50px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            left: -80px;
+            width: 420px;
+            height: 420px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.18) 0%, transparent 70%);
+            filter: blur(60px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @include bp-down('md') {
+            border-radius: 20px;
+        }
     }
 
-    &__slider { position: relative; z-index: 1; }
+    &__slider {
+        position: relative;
+        z-index: 1;
+    }
+}
+
+.xsf-hero__slide-wrapper {
+    outline: none;
 }
 
 .xsf-hero__slide {
-    min-height: 460px;
+    min-height: 480px;
+    padding: $space-10 $space-12 $space-14;
     align-items: center;
 
-    @include bp-down('md') { min-height: auto; }
+    @include bp-down('lg') {
+        min-height: 440px;
+        padding: $space-8 $space-8 $space-14;
+    }
+
+    @include bp-down('md') {
+        min-height: auto;
+        padding: $space-8 $space-6 $space-14;
+    }
+
+    @include bp-down('sm') {
+        padding: $space-6 $space-4 $space-12;
+    }
+}
+
+.xsf-hero__content {
+    position: relative;
+    z-index: 2;
+
+    @include bp-down('md') {
+        text-align: left;
+    }
 }
 
 .xsf-hero__eyebrow {
@@ -136,45 +183,58 @@
     gap: $space-2;
     font-size: $font-size-xs;
     font-weight: $font-weight-bold;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: $color-primary;
-    background: $primary-50;
-    border: 1px solid $primary-100;
+    color: #c7d2fe;
+    background: rgba(99, 102, 241, 0.18);
+    border: 1px solid rgba(165, 180, 252, 0.28);
     border-radius: $radius-pill;
-    padding: $space-2 $space-4;
-    margin-bottom: $space-5;
+    padding: 0.35rem 0.9rem;
+    margin-bottom: $space-4;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 10px rgba(99, 102, 241, 0.12);
+
+    i {
+        font-size: 0.8rem;
+        color: #818cf8;
+    }
 }
 
 .xsf-hero__title {
     font-family: 'Plus Jakarta Sans', var(--font-family-brand);
-    font-size: $font-size-4xl;
-    font-weight: $font-weight-black;
-    color: $neutral-900;
-    letter-spacing: -0.04em;
-    line-height: 1.1;
-    margin-bottom: $space-5;
+    font-size: clamp(2.1rem, 4vw, 3.4rem);
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+    margin-bottom: $space-4;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 
-    // Gradient highlight on part of text (JS can wrap a word)
     .highlight {
-        background: $gradient-primary;
+        background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 50%, #c084fc 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
     }
 
-    @include bp-down('lg') { font-size: $font-size-3xl; }
-    @include bp-down('md') { font-size: $font-size-2xl; }
+    @include bp-down('sm') {
+        font-size: 1.85rem;
+        margin-bottom: $space-3;
+    }
 }
 
 .xsf-hero__text {
-    font-size: $font-size-md;
-    color: $text-secondary;
-    line-height: $line-height-loose;
-    max-width: 44ch;
-    margin-bottom: $space-8;
+    font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+    color: rgba(226, 232, 240, 0.82);
+    line-height: 1.65;
+    max-width: 48ch;
+    margin-bottom: $space-6;
 
-    @include bp-down('md') { font-size: $font-size-base; }
+    @include bp-down('sm') {
+        font-size: $font-size-sm;
+        line-height: 1.55;
+        margin-bottom: $space-5;
+    }
 }
 
 .xsf-hero__cta-row {
@@ -182,58 +242,286 @@
     align-items: center;
     flex-wrap: wrap;
     gap: $space-3;
+    margin-bottom: $space-6;
+
+    @include bp-down('sm') {
+        gap: $space-2;
+        margin-bottom: $space-5;
+    }
+}
+
+.xsf-hero__trust {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: $space-5;
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+    padding-top: $space-5;
+
+    @include bp-down('sm') {
+        gap: $space-3;
+        padding-top: $space-4;
+    }
+}
+
+.xsf-hero__trust-item {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+    color: rgba(203, 213, 225, 0.85);
+
+    i {
+        color: #818cf8;
+        font-size: 0.85rem;
+    }
+
+    @include bp-down('sm') {
+        font-size: 0.72rem;
+    }
+}
+
+.xsf-hero__visual {
+    position: relative;
+    z-index: 2;
+
+    @include bp-down('md') {
+        margin-top: $space-6;
+    }
+}
+
+.xsf-hero__media-stage {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $space-2;
+
+    // Glowing aura behind the card
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 10%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, rgba(168, 85, 247, 0.15) 50%, transparent 70%);
+        filter: blur(35px);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 0;
+    }
 }
 
 .xsf-hero__media {
     position: relative;
-    border-radius: $radius-3xl;
+    z-index: 1;
+    width: 100%;
+    border-radius: 22px;
     overflow: hidden;
-    box-shadow: $shadow-2xl;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(12px);
 
     img {
         width: 100%;
-        height: 420px;
+        height: 380px;
         object-fit: cover;
         display: block;
-        transition: transform $transition-slow;
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    &:hover img { transform: scale(1.03); }
-
-    // Decorative corner badge
-    &::after {
-        content: 'New';
-        position: absolute;
-        top: $space-5;
-        right: $space-5;
-        background: $gradient-primary;
-        color: #fff;
-        font-size: $font-size-xs;
-        font-weight: $font-weight-bold;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        padding: $space-2 $space-4;
-        border-radius: $radius-pill;
-        box-shadow: $shadow-primary;
+    &:hover img {
+        transform: scale(1.035);
     }
 
-    @include bp-down('md') { img { height: 260px; } }
+    @include bp-down('lg') {
+        img { height: 320px; }
+    }
+
+    @include bp-down('md') {
+        img { height: 260px; }
+    }
+
+    @include bp-down('sm') {
+        border-radius: 16px;
+        img { height: 210px; }
+    }
 }
 
-// Slick dots override for hero
-.xsf-hero .slick-dots {
-    bottom: -$space-8;
+.xsf-hero__badge {
+    position: absolute;
+    top: $space-4;
+    right: $space-4;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.35rem 0.75rem;
+    border-radius: $radius-pill;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 
-    li button::before {
-        color: $primary-300;
-        font-size: 8px;
+    i {
+        color: #f59e0b;
+        font-size: 0.75rem;
     }
 
-    li.slick-active button::before { color: $primary-500; }
+    @include bp-down('sm') {
+        top: $space-3;
+        right: $space-3;
+        padding: 0.25rem 0.6rem;
+        font-size: 0.65rem;
+    }
+}
+
+.xsf-hero__floating-card {
+    position: absolute;
+    bottom: $space-4;
+    left: $space-4;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    background: rgba(15, 23, 42, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0.5rem 0.85rem;
+    border-radius: 14px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+    animation: heroFloat 4s ease-in-out infinite alternate;
+
+    @include bp-down('sm') {
+        bottom: $space-3;
+        left: $space-3;
+        padding: 0.4rem 0.65rem;
+        gap: $space-2;
+    }
+}
+
+.xsf-hero__floating-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: #f59e0b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82rem;
+    flex-shrink: 0;
+
+    @include bp-down('sm') {
+        width: 26px;
+        height: 26px;
+        font-size: 0.7rem;
+    }
+}
+
+.xsf-hero__floating-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.xsf-hero__floating-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+
+    @include bp-down('sm') {
+        font-size: 0.68rem;
+    }
+}
+
+.xsf-hero__floating-sub {
+    font-size: 0.68rem;
+    color: #94a3b8;
+
+    @include bp-down('sm') {
+        font-size: 0.6rem;
+    }
+}
+
+@keyframes heroFloat {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-5px); }
+}
+
+// Slick dots modern pill redesign for hero
+.xsf-hero .slick-dots {
+    position: absolute;
+    bottom: $space-5;
+    left: 0;
+    right: 0;
+    width: 100%;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    z-index: 10;
+    pointer-events: auto;
+
+    @include bp-down('sm') {
+        bottom: $space-3;
+        gap: 6px;
+    }
+
+    li {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: auto;
+        height: auto;
+        margin: 0;
+        padding: 0;
+
+        button {
+            display: block;
+            width: 10px;
+            height: 10px;
+            border-radius: $radius-pill;
+            background: rgba(255, 255, 255, 0.28);
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 0;
+            font-size: 0;
+            line-height: 0;
+            color: transparent;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+            &::before {
+                display: none !important;
+                content: none !important;
+            }
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.65);
+                transform: scale(1.15);
+            }
+        }
+
+        &.slick-active button {
+            width: 32px;
+            background: linear-gradient(90deg, #6366f1 0%, #818cf8 100%);
+            box-shadow: 0 0 12px rgba(99, 102, 241, 0.7);
+        }
+    }
 }
 
 // =====================================================================
-//  BTN OVERRIDES — pill variants
+//  BTN OVERRIDES — pill variants & glass button
 // =====================================================================
 .btn-pill {
     border-radius: $radius-pill !important;
@@ -253,6 +541,27 @@
     }
 
     &:active { transform: translateY(0); }
+}
+
+.btn-glass {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    font-weight: $font-weight-semibold;
+    backdrop-filter: blur(8px);
+    transition: all $transition-base;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.18);
+        border-color: rgba(255, 255, 255, 0.35);
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
 }
 
 .btn-outline-primary {
