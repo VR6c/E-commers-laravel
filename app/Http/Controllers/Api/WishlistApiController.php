@@ -17,7 +17,13 @@ class WishlistApiController extends Controller
         $customer = $request->user();
 
         $products = $customer->wishlistProducts()
-            ->with(['thumbnail', 'primaryVariant', 'category', 'brand'])
+            ->with([
+                'thumbnail',
+                'category',
+                'brand',
+                'primaryVariant',
+                'variants.attributeValues.attribute',
+            ])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
             ->orderByPivot('created_at', 'desc')
@@ -34,30 +40,48 @@ class WishlistApiController extends Controller
     /**
      * POST /api/wishlist/toggle
      * Add the product if it is not wishlisted, remove it if it is.
+     * Optional body field "action": "add" | "remove" | "toggle" (default: "toggle").
      *
-     * Body: { "product_id": 1 }
+     * Body: { "product_id": 1, "action": "toggle" }
      */
     public function toggle(Request $request)
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
+            'action'     => 'nullable|string|in:add,remove,toggle',
         ]);
 
         $customer = $request->user();
+        $action = $request->input('action', 'toggle');
 
         $existing = Wishlist::where('customer_id', $customer->id)
             ->where('product_id', $request->product_id)
             ->first();
 
-        if ($existing) {
-            $existing->delete();
+        if ($action === 'add') {
+            if (! $existing) {
+                Wishlist::create([
+                    'customer_id' => $customer->id,
+                    'product_id'  => $request->product_id,
+                ]);
+            }
+            $status = 'added';
+        } elseif ($action === 'remove') {
+            if ($existing) {
+                $existing->delete();
+            }
             $status = 'removed';
         } else {
-            Wishlist::create([
-                'customer_id' => $customer->id,
-                'product_id'  => $request->product_id,
-            ]);
-            $status = 'added';
+            if ($existing) {
+                $existing->delete();
+                $status = 'removed';
+            } else {
+                Wishlist::create([
+                    'customer_id' => $customer->id,
+                    'product_id'  => $request->product_id,
+                ]);
+                $status = 'added';
+            }
         }
 
         $count = $customer->wishlistProducts()->count();
@@ -124,22 +148,36 @@ class WishlistApiController extends Controller
             'id'                => $product->id,
             'slug'              => $product->slug,
             'name'              => $product->name,
-            'short_description' => $product->short_description,
+            'short_description' => $product->short_description ?? '',
             'thumbnail'         => $product->thumbnail
                 ? product_image_url($product->thumbnail->image_url)
-                : null,
-            'category'          => $product->category?->name ?? null,
+                : '',
+            'category'          => $product->category?->name ?? '',
             'brand'             => $product->brand?->name ?? null,
             'price'             => $product->primaryVariant
                 ? (float) $product->primaryVariant->converted_price
-                : null,
+                : (float) ($product->converted_price ?? 0),
             'discount_price'    => $product->primaryVariant
                 ? ($product->primaryVariant->converted_discount_price
                     ? (float) $product->primaryVariant->converted_discount_price
                     : null)
                 : null,
             'rating'            => round((float) ($product->reviews_avg_rating ?? 0), 1),
-            'reviews_count'     => $product->reviews_count ?? 0,
+            'reviews_count'     => (int) ($product->reviews_count ?? 0),
+            'variants'          => $product->variants ? $product->variants->map(fn ($v) => [
+                'id'             => $v->id,
+                'name'           => $v->name,
+                'price'          => (float) $v->converted_price,
+                'discount_price' => $v->converted_discount_price ? (float) $v->converted_discount_price : null,
+                'stock'          => $v->stock,
+                'sku'            => $v->SKU,
+                'is_primary'     => (bool) $v->is_primary,
+                'attributes'     => $v->attributeValues ? $v->attributeValues->map(fn ($av) => [
+                    'id'    => $av->id,
+                    'name'  => $av->attribute?->name ?? '',
+                    'value' => $av->value,
+                ])->values()->all() : [],
+            ])->values()->all() : [],
         ];
     }
 }
