@@ -2,9 +2,13 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Pages'"
+<x-admin.page-header
+    :title="'Pages'"
+    icon="bi bi-file-earmark-text-fill"
+    :subtitle="'Create and manage CMS content pages, terms, and policy documents'"
+    :breadcrumbs="['Pages' => '#']"
     :create-route="route('admin.pages.create')"
-    :create-label="'Add New'" />
+    :create-label="'Add Page'" />
 
 <x-admin.data-card>
     <div class="table-responsive">

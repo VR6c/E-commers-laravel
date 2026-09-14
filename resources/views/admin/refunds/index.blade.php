@@ -2,7 +2,11 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Refunds'" />
+<x-admin.page-header
+    :title="'Refunds'"
+    icon="bi bi-arrow-counterclockwise"
+    :subtitle="'Manage customer return requests, refund approvals and transaction reversals'"
+    :breadcrumbs="['Refunds' => '#']" />
 
 <x-admin.data-card>
     <div class="table-responsive">

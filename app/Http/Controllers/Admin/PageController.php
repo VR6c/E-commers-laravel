@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Page;
+use App\Services\ImageUploadService;
 use App\Traits\UpdatesModelStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -70,7 +71,7 @@ class PageController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('pages', 'public');
+            $imagePath = ImageUploadService::upload($request->file('image'), 'pages');
         }
 
         Page::create([
@@ -103,10 +104,10 @@ class PageController extends Controller
 
         $imagePath = $page->image_url;
         if ($request->hasFile('image')) {
-            if ($imagePath) {
+            if ($imagePath && !ImageUploadService::isRemoteUrl($imagePath) && Storage::disk('public')->exists($imagePath)) {
                 Storage::disk('public')->delete($imagePath);
             }
-            $imagePath = $request->file('image')->store('pages', 'public');
+            $imagePath = ImageUploadService::upload($request->file('image'), 'pages');
         }
 
         $page->update([
@@ -121,7 +122,11 @@ class PageController extends Controller
 
     public function destroy($id)
     {
-        Page::findOrFail($id)->delete();
+        $page = Page::findOrFail($id);
+        if ($page->image_url && !ImageUploadService::isRemoteUrl($page->image_url) && Storage::disk('public')->exists($page->image_url)) {
+            Storage::disk('public')->delete($page->image_url);
+        }
+        $page->delete();
 
         return response()->json(['success' => true, 'message' => 'Page deleted successfully.']);
     }

@@ -44,4 +44,16 @@ class Customer extends Authenticatable
     {
         return $this->hasMany(ProductReview::class);
     }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->profile_image) {
+            if (\Illuminate\Support\Str::startsWith($this->profile_image, ['http://', 'https://'])) {
+                return $this->profile_image;
+            }
+            return asset('storage/' . $this->profile_image);
+        }
+
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=6366f1&color=fff&size=80';
+    }
 }

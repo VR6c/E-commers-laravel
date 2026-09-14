@@ -57,7 +57,7 @@ class BrandService
     {
         $brand = $this->brandRepository->find($id);
 
-        if ($brand->logo_url && Storage::exists('public/' . $brand->logo_url)) {
+        if ($brand->logo_url && !Str::startsWith($brand->logo_url, ['http://', 'https://']) && Storage::exists('public/' . $brand->logo_url)) {
             Storage::delete('public/' . $brand->logo_url);
         }
 

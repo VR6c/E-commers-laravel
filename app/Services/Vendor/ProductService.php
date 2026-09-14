@@ -20,7 +20,7 @@ class ProductService
     {
         $vendorId = auth()->guard('vendor')->id();
 
-        $products = Product::with(['variants' => fn ($q) => $q->whereRaw('is_primary is true')])
+        $products = Product::with('variants')
             ->where('vendor_id', $vendorId);
 
         return DataTables::of($products)
@@ -28,10 +28,26 @@ class ProductService
                 $query->where('products.name', 'like', "%{$keyword}%")
             )
             ->addColumn('name', fn ($p) => $p->name ?? 'No name')
-            ->addColumn('price', fn ($p) => ($pv = $p->variants->first())
-                ? '$' . number_format($pv->price, 2) : 'No price')
+            ->addColumn('price', function ($p) {
+                $pv = $p->variants->firstWhere('is_primary', true) ?? $p->variants->first();
+
+                return $pv ? '$' . number_format((float) $pv->price, 2) : '—';
+            })
             ->addColumn('status', fn ($p) => $p->status)
-            ->addColumn('action', fn ($p) => '')
+            ->addColumn('action', function ($p) {
+                return '
+                    <div class="dt-actions">
+                        <a href="' . route('vendor.products.edit', $p->id) . '"
+                           class="btn-action btn-action-edit" title="Edit">
+                            <i class="bi bi-pencil-fill"></i>
+                        </a>
+                        <button type="button"
+                                class="btn-action btn-action-delete"
+                                onclick="deleteProduct(' . $p->id . ')" title="Delete">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </div>';
+            })
             ->rawColumns(['action'])
             ->make(true);
     }

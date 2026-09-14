@@ -16,7 +16,11 @@ trait SyncsProductVariants
      */
     public function syncVariants(array $variants, Product $product): void
     {
-        foreach ($variants as $variantData) {
+        $hasExistingPrimary = $product->variants()->where('is_primary', true)->exists();
+
+        foreach ($variants as $index => $variantData) {
+            $isPrimary = ! $hasExistingPrimary && ($index === 0);
+
             $variant = $product->variants()->create([
                 'variant_slug'   => Str::slug($variantData['name']) . '-' . uniqid(),
                 'name'           => $variantData['name'],
@@ -27,8 +31,12 @@ trait SyncsProductVariants
                 'barcode'        => $variantData['barcode'] ?? null,
                 'weight'         => $variantData['weight'] ?? null,
                 'dimensions'     => $variantData['dimensions'] ?? null,
-                'is_primary'     => true,
+                'is_primary'     => $isPrimary,
             ]);
+
+            if ($isPrimary) {
+                $hasExistingPrimary = true;
+            }
 
             foreach (['size_id', 'color_id'] as $attrType) {
                 if (! empty($variantData[$attrType])) {

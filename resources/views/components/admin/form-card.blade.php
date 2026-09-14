@@ -1,34 +1,39 @@
 @props([
-    'title' => null,
-    'icon'  => null,
+    'title'    => null,
+    'icon'     => null,
+    'subtitle' => null,
 ])
 
-{{-- Admin form card using vp-* design system with optional icon + ARIA region --}}
-<div {{ $attributes->merge(['class' => 'vp-card vp-anim-slide-up']) }}
+<div {{ $attributes->merge(['class' => 'admin-card']) }}
      @isset($title) role="region" aria-label="{{ $title }}" @endisset>
 
     @if ($title)
-        <div class="vp-card-header">
-            <h5 class="vp-card-header__title">
+        <div class="admin-card__header">
+            <div class="d-flex align-items-center gap-2">
                 @if ($icon)
-                    <span class="vp-card-header__icon" aria-hidden="true">
+                    <div class="admin-card__header-icon" aria-hidden="true">
                         <i class="{{ $icon }}"></i>
-                    </span>
+                    </div>
                 @endif
-                {{ $title }}
-            </h5>
+                <div>
+                    <h5 class="admin-card__title">{{ $title }}</h5>
+                    @if ($subtitle)
+                        <small class="text-muted d-block" style="font-size: 0.78rem;">{{ $subtitle }}</small>
+                    @endif
+                </div>
+            </div>
             @isset($headerActions)
                 <div class="d-flex align-items-center gap-2">{{ $headerActions }}</div>
             @endisset
         </div>
     @endif
 
-    <div class="vp-card-body">
+    <div class="admin-card__body">
         {{ $slot }}
     </div>
 
     @isset($footer)
-        <div style="padding: 14px 20px; border-top: 1px solid var(--vp-border-sub); background: var(--vp-surface-muted); display: flex; justify-content: flex-end; gap: 8px;">
+        <div class="admin-card__footer">
             {{ $footer }}
         </div>
     @endisset

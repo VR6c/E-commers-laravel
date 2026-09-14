@@ -1,17 +1,17 @@
 {
   "resources/js/app.js": {
-    "file": "assets/app-CP7ew-02.js",
+    "file": "assets/app-DBKeLq54.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
   },
   "resources/sass/admin.scss": {
-    "file": "assets/admin-CS9OF4As.css",
+    "file": "assets/admin-BulLOYVs.css",
     "src": "resources/sass/admin.scss",
     "isEntry": true
   },
   "resources/sass/app.scss": {
-    "file": "assets/app-Czt5BmWN.css",
+    "file": "assets/app-Bj0c73i_.css",
     "src": "resources/sass/app.scss",
     "isEntry": true
   },
@@ -26,13 +26,16 @@
     "isEntry": true
   },
   "resources/views/themes/xylo/js/app.js": {
-    "file": "assets/app-jFvq6utn.js",
+    "file": "assets/app-BBCj5bqu.js",
     "name": "app",
     "src": "resources/views/themes/xylo/js/app.js",
-    "isEntry": true
+    "isEntry": true,
+    "imports": [
+      "resources/views/themes/xylo/js/main.js"
+    ]
   },
   "resources/views/themes/xylo/js/main.js": {
-    "file": "assets/main-FpLbBp4W.js",
+    "file": "assets/main-bIPwQ5i_.js",
     "name": "main",
     "src": "resources/views/themes/xylo/js/main.js",
     "isEntry": true
@@ -44,7 +47,7 @@
     "isEntry": true
   },
   "resources/views/themes/xylo/sass/app.scss": {
-    "file": "assets/app-DuspvuXt.css",
+    "file": "assets/app-CRG7tY0Q.css",
     "src": "resources/views/themes/xylo/sass/app.scss",
     "isEntry": true
   }

@@ -180,8 +180,13 @@ class ProductController extends Controller
     {
         try {
             $vendorId = Auth::guard('vendor')->id();
-            $product  = Product::where('vendor_id', $vendorId)->findOrFail($id);
+            $product  = Product::with('images')->where('vendor_id', $vendorId)->findOrFail($id);
 
+            foreach ($product->images as $image) {
+                if (!\Illuminate\Support\Str::startsWith($image->image_url, ['http://', 'https://'])) {
+                    Storage::disk('public')->delete($image->image_url);
+                }
+            }
             $product->images()->delete();
             $product->variants()->delete();
             DB::table('product_variant_attribute_values')->where('product_id', $product->id)->delete();

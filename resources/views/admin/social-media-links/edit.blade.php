@@ -1,82 +1,78 @@
 @extends('admin.layouts.admin')
 
+@section('title', 'Edit Social Link — Admin')
+
 @section('content')
 
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center">
-            <h4 class="mb-0 fw-bold">{{ 'Edit Social Media Link' }}</h4>
-            <a href="{{ route('admin.social-media-links.index') }}" class="btn btn-outline-secondary shadow-sm">
-                <i class="bi bi-arrow-left me-1"></i> {{ 'Back' }}
-            </a>
-        </div>
-    </div>
-</div>
+<x-admin.page-header
+    :title="'Edit Social Media Link'"
+    :breadcrumbs="['Social Media' => route('admin.social-media-links.index'), 'Edit #' . $socialMediaLink->id => '']">
+    <x-slot:actions>
+        <a href="{{ route('admin.social-media-links.index') }}" class="btn btn-secondary shadow-xs">
+            <i class="bi bi-arrow-left me-1"></i> Back to Links
+        </a>
+    </x-slot:actions>
+</x-admin.page-header>
 
 <form action="{{ route('admin.social-media-links.update', $socialMediaLink->id) }}" method="POST">
     @csrf
     @method('PUT')
 
-    <div class="row">
+    <div class="row g-4">
         <!-- Main Content -->
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <h6 class="fw-bold mb-4">Link Information</h6>
-
-                    @if(session('error'))
-                    <div id="errorBar" class="alert alert-danger" role="alert">{{ session('error') }}</div>
-                    @endif
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="platform" class="form-label fw-semibold">{{ 'Platform' }}</label>
-                            <input type="text" name="platform" id="platform"
-                                class="form-control border-0 bg-light @error('platform') is-invalid @enderror"
-                                value="{{ old('platform', $socialMediaLink->platform) }}" required
-                                placeholder="e.g. Facebook Page">
-                            @error('platform')
+            <x-admin.form-card :title="'Link Details'" :icon="'bi bi-share'">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="platform" class="form-label fw-semibold text-dark">{{ 'Platform Display Label' }} <span class="text-danger">*</span></label>
+                        <input type="text"
+                               name="platform"
+                               id="platform"
+                               class="form-control @error('platform') is-invalid @enderror"
+                               value="{{ old('platform', $socialMediaLink->platform) }}"
+                               required
+                               autofocus>
+                        @error('platform')
                             <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="link" class="form-label fw-semibold">{{ 'Link URL' }}</label>
-                            <input type="url" name="link" id="link"
-                                class="form-control border-0 bg-light @error('link') is-invalid @enderror"
-                                value="{{ old('link', $socialMediaLink->link) }}" required
-                                placeholder="https://facebook.com/yourpage">
-                            @error('link')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                        @enderror
                     </div>
 
-                    <hr class="my-4">
-
-                        <label class="form-label fw-semibold">{{ 'Platform Name' }}</label>
-                        <input type="text" name="name"
-                            class="form-control border-0 bg-light @error('name') is-invalid @enderror"
-                            value="{{ old('name', $socialMediaLink->name ?? '') }}"
-                            required placeholder="Platform name">
-                        @error('name')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                    <div class="col-md-6">
+                        <label for="link" class="form-label fw-semibold text-dark">{{ 'Destination URL' }} <span class="text-danger">*</span></label>
+                        <input type="url"
+                               name="link"
+                               id="link"
+                               class="form-control @error('link') is-invalid @enderror"
+                               value="{{ old('link', $socialMediaLink->link) }}"
+                               required>
+                        @error('link')
+                            <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                    </div>
                 </div>
-            </div>
+
+                <div class="mb-0">
+                    <label class="form-label fw-semibold text-dark">{{ 'Internal Reference / Handle' }}</label>
+                    <input type="text"
+                           name="name"
+                           class="form-control @error('name') is-invalid @enderror"
+                           value="{{ old('name', $socialMediaLink->name ?? '') }}"
+                           required>
+                    @error('name')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </x-admin.form-card>
         </div>
 
         <!-- Sidebar -->
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <h6 class="fw-bold mb-3">Settings</h6>
-
+            <x-admin.form-card :title="'Type & Action'" :icon="'bi bi-gear'">
+                <div class="mb-4">
                     <x-admin.combobox
                         name="type"
                         id="type"
-                        wrapper-class="mb-4"
-                        :label="'Type'"
+                        :label="'Platform Icon Type'"
                         :selected="$socialMediaLink->type"
                         :placeholder="'Select Type'"
                         :placeholder-disabled="true"
@@ -88,14 +84,19 @@
                             'youtube' => 'YouTube',
                             'x' => 'X (Twitter)',
                         ]" />
-
-                    <div class="d-grid pt-2">
-                        <button type="submit" class="btn btn-primary shadow-sm py-2">
-                            <i class="bi bi-save me-1"></i> {{ 'Update Link' }}
-                        </button>
-                    </div>
                 </div>
-            </div>
+
+                <hr class="my-4" style="border-color: var(--border-subtle);">
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary shadow-sm py-2-5">
+                        <i class="bi bi-check-circle-fill me-1"></i> {{ 'Update Link' }}
+                    </button>
+                    <a href="{{ route('admin.social-media-links.index') }}" class="btn btn-secondary py-2">
+                        {{ 'Cancel' }}
+                    </a>
+                </div>
+            </x-admin.form-card>
         </div>
     </div>
 </form>

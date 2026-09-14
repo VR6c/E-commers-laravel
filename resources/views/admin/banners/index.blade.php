@@ -2,9 +2,13 @@
 
 @section('content')
 
-<x-admin.page-header :title="'All Banners'"
+<x-admin.page-header
+    :title="'All Banners'"
+    icon="bi bi-images"
+    :subtitle="'Manage promotional banners, hero sliders and homepage callouts'"
+    :breadcrumbs="['Banners' => '#']"
     :create-route="route('admin.banners.create')"
-    :create-label="'Add New'" />
+    :create-label="'Add Banner'" />
 
 <x-admin.data-card>
     <div class="table-responsive">

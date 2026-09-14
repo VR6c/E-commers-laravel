@@ -135,7 +135,7 @@
                 <article class="xsf-static-page__card">
                     @if ($page->image_url)
                         <div class="xsf-static-page__media">
-                            <img src="{{ asset('storage/' . $page->image_url) }}"
+                            <img src="{{ optimized_image_url($page->image_url) }}"
                                  alt="{{ $title }}" class="img-fluid">
                         </div>
                     @endif
@@ -186,7 +186,7 @@
                 <article class="xsf-static-page__card" style="margin-top:2.5rem;">
                     @if ($page->image_url)
                         <div class="xsf-static-page__media">
-                            <img src="{{ asset('storage/' . $page->image_url) }}"
+                            <img src="{{ optimized_image_url($page->image_url) }}"
                                  alt="{{ $title }}" class="img-fluid">
                         </div>
                     @endif
@@ -231,7 +231,7 @@
                     <article class="xsf-static-page__card">
                         @if ($page->image_url)
                             <div class="xsf-static-page__media">
-                                <img src="{{ asset('storage/' . $page->image_url) }}"
+                                <img src="{{ optimized_image_url($page->image_url) }}"
                                      alt="{{ $title }}" class="img-fluid">
                             </div>
                         @endif
@@ -293,7 +293,7 @@
                 <article class="xsf-static-page__card">
                     @if ($page->image_url)
                         <div class="xsf-static-page__media">
-                            <img src="{{ asset('storage/' . $page->image_url) }}"
+                            <img src="{{ optimized_image_url($page->image_url) }}"
                                  alt="{{ $title }}" class="img-fluid">
                         </div>
                     @endif
@@ -334,7 +334,7 @@
                 <article class="xsf-static-page__card">
                     @if ($page->image_url)
                         <div class="xsf-static-page__media">
-                            <img src="{{ asset('storage/' . $page->image_url) }}"
+                            <img src="{{ optimized_image_url($page->image_url) }}"
                                  alt="{{ $title }}" class="img-fluid">
                         </div>
                     @endif

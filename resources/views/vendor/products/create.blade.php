@@ -8,22 +8,19 @@
 
 @section('content')
 
-<div class="vp-page-header">
-    <div class="vp-page-header__left">
-        <h1 class="vp-page-header__title">
-            <span class="vp-page-header__title-icon"><i class="fas fa-plus-circle"></i></span>
-            Create Product
-        </h1>
-        <p class="vp-page-header__sub">Fill in the details below to add a new product to your store.</p>
-    </div>
-    <div class="vp-page-header__actions">
+<x-admin.page-header
+    :title="'Create Product'"
+    icon="bi bi-plus-circle-fill"
+    :subtitle="'Fill in the details below to add a new product to your store.'"
+    :breadcrumbs="['Products' => route('vendor.products.index'), 'Create' => '#']">
+    <x-slot:actions>
         <a href="{{ route('vendor.products.index') }}"
-           class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2"
-           style="border-radius:8px;font-size:.82rem;">
-            <i class="fas fa-arrow-left"></i> Back to Products
+           class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 shadow-sm"
+           style="border-radius:10px; font-size:.85rem;">
+            <i class="bi bi-arrow-left"></i> Back to Products
         </a>
-    </div>
-</div>
+    </x-slot:actions>
+</x-admin.page-header>
 
 <form action="{{ route('vendor.products.store') }}" method="POST" enctype="multipart/form-data" id="create-product-form">
 @csrf
@@ -34,89 +31,65 @@
     <div class="col-xl-8">
 
         {{-- Basic Info --}}
-        <div class="vp-card mb-4">
-            <div class="vp-card-header">
-                <h6 class="vp-card-header__title">
-                    <span class="vp-card-header__icon"><i class="fas fa-tag"></i></span>
-                    Product Information
-                </h6>
+        <x-admin.form-card :title="'Product Information'" icon="bi bi-tag-fill" class="mb-4">
+            <div class="mb-3">
+                <label class="form-label fw-semibold" for="name">Product Name <span class="text-danger">*</span></label>
+                <input type="text" id="name" name="name"
+                       class="form-control @error('name') is-invalid @enderror"
+                       value="{{ old('name') }}"
+                       placeholder="e.g. Premium Wireless Headphones" required>
+                @error('name')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
-            <div class="vp-card-body">
 
-                <div class="vp-form-group">
-                    <label class="vp-label" for="name">Product Name <span class="required">*</span></label>
-                    <input type="text" id="name" name="name"
-                           class="vp-input @error('name') is-invalid @enderror"
-                           value="{{ old('name') }}"
-                           placeholder="e.g. Premium Wireless Headphones">
-                    @error('name')
-                        <div class="vp-error"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="vp-form-group mb-0">
-                    <label class="vp-label" for="description">Description</label>
-                    <textarea id="description" name="description"
-                              class="vp-input ck-editor @error('description') is-invalid @enderror"
-                              rows="5"
-                              placeholder="Describe your product…">{{ old('description') }}</textarea>
-                    @error('description')
-                        <div class="vp-error"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
-                    @enderror
-                </div>
-
+            <div class="mb-0">
+                <label class="form-label fw-semibold" for="description">Description</label>
+                <textarea id="description" name="description"
+                          class="form-control ck-editor @error('description') is-invalid @enderror"
+                          rows="5"
+                          placeholder="Describe your product…">{{ old('description') }}</textarea>
+                @error('description')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
-        </div>
+        </x-admin.form-card>
 
         {{-- Classification --}}
-        <div class="vp-card mb-4">
-            <div class="vp-card-header">
-                <h6 class="vp-card-header__title">
-                    <span class="vp-card-header__icon"><i class="fas fa-layer-group"></i></span>
-                    Classification
-                </h6>
-            </div>
-            <div class="vp-card-body">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <x-admin.combobox name="category_id" wrapper-class=""
-                            :label="'Category'" :options="$categories"
-                            option-label="name" :selected="old('category_id')" />
-                    </div>
-                    <div class="col-md-6">
-                        <x-admin.combobox name="brand_id" wrapper-class=""
-                            :label="'Brand'" :placeholder="'No Brand'"
-                            :options="$brands" option-label="name"
-                            :selected="old('brand_id')" />
-                    </div>
+        <x-admin.form-card :title="'Classification'" icon="bi bi-diagram-3-fill" class="mb-4">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <x-admin.combobox name="category_id" wrapper-class=""
+                        :label="'Category'" :options="$categories"
+                        option-label="name" :selected="old('category_id')" />
+                </div>
+                <div class="col-md-6">
+                    <x-admin.combobox name="brand_id" wrapper-class=""
+                        :label="'Brand'" :placeholder="'No Brand'"
+                        :options="$brands" option-label="name"
+                        :selected="old('brand_id')" />
                 </div>
             </div>
-        </div>
+        </x-admin.form-card>
 
         {{-- Variants --}}
-        <div class="vp-card mb-4">
-            <div class="vp-card-header">
-                <h6 class="vp-card-header__title">
-                    <span class="vp-card-header__icon"><i class="fas fa-cubes"></i></span>
-                    Product Variants
-                </h6>
-                <span class="badge rounded-pill"
-                      style="background:var(--vp-primary-bg);color:var(--vp-primary);font-size:.72rem;font-weight:700;"
+        <x-admin.form-card :title="'Product Variants'" icon="bi bi-layers-fill" class="mb-4">
+            <x-slot:headerActions>
+                <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 fw-bold"
                       id="variant-count-badge">0 variants</span>
+            </x-slot:headerActions>
+
+            <div id="variants-wrapper"></div>
+            <div class="d-flex align-items-center gap-2 mt-3 pt-2 border-top">
+                <button type="button" id="add-variant-btn" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-2 rounded-pill px-3 shadow-sm">
+                    <i class="bi bi-plus-lg"></i> Add Variant
+                </button>
+                <button type="button" id="remove-variant-btn" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-2 rounded-pill px-3" disabled>
+                    <i class="bi bi-trash"></i> Remove Last
+                </button>
+                <span class="text-muted small ms-2">At least one primary variant is required.</span>
             </div>
-            <div class="vp-card-body">
-                <div id="variants-wrapper"></div>
-                <div class="vp-variant-controls mt-2">
-                    <button type="button" id="add-variant-btn" class="vp-icon-btn vp-icon-btn--add" title="Add Variant">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                    <button type="button" id="remove-variant-btn" class="vp-icon-btn vp-icon-btn--remove" title="Remove last variant" disabled>
-                        <i class="fas fa-trash"></i>
-                    </button>
-                    <span style="font-size:.78rem;color:var(--vp-text-muted);">Add or remove variant rows</span>
-                </div>
-            </div>
-        </div>
+        </x-admin.form-card>
 
     </div>
 
@@ -124,41 +97,31 @@
     <div class="col-xl-4">
 
         {{-- Images --}}
-        <div class="vp-card mb-4">
-            <div class="vp-card-header">
-                <h6 class="vp-card-header__title">
-                    <span class="vp-card-header__icon"><i class="fas fa-images"></i></span>
-                    Images
-                </h6>
+        <x-admin.form-card :title="'Product Images'" icon="bi bi-images" class="mb-4">
+            <div class="vp-upload-zone" id="upload-zone"
+                 onclick="document.getElementById('productImages').click();">
+                <div class="vp-upload-icon"><i class="bi bi-cloud-arrow-up-fill fs-3"></i></div>
+                <p class="vp-upload-label">Click or drag images here</p>
+                <p class="vp-upload-hint">PNG, JPG, WEBP — multiple allowed</p>
             </div>
-            <div class="vp-card-body">
-                <div class="vp-upload-zone" id="upload-zone"
-                     onclick="document.getElementById('productImages').click();">
-                    <div class="vp-upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-                    <p class="vp-upload-label">Click to upload images</p>
-                    <p class="vp-upload-hint">PNG, JPG, WEBP — multiple allowed</p>
-                </div>
-                <input type="file" name="images[]" id="productImages" multiple accept="image/*"
-                       class="d-none" onchange="previewMultipleImages(this)">
-                <div id="productImagesPreview" class="vp-image-grid"></div>
-            </div>
-        </div>
+            <input type="file" name="images[]" id="productImages" multiple accept="image/*"
+                   class="d-none" onchange="previewMultipleImages(this)">
+            <div id="productImagesPreview" class="vp-image-grid"></div>
+        </x-admin.form-card>
 
         {{-- Submit --}}
-        <div class="vp-card">
-            <div class="vp-card-body">
-                <button type="submit" class="vp-btn-save w-100 justify-content-center" id="saveProductBtn">
-                    <span class="spinner-border spinner-border-sm d-none" id="productLoader" role="status"></span>
-                    <i class="fas fa-check-circle" id="saveIcon"></i>
-                    Save Product
-                </button>
-                <a href="{{ route('vendor.products.index') }}"
-                   class="btn btn-light w-100 mt-2 d-flex align-items-center justify-content-center gap-2"
-                   style="border-radius:10px;font-size:.85rem;font-weight:600;border:1.5px solid var(--vp-border);">
-                    <i class="fas fa-times"></i> Cancel
-                </a>
-            </div>
-        </div>
+        <x-admin.form-card class="mb-4">
+            <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 py-2 fw-semibold shadow-sm" id="saveProductBtn" style="border-radius: 10px;">
+                <span class="spinner-border spinner-border-sm d-none" id="productLoader" role="status"></span>
+                <i class="bi bi-check-circle-fill" id="saveIcon"></i>
+                Save Product
+            </button>
+            <a href="{{ route('vendor.products.index') }}"
+               class="btn btn-outline-secondary w-100 mt-2 d-flex align-items-center justify-content-center gap-2 py-2 fw-semibold"
+               style="border-radius:10px;">
+                <i class="bi bi-x-lg"></i> Cancel
+            </a>
+        </x-admin.form-card>
 
     </div>
 </div>
@@ -166,61 +129,64 @@
 
 {{-- Variant template --}}
 <template id="variant-template">
-    <div class="vp-variant-block" data-index="__INDEX__">
-        <div class="vp-variant-header">
-            <div class="vp-variant-title">
-                <i class="fas fa-cube"></i> Variant
-                <span class="vp-variant-badge">#__NUMBER__</span>
+    <div class="vp-variant-block card mb-3 border bg-light shadow-none" data-index="__INDEX__" style="border-radius: 12px;">
+        <div class="card-body p-3">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                <div class="fw-bold text-primary d-flex align-items-center gap-2">
+                    <i class="bi bi-box"></i> Variant <span class="badge bg-primary-subtle text-primary">#__NUMBER__</span>
+                </div>
             </div>
-        </div>
-        <div class="row g-3">
-            <div class="col-md-4">
-                <label class="vp-label">Variant Name</label>
-                <input type="text" name="variants[__INDEX__][name]" class="vp-input" value="__NAME__" placeholder="e.g. Standard">
-            </div>
-            <div class="col-md-4">
-                <label class="vp-label">Price <span class="required">*</span></label>
-                <input type="number" step="0.01" name="variants[__INDEX__][price]" class="vp-input" value="__PRICE__" placeholder="0.00">
-            </div>
-            <div class="col-md-4">
-                <label class="vp-label">Discount Price</label>
-                <input type="number" step="0.01" name="variants[__INDEX__][discount_price]" class="vp-input" value="__DISCOUNT__" placeholder="0.00">
-            </div>
-            <div class="col-md-4">
-                <label class="vp-label">Stock</label>
-                <input type="number" name="variants[__INDEX__][stock]" class="vp-input" value="__STOCK__" placeholder="0">
-            </div>
-            <div class="col-md-4">
-                <label class="vp-label">SKU</label>
-                <input type="text" name="variants[__INDEX__][SKU]" class="vp-input" value="__SKU__" placeholder="SKU-001">
-            </div>
-            <div class="col-md-4">
-                <label class="vp-label">Barcode</label>
-                <input type="text" name="variants[__INDEX__][barcode]" class="vp-input" value="__BARCODE__">
-            </div>
-            <div class="col-md-6">
-                <label class="vp-label">Weight</label>
-                <input type="text" name="variants[__INDEX__][weight]" class="vp-input" value="__WEIGHT__" placeholder="e.g. 0.5kg">
-            </div>
-            <div class="col-md-6">
-                <label class="vp-label">Dimensions</label>
-                <input type="text" name="variants[__INDEX__][dimension]" class="vp-input" value="__DIMENSION__" placeholder="e.g. 10x5x3cm">
-            </div>
-            <div class="col-md-6">
-                <label class="vp-label">Size</label>
-                <select name="variants[__INDEX__][size_id]" class="vp-select">
-                    @foreach($sizes as $size)
-                        <option value="{{ $size->id }}">{{ $size->value }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-6">
-                <label class="vp-label">Color</label>
-                <select name="variants[__INDEX__][color_id]" class="vp-select">
-                    @foreach($colors as $color)
-                        <option value="{{ $color->id }}">{{ $color->value }}</option>
-                    @endforeach
-                </select>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Variant Name</label>
+                    <input type="text" name="variants[__INDEX__][name]" class="form-control form-control-sm" value="__NAME__" placeholder="e.g. Standard" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Price ($) <span class="text-danger">*</span></label>
+                    <input type="number" step="0.01" name="variants[__INDEX__][price]" class="form-control form-control-sm" value="__PRICE__" placeholder="0.00" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Discount Price ($)</label>
+                    <input type="number" step="0.01" name="variants[__INDEX__][discount_price]" class="form-control form-control-sm" value="__DISCOUNT__" placeholder="0.00">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Stock Quantity</label>
+                    <input type="number" name="variants[__INDEX__][stock]" class="form-control form-control-sm" value="__STOCK__" placeholder="0" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">SKU</label>
+                    <input type="text" name="variants[__INDEX__][SKU]" class="form-control form-control-sm" value="__SKU__" placeholder="SKU-001" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Barcode</label>
+                    <input type="text" name="variants[__INDEX__][barcode]" class="form-control form-control-sm" value="__BARCODE__">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Weight</label>
+                    <input type="text" name="variants[__INDEX__][weight]" class="form-control form-control-sm" value="__WEIGHT__" placeholder="e.g. 0.5kg">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Dimensions</label>
+                    <input type="text" name="variants[__INDEX__][dimension]" class="form-control form-control-sm" value="__DIMENSION__" placeholder="e.g. 10x5x3cm">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Size</label>
+                    <select name="variants[__INDEX__][size_id]" class="form-select form-select-sm">
+                        <option value="">Select Size (Optional)</option>
+                        @foreach($sizes as $size)
+                            <option value="{{ $size->id }}">{{ $size->value }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Color</label>
+                    <select name="variants[__INDEX__][color_id]" class="form-select form-select-sm">
+                        <option value="">Select Color (Optional)</option>
+                        @foreach($colors as $color)
+                            <option value="{{ $color->id }}">{{ $color->value }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
         </div>
     </div>
@@ -316,7 +282,7 @@ function previewMultipleImages(input) {
             thumb.className = 'vp-image-thumb';
             thumb.innerHTML = `<img src="${e.target.result}" alt="">
                 <button type="button" class="vp-image-thumb__remove" onclick="removePreviewImage(${idx})">
-                    <i class="fas fa-times"></i>
+                    <i class="bi bi-x-lg"></i>
                 </button>`;
             preview.appendChild(thumb);
         };

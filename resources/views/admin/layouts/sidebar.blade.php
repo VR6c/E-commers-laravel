@@ -164,26 +164,74 @@
                     </ul>
                 </li>
 
-                {{-- Coupons --}}
-                <li class="nav-item">
-                    <a href="{{ route('admin.coupons.index') }}"
-                       class="nav-link {{ Route::currentRouteName() == 'admin.coupons.index' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-ticket-alt"></i>
-                        <p>Coupons</p>
+                {{-- Product Variants --}}
+                @php $variantsActive = in_array(Route::currentRouteName(), ['admin.product_variants.create','admin.product_variants.index','admin.product_variants.edit']); @endphp
+                <li class="nav-item {{ $variantsActive ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ $variantsActive ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-layer-group"></i>
+                        <p>Product Variants <i class="right fas fa-angle-left"></i></p>
                     </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.product_variants.create') }}"
+                               class="nav-link {{ Route::currentRouteName() == 'admin.product_variants.create' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add New</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.product_variants.index') }}"
+                               class="nav-link {{ Route::currentRouteName() == 'admin.product_variants.index' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>All Variants</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {{-- Coupons --}}
+                @php $couponsActive = in_array(Route::currentRouteName(), ['admin.coupons.create','admin.coupons.index','admin.coupons.edit']); @endphp
+                <li class="nav-item {{ $couponsActive ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ $couponsActive ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-ticket-alt"></i>
+                        <p>Coupons <i class="right fas fa-angle-left"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.coupons.create') }}"
+                               class="nav-link {{ Route::currentRouteName() == 'admin.coupons.create' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add New</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.coupons.index') }}"
+                               class="nav-link {{ Route::currentRouteName() == 'admin.coupons.index' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>All Coupons</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
                 {{-- ─── USERS ───────────────────────────────────── --}}
                 <li class="nav-header">USERS</li>
 
                 {{-- Customers --}}
-                @php $custsActive = in_array(Route::currentRouteName(), ['admin.customers.index','admin.customers.create']); @endphp
+                @php $custsActive = in_array(Route::currentRouteName(), ['admin.customers.index','admin.customers.create','admin.customers.edit']); @endphp
                 <li class="nav-item {{ $custsActive ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ $custsActive ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users"></i>
                         <p>Customers <i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.customers.create') }}"
+                               class="nav-link {{ Route::currentRouteName() == 'admin.customers.create' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add New</p>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.customers.index') }}"
                                class="nav-link {{ Route::currentRouteName() == 'admin.customers.index' ? 'active' : '' }}">
@@ -195,7 +243,7 @@
                 </li>
 
                 {{-- Vendors --}}
-                @php $vendsActive = in_array(Route::currentRouteName(), ['admin.vendors.index','admin.vendors.create']); @endphp
+                @php $vendsActive = in_array(Route::currentRouteName(), ['admin.vendors.index','admin.vendors.create','admin.vendors.edit']); @endphp
                 <li class="nav-item {{ $vendsActive ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ $vendsActive ? 'active' : '' }}">
                         <i class="nav-icon fas fa-store"></i>
@@ -214,6 +262,31 @@
                                class="nav-link {{ Route::currentRouteName() == 'admin.vendors.index' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>All Vendors</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {{-- Shops --}}
+                @php $shopsActive = in_array(Route::currentRouteName(), ['admin.shops.create','admin.shops.index','admin.shops.edit']); @endphp
+                <li class="nav-item {{ $shopsActive ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ $shopsActive ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-shop"></i>
+                        <p>Shops <i class="right fas fa-angle-left"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.shops.create') }}"
+                               class="nav-link {{ Route::currentRouteName() == 'admin.shops.create' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add New</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.shops.index') }}"
+                               class="nav-link {{ Route::currentRouteName() == 'admin.shops.index' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>All Shops</p>
                             </a>
                         </li>
                     </ul>
@@ -429,6 +502,31 @@
 
                 {{-- ─── SETTINGS ────────────────────────────────── --}}
                 <li class="nav-header">SETTINGS</li>
+
+                {{-- Currencies --}}
+                @php $currActive = in_array(Route::currentRouteName(), ['admin.currencies.create','admin.currencies.index','admin.currencies.edit']); @endphp
+                <li class="nav-item {{ $currActive ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ $currActive ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-coins"></i>
+                        <p>Currencies <i class="right fas fa-angle-left"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.currencies.create') }}"
+                               class="nav-link {{ Route::currentRouteName() == 'admin.currencies.create' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add New</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.currencies.index') }}"
+                               class="nav-link {{ Route::currentRouteName() == 'admin.currencies.index' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>All Currencies</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
 
                 {{-- Site Settings --}}
                 @php $settingsActive = Route::currentRouteName() == 'admin.site-settings.index' || Route::currentRouteName() == 'admin.site-settings.edit'; @endphp

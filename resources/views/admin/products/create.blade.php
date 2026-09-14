@@ -1,181 +1,175 @@
 @extends('admin.layouts.admin')
 
+@section('title', 'Create Product — Admin')
+
 @section('content')
 
-<div class="row">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="mb-0 fw-bold">{{ 'Create Product' }}</h4>
-            <a href="{{ route('admin.products.index') }}" class="btn btn-light shadow-sm">
-                <i class="bi bi-arrow-left me-1"></i> {{ 'Back' }}
-            </a>
-        </div>
-    </div>
-</div>
+<x-admin.page-header
+    :title="'Create Product'"
+    :breadcrumbs="['Products' => route('admin.products.index'), 'Create' => '']">
+    <x-slot:actions>
+        <a href="{{ route('admin.products.index') }}" class="btn btn-secondary shadow-xs">
+            <i class="bi bi-arrow-left me-1"></i> Back to Products
+        </a>
+    </x-slot:actions>
+</x-admin.page-header>
 
 <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
-    <div class="row">
+    <div class="row g-4">
         {{-- Main Content Column --}}
         <div class="col-lg-8">
-            <div class="card mb-4 border-0 shadow-sm">
-                <div class="card-body p-4">
-                    {{-- Product Name --}}
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold text-dark">{{ 'Product Name' }}</label>
-                        <input type="text" name="name"
-                            class="form-control border-0 bg-light @error('name') is-invalid @enderror"
-                            value="{{ old('name') }}"
-                            placeholder="Electronic device, etc.">
-                        @error('name')
+            <x-admin.form-card :title="'Product Information'" :icon="'bi bi-box-seam'" class="mb-4">
+                {{-- Product Name --}}
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-dark">{{ 'Product Name' }} <span class="text-danger">*</span></label>
+                    <input type="text"
+                           name="name"
+                           class="form-control @error('name') is-invalid @enderror"
+                           value="{{ old('name') }}"
+                           placeholder="e.g. Wireless Noise Canceling Headphones"
+                           required
+                           autofocus>
+                    @error('name')
                         <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    {{-- Description --}}
-                    <div class="mb-0">
-                        <label class="form-label fw-semibold text-dark">{{ 'Description' }}</label>
-                        <textarea name="description"
-                            class="form-control border-0 bg-light ck-editor @error('description') is-invalid @enderror"
-                            rows="10">{{ old('description') }}</textarea>
-                        @error('description')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                    @enderror
                 </div>
-            </div>
+
+                {{-- Description --}}
+                <div class="mb-0">
+                    <label class="form-label fw-semibold text-dark">{{ 'Description' }}</label>
+                    <textarea name="description"
+                              class="form-control ck-editor @error('description') is-invalid @enderror"
+                              rows="8"
+                              placeholder="Full product overview, features, specifications...">{{ old('description') }}</textarea>
+                    @error('description')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </x-admin.form-card>
 
             {{-- Variants Card --}}
-            <div class="card mb-4 border-0 shadow-sm">
-                <div class="card-header bg-white border-bottom-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
-                    <h6 class="fw-bold mb-0">{{ 'Variants' }}</h6>
-                    <div class="btn-group">
-                        <button type="button" id="add-variant-btn"
-                            class="btn btn-primary d-flex align-items-center btn-sm ms-2">
-                            <i class="bi bi-plus-lg me-1"></i> {{ 'Add Variant' }}
-                        </button>
+            <x-admin.form-card :title="'Product Variants'" :icon="'bi bi-layers'" class="mb-4">
+                <x-slot:headerActions>
+                    <button type="button" id="add-variant-btn" class="btn btn-primary btn-sm shadow-xs">
+                        <i class="bi bi-plus-lg me-1"></i> {{ 'Add Variant' }}
+                    </button>
+                </x-slot:headerActions>
+
+                <div id="variants-wrapper"></div>
+
+                <div id="no-variants-msg" class="text-center py-4">
+                    <div class="mb-2 text-muted opacity-50" style="font-size: 2.2rem;">
+                        <i class="bi bi-layers"></i>
                     </div>
+                    <p class="text-muted small mb-0">{{ 'No variants added yet. Click \'Add Variant\' above to configure price, SKU, size, or color.' }}</p>
                 </div>
-                <div class="card-body p-4 pt-2">
-                    <div id="variants-wrapper"></div>
-                    <div id="no-variants-msg" class="text-center py-5">
-                        <div class="mb-3">
-                            <i class="bi bi-layers text-light display-1"></i>
-                        </div>
-                        <p class="text-muted">{{ 'Click \'Add Variant\' to add product variants.' }}</p>
-                    </div>
-                </div>
-            </div>
+            </x-admin.form-card>
         </div>
 
         {{-- Sidebar Column --}}
         <div class="col-lg-4">
             {{-- Organization Card --}}
-            <div class="card mb-4 border-0 shadow-sm">
-                <div class="card-header bg-white border-bottom-0 pt-4 px-4 pb-0">
-                    <h6 class="fw-bold mb-0">{{ 'Organization' }}</h6>
-                </div>
-                <div class="card-body p-4">
-                    <x-admin.combobox
-                        name="category_id"
-                        wrapper-class="mb-4"
-                        :label="'Category'"
-                        :options="$categories"
-                        option-label="name" />
+            <x-admin.form-card :title="'Organization'" :icon="'bi bi-tags'" class="mb-4">
+                <x-admin.combobox
+                    name="category_id"
+                    wrapper-class="mb-3"
+                    :label="'Category'"
+                    :options="$categories"
+                    option-label="name" />
 
-                    <x-admin.combobox
-                        name="brand_id"
-                        wrapper-class="mb-4"
-                        :label="'Brand'"
-                        :placeholder="'No Brand'"
-                        :options="$brands"
-                        option-label="name" />
+                <x-admin.combobox
+                    name="brand_id"
+                    wrapper-class="mb-3"
+                    :label="'Brand'"
+                    :placeholder="'No Brand'"
+                    :options="$brands"
+                    option-label="name" />
 
-                    <x-admin.combobox
-                        name="vendor_id"
-                        wrapper-class="mb-0"
-                        :label="'Vendor'"
-                        :placeholder="'Select Vendor'"
-                        :options="$vendors" />
-                </div>
-            </div>
+                <x-admin.combobox
+                    name="vendor_id"
+                    wrapper-class="mb-0"
+                    :label="'Vendor'"
+                    :placeholder="'Select Vendor'"
+                    :options="$vendors" />
+            </x-admin.form-card>
 
             {{-- Media Card --}}
-            <div class="card mb-4 border-0 shadow-sm">
-                <div class="card-header bg-white border-bottom-0 pt-4 px-4 pb-0">
-                    <h6 class="fw-bold mb-0">{{ 'Images' }}</h6>
-                </div>
-                <div class="card-body p-4">
-                    <div id="image-previews" class="row g-2 mb-3"></div>
-                    <label class="btn btn-outline-light border-dashed text-primary w-100 py-4 d-flex flex-column align-items-center">
-                        <i class="bi bi-cloud-arrow-up fs-2 mb-2"></i>
-                        <span>{{ 'Upload Images' }}</span>
-                        <input type="file" name="images[]" multiple class="d-none" id="product-images">
-                    </label>
-                </div>
-            </div>
+            <x-admin.form-card :title="'Product Gallery'" :icon="'bi bi-images'" class="mb-4">
+                <div id="image-previews" class="row g-2 mb-3"></div>
+                <label class="border rounded-3 p-3 text-center d-flex flex-column align-items-center justify-content-center w-100 transition-all"
+                       style="background: var(--neutral-50); border: 2px dashed var(--neutral-300) !important; cursor: pointer;">
+                    <i class="bi bi-cloud-arrow-up fs-2 text-primary mb-1"></i>
+                    <span class="fw-semibold text-dark small mb-1">{{ 'Upload Product Images' }}</span>
+                    <span class="text-muted" style="font-size: 0.72rem;">Multi-file selection supported</span>
+                    <input type="file" name="images[]" multiple class="d-none" id="product-images" accept="image/*">
+                </label>
+            </x-admin.form-card>
 
-            {{-- Submit Card --}}
-            <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)">
-                <div class="card-body p-4 text-center">
-                    <button type="submit" class="btn btn-light w-100 py-3 fw-bold text-primary">
-                        <i class="bi bi-check-circle-fill me-2"></i> {{ 'Save Product' }}
+            {{-- Publish Card --}}
+            <x-admin.form-card :title="'Publishing'" :icon="'bi bi-send-check'">
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary shadow-sm py-2-5">
+                        <i class="bi bi-check-circle-fill me-1"></i> {{ 'Save Product' }}
                     </button>
-                    <p class="text-white opacity-75 small mt-3 mb-0">{{ 'Changes will be saved immediately.' }}</p>
+                    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary py-2">
+                        {{ 'Cancel' }}
+                    </a>
                 </div>
-            </div>
+            </x-admin.form-card>
         </div>
     </div>
 </form>
 
 {{-- Variant Template --}}
 <template id="variant-template">
-    <div class="variant-item border-0 rounded-3 p-4 mb-3 position-relative bg-light" data-index="__INDEX__">
+    <div class="variant-item border rounded-3 p-3 mb-3 position-relative" style="background: #ffffff; border-color: var(--border-color) !important;" data-index="__INDEX__">
         <button type="button"
-            class="btn btn-link link-danger p-0 position-absolute top-0 end-0 mt-3 me-3 remove-variant-item">
-            <i class="bi bi-x-circle fs-5"></i>
+            class="btn btn-sm btn-light text-danger border-0 p-1 position-absolute top-0 end-0 mt-2 me-2 remove-variant-item"
+            title="Remove variant">
+            <i class="bi bi-trash3-fill"></i>
         </button>
+
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill">
+                <i class="bi bi-tag-fill me-1"></i> Variant #<span class="variant-number">__INDEX__</span>
+            </span>
+        </div>
+
         <div class="row g-3">
-            <div class="col-12">
-                <h6 class="fw-bold text-primary mb-3"><i class="bi bi-tag-fill me-2"></i>{{ 'Variant #' . '' }}<span class="variant-number">__INDEX__</span></h6>
-            </div>
             <div class="col-md-6">
-                <label class="form-label fw-semibold text-dark">{{ 'Variant Name' }}</label>
-                <input type="text" name="variants[__INDEX__][name]" class="form-control border-0 bg-white" value="__NAME__" placeholder="e.g. XL - Red" />
-                <div class="invalid-feedback variant-name-error"></div>
+                <label class="form-label fw-semibold text-dark small mb-1">{{ 'Variant Name' }}</label>
+                <input type="text" name="variants[__INDEX__][name]" class="form-control form-control-sm" value="__NAME__" placeholder="e.g. XL - Midnight Black" />
             </div>
             <div class="col-md-3">
-                <label class="form-label fw-semibold text-dark">{{ 'Price' }}</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-0">$</span>
-                    <input type="number" step="0.01" name="variants[__INDEX__][price]" class="form-control border-0 bg-white" value="__PRICE__" />
-                </div>
-                <div class="invalid-feedback variant-price-error"></div>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label fw-semibold text-dark">{{ 'Discount Price' }}</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-0">$</span>
-                    <input type="number" step="0.01" name="variants[__INDEX__][discount_price]" class="form-control border-0 bg-white" value="__DISCOUNT__" />
+                <label class="form-label fw-semibold text-dark small mb-1">{{ 'Price' }}</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">$</span>
+                    <input type="number" step="0.01" name="variants[__INDEX__][price]" class="form-control" value="__PRICE__" />
                 </div>
             </div>
             <div class="col-md-3">
-                <label class="form-label fw-semibold text-dark">{{ 'Stock' }}</label>
-                <input type="number" name="variants[__INDEX__][stock]" class="form-control border-0 bg-white" value="__STOCK__" />
-                <div class="invalid-feedback variant-stock-error"></div>
+                <label class="form-label fw-semibold text-dark small mb-1">{{ 'Discount Price' }}</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">$</span>
+                    <input type="number" step="0.01" name="variants[__INDEX__][discount_price]" class="form-control" value="__DISCOUNT__" />
+                </div>
             </div>
             <div class="col-md-3">
-                <label class="form-label fw-semibold text-dark">{{ 'SKU' }}</label>
-                <input type="text" name="variants[__INDEX__][SKU]" class="form-control border-0 bg-white" value="__SKU__" />
-                <div class="invalid-feedback variant-sku-error"></div>
+                <label class="form-label fw-semibold text-dark small mb-1">{{ 'Stock Qty' }}</label>
+                <input type="number" name="variants[__INDEX__][stock]" class="form-control form-control-sm" value="__STOCK__" />
             </div>
             <div class="col-md-3">
-                <label class="form-label fw-semibold text-dark">{{ 'Barcode' }}</label>
-                <input type="text" name="variants[__INDEX__][barcode]" class="form-control border-0 bg-white" value="__BARCODE__" />
+                <label class="form-label fw-semibold text-dark small mb-1">{{ 'SKU' }}</label>
+                <input type="text" name="variants[__INDEX__][SKU]" class="form-control form-control-sm" value="__SKU__" />
             </div>
             <div class="col-md-3">
-                <label class="form-label fw-semibold text-dark">{{ 'Size' }}</label>
-                <select name="variants[__INDEX__][size_id]" class="form-select border-0 bg-white">
+                <label class="form-label fw-semibold text-dark small mb-1">{{ 'Barcode' }}</label>
+                <input type="text" name="variants[__INDEX__][barcode]" class="form-control form-control-sm" value="__BARCODE__" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold text-dark small mb-1">{{ 'Size' }}</label>
+                <select name="variants[__INDEX__][size_id]" class="form-select form-select-sm">
                     <option value="">{{ 'No Size' }}</option>
                     @foreach($sizes as $size)
                     <option value="{{ $size->id }}">{{ $size->value }}</option>
@@ -183,18 +177,18 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label class="form-label fw-semibold text-dark">{{ 'Color' }}</label>
-                <select name="variants[__INDEX__][color_id]" class="form-select border-0 bg-white">
+                <label class="form-label fw-semibold text-dark small mb-1">{{ 'Color' }}</label>
+                <select name="variants[__INDEX__][color_id]" class="form-select form-select-sm">
                     <option value="">{{ 'No Color' }}</option>
                     @foreach($colors as $color)
                     <option value="{{ $color->id }}">{{ $color->value }}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <div class="form-check form-switch mb-2">
+            <div class="col-md-3 d-flex align-items-center pt-3">
+                <div class="form-check form-switch mb-0">
                     <input class="form-check-input" type="radio" name="primary_variant" value="__INDEX__" id="primary__INDEX__">
-                    <label class="form-check-label" for="primary__INDEX__">{{ 'Primary' }}</label>
+                    <label class="form-check-label small fw-semibold text-dark" for="primary__INDEX__">{{ 'Primary Variant' }}</label>
                 </div>
             </div>
         </div>
@@ -252,7 +246,7 @@ $(document).ready(function() {
         for (let i = 0; i < files.length; i++) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                container.append(`<div class="col-4"><div class="position-relative"><img src="${e.target.result}" class="img-fluid rounded border" style="height: 80px; width: 100%; object-fit: cover;"></div></div>`);
+                container.append(`<div class="col-4"><div class="position-relative"><img src="${e.target.result}" class="img-fluid rounded-3 border shadow-xs" style="height: 80px; width: 100%; object-fit: cover;"></div></div>`);
             };
             reader.readAsDataURL(files[i]);
         }

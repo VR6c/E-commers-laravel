@@ -5,7 +5,7 @@
     var LENGTH_CONTAINER = '.dt-length, .dataTables_length';
 
     function isLengthMenu(el) {
-        return !!el.closest(LENGTH_CONTAINER);
+        return !!el.closest(LENGTH_CONTAINER) || el.classList.contains('dt-input');
     }
 
     function shouldEnhance(el) {
@@ -37,17 +37,31 @@
         var lengthMenu = isLengthMenu(el);
         var settings = {
             create: false,
-            allowEmptyOption: true,
-            placeholder: lengthMenu ? null : resolvePlaceholder(el),
+            allowEmptyOption: false,
             sortField: [{ field: '$order' }],
-            searchField: (!lengthMenu && shouldSearch(el)) ? ['text'] : [],
+            searchField: ['text', 'value'],
             maxOptions: null,
+            dropdownParent: 'body',
         };
 
         if (lengthMenu) {
-            settings.onChange = function () {
-                el.dispatchEvent(new Event('change', { bubbles: true }));
+            settings.controlInput = null;
+            settings.placeholder = null;
+            settings.dropdownClass = 'ts-dropdown ts-length-dropdown';
+            settings.onChange = function (val) {
+                if (window.jQuery) {
+                    window.jQuery(el).val(val).trigger('change');
+                } else {
+                    el.value = val;
+                    el.dispatchEvent(new Event('change', { bubbles: true }));
+                }
             };
+        } else {
+            settings.placeholder = resolvePlaceholder(el);
+            settings.allowEmptyOption = true;
+            if (!shouldSearch(el)) {
+                settings.controlInput = null;
+            }
         }
 
         try {
@@ -55,6 +69,12 @@
             el.dataset.tsInit = '1';
             if (lengthMenu && ts && ts.wrapper) {
                 ts.wrapper.classList.add('ts-length');
+                // Ensure clicking anywhere on the custom length control opens the dropdown
+                ts.control.addEventListener('click', function () {
+                    if (!ts.isOpen) {
+                        ts.open();
+                    }
+                });
             }
         } catch (e) {
             if (window.console) {

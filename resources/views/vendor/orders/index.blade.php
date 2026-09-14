@@ -8,9 +8,13 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Orders'" />
+<x-admin.page-header
+    :title="'Orders'"
+    icon="bi bi-bag-check-fill"
+    :subtitle="'View customer purchases and fulfillment status for your products'"
+    :breadcrumbs="['Orders' => '#']" />
 
-<x-admin.data-card>
+<x-admin.data-card label="Vendor Orders Table">
     <div class="table-responsive">
         <table id="orders-table" class="table align-middle">
             <thead>
@@ -30,16 +34,15 @@
 <x-admin.delete-modal
     id="deleteOrderModal"
     confirm-id="confirmDeleteOrder"
-    :title="'Confirm Delete'"
-    :message="'Are you sure you want to delete this order?'"
-    :confirm-label="'Delete'"
+    :title="'Remove Order Items'"
+    :message="'Are you sure you want to remove your items from this order? If other vendors have items in this order, their items will remain intact.'"
+    :confirm-label="'Remove Items'"
     :cancel-label="'Cancel'" />
 
 @endsection
 
 @section('js')
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-@php $datatableLang = null; @endphp
 
 <script>
 $(function () {
@@ -67,30 +70,40 @@ $(function () {
             },
             {
                 data: 'status', name: 'status',
-                render: d => {
-                    const cls = d ? d.toLowerCase() : '';
-                    return `<span class="vp-status-badge ${cls}">${d ?? '—'}</span>`;
-                }
+                orderable: false, searchable: false
             },
             {
                 data: 'total_price', name: 'total_price',
                 orderable: false, searchable: false,
-                render: d => `<span class="fw-semibold">${d}</span>`
+                render: d => `<span class="fw-semibold text-primary">${d}</span>`
             },
             {
                 data: 'action', orderable: false, searchable: false,
-                render: (data, type, row) =>
+                className: 'text-end',
+                render: (data, type, row) => data ||
                     `<div class="dt-actions">
+                        <a href="/vendor/orders/${row.id}"
+                           class="btn-action btn-action-view" title="View Details">
+                            <i class="bi bi-eye-fill"></i>
+                        </a>
                         <button type="button"
                                 class="btn-action btn-action-delete"
-                                onclick="deleteOrder(${row.id})" title="Delete">
+                                onclick="deleteOrder(${row.id})" title="Remove Items">
                             <i class="bi bi-trash-fill"></i>
                         </button>
                     </div>`
             }
         ],
         pageLength: 10,
-        language: @json($datatableLang)
+        language: {
+            search: '',
+            searchPlaceholder: 'Search orders…',
+            lengthMenu: 'Show _MENU_',
+            zeroRecords: 'No matching orders found.',
+            info: 'Showing _START_–_END_ of _TOTAL_ entries',
+            infoEmpty: 'No orders available',
+            infoFiltered: '(filtered from _MAX_ total)',
+        }
     });
 });
 
@@ -109,14 +122,14 @@ function deleteOrder(id) {
                     $('#deleteOrderModal').modal('hide');
                     if (response.success) {
                         $('#orders-table').DataTable().ajax.reload();
-                        showToast('success', response.message ?? 'Order deleted successfully.');
+                        showToast('success', response.message ?? 'Order items removed successfully.');
                     } else {
-                        showToast('error', response.message ?? 'Failed to delete order.');
+                        showToast('error', response.message ?? 'Failed to remove order items.');
                     }
                 },
                 error: function () {
                     $('#deleteOrderModal').modal('hide');
-                    showToast('error', 'An error occurred while deleting the order.');
+                    showToast('error', 'An error occurred while removing order items.');
                 }
             });
         }

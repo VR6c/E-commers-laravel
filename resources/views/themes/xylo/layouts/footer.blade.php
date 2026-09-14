@@ -4,12 +4,14 @@
 
             {{-- Brand + blurb + social --}}
             <div class="col-12 col-lg-4">
-                <img src="{{ getSiteLogo() }}"
-                     onerror="this.onerror=null; this.style.display='none';"
-                     alt="{{ config('app.name') }} logo"
-                     class="xsf-footer__logo"
-                     width="160" height="40"
-                     style="aspect-ratio: 4/1; object-fit: contain;">
+                <a href="{{ route('xylo.home') }}" class="xsf-footer__brand" aria-label="{{ config('app.name') }}">
+                    <img src="{{ getSiteLogo() }}"
+                         onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode(config('app.name', 'Store')) }}&background=6366f1&color=fff&size=100';"
+                         alt="{{ config('app.name') }} logo"
+                         class="xsf-footer__logo"
+                         height="44"
+                         style="object-fit: contain;">
+                </a>
                 <p class="xsf-footer__blurb">{{ 'Quality products, delivered with care.' }}</p>
 
                 {{-- Social --}}

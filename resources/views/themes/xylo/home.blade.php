@@ -9,7 +9,7 @@
 @section('content')
     @php $currency = activeCurrency(); @endphp
 
-    {{-- Hero / Banner --}}
+    {{-- Hero / Banner Slider --}}
     <section class="xsf-hero">
         <div class="container">
             <div class="banner-slider xsf-hero__slider">
@@ -17,14 +17,19 @@
                     <div>
                         <div class="row align-items-center xsf-hero__slide">
                             <div class="col-lg-6">
-                                <span class="xsf-hero__eyebrow">{{ 'New Arrivals' }}</span>
+                                <span class="xsf-hero__eyebrow">
+                                    <i class="fa-solid fa-sparkles me-1"></i> {{ 'New Collection' }}
+                                </span>
                                 <h1 class="xsf-hero__title">
                                     {{ $banner->title }}
                                 </h1>
-                                <p class="xsf-hero__text">{{ 'Discover our latest collection of premium products.' }}</p>
-                                <a href="{{ route('shop.index') }}" class="btn btn-primary btn-pill btn-lg">
-                                    {{ 'Shop Now' }}
-                                </a>
+                                <p class="xsf-hero__text">{{ 'Discover our latest collection of premium products, designed for your lifestyle.' }}</p>
+                                <div class="xsf-hero__cta-row">
+                                    <a href="{{ route('shop.index') }}" class="btn btn-primary btn-pill btn-lg">
+                                        <span>{{ 'Shop Now' }}</span>
+                                        <i class="fa-solid fa-arrow-right ms-2"></i>
+                                    </a>
+                                </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="xsf-hero__media">
@@ -33,7 +38,7 @@
                                         class="img-fluid"
                                         width="600"
                                         height="420"
-                                        style="aspect-ratio: 10/7; object-fit: contain;"
+                                        style="aspect-ratio: 10/7; object-fit: cover;"
                                         @if ($index === 0)
                                             fetchpriority="high"
                                             loading="eager"
@@ -51,39 +56,37 @@
         </div>
     </section>
 
-    {{-- Categories --}}
+    {{-- Popular Categories --}}
     <section class="xsf-section">
         <div class="container">
             <div class="xsf-section__head">
-                <h2 class="xsf-section__title sec-heading">{{ 'Explore Popular Categories' }}</h2>
+                <div>
+                    <span class="xsf-section__eyebrow">{{ 'Browse By' }}</span>
+                    <h2 class="xsf-section__title sec-heading">{{ 'Explore Popular Categories' }}</h2>
+                </div>
+                <a href="{{ route('shop.index') }}" class="xsf-section-link">
+                    <span>{{ 'View All Categories' }}</span>
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                </a>
             </div>
             <div class="category-slider xsf-category-slider">
                 @foreach ($categories as $category)
                     <div>
-                        <a href="{{ route('category.show', $category->slug) }}" class="xsf-category-card">
-                            <span class="xsf-category-card__img">
-                                <img src="{{ optimized_image_url($category->image_url ?? 'default.jpg') }}"
-                                    onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&auto=format&fit=crop&q=80';"
-                                    loading="lazy"
-                                    decoding="async"
-                                    width="100"
-                                    height="100"
-                                    style="aspect-ratio: 1/1; object-fit: contain;"
-                                    alt="{{ $category->name ?? 'Category' }}">
-                            </span>
-                            <span class="xsf-category-card__name">{{ $category->name ?? 'Category' }}</span>
-                        </a>
+                        <x-store.category-card :category="$category" />
                     </div>
                 @endforeach
             </div>
         </div>
     </section>
 
-    {{-- Trending (slider) --}}
-    <section class="xsf-section">
+    {{-- Trending Products (Slider) --}}
+    <section class="xsf-section xsf-section--bg-soft">
         <div class="container position-relative">
             <div class="xsf-section__head">
-                <h2 class="xsf-section__title sec-heading">{{ 'Trending Products' }}</h2>
+                <div>
+                    <span class="xsf-section__eyebrow">{{ 'Top Picks' }}</span>
+                    <h2 class="xsf-section__title sec-heading">{{ 'Trending Products' }}</h2>
+                </div>
                 <div class="custom-arrows xsf-slider-arrows">
                     <button class="prev" aria-label="{{ 'Previous' }}"><i class="fa-solid fa-chevron-left"></i></button>
                     <button class="next" aria-label="{{ 'Next' }}"><i class="fa-solid fa-chevron-right"></i></button>
@@ -92,137 +95,79 @@
             <div class="product-slider xsf-product-slider">
                 @foreach ($products as $product)
                     <div>
-                        @include('themes.xylo.partials.product-card', ['product' => $product, 'currency' => $currency])
+                        <x-store.product-card :product="$product" :currency="$currency" :wishlist-ids="$wishlistIds" />
                     </div>
                 @endforeach
             </div>
         </div>
     </section>
 
-    {{-- Featured (grid) --}}
+    {{-- Featured Products (Grid) --}}
     <section class="xsf-section">
         <div class="container">
             <div class="xsf-section__head">
-                <h2 class="xsf-section__title sec-heading">{{ 'Featured Products' }}</h2>
+                <div>
+                    <span class="xsf-section__eyebrow">{{ 'Curated' }}</span>
+                    <h2 class="xsf-section__title sec-heading">{{ 'Featured Products' }}</h2>
+                </div>
+                <a href="{{ route('shop.index') }}" class="xsf-section-link">
+                    <span>{{ 'See All Products' }}</span>
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                </a>
             </div>
             <div class="row g-4">
                 @foreach ($products as $product)
-                    <div class="col-6 col-lg-3">
-                        @include('themes.xylo.partials.product-card', ['product' => $product, 'currency' => $currency])
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <x-store.product-card :product="$product" :currency="$currency" :wishlist-ids="$wishlistIds" />
                     </div>
                 @endforeach
             </div>
             <div class="text-center mt-5">
-                <a href="{{ route('shop.index') }}" class="btn btn-outline-primary btn-pill">{{ 'View All' }}</a>
+                <a href="{{ route('shop.index') }}" class="btn btn-outline-primary btn-pill px-5 py-3">
+                    <span>{{ 'Explore All Products' }}</span>
+                    <i class="fa-solid fa-arrow-right ms-2"></i>
+                </a>
             </div>
         </div>
     </section>
 
-    {{-- Why choose us --}}
+    {{-- Why Choose Us (Features) --}}
     <section class="xsf-section xsf-features">
         <div class="container">
-            <div class="xsf-section__head">
-                <h2 class="xsf-section__title sec-heading">{{ 'Why Choose Us' }}</h2>
+            <div class="xsf-section__head text-center d-block">
+                <span class="xsf-section__eyebrow">{{ 'Our Commitment' }}</span>
+                <h2 class="xsf-section__title sec-heading d-block">{{ 'Why Choose Us' }}</h2>
             </div>
-            <div class="row g-4">
-                @php
-                    $features = [
-                        ['img' => 'https://i.ibb.co/WNQXhLnP/choose-icon1.png', 'title' => 'Fast Delivery', 'text' => 'Get your orders delivered quickly and reliably.'],
-                        ['img' => 'https://i.ibb.co/FkmgGPrr/choose-icon2.png', 'title' => '24/7 Support', 'text' => 'Our team is always here to help you.'],
-                        ['img' => 'https://i.ibb.co/CffNqX9/choose-icon3.png', 'title' => 'Trusted Worldwide', 'text' => 'Thousands of happy customers around the globe.'],
-                        ['img' => 'https://i.ibb.co/XPvjQGG/choose-icon4.png', 'title' => '10+ Years of Service', 'text' => 'A decade of delivering quality and excellence.'],
-                    ];
-                @endphp
-                @foreach ($features as $feature)
-                    <div class="col-6 col-lg-3">
-                        <div class="xsf-feature">
-                            <div class="xsf-feature__icon">
-                                <img src="{{ $feature['img'] }}" alt="" aria-hidden="true" width="48" height="48" loading="lazy" decoding="async" style="aspect-ratio: 1/1; object-fit: contain;">
-                            </div>
-                            <h3 class="xsf-feature__title">{{ $feature['title'] }}</h3>
-                            <p class="xsf-feature__text">{{ $feature['text'] }}</p>
-                        </div>
-                    </div>
-                @endforeach
+            <div class="row g-4 mt-2">
+                <div class="col-6 col-lg-3">
+                    <x-store.feature-card
+                        icon="fa-solid fa-truck-fast"
+                        title="Fast & Free Delivery"
+                        description="Free shipping on orders over $50 with real-time tracking."
+                    />
+                </div>
+                <div class="col-6 col-lg-3">
+                    <x-store.feature-card
+                        icon="fa-solid fa-headset"
+                        title="24/7 Expert Support"
+                        description="Our friendly support team is always here to help you."
+                    />
+                </div>
+                <div class="col-6 col-lg-3">
+                    <x-store.feature-card
+                        icon="fa-solid fa-shield-halved"
+                        title="Secure Payments"
+                        description="Encrypted and safe checkout across cards & PayPal."
+                    />
+                </div>
+                <div class="col-6 col-lg-3">
+                    <x-store.feature-card
+                        icon="fa-solid fa-award"
+                        title="Quality Guarantee"
+                        description="Over a decade of providing verified, authentic products."
+                    />
+                </div>
             </div>
         </div>
     </section>
-@endsection
-
-@section('js')
-    <script>
-        function addToCart(productId) {
-            fetch("{{ route('cart.add') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                },
-                body: JSON.stringify({ product_id: productId, quantity: 1 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                toastr.success(data.message || "{{ 'Added to cart' }}");
-                updateCartCount(data.cart);
-            })
-            .catch(error => console.error("Error:", error));
-        }
-
-        function updateCartCount(cart) {
-            let totalCount = Object.values(cart || {}).reduce((sum, item) => sum + item.quantity, 0);
-            const el = document.getElementById("cart-count");
-            if (el) {
-                el.textContent = totalCount;
-                el.classList.toggle('d-none', totalCount === 0);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.wishlist-btn').forEach(button => {
-                button.addEventListener('click', function () {
-                    const btn = this;
-                    const productId = btn.getAttribute('data-product-id');
-                    fetch('{{ route('customer.wishlist.toggle') }}', {
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                            "Accept": "application/json",
-                        },
-                        body: JSON.stringify({ product_id: productId })
-                    })
-                    .then(response => {
-                        if (response.status === 401) {
-                            window.location.href = '/customer/login';
-                            return;
-                        } else if (response.ok) {
-                            return response.json();
-                        } else {
-                            throw new Error('Something went wrong');
-                        }
-                    })
-                    .then(data => {
-                        if (!data) return;
-                        const icon = btn.querySelector('i');
-                        if (data.status === 'added') {
-                            icon.classList.replace('fa-regular', 'fa-solid');
-                            btn.classList.add('is-active');
-                            toastr.success(data.message);
-                        } else {
-                            icon.classList.replace('fa-solid', 'fa-regular');
-                            btn.classList.remove('is-active');
-                            toastr.info(data.message);
-                        }
-                        // Update header badge
-                        const badge = document.getElementById('wishlist-count');
-                        if (badge && data.count !== undefined) {
-                            badge.textContent = data.count;
-                            badge.classList.toggle('d-none', data.count === 0);
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-                });
-            });
-        });
-    </script>
 @endsection

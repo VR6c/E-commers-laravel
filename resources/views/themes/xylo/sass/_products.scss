@@ -212,6 +212,7 @@
         line-height: $line-height-snug;
         display: -webkit-box;
         -webkit-line-clamp: 2;
+        line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
         margin: 0;
@@ -342,6 +343,173 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(99,102,241,0.45);
             color: #fff;
+        }
+    }
+}
+
+// =====================================================================
+//  STANDARDIZED ATOMIC COMPONENTS (Badge, Rating, Cart Button)
+// =====================================================================
+.xsf-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: $radius-pill;
+    font-size: 0.68rem;
+    font-weight: $font-weight-bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+
+    &--sale {
+        background: #fee2e2;
+        color: #ef4444;
+        border: 1px solid #fecaca;
+    }
+
+    &--new {
+        background: $primary-50;
+        color: $color-primary;
+        border: 1px solid $primary-200;
+    }
+
+    &--hot {
+        background: #fef3c7;
+        color: #d97706;
+        border: 1px solid #fde68a;
+    }
+
+    &--default {
+        background: $neutral-100;
+        color: $neutral-700;
+        border: 1px solid $neutral-200;
+    }
+}
+
+.xsf-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+
+    &__stars {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        color: #f59e0b;
+        font-size: 0.72rem;
+
+        .is-empty {
+            color: #cbd5e1;
+        }
+    }
+
+    &__count {
+        font-size: 0.72rem;
+        color: $text-muted;
+        font-weight: $font-weight-medium;
+    }
+}
+
+.xsf-product-card {
+    &__badges {
+        position: absolute;
+        top: $space-3;
+        left: $space-3;
+        z-index: 4;
+        display: flex;
+        flex-direction: column;
+        gap: $space-1;
+    }
+
+    &__img-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        text-decoration: none;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform $transition-slow;
+        }
+    }
+
+    &__quickview-wrap {
+        position: absolute;
+        bottom: $space-3;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        opacity: 0;
+        transform: translateY(6px);
+        transition: all $transition-fast;
+        z-index: 5;
+        pointer-events: none;
+    }
+
+    &:hover &__quickview-wrap {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    &__price--sale {
+        color: $neutral-900;
+        font-weight: $font-weight-extrabold;
+        font-size: $font-size-base;
+    }
+
+    &__price--original {
+        font-size: $font-size-xs;
+        color: $text-muted;
+        text-decoration: line-through;
+        font-weight: $font-weight-normal;
+        margin-left: $space-1;
+    }
+
+    &__price--regular {
+        color: $neutral-900;
+        font-weight: $font-weight-extrabold;
+        font-size: $font-size-base;
+    }
+
+    &__cart-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: $space-2;
+        padding: $space-2 $space-4;
+        border-radius: $radius-pill;
+        border: none;
+        background: $gradient-primary;
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: $font-weight-semibold;
+        box-shadow: $shadow-sm;
+        cursor: pointer;
+        transition: all $transition-fast;
+
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: $shadow-primary;
+            color: #fff;
+        }
+
+        &:active {
+            transform: translateY(1px);
+        }
+
+        &:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        i {
+            font-size: 0.75rem;
         }
     }
 }

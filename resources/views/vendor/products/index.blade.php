@@ -10,10 +10,13 @@
 
 <x-admin.page-header
     :title="'Manage Products'"
+    icon="bi bi-box-seam"
+    :subtitle="'Manage your product catalog, pricing, and stock variants'"
+    :breadcrumbs="['Products' => '#']"
     :create-route="route('vendor.products.create')"
-    :create-label="'Add New'" />
+    :create-label="'Add Product'" />
 
-<x-admin.data-card>
+<x-admin.data-card label="Vendor Products Table">
     <div class="table-responsive">
         <table id="products-table" class="table align-middle">
             <thead>
@@ -33,15 +36,14 @@
     id="deleteProductModal"
     confirm-id="confirmDeleteProduct"
     :title="'Confirm Delete'"
-    :message="'Are you sure you want to delete this product?'"
-    :confirm-label="'Delete'"
+    :message="'Are you sure you want to delete this product? All variants and images will be permanently removed.'"
+    :confirm-label="'Delete Product'"
     :cancel-label="'Cancel'" />
 
 @endsection
 
 @section('js')
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-@php $datatableLang = null; @endphp
 
 <script>
 $(document).ready(function () {
@@ -61,11 +63,11 @@ $(document).ready(function () {
             },
             {
                 data: 'name', name: 'name',
-                render: d => `<span class="fw-semibold">${d}</span>`
+                render: d => `<span class="fw-semibold text-dark">${d}</span>`
             },
             {
                 data: 'price', name: 'price',
-                render: d => `<span class="fw-semibold">${d}</span>`
+                render: d => `<span class="fw-semibold text-primary">${d}</span>`
             },
             {
                 data: 'status', name: 'status',
@@ -79,7 +81,8 @@ $(document).ready(function () {
             {
                 data: 'action', name: 'action',
                 orderable: false, searchable: false,
-                render: (data, type, row) =>
+                className: 'text-end',
+                render: (data, type, row) => data ||
                     `<div class="dt-actions">
                         <a href="/vendor/products/${row.id}/edit"
                            class="btn-action btn-action-edit" title="Edit">
@@ -94,7 +97,15 @@ $(document).ready(function () {
             }
         ],
         pageLength: 10,
-        language: @json($datatableLang)
+        language: {
+            search: '',
+            searchPlaceholder: 'Search products…',
+            lengthMenu: 'Show _MENU_',
+            zeroRecords: 'No matching products found.',
+            info: 'Showing _START_–_END_ of _TOTAL_ entries',
+            infoEmpty: 'No products available',
+            infoFiltered: '(filtered from _MAX_ total)',
+        }
     });
 
     $(document).on('change', '.toggle-status', function () {

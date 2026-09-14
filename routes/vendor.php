@@ -32,6 +32,8 @@ Route::prefix('vendor')->group(function () {
         /** Orders */
         Route::get('orders', [OrderController::class, 'index'])->name('vendor.orders.index');
         Route::post('orders/data', [OrderController::class, 'getData'])->name('vendor.orders.data');
+        Route::get('orders/{id}', [OrderController::class, 'show'])->name('vendor.orders.show');
+        Route::patch('orders/{id}/status', [OrderController::class, 'updateStatus'])->name('vendor.orders.updateStatus');
         Route::delete('orders/{id}', [OrderController::class, 'destroy'])->name('vendor.orders.destroy');
 
         /** Profile */

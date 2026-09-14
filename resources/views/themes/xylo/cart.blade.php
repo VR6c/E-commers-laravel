@@ -38,14 +38,8 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($cart as $key => $item)
-                                            @php
-                                                $product = \App\Models\Product::with(['thumbnail'])->find($item['product_id']);
-                                                $variant = isset($item['variant_id'])
-                                                    ? \App\Models\ProductVariant::with('images')->find($item['variant_id'])
-                                                    : \App\Models\ProductVariant::where('product_id', $item['product_id'])->whereRaw('is_primary is true')->first();
-                                                $subtotal = $item['price'] * $item['quantity'];
-                                            @endphp
+                                        @php $cartItems = $hydratedCart ?? []; @endphp
+                                        @foreach ($cartItems as $key => $item)
                                             <tr>
                                                 <td>
                                                     <button class="btn btn-link p-0 bnlink remove-from-cart" data-id="{{ $key }}"
@@ -55,32 +49,19 @@
                                                 </td>
                                                 <td>
                                                     <div class="cart-product-detail">
-                                                        <img src="{{ product_image_url(($variant->images->first() ?? $product->thumbnail)?->image_url) }}"
-                                                            alt="{{ $variant->name ?? $product->name }}" class="cart-product-img">
+                                                        <img src="{{ $item['image_url'] }}"
+                                                            alt="{{ $item['display_name'] }}" class="cart-product-img">
                                                         <div class="cart-product-info">
-                                                            <p class="cart-product-name">{{ $variant->name ?? $product->name }}</p>
+                                                            <p class="cart-product-name">{{ $item['display_name'] }}</p>
                                                             <div class="cart-product-attributes">
-                                                                @php $sizes = []; $colors = []; @endphp
-                                                                @if (!empty($item['attributes']))
-                                                                    @foreach ($item['attributes'] as $attributeValueId)
-                                                                        @php $attributeValue = \App\Models\AttributeValue::with('attribute')->find($attributeValueId); @endphp
-                                                                        @if ($attributeValue && $attributeValue->attribute)
-                                                                            @php
-                                                                                $attributeName = strtolower($attributeValue->attribute->name);
-                                                                                if ($attributeName === 'size') { $sizes[] = $attributeValue->translated_value; }
-                                                                                elseif ($attributeName === 'color') { $colors[] = $attributeValue->translated_value; }
-                                                                            @endphp
-                                                                        @endif
-                                                                    @endforeach
-                                                                @endif
-                                                                @if (!empty($sizes))
+                                                                @if (!empty($item['sizes']))
                                                                     <div class="cart-attribute-sizes">
-                                                                        @foreach ($sizes as $size)<span class="size-box">{{ $size }}</span>@endforeach
+                                                                        @foreach ($item['sizes'] as $size)<span class="size-box">{{ $size }}</span>@endforeach
                                                                     </div>
                                                                 @endif
-                                                                @if (!empty($colors))
+                                                                @if (!empty($item['colors']))
                                                                     <div class="cart-attribute-colors">
-                                                                        @foreach ($colors as $color)<span class="color-circle {{ strtolower($color) }}" style="background-color: {{ strtolower($color) }};"></span>@endforeach
+                                                                        @foreach ($item['colors'] as $color)<span class="color-circle {{ strtolower($color) }}" style="background-color: {{ strtolower($color) }};"></span>@endforeach
                                                                     </div>
                                                                 @endif
                                                             </div>
@@ -91,9 +72,9 @@
                                                 <td>
                                                     <input type="number" class="form-control form-control-sm xsf-cart-qty" value="{{ $item['quantity'] }}" min="1" data-id="{{ $key }}">
                                                 </td>
-                                                <td class="text-end"><strong>{{ $currency->symbol }}{{ number_format($subtotal, 2) }}</strong></td>
+                                                <td class="text-end"><strong>{{ $currency->symbol }}{{ number_format($item['subtotal'], 2) }}</strong></td>
                                             </tr>
-                                            @php $total += $subtotal; @endphp
+                                            @php $total += $item['subtotal']; @endphp
                                         @endforeach
                                     </tbody>
                                 </table>

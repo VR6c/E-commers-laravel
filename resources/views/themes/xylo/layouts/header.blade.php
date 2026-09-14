@@ -13,8 +13,8 @@
         <div class="container">
             <div class="xsf-topbar__inner">
                 <p class="xsf-topbar__msg mb-0">
-                    <i class="fas fa-truck xsf-topbar__icon"></i>
-                    {{ 'Free shipping on orders over $50' }}
+                    <i class="fas fa-truck-fast xsf-topbar__icon"></i>
+                    <span>{{ 'Free shipping on orders over $50' }}</span>
                 </p>
 
                 {{-- Register CTA buttons (guests only) --}}
@@ -67,8 +67,8 @@
                                id="search-input"
                                name="q"
                                autocomplete="off"
-                               placeholder="{{ 'Search products...' }}"
-                               aria-label="{{ 'Search products...' }}">
+                               placeholder="{{ 'Search premium products...' }}"
+                               aria-label="{{ 'Search products' }}">
                         <button type="submit" class="xsf-search__btn">
                             {{ 'Search' }}
                         </button>
@@ -88,7 +88,7 @@
                         <span id="wishlist-count" class="xsf-action__badge {{ $wishlistCount > 0 ? '' : 'd-none' }}">{{ $wishlistCount }}</span>
                     </a>
 
-                    {{-- Account --}}
+                    {{-- Account dropdown --}}
                     <div class="dropdown xsf-account">
                         <a href="#"
                            class="xsf-action dropdown-toggle"
@@ -97,7 +97,7 @@
                            aria-label="{{ 'Account' }}">
                             @auth('customer')
                                 @php $customer = Auth::guard('customer')->user(); @endphp
-                                <img src="{{ $customer->profile_image ? (\Illuminate\Support\Str::startsWith($customer->profile_image, ['http://', 'https://']) ? $customer->profile_image : asset('storage/' . $customer->profile_image)) : 'https://ui-avatars.com/api/?name=' . urlencode($customer->name) . '&background=6366f1&color=fff&size=40' }}"
+                                <img src="{{ $customer->avatar_url }}"
                                      alt="{{ $customer->name }}"
                                      class="xsf-action__avatar">
                             @else
@@ -128,7 +128,7 @@
                             @else
                                 <li>
                                     <div class="xsf-account__user-header">
-                                        <img src="{{ $customer->profile_image ? (\Illuminate\Support\Str::startsWith($customer->profile_image, ['http://', 'https://']) ? $customer->profile_image : asset('storage/' . $customer->profile_image)) : 'https://ui-avatars.com/api/?name=' . urlencode($customer->name) . '&background=6366f1&color=fff&size=64' }}"
+                                        <img src="{{ $customer->avatar_url }}"
                                              alt="{{ $customer->name }}"
                                              class="xsf-account__user-avatar">
                                         <div>
@@ -186,8 +186,8 @@
                            class="xsf-search__input"
                            name="q"
                            autocomplete="off"
-                           placeholder="{{ 'Search products...' }}"
-                           aria-label="{{ 'Search products...' }}">
+                           placeholder="{{ 'Search premium products...' }}"
+                           aria-label="{{ 'Search products' }}">
                     <button type="submit" class="xsf-search__btn">
                         {{ 'Search' }}
                     </button>
@@ -209,6 +209,9 @@
                             </a>
                         </li>
                     @endforeach
+                @else
+                    <li class="xsf-nav__item"><a class="xsf-nav__link" href="{{ url('/') }}">Home</a></li>
+                    <li class="xsf-nav__item"><a class="xsf-nav__link" href="{{ route('shop.index') }}">Shop All</a></li>
                 @endif
             </ul>
         </div>
@@ -235,6 +238,9 @@
                         </a>
                     </li>
                 @endforeach
+            @else
+                <li><a class="xsf-mobile-nav__link" href="{{ url('/') }}">Home</a></li>
+                <li><a class="xsf-mobile-nav__link" href="{{ route('shop.index') }}">Shop All</a></li>
             @endif
         </ul>
 
@@ -254,7 +260,7 @@
                 </a>
             @else
                 <div class="d-flex align-items-center gap-3 mb-3">
-                    <img src="{{ auth('customer')->user()->profile_image ? (\Illuminate\Support\Str::startsWith(auth('customer')->user()->profile_image, ['http://', 'https://']) ? auth('customer')->user()->profile_image : asset('storage/' . auth('customer')->user()->profile_image)) : 'https://ui-avatars.com/api/?name=' . urlencode(auth('customer')->user()->name) . '&background=6366f1&color=fff&size=40' }}"
+                    <img src="{{ auth('customer')->user()->avatar_url }}"
                          alt="{{ auth('customer')->user()->name }}"
                          class="rounded-circle" width="42" height="42" style="object-fit:cover;">
                     <div>
@@ -269,134 +275,3 @@
         </div>
     </div>
 </div>
-
-{{-- Scroll-aware header elevation --}}
-<script>
-(function () {
-    const header = document.getElementById('site-header');
-    if (!header) return;
-    const onScroll = function () {
-        header.classList.toggle('is-scrolled', window.scrollY > 20);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-})();
-</script>
-
-{{-- Register button click animations --}}
-<script>
-(function () {
-    /* ── Ripple factory ───────────────────────────────────────────── */
-    function spawnRipple(btn, e) {
-        const existing = btn.querySelector('.xsf-reg-ripple');
-        if (existing) existing.remove();
-
-        const rect   = btn.getBoundingClientRect();
-        const size   = Math.max(rect.width, rect.height) * 2.2;
-        const x      = (e ? e.clientX - rect.left : rect.width  / 2) - size / 2;
-        const y      = (e ? e.clientY - rect.top  : rect.height / 2) - size / 2;
-
-        const ripple = document.createElement('span');
-        ripple.className = 'xsf-reg-ripple';
-        ripple.style.cssText =
-            'width:'  + size + 'px;' +
-            'height:' + size + 'px;' +
-            'left:'   + x    + 'px;' +
-            'top:'    + y    + 'px;';
-        btn.appendChild(ripple);
-
-        ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
-    }
-
-    /* ── Particle burst factory ───────────────────────────────────── */
-    function spawnParticles(btn, isVendor) {
-        const colors = isVendor
-            ? ['#fbbf24','#f59e0b','#fcd34d','#fff','#d97706']
-            : ['#a5b4fc','#6366f1','#c7d2fe','#fff','#818cf8'];
-
-        const count = 10;
-        for (let i = 0; i < count; i++) {
-            const p    = document.createElement('span');
-            const angle  = (360 / count) * i + (Math.random() * 20 - 10);
-            const dist   = 28 + Math.random() * 22;
-            const dx     = Math.cos((angle * Math.PI) / 180) * dist;
-            const dy     = Math.sin((angle * Math.PI) / 180) * dist;
-            const size   = 3 + Math.random() * 3;
-            const color  = colors[Math.floor(Math.random() * colors.length)];
-            const delay  = Math.random() * 60;
-
-            p.className = 'xsf-reg-particle';
-            p.style.cssText =
-                'width:'            + size    + 'px;' +
-                'height:'           + size    + 'px;' +
-                'background:'       + color   + ';'   +
-                '--dx:'             + dx      + 'px;' +
-                '--dy:'             + dy      + 'px;' +
-                'animation-delay:'  + delay   + 'ms;';
-            btn.appendChild(p);
-            p.addEventListener('animationend', () => p.remove(), { once: true });
-        }
-    }
-
-    /* ── Icon swap helper ─────────────────────────────────────────── */
-    function swapIcon(btn, newIconClass) {
-        const icon = btn.querySelector('i');
-        if (!icon) return null;
-        const original = icon.className;
-        icon.style.transition = 'transform .15s ease, opacity .15s ease';
-        icon.style.opacity = '0';
-        icon.style.transform = 'scale(0.4) rotate(-20deg)';
-        setTimeout(function () {
-            icon.className = newIconClass;
-            icon.style.opacity = '1';
-            icon.style.transform = 'scale(1) rotate(0deg)';
-        }, 150);
-        return original;
-    }
-
-    /* ── Scale-press ──────────────────────────────────────────────── */
-    function scalePress(btn) {
-        btn.style.transition = 'transform .10s cubic-bezier(.36,.07,.19,.97)';
-        btn.style.transform  = 'scale(0.88)';
-        setTimeout(function () {
-            btn.style.transform = 'scale(1.06)';
-            setTimeout(function () {
-                btn.style.transform = '';
-                btn.style.transition = '';
-            }, 160);
-        }, 100);
-    }
-
-    /* ── Main handler ─────────────────────────────────────────────── */
-    document.querySelectorAll('.xsf-topbar-reg, .xsf-mobile-reg-vendor, [href="{{ route('customer.register') }}"].btn-outline-primary').forEach(function (btn) {
-        btn.addEventListener('click', function (e) {
-            const isVendor = btn.classList.contains('xsf-topbar-reg--vendor') ||
-                             btn.classList.contains('xsf-mobile-reg-vendor');
-
-            /* 1. Ripple */
-            spawnRipple(btn, e);
-
-            /* 2. Particle burst */
-            spawnParticles(btn, isVendor);
-
-            /* 3. Scale press */
-            scalePress(btn);
-
-            /* 4. Icon swap to spinner / arrow */
-            const origIcon = swapIcon(btn, 'fas fa-circle-notch fa-spin');
-
-            /* 5. After a short beat, swap icon to arrow-right then navigate */
-            const href = btn.getAttribute('href');
-            if (href && href !== '#') {
-                e.preventDefault();
-                setTimeout(function () {
-                    swapIcon(btn, 'fas fa-arrow-right');
-                    setTimeout(function () {
-                        window.location.href = href;
-                    }, 280);
-                }, 380);
-            }
-        });
-    });
-})();
-</script>

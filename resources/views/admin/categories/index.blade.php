@@ -2,9 +2,13 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Categories'"
+<x-admin.page-header
+    :title="'Categories'"
+    icon="bi bi-folder2-open"
+    :subtitle="'Organize and manage store product categories'"
+    :breadcrumbs="['Categories' => '#']"
     :create-route="route('admin.categories.create')"
-    :create-label="'Add New'" />
+    :create-label="'Add Category'" />
 
 <x-admin.data-card>
     <div class="table-responsive">

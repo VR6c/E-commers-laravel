@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateProfileRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProfileController extends Controller
 {
@@ -48,7 +49,7 @@ class ProfileController extends Controller
         $admin = auth()->user();
 
         // Handle profile image deletion
-        if ($admin->profile_image && Storage::exists('public/' . $admin->profile_image)) {
+        if ($admin->profile_image && !Str::startsWith($admin->profile_image, ['http://', 'https://']) && Storage::exists('public/' . $admin->profile_image)) {
             Storage::delete('public/' . $admin->profile_image);
         }
 

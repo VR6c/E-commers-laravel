@@ -2,9 +2,13 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Vendors'"
+<x-admin.page-header
+    :title="'Vendors'"
+    icon="bi bi-shop-window"
+    :subtitle="'Manage marketplace vendors, shop profiles, and seller statuses'"
+    :breadcrumbs="['Vendors' => '#']"
     :create-route="route('admin.vendors.create')"
-    :create-label="'Add New Vendor'" />
+    :create-label="'Add Vendor'" />
 
 <x-admin.data-card>
     <div class="table-responsive">

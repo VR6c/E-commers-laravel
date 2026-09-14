@@ -34,8 +34,8 @@
 
     {{-- Tom Select --}}
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.6.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
-    <link href="{{ asset('css/admin-select.css') }}?v=3" rel="stylesheet">
-    <link href="{{ asset('css/vendor-panel.css') }}?v=6" rel="stylesheet">
+    <link href="{{ asset('css/admin-select.css') }}?v=4" rel="stylesheet">
+    <link href="{{ asset('css/vendor-panel.css') }}?v=8" rel="stylesheet">
 
     {{-- Toastr --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
@@ -132,27 +132,38 @@
 {{-- Sidebar --}}
 @include('vendor.layouts.sidebar')
 
+{{-- Mobile Sidebar Backdrop --}}
+<div id="sidebarBackdrop" class="sidebar-backdrop" aria-hidden="true"></div>
+
 {{-- Content wrapper --}}
-<div id="content" class="w-100">
+<div id="content" class="content-wrapper d-flex flex-column min-vh-100">
 
     {{-- ── TOPBAR ───────────────────────────────────────────────── --}}
-    <nav class="navbar navbar-expand navbar-light p-0" aria-label="Vendor top navigation">
+    <nav class="navbar navbar-expand navbar-light p-0 main-header sticky-top" aria-label="Vendor top navigation">
 
-        <div class="d-flex align-items-center gap-3 ps-3">
-            <button class="btn btn-outline-secondary border-0 p-2"
+        <div class="d-flex align-items-center gap-2 ps-3">
+            <button class="btn btn-light border-0 p-2 d-flex align-items-center justify-content-center rounded-3 shadow-xs"
                     id="sidebarToggle"
                     aria-label="Toggle sidebar"
                     aria-expanded="true"
-                    aria-controls="sidebar">
-                <i class="fas fa-bars" style="font-size:1.1rem;"></i>
+                    aria-controls="sidebar"
+                    style="width: 36px; height: 36px; color: #475569;">
+                <i class="bi bi-list" style="font-size: 1.25rem;"></i>
             </button>
+
+            {{-- Storefront Link --}}
+            <a href="/" target="_blank" class="btn btn-sm btn-light border d-flex align-items-center gap-1 px-3 py-1-5 text-secondary rounded-pill shadow-xs" title="View Storefront">
+                <i class="bi bi-shop text-primary" style="font-size: 0.85rem;"></i>
+                <span class="d-none d-sm-inline" style="font-size: 0.8rem; font-weight: 600;">Storefront</span>
+                <i class="bi bi-arrow-up-right text-muted" style="font-size: 0.65rem;"></i>
+            </a>
         </div>
 
-        <div class="d-flex align-items-center gap-2 ms-auto pe-4">
+        <div class="d-flex align-items-center gap-2 ms-auto pe-3 pe-md-4">
             @php $vendor = Auth::guard('vendor')->user(); @endphp
 
             {{-- Divider --}}
-            <div style="width:1px;height:22px;background:var(--border-color,#ACBCBF);"></div>
+            <div style="width: 1px; height: 20px; background: #e2e8f0; margin: 0 4px;"></div>
 
             {{-- Profile Dropdown --}}
             <div class="dropdown">
@@ -161,52 +172,52 @@
                         aria-haspopup="true"
                         aria-expanded="false"
                         aria-label="Vendor account menu"
-                        style="background:none;border:none;">
+                        style="background: none; border: none;">
                     <img src="{{ $vendor && $vendor->profile_image
                             ? (\Illuminate\Support\Str::startsWith($vendor->profile_image, ['http://', 'https://'])
                                 ? $vendor->profile_image
                                 : asset('storage/' . $vendor->profile_image))
-                            : 'https://ui-avatars.com/api/?name=' . urlencode($vendor ? $vendor->name : 'V') . '&background=5289AD&color=fff&size=40' }}"
-                         class="rounded-circle"
+                            : 'https://ui-avatars.com/api/?name=' . urlencode($vendor ? $vendor->name : 'V') . '&background=6366f1&color=fff&size=40' }}"
+                         class="rounded-circle shadow-xs"
                          alt="{{ $vendor ? $vendor->name : 'Vendor' }}"
                          width="34" height="34"
-                         style="object-fit:cover;border:2px solid var(--border-color,#ACBCBF);border-radius:50%;transition:all .2s;">
+                         style="object-fit: cover; border: 2px solid #e2e8f0;">
                     <span class="d-none d-md-inline"
-                          style="font-size:.82rem;font-weight:600;color:var(--text-secondary,#3d5760);">
+                          style="font-size: 0.84rem; font-weight: 600; color: #1e293b;">
                         {{ $vendor ? $vendor->name : 'Vendor' }}
                     </span>
-                    <i class="bi bi-chevron-down d-none d-md-inline" style="font-size:.65rem;opacity:.5;"></i>
+                    <i class="bi bi-chevron-down d-none d-md-inline text-muted" style="font-size: 0.65rem;"></i>
                 </button>
 
-                <ul class="dropdown-menu dropdown-menu-end" style="min-width:210px;">
+                <ul class="dropdown-menu dropdown-menu-end shadow-xl border-0 rounded-3 p-2 mt-2" style="min-width: 210px; border: 1px solid #e2e8f0 !important;">
                     <li>
-                        <div class="px-3 py-2 border-bottom" style="border-color:#d0e0e3!important;">
-                            <p class="mb-0" style="font-size:.8rem;font-weight:600;color:#1e2e3a;">
+                        <div class="px-3 py-2 border-bottom mb-1" style="border-color: #f1f5f9 !important;">
+                            <p class="mb-0" style="font-size: 0.82rem; font-weight: 700; color: #0f172a;">
                                 {{ $vendor ? $vendor->name : 'Vendor' }}
                             </p>
-                            <p class="mb-0" style="font-size:.72rem;color:#698696;">
+                            <p class="mb-0 text-muted" style="font-size: 0.72rem;">
                                 {{ $vendor ? $vendor->email : '' }}
                             </p>
                         </div>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="{{ route('vendor.profile.edit') }}">
-                            <i class="bi bi-person-circle"></i> My Profile
+                        <a class="dropdown-item py-2 rounded-2" href="{{ route('vendor.profile.edit') }}">
+                            <i class="bi bi-person-circle me-2 text-primary"></i> My Profile
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="{{ route('vendor.dashboard') }}">
-                            <i class="bi bi-grid"></i> Dashboard
+                        <a class="dropdown-item py-2 rounded-2" href="{{ route('vendor.dashboard') }}">
+                            <i class="bi bi-speedometer2 me-2 text-primary"></i> Dashboard
                         </a>
                     </li>
-                    <li><hr class="dropdown-divider"></li>
+                    <li><hr class="dropdown-divider my-1"></li>
                     <li>
                         <form id="vendor-logout-form" action="{{ route('vendor.logout') }}" method="POST" class="d-none">
                             @csrf
                         </form>
-                        <a class="dropdown-item text-danger" href="#"
+                        <a class="dropdown-item py-2 rounded-2 text-danger" href="#"
                            onclick="event.preventDefault(); document.getElementById('vendor-logout-form').submit();">
-                            <i class="bi bi-box-arrow-right"></i> Sign Out
+                            <i class="bi bi-box-arrow-right me-2"></i> Sign Out
                         </a>
                     </li>
                 </ul>
@@ -216,9 +227,21 @@
     {{-- ── END TOPBAR ──────────────────────────────────────────── --}}
 
     {{-- ── MAIN CONTENT ─────────────────────────────────────────── --}}
-    <div class="container-fluid px-4 mt-4" id="main-content">
-        @yield('content')
-    </div>
+    <main class="flex-grow-1 p-3 p-md-4 d-flex flex-column" id="main-content">
+        <div class="flex-grow-1">
+            @yield('content')
+        </div>
+
+        {{-- Minimal Modern Footer (Consistent with Admin) --}}
+        <footer class="mt-4 pt-3 pb-2 text-center text-md-start d-flex flex-column flex-md-row align-items-center justify-content-between text-muted border-top" style="font-size: 0.78rem; border-color: #e2e8f0 !important;">
+            <div>
+                &copy; {{ date('Y') }} <a href="{{ route('vendor.dashboard') }}" class="text-secondary fw-semibold text-decoration-none">{{ config('app.name', 'TVR') }}</a>. All rights reserved.
+            </div>
+            <div class="d-none d-md-block text-muted">
+                <span>Vendor Portal &bull; Seller Hub</span>
+            </div>
+        </footer>
+    </main>
 
 </div>
 {{-- END CONTENT AREA --}}
@@ -231,26 +254,90 @@
     @vite(['resources/js/app.js'])
 @endif
 
-{{-- Sidebar toggle --}}
+{{-- Ensure modals are appended to <body> so parent container stacking contexts do not trap/block modals with backdrops --}}
+<script>
+$(document).on('show.bs.modal', '.modal', function () {
+    if ($(this).parent().is(':not(body)')) {
+        $(this).appendTo('body');
+    }
+});
+</script>
+
+{{-- Sidebar Toggle with LocalStorage Memory & Mobile Drawer (Admin Consistent) --}}
 <script>
 (function () {
-    const sidebar  = document.querySelector('.main-sidebar');
-    const toggle   = document.getElementById('sidebarToggle');
+    const sidebar   = document.getElementById('sidebar');
+    const toggle    = document.getElementById('sidebarToggle');
+    const backdrop  = document.getElementById('sidebarBackdrop');
     const isDesktop = () => window.innerWidth >= 992;
+
     if (!sidebar || !toggle) return;
-    toggle.addEventListener('click', function () {
-        sidebar.classList.toggle('collapsed');
-        toggle.setAttribute('aria-expanded', !sidebar.classList.contains('collapsed'));
+
+    // Restore desktop collapsed state from localStorage
+    if (isDesktop() && localStorage.getItem('vendor_sidebar_collapsed') === 'true') {
+        sidebar.classList.add('collapsed');
+        toggle.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleSidebar() {
+        if (isDesktop()) {
+            sidebar.classList.toggle('collapsed');
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            toggle.setAttribute('aria-expanded', !isCollapsed);
+            localStorage.setItem('vendor_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+        } else {
+            const isOpen = sidebar.classList.contains('mobile-open');
+            if (isOpen) {
+                closeMobileSidebar();
+            } else {
+                openMobileSidebar();
+            }
+        }
+    }
+
+    function openMobileSidebar() {
+        sidebar.classList.add('mobile-open');
+        if (backdrop) backdrop.classList.add('show');
+        toggle.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileSidebar() {
+        sidebar.classList.remove('mobile-open');
+        if (backdrop) backdrop.classList.remove('show');
+        toggle.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+    }
+
+    toggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleSidebar();
     });
-    document.addEventListener('click', function (e) {
-        if (!isDesktop() && sidebar.classList.contains('collapsed') &&
-            !sidebar.contains(e.target) && !toggle.contains(e.target)) {
-            sidebar.classList.remove('collapsed');
-            toggle.setAttribute('aria-expanded', 'false');
+
+    if (backdrop) {
+        backdrop.addEventListener('click', closeMobileSidebar);
+    }
+
+    // Auto-close mobile drawer when clicking non-expanding navigation links
+    document.querySelectorAll('#sidebar .nav-link').forEach(function (link) {
+        link.addEventListener('click', function () {
+            if (!isDesktop() && sidebar.classList.contains('mobile-open')) {
+                const hasTreeview = this.nextElementSibling && this.nextElementSibling.classList.contains('nav-treeview');
+                if (!hasTreeview) {
+                    closeMobileSidebar();
+                }
+            }
+        });
+    });
+
+    window.addEventListener('resize', function () {
+        if (isDesktop() && sidebar.classList.contains('mobile-open')) {
+            closeMobileSidebar();
         }
     });
 })();
 </script>
+
 
 {{-- AdminLTE treeview --}}
 <script>
@@ -374,7 +461,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 {{-- Tom Select --}}
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.6.1/dist/js/tom-select.complete.min.js"></script>
-<script src="{{ asset('js/admin-select.js') }}?v=3"></script>
+<script src="{{ asset('js/admin-select.js') }}?v=5"></script>
 <script src="{{ asset('js/admin-combobox.js') }}?v=3"></script>
 
 @yield('js')

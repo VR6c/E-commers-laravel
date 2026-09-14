@@ -22,15 +22,28 @@ class MenuItemController extends Controller
         $menuItems = $this->menuItemService->getAllMenuItems();
 
         return datatables()->of($menuItems)
-            ->addColumn('action', function ($menuItems) {
-                return view('admin.menus.index', compact('menuItems'));
+            ->addColumn('action', function ($row) {
+                return '<div class="dt-actions">
+                    <a href="'.route('admin.items.edit', $row->id).'" class="btn-action btn-action-edit" title="Edit">
+                        <i class="bi bi-pencil-fill"></i>
+                    </a>
+                    <button type="button" class="btn-action btn-action-delete" onclick="deleteMenuItem('.$row->id.')" title="Delete">
+                        <i class="bi bi-trash-fill"></i>
+                    </button>
+                </div>';
             })
+            ->rawColumns(['action'])
             ->make(true);
     }
 
-    public function index()
+    public function index(Request $request, $menu = null)
     {
-        return view('admin.menu_items.index');
+        if (! $menu && $request->has('menu_id')) {
+            $menu = $request->get('menu_id');
+        }
+        $menuModel = $menu instanceof Menu ? $menu : ($menu ? Menu::find($menu) : Menu::first());
+
+        return view('admin.menu_items.index', ['menu' => $menuModel]);
     }
 
     public function create($menuId)

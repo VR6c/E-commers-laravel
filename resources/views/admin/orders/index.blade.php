@@ -1,15 +1,38 @@
 @extends('admin.layouts.admin')
 
+@section('title', ($pageTitle ?? 'Orders') . ' — Admin')
+
 @section('content')
 
-<x-admin.page-header :title="$pageTitle ?? 'Orders'" />
+<x-admin.page-header
+    :title="$pageTitle ?? 'Manage Orders'"
+    icon="bi bi-bag-check-fill"
+    :subtitle="'Track and manage customer orders, fulfillment and payment statuses'"
+    :breadcrumbs="['Orders' => route('admin.orders.index')]">
+    <x-slot:actions>
+        <div class="btn-group shadow-xs rounded-3 overflow-hidden" role="group" aria-label="Order status filter">
+            <a href="{{ route('admin.orders.index') }}"
+               class="btn btn-sm {{ Route::currentRouteName() == 'admin.orders.index' ? 'btn-primary' : 'btn-light border' }}">
+                All
+            </a>
+            <a href="{{ route('admin.orders.pending') }}"
+               class="btn btn-sm {{ Route::currentRouteName() == 'admin.orders.pending' ? 'btn-primary' : 'btn-light border' }}">
+                Pending
+            </a>
+            <a href="{{ route('admin.orders.completed') }}"
+               class="btn btn-sm {{ Route::currentRouteName() == 'admin.orders.completed' ? 'btn-primary' : 'btn-light border' }}">
+                Completed
+            </a>
+        </div>
+    </x-slot:actions>
+</x-admin.page-header>
 
 <x-admin.data-card>
     <div class="table-responsive">
         <table id="orders-table" class="table align-middle">
             <thead>
                 <tr>
-                    <th>{{ 'ID' }}</th>
+                    <th>{{ 'Order ID' }}</th>
                     <th>{{ 'Customer' }}</th>
                     <th>{{ 'Order Date' }}</th>
                     <th>{{ 'Status' }}</th>
@@ -22,9 +45,9 @@
 </x-admin.data-card>
 
 <x-admin.delete-modal id="deleteOrderModal" confirm-id="confirmDeleteOrder"
-    :title="'Confirm Delete'"
-    :message="'Are you sure you want to delete this order?'"
-    :confirm-label="'Delete'"
+    :title="'Confirm Delete Order'"
+    :message="'Are you sure you want to delete this order? All associated transaction logs will be removed.'"
+    :confirm-label="'Delete Order'"
     :cancel-label="'Cancel'" />
 
 @endsection

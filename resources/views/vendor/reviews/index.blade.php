@@ -8,9 +8,13 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Product Reviews'" />
+<x-admin.page-header
+    :title="'Product Reviews'"
+    icon="bi bi-star-fill"
+    :subtitle="'Customer feedback and ratings for your products'"
+    :breadcrumbs="['Reviews' => '#']" />
 
-<x-admin.data-card>
+<x-admin.data-card label="Product Reviews Table">
     <div class="table-responsive">
         <table id="reviews-table" class="table align-middle">
             <thead>
@@ -31,15 +35,14 @@
     id="deleteReviewModal"
     confirm-id="confirmDeleteReview"
     :title="'Confirm Delete'"
-    :message="'Are you sure you want to delete this review?'"
-    :confirm-label="'Delete'"
+    :message="'Are you sure you want to delete this product review?'"
+    :confirm-label="'Delete Review'"
     :cancel-label="'Cancel'" />
 
 @endsection
 
 @section('js')
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-@php $datatableLang = null; @endphp
 
 <script>
 $(document).ready(function () {
@@ -57,7 +60,7 @@ $(document).ready(function () {
                 render: d => `<span class="fw-bold text-body">#${d}</span>`
             },
             { data: 'customer_name', name: 'customer_name' },
-            { data: 'product_name',  name: 'product_name' },
+            { data: 'product_name',  name: 'product_name', render: d => `<span class="fw-semibold text-dark">${d}</span>` },
             {
                 data: 'rating', name: 'rating',
                 render: d => {
@@ -78,11 +81,11 @@ $(document).ready(function () {
             {
                 data: 'action', name: 'action',
                 orderable: false, searchable: false,
-                render: (data, type, row) =>
+                className: 'text-end',
+                render: (data, type, row) => data ||
                     `<div class="dt-actions">
                         <a href="/vendor/reviews/${row.id}"
-                           class="btn-action btn-action-edit" title="View"
-                           style="background:#ecfeff;color:#0891b2;border-color:#a5f3fc;">
+                           class="btn-action btn-action-view" title="View Review">
                             <i class="bi bi-eye-fill"></i>
                         </a>
                         <button type="button"
@@ -94,7 +97,15 @@ $(document).ready(function () {
             }
         ],
         pageLength: 10,
-        language: @json($datatableLang)
+        language: {
+            search: '',
+            searchPlaceholder: 'Search reviews…',
+            lengthMenu: 'Show _MENU_',
+            zeroRecords: 'No matching reviews found.',
+            info: 'Showing _START_–_END_ of _TOTAL_ entries',
+            infoEmpty: 'No reviews available',
+            infoFiltered: '(filtered from _MAX_ total)',
+        }
     });
 });
 

@@ -24,8 +24,28 @@ class AuthController extends Controller
             'password' => 'required|min:6',
         ]);
 
-        if (Auth::guard('vendor')->attempt($request->only('email', 'password'))) {
-            return redirect()->route('vendor.dashboard');
+        try {
+            if (Auth::guard('vendor')->attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+                $vendor = Auth::guard('vendor')->user();
+                if ($vendor->status === 'pending') {
+                    Auth::guard('vendor')->logout();
+
+                    return redirect()->route('vendor.login')
+                        ->with('warning', 'Your account is pending administrative approval. You will receive access once approved.');
+                }
+                if ($vendor->status !== 'active') {
+                    Auth::guard('vendor')->logout();
+
+                    return redirect()->route('vendor.login')
+                        ->with('error', 'Your vendor account has been deactivated or suspended. Please contact support.');
+                }
+
+                $request->session()->regenerate();
+
+                return redirect()->route('vendor.dashboard');
+            }
+        } catch (\RuntimeException $e) {
+            return back()->with('error', 'Invalid credentials');
         }
 
         return back()->with('error', 'Invalid credentials');

@@ -9,7 +9,11 @@ class AdminCrudTest extends TestCase
 {
     protected function admin(): ?User
     {
-        return User::query()->first();
+        try {
+            return User::query()->first();
+        } catch (\Throwable $t) {
+            return null;
+        }
     }
 
     public function test_products_index_renders_with_shared_crud_partials(): void

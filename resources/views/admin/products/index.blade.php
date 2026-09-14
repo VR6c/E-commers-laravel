@@ -7,9 +7,13 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Manage Products'"
+<x-admin.page-header
+    :title="'Manage Products'"
+    icon="bi bi-box-seam"
+    :subtitle="'Catalog, pricing, stock levels and status controls'"
+    :breadcrumbs="['Products' => '#']"
     :create-route="route('admin.products.create')"
-    :create-label="'Add New'" />
+    :create-label="'Add Product'" />
 
 <x-admin.data-card>
     <div class="table-responsive">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SiteSetting;
+use App\Services\ImageUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -10,12 +11,14 @@ class SiteSettingsController extends Controller
 {
     public function index()
     {
-        return view('admin.site-settings.index');
+        $settings = SiteSetting::first() ?? new SiteSetting();
+
+        return view('admin.site-settings.index', compact('settings'));
     }
 
     public function edit()
     {
-        $settings = SiteSetting::first();
+        $settings = SiteSetting::first() ?? new SiteSetting();
 
         return view('admin.site-settings.edit', compact('settings'));
     }
@@ -36,6 +39,9 @@ class SiteSettingsController extends Controller
         ]);
 
         $settings = SiteSetting::first();
+        if (! $settings) {
+            $settings = new SiteSetting();
+        }
 
         $data = [
             'site_name'        => $request->site_name,
@@ -51,14 +57,18 @@ class SiteSettingsController extends Controller
 
         // Handle logo upload
         if ($request->hasFile('logo')) {
-            // Delete old logo if it exists and is not the default
-            if ($settings->logo && $settings->logo !== 'logo_icon/shopping.png') {
+            // Delete old logo if it exists, is not the default, and is a local file
+            if ($settings->logo && $settings->logo !== 'logo_icon/shopping.png' && !ImageUploadService::isRemoteUrl($settings->logo) && Storage::disk('public')->exists($settings->logo)) {
                 Storage::disk('public')->delete($settings->logo);
             }
-            $data['logo'] = $request->file('logo')->store('logo_icon', 'public');
+            $data['logo'] = ImageUploadService::upload($request->file('logo'), 'logo_icon');
         }
 
-        $settings->update($data);
+        if ($settings->exists) {
+            $settings->update($data);
+        } else {
+            $settings->fill($data)->save();
+        }
 
         return redirect()->back()->with('success', 'Site settings updated successfully!');
     }

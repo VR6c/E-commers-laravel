@@ -4,154 +4,126 @@
 
 @section('content')
 
-<div class="vp-page-header">
-    <div class="vp-page-header__left">
-        <h1 class="vp-page-header__title">
-            <span class="vp-page-header__title-icon"><i class="fas fa-star"></i></span>
-            Review Details
-        </h1>
-        <p class="vp-page-header__sub">Full details for review #{{ $review->id }}</p>
-    </div>
-    <div class="vp-page-header__actions">
+<x-admin.page-header
+    :title="'Review #' . $review->id"
+    icon="bi bi-star-fill"
+    :subtitle="'Customer feedback for ' . ($review->product?->name ?? 'Product')"
+    :breadcrumbs="['Reviews' => route('vendor.reviews.index'), 'Review #' . $review->id => '#']">
+    <x-slot:actions>
         <a href="{{ route('vendor.reviews.index') }}"
-           class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2"
-           style="border-radius:8px;font-size:.82rem;">
-            <i class="fas fa-arrow-left"></i> Back
+           class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 shadow-sm"
+           style="border-radius:10px; font-size:.85rem;">
+            <i class="bi bi-arrow-left"></i> Back to Reviews
         </a>
-    </div>
-</div>
+    </x-slot:actions>
+</x-admin.page-header>
 
 <div class="row g-4">
 
     {{-- Review content --}}
     <div class="col-lg-8">
-        <div class="vp-card">
-            <div class="vp-card-header">
-                <h6 class="vp-card-header__title">
-                    <span class="vp-card-header__icon"><i class="fas fa-comment-dots"></i></span>
-                    Customer Review
-                </h6>
-                @if($review->status == 1)
-                    <span class="vp-status-badge active" style="font-size:.72rem;padding:4px 12px;">
-                        <i class="fas fa-check-circle me-1" style="font-size:.65rem;"></i>Approved
+        <x-admin.form-card :title="'Customer Review'" icon="bi bi-chat-square-quote-fill" class="mb-4">
+            <x-slot:headerActions>
+                @if($review->is_approved)
+                    <span class="badge bg-success-soft px-3 py-1">
+                        <i class="bi bi-check-circle-fill me-1"></i>Approved
                     </span>
                 @else
-                    <span class="vp-status-badge pending" style="font-size:.72rem;padding:4px 12px;">
-                        <i class="fas fa-clock me-1" style="font-size:.65rem;"></i>Pending
+                    <span class="badge bg-warning-soft px-3 py-1">
+                        <i class="bi bi-clock-fill me-1"></i>Pending
                     </span>
                 @endif
-            </div>
-            <div class="vp-card-body">
+            </x-slot:headerActions>
 
-                @php $stars = intval($review->rating ?? 0); @endphp
-                <div class="d-flex align-items-center gap-3 mb-4">
-                    <div class="d-flex align-items-center gap-1">
-                        @for($i = 1; $i <= 5; $i++)
-                            <i class="fas fa-star"
-                               style="font-size:1.1rem;color:{{ $i <= $stars ? '#f59e0b' : '#e2e8f0' }};"></i>
-                        @endfor
-                    </div>
-                    <div style="display:flex;flex-direction:column;gap:1px;">
-                        <span style="font-size:1.1rem;font-weight:800;color:var(--vp-text);line-height:1;">
-                            {{ number_format($review->rating, 1) }}
-                        </span>
-                        <span style="font-size:0.72rem;color:var(--vp-text-muted);">out of 5</span>
-                    </div>
+            @php $stars = intval($review->rating ?? 0); @endphp
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="d-flex align-items-center gap-1">
+                    @for($i = 1; $i <= 5; $i++)
+                        <i class="bi bi-star-fill"
+                           style="font-size:1.2rem;color:{{ $i <= $stars ? '#f59e0b' : '#e2e8f0' }};"></i>
+                    @endfor
                 </div>
-
-                <div style="background:var(--vp-surface-muted);border:1.5px solid var(--vp-border);border-radius:var(--vp-r-lg);padding:18px 20px;">
-                    @if($review->review)
-                        <p style="font-size:.9rem;color:var(--vp-text-2);line-height:1.7;margin:0;">
-                            "{{ $review->review }}"
-                        </p>
-                    @else
-                        <p style="font-size:.85rem;color:var(--vp-text-muted);margin:0;font-style:italic;">
-                            No written review provided.
-                        </p>
-                    @endif
+                <div class="d-flex flex-column">
+                    <span class="fs-4 fw-bold text-dark lh-1">
+                        {{ number_format((float) ($review->rating ?? 0), 1) }}
+                    </span>
+                    <small class="text-muted">out of 5 stars</small>
                 </div>
-
             </div>
-        </div>
+
+            <div class="p-3 bg-light rounded-3 border">
+                @if($review->review)
+                    <p class="mb-0 text-dark" style="font-size: .95rem; line-height: 1.7;">
+                        "{{ $review->review }}"
+                    </p>
+                @else
+                    <p class="text-muted mb-0 fst-italic">
+                        No written review provided.
+                    </p>
+                @endif
+            </div>
+        </x-admin.form-card>
     </div>
 
     {{-- Sidebar meta --}}
     <div class="col-lg-4">
 
         {{-- Customer --}}
-        <div class="vp-card mb-4">
-            <div class="vp-card-header">
-                <h6 class="vp-card-header__title">
-                    <span class="vp-card-header__icon"><i class="fas fa-user"></i></span>
-                    Customer
-                </h6>
-            </div>
-            <div class="vp-card-body">
-                <div class="d-flex align-items-center gap-3">
-                    <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        {{ strtoupper(substr(optional($review->customer)->name ?? 'G', 0, 1)) }}
+        <x-admin.form-card :title="'Customer'" icon="bi bi-person-fill" class="mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#818cf8);color:#fff;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    {{ strtoupper(substr(optional($review->customer)->name ?? 'G', 0, 1)) }}
+                </div>
+                <div>
+                    <div class="fw-bold text-dark">
+                        {{ optional($review->customer)->name ?? 'Guest Customer' }}
                     </div>
-                    <div>
-                        <div style="font-size:.875rem;font-weight:700;color:var(--vp-text);">
-                            {{ optional($review->customer)->name ?? 'Guest' }}
+                    @if(optional($review->customer)->email)
+                        <div class="text-muted small">
+                            {{ $review->customer->email }}
                         </div>
-                        @if(optional($review->customer)->email)
-                            <div style="font-size:.75rem;color:var(--vp-text-muted);margin-top:2px;">
-                                {{ $review->customer->email }}
-                            </div>
-                        @endif
-                    </div>
+                    @endif
                 </div>
             </div>
-        </div>
+        </x-admin.form-card>
 
         {{-- Product --}}
-        <div class="vp-card mb-4">
-            <div class="vp-card-header">
-                <h6 class="vp-card-header__title">
-                    <span class="vp-card-header__icon"><i class="fas fa-box-open"></i></span>
-                    Product
-                </h6>
+        <x-admin.form-card :title="'Product'" icon="bi bi-box-seam" class="mb-4">
+            <div class="fw-semibold text-dark mb-2">
+                {{ $review->product?->name ?? 'Deleted Product' }}
             </div>
-            <div class="vp-card-body">
-                <div style="font-size:.875rem;font-weight:600;color:var(--vp-text);">
-                    {{ $review->product?->name ?? 'N/A' }}
-                </div>
-                @if($review->product)
-                    <div class="mt-3">
-                        <a href="{{ route('vendor.products.edit', $review->product->id) }}" class="vp-btn-primary" style="padding:7px 14px;font-size:.78rem;">
-                            <i class="fas fa-external-link-alt" style="font-size:.7rem;"></i>
-                            View Product
-                        </a>
-                    </div>
-                @endif
-            </div>
-        </div>
+            @if($review->product)
+                <a href="{{ route('vendor.products.edit', $review->product->id) }}" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-2 rounded-pill">
+                    <i class="bi bi-box-arrow-up-right"></i> View Product
+                </a>
+            @endif
+        </x-admin.form-card>
 
         {{-- Meta details --}}
-        <div class="vp-card">
-            <div class="vp-card-header">
-                <h6 class="vp-card-header__title">
-                    <span class="vp-card-header__icon"><i class="fas fa-info-circle"></i></span>
-                    Details
-                </h6>
-            </div>
-            <div class="vp-card-body p-0">
-                <dl class="mb-0">
-                    @foreach ([
-                        ['label'=>'Review ID',  'value'=>'#'.$review->id],
-                        ['label'=>'Rating',     'value'=>$stars.'/5 ★'],
-                        ['label'=>'Status',     'value'=>$review->status == 1 ? 'Approved' : 'Pending'],
-                        ['label'=>'Submitted',  'value'=>$review->created_at?->format('M j, Y') ?? '—'],
-                    ] as $row)
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid var(--vp-border);">
-                        <dt style="font-size:.72rem;font-weight:600;color:var(--vp-text-muted);text-transform:uppercase;letter-spacing:.06em;margin:0;">{{ $row['label'] }}</dt>
-                        <dd style="font-size:.85rem;font-weight:700;color:var(--vp-text);margin:0;">{{ $row['value'] }}</dd>
-                    </div>
-                    @endforeach
-                </dl>
-            </div>
-        </div>
+        <x-admin.form-card :title="'Details'" icon="bi bi-info-circle-fill">
+            <dl class="mb-0 small">
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <dt class="text-muted fw-normal">Review ID</dt>
+                    <dd class="fw-bold mb-0">#{{ $review->id }}</dd>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <dt class="text-muted fw-normal">Rating</dt>
+                    <dd class="fw-bold mb-0 text-warning">{{ $stars }}/5 ★</dd>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <dt class="text-muted fw-normal">Status</dt>
+                    <dd class="mb-0">
+                        <span class="badge {{ $review->is_approved ? 'bg-success-soft' : 'bg-warning-soft' }}">
+                            {{ $review->is_approved ? 'Approved' : 'Pending' }}
+                        </span>
+                    </dd>
+                </div>
+                <div class="d-flex justify-content-between py-2">
+                    <dt class="text-muted fw-normal">Submitted</dt>
+                    <dd class="fw-semibold mb-0">{{ $review->created_at?->format('M j, Y') ?? '—' }}</dd>
+                </div>
+            </dl>
+        </x-admin.form-card>
 
     </div>
 </div>

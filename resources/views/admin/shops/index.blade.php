@@ -2,9 +2,13 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Shops'"
+<x-admin.page-header
+    :title="'Shops'"
+    icon="bi bi-shop"
+    :subtitle="'Manage merchant storefronts, business details and verification'"
+    :breadcrumbs="['Shops' => '#']"
     :create-route="route('admin.shops.create')"
-    :create-label="'Add New Shop'" />
+    :create-label="'Add Shop'" />
 
 <x-admin.data-card>
     <div class="table-responsive">

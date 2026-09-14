@@ -133,6 +133,7 @@ table.dataTable {
 
 // ---- Wrapper chrome ----
 // Global rule handling standalone DataTables used outside a data-card
+.dt-container:not(.admin-data-card .dt-container),
 .dataTables_wrapper:not(.admin-data-card .dataTables_wrapper) {
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -140,62 +141,103 @@ table.dataTable {
     box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05);
     overflow: hidden;
     position: relative;
+    margin-bottom: $space-6;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #6366f1 0%, #818cf8 50%, #4f46e5 100%);
+        z-index: 5;
+    }
 
     // Top bar: length + filter
+    .dt-toolbar,
     .dt-layout-row:first-child {
         display: flex;
         align-items: center;
         justify-content: space-between;
         flex-wrap: wrap;
-        gap: 12px;
-        padding: 16px 22px;
+        gap: 16px;
+        padding: 16px 24px;
         border-bottom: 1px solid #e2e8f0;
         background: #f8fafc;
     }
 
     // Bottom bar: info + paginate
+    .dt-footer,
     .dt-layout-row:last-child {
         display: flex;
         align-items: center;
         justify-content: space-between;
         flex-wrap: wrap;
-        gap: 12px;
-        padding: 14px 22px;
+        gap: 14px;
+        padding: 14px 24px;
         border-top: 1px solid #e2e8f0;
         background: #f8fafc;
     }
 
+    .dt-length,
+    .dt-search,
     .dataTables_length,
     .dataTables_filter {
         padding: 0;
         color: #64748b;
-        font-size: 0.82rem;
+        font-size: 0.8125rem;
 
         label {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 8px;
             margin: 0;
             font-weight: 500;
             color: #64748b;
+            white-space: nowrap;
         }
     }
 
+    .dt-footer__info,
+    .dt-info,
     .dataTables_info {
         padding: 0;
         color: #64748b;
-        font-size: 0.78rem;
+        font-size: 0.8125rem;
         font-weight: 500;
+        margin: 0;
     }
 
-    .dataTables_paginate { padding: 0; }
+    .dt-footer__paging,
+    .dt-paging,
+    .dataTables_paginate {
+        padding: 0;
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+}
+
+// Inside .admin-data-card, make inner wrappers transparent
+.admin-data-card .dt-container,
+.admin-data-card .dataTables_wrapper {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+
+    &::before { display: none !important; }
 }
 
 // ---- Search input ----
+.dt-search input,
+.dt-search input[type="search"],
+input.dt-input[type="search"],
 .dataTables_filter input {
     border: 1px solid #cbd5e1 !important;
     border-radius: 10px !important;
-    padding: 7px 14px 7px 34px !important;
+    padding: 7px 14px 7px 36px !important;
     font-size: 0.8125rem !important;
     font-family: var(--font-family-base) !important;
     background-color: #ffffff !important;
@@ -206,17 +248,21 @@ table.dataTable {
     outline: none !important;
     transition: all 0.18s ease !important;
     min-width: 240px;
+    height: 38px;
 
     &:focus,
     &:focus-visible {
         border-color: #6366f1 !important;
         box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.20) !important;
+        background-color: #ffffff !important;
     }
 
     &::placeholder { color: #94a3b8; }
 }
 
 // ---- Page-length select ----
+.dt-length select,
+select.dt-input,
 .dataTables_length select {
     appearance: none !important;
     -webkit-appearance: none !important;
@@ -224,12 +270,14 @@ table.dataTable {
     border-radius: 8px !important;
     padding: 6px 28px 6px 12px !important;
     font-size: 0.8125rem !important;
+    font-weight: 600 !important;
     background-color: #ffffff !important;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2364748b'/%3E%3C/svg%3E") !important;
     background-repeat: no-repeat !important;
     background-position: right 9px center !important;
     color: #1e293b !important;
-    min-width: 72px;
+    min-width: 68px;
+    height: 36px;
     cursor: pointer;
 
     &:focus,
@@ -241,21 +289,29 @@ table.dataTable {
 }
 
 // ---- Pagination ----
+.dt-paging,
 .dataTables_paginate {
     display: flex;
     align-items: center;
-    gap: 4px;
 
+    nav {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-wrap: wrap;
+    }
+
+    button.dt-paging-button,
     .paginate_button {
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
         min-width: 36px;
         height: 36px;
-        padding: 0 12px !important;
-        margin: 0 !important;
+        padding: 0 10px !important;
+        margin: 0 1px !important;
         border-radius: 8px !important;
-        font-size: 0.8rem !important;
+        font-size: 0.8125rem !important;
         font-weight: 600 !important;
         color: #475569 !important;
         background: #ffffff !important;
@@ -265,10 +321,11 @@ table.dataTable {
         user-select: none;
         line-height: 1 !important;
         text-decoration: none !important;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 
         &:hover {
             color: #4f46e5 !important;
-            background: #e0e7ff !important;
+            background: #eef2ff !important;
             border-color: #a5b4fc !important;
             text-decoration: none !important;
         }
@@ -282,12 +339,14 @@ table.dataTable {
         }
 
         &.disabled,
-        &.disabled:hover {
+        &.disabled:hover,
+        &[aria-disabled="true"] {
             color: #94a3b8 !important;
             background: #f1f5f9 !important;
             border-color: #e2e8f0 !important;
-            cursor: default;
+            cursor: not-allowed;
             box-shadow: none !important;
+            opacity: 0.65;
         }
 
         &:focus-visible {
@@ -298,22 +357,24 @@ table.dataTable {
 }
 
 // ---- Processing Backdrop Overlay ----
+.dt-processing,
 .dataTables_processing {
     position: absolute !important;
     top: 50% !important;
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
     margin: 0 !important;
-    padding: 14px 28px !important;
-    background: rgba(255, 255, 255, 0.94) !important;
+    padding: 12px 28px !important;
+    background: rgba(255, 255, 255, 0.96) !important;
     border: 1px solid #cbd5e1 !important;
-    border-radius: 14px !important;
+    border-radius: 12px !important;
     box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12) !important;
     font-size: 0.85rem !important;
     font-weight: 600 !important;
     color: #4f46e5 !important;
-    backdrop-filter: blur(6px);
-    z-index: 10;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 100;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -334,8 +395,82 @@ table.dataTable {
     to { transform: rotate(360deg); }
 }
 
-// Prevent Bootstrap override on transparent rows
-.table > :not(caption) > * > * {
-    background-color: transparent !important;
+// =====================================================================
+//  LARAVEL & BOOTSTRAP 5 PAGINATION
+//  Clean pill buttons matching DataTable paging + defense against unstyled SVGs
+// =====================================================================
+.pagination {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    margin-bottom: 0 !important;
+    padding-left: 0 !important;
+    list-style: none !important;
+
+    .page-item {
+        margin: 0 !important;
+
+        .page-link {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 36px !important;
+            height: 36px !important;
+            padding: 0 12px !important;
+            border-radius: 8px !important;
+            font-size: 0.8125rem !important;
+            font-weight: 600 !important;
+            color: #475569 !important;
+            background: #ffffff !important;
+            border: 1px solid #cbd5e1 !important;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+            transition: all 0.18s ease !important;
+            text-decoration: none !important;
+            line-height: 1 !important;
+
+            &:hover {
+                color: #4f46e5 !important;
+                background: #eef2ff !important;
+                border-color: #a5b4fc !important;
+            }
+
+            &:focus {
+                outline: none !important;
+                box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25) !important;
+            }
+        }
+
+        &.active .page-link {
+            color: #ffffff !important;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+            border-color: #4f46e5 !important;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35) !important;
+        }
+
+        &.disabled .page-link,
+        &[aria-disabled="true"] .page-link {
+            color: #94a3b8 !important;
+            background: #f1f5f9 !important;
+            border-color: #e2e8f0 !important;
+            cursor: not-allowed !important;
+            opacity: 0.65 !important;
+            box-shadow: none !important;
+        }
+    }
 }
+
+// Global safeguard: constrain any pagination SVGs (e.g. Tailwind defaults or icons)
+nav[role="navigation"] svg,
+.pagination svg,
+.page-link svg {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+    max-width: 20px !important;
+    max-height: 20px !important;
+    min-width: unset !important;
+    min-height: unset !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+
 

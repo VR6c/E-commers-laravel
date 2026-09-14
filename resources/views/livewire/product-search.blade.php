@@ -199,8 +199,7 @@
                             {{-- Image Container --}}
                             <div class="position-relative bg-light text-center p-3">
                                 @php
-                                    $imgUrl = $product->image_url
-                                        ?: ($product->thumbnail?->image_path ? asset('storage/' . $product->thumbnail->image_path) : asset('assets/images/placeholder.jpg'));
+                                    $imgUrl = product_image_url($product->image_url ?: optional($product->thumbnail)->image_url);
                                 @endphp
                                 <img
                                     src="{{ $imgUrl }}"

@@ -2,9 +2,13 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Manage Attributes'"
+<x-admin.page-header
+    :title="'Manage Attributes'"
+    icon="bi bi-sliders"
+    :subtitle="'Configure product variant attributes like size, color, and material'"
+    :breadcrumbs="['Attributes' => '#']"
     :create-route="route('admin.attributes.create')"
-    :create-label="'Add New Attribute'" />
+    :create-label="'Add Attribute'" />
 
 <x-admin.data-card>
     <div class="table-responsive">

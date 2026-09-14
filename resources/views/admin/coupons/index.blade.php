@@ -2,9 +2,13 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Coupons'"
+<x-admin.page-header
+    :title="'Coupons'"
+    icon="bi bi-ticket-perforated-fill"
+    :subtitle="'Manage promotional discounts, coupon codes and expiry rules'"
+    :breadcrumbs="['Coupons' => '#']"
     :create-route="route('admin.coupons.create')"
-    :create-label="'Add New Coupon'" />
+    :create-label="'Add Coupon'" />
 
 <x-admin.data-card>
     <div class="table-responsive">

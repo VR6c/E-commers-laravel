@@ -1,92 +1,93 @@
 @extends('admin.layouts.admin')
 
+@section('title', 'Edit Category — Admin')
+
 @section('content')
 
-<x-admin.page-header :title="'Category'">
+<x-admin.page-header
+    :title="'Edit Category'"
+    :subtitle="$category->name"
+    :breadcrumbs="['Categories' => route('admin.categories.index'), 'Edit' => '']">
     <x-slot:actions>
-        <a href="{{ route('admin.categories.index') }}" class="btn btn-light">
-            <i class="bi bi-arrow-left me-1"></i> {{ 'Back' }}
+        <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary shadow-xs">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
         </a>
     </x-slot:actions>
 </x-admin.page-header>
 
-<form action="{{ route('admin.categories.update', $category->id) }}" method="POST" enctype="multipart/form-data">
+<form id="categoryEditForm" action="{{ route('admin.categories.update', $category->id) }}" method="POST" enctype="multipart/form-data">
     @csrf
     @method('PUT')
 
-    @php $translation = $category; @endphp
-
-    <div class="row">
+    <div class="row g-4">
         <!-- Main Content -->
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold">{{ 'Name' }}</label>
-                        <input type="text" name="name"
-                            class="form-control border-0 bg-light @error('name') is-invalid @enderror"
-                            value="{{ old('name', $category->name ?? '') }}" required>
-                        @error('name')
+            <x-admin.form-card :title="'General Information'" :icon="'bi bi-folder2-open'">
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-dark">{{ 'Category Name' }} <span class="text-danger">*</span></label>
+                    <input type="text"
+                           name="name"
+                           class="form-control @error('name') is-invalid @enderror"
+                           value="{{ old('name', $category->name) }}"
+                           required>
+                    @error('name')
                         <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold">{{ 'Description' }}</label>
-                        <textarea name="description"
-                            class="form-control ck-editor @error('description') is-invalid @enderror">{{ old('description', $category->description ?? '') }}</textarea>
-                        @error('description')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-0">
-                        <label class="form-label fw-semibold">{{ 'Image' }}</label>
-                        <div class="image-upload-wrapper border rounded-3 p-4 text-center bg-light">
-                            <div id="image_preview_en" class="mb-3"
-                                style="{{ ($category->image_url) ? '' : 'display:none;' }}">
-                                <img id="image_preview_img_en"
-                                    src="{{ ($category->image_url) ? (\Illuminate\Support\Str::startsWith($category->image_url, ['http://', 'https://']) ? $category->image_url : asset('storage/' . $category->image_url)) : '#' }}"
-                                    alt="Preview" class="img-thumbnail shadow-sm" style="max-height: 150px;"
-                                    onerror="this.onerror=null;this.src='{{ asset('images/no-product.png') }}';">
-                            </div>
-                            <div class="upload-controls">
-                                <label class="btn btn-outline-primary shadow-sm" for="image_file_en">
-                                    <i class="bi bi-cloud-arrow-up me-1"></i> {{ 'Choose File' }}
-                                </label>
-                                <input type="file" name="image" accept="image/*"
-                                    class="form-control d-none @error('image') is-invalid @enderror"
-                                    id="image_file_en"
-                                    onchange="previewImage(this)">
-                            </div>
-                        </div>
-                        @error('image')
-                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @enderror
-                    </div>
+                    @enderror
                 </div>
-            </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-dark">{{ 'Description' }}</label>
+                    <textarea id="description_en"
+                              name="description"
+                              class="form-control ck-editor @error('description') is-invalid @enderror"
+                              rows="4">{{ old('description', $category->description) }}</textarea>
+                    @error('description')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-0">
+                    <x-admin.image-uploader
+                        name="image"
+                        :label="'Category Image'"
+                        :current-image="$category->image_url"
+                        aspect-ratio="wide" />
+                </div>
+            </x-admin.form-card>
         </div>
 
-        <!-- Sidebar -->
+        <!-- Sidebar Column -->
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <h6 class="fw-bold mb-3">{{ 'Publishing' }}</h6>
-                    <x-admin.combobox
-                        name="status"
-                        :label="'Status'"
-                        wrapper-class="mb-3"
-                        :selected="$category->status"
-                        :options="['active' => 'Active', 'inactive' => 'Inactive']" />
-                    <hr class="my-4">
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary shadow-sm py-2">
-                            <i class="bi bi-save me-1"></i> {{ 'Update Category' }}
-                        </button>
+            <x-admin.form-card :title="'Publishing & Status'" :icon="'bi bi-gear'">
+                <x-admin.combobox
+                    name="status"
+                    :label="'Status'"
+                    wrapper-class="mb-4"
+                    :options="['active' => 'Active', 'inactive' => 'Inactive']"
+                    :selected="old('status', $category->status ? 'active' : 'inactive')" />
+
+                <div class="mb-3 text-muted small">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Created:</span>
+                        <span class="text-dark fw-medium">{{ $category->created_at ? $category->created_at->format('M d, Y') : '—' }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Last Updated:</span>
+                        <span class="text-dark fw-medium">{{ $category->updated_at ? $category->updated_at->format('M d, Y') : '—' }}</span>
                     </div>
                 </div>
-            </div>
+
+                <hr class="my-4" style="border-color: var(--border-subtle);">
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary shadow-sm py-2-5">
+                        <i class="bi bi-save me-1 fs-6"></i> {{ 'Update Category' }}
+                    </button>
+                    <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary py-2">
+                        {{ 'Cancel' }}
+                    </a>
+                </div>
+            </x-admin.form-card>
         </div>
     </div>
 </form>
@@ -95,24 +96,15 @@
 @section('js')
 <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
 <script>
-function previewImage(input) {
-    var file = input.files[0];
-    var previewElement = document.getElementById('image_preview_en');
-    var previewImg = document.getElementById('image_preview_img_en');
-    if (file) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            previewElement.style.display = 'block';
-            previewImg.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    } else {
-        previewElement.style.display = 'none';
-    }
-}
+let ckEditor;
+ClassicEditor.create(document.getElementById('description_en'))
+    .then(editor => { ckEditor = editor; })
+    .catch(error => { console.error('CKEditor error', error); });
 
-document.querySelectorAll('.ck-editor').forEach((element) => {
-    ClassicEditor.create(element).catch(error => { console.error(error); });
+document.getElementById('categoryEditForm').addEventListener('submit', function () {
+    if (ckEditor) {
+        document.getElementById('description_en').value = ckEditor.getData();
+    }
 });
 </script>
 @endsection

@@ -2,7 +2,11 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Payment Gateways'" />
+<x-admin.page-header
+    :title="'Payment Gateways'"
+    icon="bi bi-wallet2"
+    :subtitle="'Configure active payment providers, API credentials and checkout methods'"
+    :breadcrumbs="['Payment Gateways' => '#']" />
 
 <x-admin.data-card>
     <div class="table-responsive">

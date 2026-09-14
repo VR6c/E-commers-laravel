@@ -7,10 +7,11 @@
     :title="'Product Variants'"
     icon="bi bi-layers-fill"
     :subtitle="'Manage all product size, colour and attribute variants'"
+    :breadcrumbs="['Product Variants' => '#']"
     :create-route="route('admin.product_variants.create')"
     :create-label="'Add Variant'" />
 
-{{-- Data table card — same pattern as products/index --}}
+{{-- Data table card — 100% consistent with all admin CRUD tables --}}
 <x-admin.data-card label="Product Variants Table">
     <div class="table-responsive">
         <table id="product-variants-table" class="table align-middle">
@@ -24,95 +25,9 @@
                     <th class="text-end">{{ 'Actions' }}</th>
                 </tr>
             </thead>
-            <tbody>
-                @forelse($productVariants as $productVariant)
-                <tr class="vp-anim-fade-in">
-                    <td>
-                        <span class="fw-semibold" style="color: var(--vp-text);">
-                            {{ $productVariant->product->name ?? 'Unknown Product' }}
-                        </span>
-                    </td>
-
-                    <td>
-                        <span class="vp-status-badge inactive" style="background: var(--vp-primary-bg); color: var(--vp-primary);">
-                            {{ $productVariant->name ?? '—' }}
-                        </span>
-                    </td>
-
-                    <td>
-                        <span style="font-weight: 700; color: var(--vp-primary); font-size: .875rem;">
-                            ${{ number_format($productVariant->price, 2) }}
-                        </span>
-                    </td>
-
-                    <td>
-                        @if($productVariant->stock <= 0)
-                            <span class="vp-status-badge cancelled">
-                                {{ $productVariant->stock }} — Out
-                            </span>
-                        @elseif($productVariant->stock <= 5)
-                            <span class="vp-status-badge pending">
-                                {{ $productVariant->stock }} — Low
-                            </span>
-                        @else
-                            <span class="vp-status-badge active">
-                                {{ $productVariant->stock }}
-                            </span>
-                        @endif
-                    </td>
-
-                    <td>
-                        <code style="font-size: .78rem; background: var(--vp-surface-muted); padding: 3px 8px; border-radius: var(--vp-r-xs); border: 1px solid var(--vp-border-sub); color: var(--vp-text-2);">
-                            {{ $productVariant->SKU }}
-                        </code>
-                    </td>
-
-                    <td>
-                        <div class="dt-actions">
-                            <a href="{{ route('admin.product_variants.edit', $productVariant->id) }}"
-                               class="vp-action-btn vp-action-btn--edit"
-                               title="Edit variant"
-                               aria-label="Edit variant {{ $productVariant->name }}">
-                                <i class="bi bi-pencil-fill" aria-hidden="true"></i>
-                            </a>
-
-                            <form action="{{ route('admin.product_variants.destroy', $productVariant->id) }}"
-                                  method="POST"
-                                  style="display:inline;"
-                                  onsubmit="return confirm('Delete this variant?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                        class="vp-action-btn vp-action-btn--delete"
-                                        title="Delete variant"
-                                        aria-label="Delete variant {{ $productVariant->name }}">
-                                    <i class="bi bi-trash-fill" aria-hidden="true"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="6">
-                        <div class="vp-empty-state">
-                            <div class="vp-empty-state__icon"><i class="bi bi-layers"></i></div>
-                            <p class="vp-empty-state__text">No product variants found. Click <strong>Add Variant</strong> to create one.</p>
-                        </div>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
         </table>
     </div>
 </x-admin.data-card>
-
-{{-- Laravel pagination --}}
-@if($productVariants->hasPages())
-<div class="mt-3 d-flex justify-content-end">
-    {{ $productVariants->links() }}
-</div>
-@endif
 
 @endsection
 
@@ -121,22 +36,54 @@
 <script>
 $(document).ready(function () {
     $('#product-variants-table').DataTable({
-        paging:    false,
-        searching: true,
-        ordering:  true,
-        info:      false,
-        // Custom DOM matching admin-data-card layout
+        processing: true,
+        serverSide: true,
         dom: '<"dt-toolbar"<"dt-toolbar__left"l><"dt-toolbar__right"f>>rt<"dt-footer"<"dt-footer__info"i><"dt-footer__paging"p>>',
-        language: {
-            search:         '',
-            searchPlaceholder: 'Search variants…',
-            lengthMenu:     'Show _MENU_',
-            zeroRecords:    'No matching variants found.',
-            info:           'Showing _START_–_END_ of _TOTAL_',
-            infoEmpty:      'No variants available',
-            infoFiltered:   '(filtered from _MAX_ total)',
+        ajax: {
+            url: "{{ route('admin.product_variants.data') }}",
+            type: 'POST',
+            data: function(d) {
+                d._token = "{{ csrf_token() }}";
+            }
         },
+        columns: [
+            { data: 'product', name: 'product.name' },
+            { data: 'variant_name', name: 'name' },
+            { data: 'price', name: 'price' },
+            { data: 'stock', name: 'stock' },
+            { data: 'sku', name: 'SKU' },
+            { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-end' }
+        ],
+        pageLength: 10,
+        language: {
+            search: '',
+            searchPlaceholder: 'Search variants…',
+            lengthMenu: 'Show _MENU_',
+            zeroRecords: 'No matching variants found.',
+            info: 'Showing _START_–_END_ of _TOTAL_ entries',
+            infoEmpty: 'No variants available',
+            infoFiltered: '(filtered from _MAX_ total)',
+        }
     });
 });
+
+function deleteVariant(id) {
+    if (!confirm('Are you sure you want to delete this variant?')) {
+        return;
+    }
+    $.ajax({
+        url: "{{ url('admin/product_variants') }}/" + id,
+        type: 'DELETE',
+        data: {
+            _token: "{{ csrf_token() }}"
+        },
+        success: function(response) {
+            $('#product-variants-table').DataTable().ajax.reload();
+        },
+        error: function(xhr) {
+            alert('Failed to delete variant.');
+        }
+    });
+}
 </script>
 @endsection

@@ -122,3 +122,39 @@ select.is-invalid + .ts-wrapper.focus .ts-control {
     padding: 0.4rem 0.65rem;
     text-align: left;
 }
+
+/* Custom Table Length Dropdown (Portal body attached) */
+.ts-dropdown.ts-length-dropdown {
+    min-width: 5.5rem !important;
+    width: auto !important;
+    border-radius: 8px !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12) !important;
+    padding: 4px !important;
+    background: #ffffff !important;
+    z-index: 1085 !important;
+}
+
+.ts-dropdown.ts-length-dropdown .option {
+    padding: 6px 14px !important;
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    color: #1e293b !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    text-align: center !important;
+}
+
+.ts-dropdown.ts-length-dropdown .option:hover,
+.ts-dropdown.ts-length-dropdown .option.active {
+    background: #eef2ff !important;
+    color: #4f46e5 !important;
+}
+
+.ts-dropdown.ts-length-dropdown .option[aria-selected="true"],
+.ts-dropdown.ts-length-dropdown .option.selected {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+    color: #ffffff !important;
+}
+

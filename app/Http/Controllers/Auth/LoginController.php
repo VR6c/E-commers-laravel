@@ -47,4 +47,37 @@ class LoginController extends Controller
     {
         return view('admin.auth.login');
     }
+
+    /**
+     * Attempt to log the user into the application with defensive check against unhashed passwords.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return bool
+     */
+    protected function attemptLogin(\Illuminate\Http\Request $request)
+    {
+        try {
+            $user = \App\Models\User::where($this->username(), $request->input($this->username()))->first();
+            if ($user && ! empty($user->password)) {
+                $info = password_get_info($user->password);
+                if ($info['algo'] === 0) {
+                    if ($request->input('password') === $user->password) {
+                        $user->password = $request->input('password');
+                        $user->save();
+                        $this->guard()->login($user, $request->filled('remember'));
+
+                        return true;
+                    }
+
+                    return false;
+                }
+            }
+
+            return $this->guard()->attempt(
+                $this->credentials($request), $request->filled('remember')
+            );
+        } catch (\RuntimeException $e) {
+            return false;
+        }
+    }
 }

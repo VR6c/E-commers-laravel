@@ -2,9 +2,13 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Currencies'"
+<x-admin.page-header
+    :title="'Currencies'"
+    icon="bi bi-currency-exchange"
+    :subtitle="'Manage active currencies, symbols, and currency exchange rates'"
+    :breadcrumbs="['Currencies' => '#']"
     :create-route="route('admin.currencies.create')"
-    :create-label="'Add New Currency'" />
+    :create-label="'Add Currency'" />
 
 <x-admin.data-card>
     <div class="table-responsive">

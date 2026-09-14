@@ -2,7 +2,13 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Customers'" />
+<x-admin.page-header
+    :title="'Customers'"
+    icon="bi bi-people-fill"
+    :subtitle="'Manage registered customer accounts and profiles'"
+    :breadcrumbs="['Customers' => '#']"
+    :create-route="route('admin.customers.create')"
+    :create-label="'Add Customer'" />
 
 <x-admin.data-card>
     <div class="table-responsive">
@@ -13,6 +19,7 @@
                     <th>{{ 'Name' }}</th>
                     <th>{{ 'Email' }}</th>
                     <th>{{ 'Phone' }}</th>
+                    <th>{{ 'Status' }}</th>
                     <th class="text-end">{{ 'Action' }}</th>
                 </tr>
             </thead>
@@ -47,11 +54,14 @@ $(document).ready(function() {
             { data: 'id', name: 'id' },
             { data: 'name', name: 'name' },
             { data: 'email', name: 'email' },
-            { data: 'phone', name: 'phone' },
+            { data: 'phone', name: 'phone', defaultContent: '<span class="text-muted">—</span>' },
+            { data: 'status', name: 'status' },
             {
                 data: 'action', name: 'action', orderable: false, searchable: false,
                 render: function(data, type, row) {
+                    var editUrl = "{{ route('admin.customers.edit', ':id') }}".replace(':id', row.id);
                     return `<div class="dt-actions">
+                        <a href="${editUrl}" class="btn-action btn-action-edit" title="Edit Customer" aria-label="Edit customer ${row.id}"><i class="bi bi-pencil-fill"></i></a>
                         <button type="button" class="btn-action btn-action-delete" onclick="deleteCustomer(${row.id})" title="Delete" aria-label="Delete customer ${row.id}"><i class="bi bi-trash-fill"></i></button>
                     </div>`;
                 }

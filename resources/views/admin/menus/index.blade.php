@@ -2,9 +2,13 @@
 
 @section('content')
 
-<x-admin.page-header :title="'All Menus'"
+<x-admin.page-header
+    :title="'All Menus'"
+    icon="bi bi-list-nested"
+    :subtitle="'Configure navigation menus, menu items, and location placements'"
+    :breadcrumbs="['Menus' => '#']"
     :create-route="route('admin.menus.create')"
-    :create-label="'Add New Menu'" />
+    :create-label="'Add Menu'" />
 
 <x-admin.data-card>
     <div class="table-responsive">

@@ -13,7 +13,11 @@ class ProductVariantController extends Controller
 {
     public function index()
     {
-        return view('admin.product_variants.index');
+        $productVariants = ProductVariant::with('product')
+            ->latest()
+            ->paginate(15);
+
+        return view('admin.product_variants.index', compact('productVariants'));
     }
 
     public function getData(Request $request)
@@ -23,16 +27,31 @@ class ProductVariantController extends Controller
 
         return DataTables::of($productVariants)
             ->addColumn('id', fn ($pv) => $pv->id)
-            ->addColumn('product', fn ($pv) => $pv->product->name ?? 'Unknown Product')
-            ->addColumn('variant_name', fn ($pv) => $pv->name ?? 'N/A')
-            ->addColumn('action', function ($pv) {
-                return '<a href="'.route('admin.product_variants.edit', $pv->id).'" class="btn btn-warning btn-sm">Edit</a>
-                    <form action="'.route('admin.product_variants.destroy', $pv->id).'" method="POST" style="display:inline;" onsubmit="return confirm(\'Are you sure?\');">
-                        '.csrf_field().method_field('DELETE').'
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>';
+            ->addColumn('product', fn ($pv) => '<span class="fw-semibold" style="color: var(--vp-text);">' . e($pv->product->name ?? 'Unknown Product') . '</span>')
+            ->addColumn('variant_name', function ($pv) {
+                return '<span class="vp-status-badge inactive" style="background: var(--vp-primary-bg); color: var(--vp-primary); font-weight: 600;">' . e($pv->name ?? '—') . '</span>';
             })
-            ->rawColumns(['action'])
+            ->addColumn('price', fn ($pv) => '<span style="font-weight: 700; color: var(--vp-primary); font-size: .875rem;">$' . number_format((float) $pv->price, 2) . '</span>')
+            ->addColumn('stock', function ($pv) {
+                if ($pv->stock <= 0) {
+                    return '<span class="vp-status-badge cancelled">' . (int)$pv->stock . ' — Out</span>';
+                } elseif ($pv->stock <= 5) {
+                    return '<span class="vp-status-badge pending">' . (int)$pv->stock . ' — Low</span>';
+                }
+                return '<span class="vp-status-badge active">' . (int)$pv->stock . '</span>';
+            })
+            ->addColumn('sku', fn ($pv) => '<code style="font-size: .78rem; background: var(--vp-surface-muted); padding: 3px 8px; border-radius: var(--vp-r-xs); border: 1px solid var(--vp-border-sub); color: var(--vp-text-2);">' . e($pv->SKU ?? '—') . '</code>')
+            ->addColumn('action', function ($pv) {
+                return '<div class="dt-actions">
+                    <a href="'.route('admin.product_variants.edit', $pv->id).'" class="btn-action btn-action-edit" title="Edit variant" aria-label="Edit variant">
+                        <i class="bi bi-pencil-fill"></i>
+                    </a>
+                    <button type="button" class="btn-action btn-action-delete" onclick="deleteVariant('.$pv->id.')" title="Delete variant" aria-label="Delete variant">
+                        <i class="bi bi-trash-fill"></i>
+                    </button>
+                </div>';
+            })
+            ->rawColumns(['product', 'variant_name', 'price', 'stock', 'sku', 'action'])
             ->make(true);
     }
 
@@ -89,9 +108,17 @@ class ProductVariantController extends Controller
         try {
             ProductVariant::findOrFail($id)->delete();
 
-            return response()->json(['success' => true, 'message' => 'Product Variant deleted successfully.']);
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Product Variant deleted successfully.']);
+            }
+
+            return redirect()->route('admin.product_variants.index')->with('success', 'Product Variant deleted successfully.');
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'An error occurred while deleting the product variant.']);
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json(['success' => false, 'message' => 'An error occurred while deleting the product variant.']);
+            }
+
+            return redirect()->route('admin.product_variants.index')->with('error', 'An error occurred while deleting the product variant.');
         }
     }
 }

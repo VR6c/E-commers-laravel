@@ -2,9 +2,13 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Social Media Links'"
+<x-admin.page-header
+    :title="'Social Media Links'"
+    icon="bi bi-share-fill"
+    :subtitle="'Manage official brand social profiles and footer channel links'"
+    :breadcrumbs="['Social Media' => '#']"
     :create-route="route('admin.social-media-links.create')"
-    :create-label="'Add New'" />
+    :create-label="'Add Link'" />
 
 <x-admin.data-card>
     <div class="table-responsive">
@@ -14,7 +18,7 @@
                     <th>{{ 'ID' }}</th>
                     <th>{{ 'Platform' }}</th>
                     <th>{{ 'URL' }}</th>
-                    <th>{{ 'Status' }}</th>
+                    <th>{{ 'Type' }}</th>
                     <th class="text-end">{{ 'Action' }}</th>
                 </tr>
             </thead>
@@ -54,7 +58,12 @@ $(document).ready(function() {
                     return `<a href="${data}" target="_blank" class="text-muted small text-decoration-none">${data}</a>`;
                 }
             },
-            { data: 'status', name: 'status' },
+            {
+                data: 'type', name: 'type',
+                render: function(data) {
+                    return `<span class="badge bg-primary-soft text-primary text-uppercase">${data || '—'}</span>`;
+                }
+            },
             {
                 data: 'action', name: 'action', orderable: false, searchable: false,
                 render: function(data, type, row) {

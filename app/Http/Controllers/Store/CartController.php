@@ -120,7 +120,57 @@ class CartController extends Controller
     {
         $cart = Session::get('cart', []);
 
-        return view('themes.xylo.cart', compact('cart'));
+        $productIds = collect($cart)->pluck('product_id')->filter()->unique()->values();
+        $variantIds = collect($cart)->pluck('variant_id')->filter()->unique()->values();
+        $allAttrValueIds = collect($cart)->pluck('attributes')->flatten()->filter()->unique()->values();
+
+        $products = Product::with('thumbnail')->whereIn('id', $productIds)->get()->keyBy('id');
+        $variants = ProductVariant::with('images')->whereIn('id', $variantIds)->get()->keyBy('id');
+        $attributeValues = \App\Models\AttributeValue::with('attribute')->whereIn('id', $allAttrValueIds)->get()->keyBy('id');
+
+        $hydratedCart = [];
+        foreach ($cart as $key => $item) {
+            $product = $products->get($item['product_id']);
+            $variant = isset($item['variant_id']) ? $variants->get($item['variant_id']) : null;
+            if (! $variant && $product) {
+                $variant = $product->variants()->whereRaw('is_primary is true')->first();
+            }
+
+            $sizes = [];
+            $colors = [];
+            if (! empty($item['attributes'])) {
+                foreach ($item['attributes'] as $attrId) {
+                    $av = $attributeValues->get($attrId);
+                    if ($av && $av->attribute) {
+                        $attrName = strtolower($av->attribute->name);
+                        if ($attrName === 'size') {
+                            $sizes[] = $av->translated_value;
+                        } elseif ($attrName === 'color') {
+                            $colors[] = $av->translated_value;
+                        }
+                    }
+                }
+            }
+
+            $imageUrl = product_image_url(($variant?->images?->first() ?? $product?->thumbnail)?->image_url);
+            $displayName = $variant?->name ?? $product?->name ?? 'Product';
+            $subtotal = $item['price'] * $item['quantity'];
+
+            $hydratedCart[$key] = array_merge($item, [
+                'product' => $product,
+                'variant' => $variant,
+                'display_name' => $displayName,
+                'image_url' => $imageUrl,
+                'sizes' => $sizes,
+                'colors' => $colors,
+                'subtotal' => $subtotal,
+            ]);
+        }
+
+        return view('themes.xylo.cart', [
+            'cart' => $cart,
+            'hydratedCart' => $hydratedCart,
+        ]);
     }
 
     public function removeFromCart(Request $request)

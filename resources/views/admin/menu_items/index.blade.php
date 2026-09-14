@@ -2,9 +2,13 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Menu Items'"
-    :create-route="route('admin.menus.items.create', $menu->id)"
-    :create-label="'Add New Item'" />
+<x-admin.page-header
+    :title="'Menu Items'"
+    icon="bi bi-link-45deg"
+    :subtitle="'Manage hierarchy and links for menu: ' . ($menu ? ($menu->title ?? '#' . $menu->id) : 'All Menus')"
+    :breadcrumbs="['Menus' => route('admin.menus.index'), ($menu->title ?? 'Menu') => ($menu ? route('admin.menus.edit', $menu->id) : '#'), 'Items' => '#']"
+    :create-route="$menu ? route('admin.menus.items.create', $menu->id) : route('admin.menus.create')"
+    :create-label="'Add Item'" />
 
 <x-admin.data-card>
     <div class="table-responsive">

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Vendor\UpdateProfileRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProfileController extends Controller
 {
@@ -45,7 +46,7 @@ class ProfileController extends Controller
         $vendor = auth()->guard('vendor')->user();
 
         // Handle profile image deletion
-        if ($vendor->profile_image && Storage::exists('public/' . $vendor->profile_image)) {
+        if ($vendor->profile_image && !Str::startsWith($vendor->profile_image, ['http://', 'https://']) && Storage::exists('public/' . $vendor->profile_image)) {
             Storage::delete('public/' . $vendor->profile_image);
         }
 

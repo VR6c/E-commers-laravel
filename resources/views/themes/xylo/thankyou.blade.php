@@ -273,9 +273,8 @@
                             <div class="xsf-ty-items">
                                 @foreach ($order->details as $detail)
                                     @php
-                                        $product   = $detail->product;
-                                        $thumbUrl  = $product?->thumbnail?->path
-                                                     ? asset('storage/' . $product->thumbnail->path)
+                                        $thumbUrl  = $product?->thumbnail?->image_url
+                                                     ? product_image_url($product->thumbnail->image_url)
                                                      : null;
                                         $name = $product
                                             ? ($product->name ?? 'Product Name Not Available')

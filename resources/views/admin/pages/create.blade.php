@@ -1,104 +1,113 @@
 @extends('admin.layouts.admin')
 
+@section('title', 'Create Page — Admin')
+
 @section('content')
 
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center">
-            <h4 class="mb-0 fw-bold">{{ 'Create Page' }}</h4>
-            <a href="{{ route('admin.pages.index') }}" class="btn btn-outline-secondary shadow-sm">
-                <i class="bi bi-arrow-left me-1"></i> {{ 'Back' }}
-            </a>
-        </div>
-    </div>
-</div>
+<x-admin.page-header
+    :title="'Create Page'"
+    :breadcrumbs="['Pages' => route('admin.pages.index'), 'Create' => '']">
+    <x-slot:actions>
+        <a href="{{ route('admin.pages.index') }}" class="btn btn-secondary shadow-xs">
+            <i class="bi bi-arrow-left me-1"></i> Back to Pages
+        </a>
+    </x-slot:actions>
+</x-admin.page-header>
 
 <form id="pageForm" action="{{ route('admin.pages.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
-    <div class="row">
+
+    <div class="row g-4">
         <!-- Main Content -->
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold">{{ 'Title' }}</label>
-                        <input type="text" name="title"
-                            value="{{ old('title') }}"
-                            class="form-control border-0 bg-light @error('title') is-invalid @enderror"
-                            placeholder="Enter page title">
-                        @error('title')
+            <x-admin.form-card :title="'Page Content'" :icon="'bi bi-file-earmark-richtext'">
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-dark">{{ 'Page Title' }} <span class="text-danger">*</span></label>
+                    <input type="text"
+                           name="title"
+                           value="{{ old('title') }}"
+                           class="form-control @error('title') is-invalid @enderror"
+                           placeholder="e.g. About Us, Terms of Service, Privacy Policy"
+                           required
+                           autofocus>
+                    @error('title')
                         <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-0">
-                        <label class="form-label fw-semibold">{{ 'Content' }}</label>
-                        <textarea id="content_en" name="content"
-                            class="form-control ck-editor @error('content') is-invalid @enderror">{{ old('content') }}</textarea>
-                        @error('content')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                    @enderror
                 </div>
-            </div>
+
+                <div class="mb-0">
+                    <label class="form-label fw-semibold text-dark mb-2">{{ 'Body Content' }}</label>
+                    <textarea id="content_en"
+                              name="content"
+                              class="form-control ck-editor @error('content') is-invalid @enderror">{{ old('content') }}</textarea>
+                    @error('content')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </x-admin.form-card>
         </div>
 
         <!-- Sidebar -->
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <h6 class="fw-bold mb-3">{{ 'Publishing' }}</h6>
-                    <p class="text-muted small">{{ 'Save to publish this page.' }}</p>
-                    <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-primary shadow-sm py-2">
-                            <i class="bi bi-save me-1"></i> {{ 'Save Page' }}
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Image -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <h6 class="fw-bold mb-3">{{ 'Image' }}</h6>
-                    <div class="mb-3">
-                        <div class="image-upload-wrapper">
-                            <div class="image-preview mb-3 text-center bg-light rounded py-4 border-2 border-dashed"
-                                 id="image_preview_en"
-                                 style="{{ old('image_base64') ? '' : 'display:none;' }}">
-                                <img id="image_preview_img_en"
-                                    src="{{ old('image_base64') ?: '#' }}"
-                                    class="img-fluid rounded shadow-sm" style="max-height: 150px;">
-                            </div>
-
-                            @if(!old('image_base64'))
-                            <div class="placeholder-preview mb-3 text-center bg-light rounded py-4 border-2 border-dashed pointer-cursor"
-                                 onclick="document.getElementById('image_file_en').click()"
-                                 id="placeholder_en">
-                                <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
-                                <p class="text-muted small mt-2 mb-0">{{ 'Click to upload' }}</p>
-                            </div>
-                            @endif
-
-                            <div class="d-grid">
-                                <label class="btn btn-outline-primary btn-sm" for="image_file_en">
-                                    <i class="bi bi-cloud-arrow-up me-1"></i> {{ 'Choose Image' }}
-                                </label>
-                                <input type="file" id="image_file_en"
-                                    name="image" accept="image/*"
-                                    class="form-control d-none @error('image') is-invalid @enderror"
-                                    onchange="previewImage(this)">
-                            </div>
-
-                            <input type="hidden" id="image_base64_en"
-                                name="image_base64"
-                                value="{{ old('image_base64') }}">
+            <!-- Featured Image -->
+            <x-admin.form-card :title="'Featured Image'" :icon="'bi bi-image'">
+                <div class="mb-3">
+                    <div class="image-upload-wrapper">
+                        <div class="image-preview mb-3 text-center bg-light rounded py-4 border-2 border-dashed"
+                             id="image_preview_en"
+                             style="{{ old('image_base64') ? '' : 'display:none;' }}">
+                            <img id="image_preview_img_en"
+                                src="{{ old('image_base64') ?: '#' }}"
+                                class="img-fluid rounded shadow-sm" style="max-height: 160px; object-fit: cover;">
                         </div>
-                        @error('image')
-                        <div class="invalid-feedback d-block mt-2">{{ $message }}</div>
-                        @enderror
+
+                        @if(!old('image_base64'))
+                        <div class="placeholder-preview mb-3 text-center bg-light rounded py-4 border-2 border-dashed"
+                             onclick="document.getElementById('image_file_en').click()"
+                             id="placeholder_en"
+                             style="cursor: pointer;">
+                            <i class="bi bi-cloud-arrow-up text-primary" style="font-size: 2.25rem;"></i>
+                            <p class="text-dark fw-medium small mt-2 mb-1">Click to upload header image</p>
+                            <span class="text-muted" style="font-size: 0.75rem;">PNG, JPG, WEBP up to 2MB</span>
+                        </div>
+                        @endif
+
+                        <div class="d-grid">
+                            <label class="btn btn-outline-primary btn-sm" for="image_file_en">
+                                <i class="bi bi-upload me-1"></i> {{ 'Choose File' }}
+                            </label>
+                            <input type="file" id="image_file_en"
+                                name="image" accept="image/*"
+                                class="form-control d-none @error('image') is-invalid @enderror"
+                                onchange="previewImage(this)">
+                        </div>
+
+                        <input type="hidden" id="image_base64_en"
+                            name="image_base64"
+                            value="{{ old('image_base64') }}">
                     </div>
+                    @error('image')
+                        <div class="invalid-feedback d-block mt-2">{{ $message }}</div>
+                    @enderror
                 </div>
+            </x-admin.form-card>
+
+            <div class="mt-4">
+                <!-- Publishing Actions -->
+                <x-admin.form-card :title="'Publishing'" :icon="'bi bi-send'">
+                    <p class="text-muted small mb-4">
+                        Pages are automatically published upon saving and will appear in header or footer menus once linked.
+                    </p>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary shadow-sm py-2-5">
+                            <i class="bi bi-check-circle-fill me-1"></i> {{ 'Publish Page' }}
+                        </button>
+                        <a href="{{ route('admin.pages.index') }}" class="btn btn-secondary py-2">
+                            {{ 'Cancel' }}
+                        </a>
+                    </div>
+                </x-admin.form-card>
             </div>
         </div>
     </div>

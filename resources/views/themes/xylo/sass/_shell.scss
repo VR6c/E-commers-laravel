@@ -278,6 +278,52 @@ $sf-accent:  $color-primary;
 
             img { border-radius: $radius-sm; object-fit: cover; }
         }
+
+        .xsf-search-suggestion {
+            display: flex;
+            align-items: center;
+            gap: $space-3;
+            padding: $space-3 $space-4;
+            text-decoration: none;
+            color: $neutral-900;
+            transition: background $transition-fast;
+            border-bottom: 1px solid $border-subtle;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            &:hover {
+                background: $primary-50;
+                color: $color-primary;
+            }
+
+            &__img {
+                width: 42px;
+                height: 42px;
+                border-radius: $radius-md;
+                object-fit: cover;
+                flex-shrink: 0;
+            }
+
+            &__info {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            &__title {
+                font-size: $font-size-sm;
+                font-weight: $font-weight-semibold;
+            }
+
+            &--empty {
+                padding: $space-4;
+                text-align: center;
+                color: $text-muted;
+                font-size: $font-size-sm;
+            }
+        }
     }
 
     &--mobile {
@@ -591,13 +637,28 @@ $sf-accent:  $color-primary;
         z-index: 1;
     }
 
+    &__brand {
+        display: inline-flex;
+        align-items: center;
+        gap: $space-3;
+        text-decoration: none;
+        margin-bottom: $space-4;
+        transition: opacity $transition-fast;
+
+        &:hover { opacity: 0.85; }
+
+        .xsf-footer__logo {
+            margin-bottom: 0;
+        }
+    }
+
     &__logo {
-        max-height: 44px;
-        max-width: 140px;
+        height: 44px;
+        width: auto;
+        max-width: 160px;
         object-fit: contain;
         margin-bottom: $space-4;
-        filter: brightness(0) invert(1);
-        opacity: 0.85;
+        display: block;
     }
 
     &__wordmark {

@@ -1,51 +1,47 @@
 // =====================================================================
-//  DESIGN TOKENS — Single source of truth
-//  Arctic Reflection palette:
-//    #5289AD  steel blue (primary)
-//    #243C4C  deep navy  (dark / sidebar)
-//    #ACBCBF  silver mist (neutral mid)
-//    #F4FCFB  ice white  (surface)
-//    #698696  slate      (accent / muted)
+//  DESIGN TOKENS — Single source of truth (Modern Slate & Tech Indigo)
+//  Clean, crisp, high-contrast, professional SaaS palette
 // =====================================================================
 
 @use 'sass:map';
 
-$primary-50:  #edf4f9;
-$primary-100: #d5e7f2;
-$primary-200: #aacfe5;
-$primary-300: #7db6d7;
-$primary-400: #5f9ec4;
-$primary-500: #5289AD;   // ← Arctic Reflection key colour
-$primary-600: #3f6f90;
-$primary-700: #2f5470;
-$primary-800: #243C4C;   // ← deep navy
-$primary-900: #172530;
+// Primary Brand Scale — Modern Indigo
+$primary-50:  #eef2ff;
+$primary-100: #e0e7ff;
+$primary-200: #c7d2fe;
+$primary-300: #a5b4fc;
+$primary-400: #818cf8;
+$primary-500: #6366f1;
+$primary-600: #4f46e5;   // Key brand primary
+$primary-700: #4338ca;
+$primary-800: #3730a3;
+$primary-900: #312e81;
 
-// Slate accent — #698696 scale
-$accent-100: #e8eef0;
-$accent-200: #c8d5da;
-$accent-300: #a5bcc3;
-$accent-400: #7ea2ac;
-$accent-500: #698696;   // ← Arctic Reflection slate
-$accent-600: #536d7a;
-$accent-700: #3e5460;
+// Accent / Purple Scale
+$accent-100: #f3e8ff;
+$accent-200: #e9d5ff;
+$accent-300: #d8b4fe;
+$accent-400: #c084fc;
+$accent-500: #a855f7;
+$accent-600: #9333ea;
+$accent-700: #7e22ce;
 
-// Neutral — Arctic silver/ice scale
+// Neutral Scale — Slate / Obsidian
 $neutral-0:   #ffffff;
-$neutral-50:  #F4FCFB;   // ← Arctic Reflection ice white
-$neutral-100: #e8f4f3;
-$neutral-200: #ACBCBF;   // ← Arctic Reflection silver mist
-$neutral-300: #8fa9ad;
-$neutral-400: #6f8e94;
-$neutral-500: #4f7078;
-$neutral-600: #3d5760;
-$neutral-700: #2e4250;
-$neutral-800: #1e2e3a;
-$neutral-850: #172533;
-$neutral-900: #0e1a24;
-$neutral-950: #060e14;
+$neutral-50:  #f8fafc;   // Canvas background
+$neutral-100: #f1f5f9;   // Input/muted surface
+$neutral-200: #e2e8f0;   // Default hairline border
+$neutral-300: #cbd5e1;   // Hover border / dark icon
+$neutral-400: #94a3b8;   // Placeholder / subdued text
+$neutral-500: #64748b;   // Muted text
+$neutral-600: #475569;   // Secondary text
+$neutral-700: #334155;   // Body text
+$neutral-800: #1e293b;   // Card headers / dark elements
+$neutral-850: #131d2e;   // Sidebar mid
+$neutral-900: #0f172a;   // Deep headings / sidebar base
+$neutral-950: #0b0f19;   // Obsidian dark / sidebar header
 
-// Semantic — success / emerald
+// Semantic Statuses
 $success-50:  #ecfdf5;
 $success-100: #d1fae5;
 $success-200: #a7f3d0;
@@ -53,15 +49,13 @@ $success-500: #10b981;
 $success-600: #059669;
 $success-700: #047857;
 
-// Semantic — danger / rose
-$danger-50:   #fff1f2;
-$danger-100:  #ffe4e6;
-$danger-200:  #fecdd3;
-$danger-500:  #f43f5e;
-$danger-600:  #e11d48;
-$danger-700:  #be123c;
+$danger-50:   #fef2f2;
+$danger-100:  #fee2e2;
+$danger-200:  #fecaca;
+$danger-500:  #ef4444;
+$danger-600:  #dc2626;
+$danger-700:  #b91c1c;
 
-// Semantic — warning / amber
 $warning-50:  #fffbeb;
 $warning-100: #fef3c7;
 $warning-200: #fde68a;
@@ -69,72 +63,69 @@ $warning-500: #f59e0b;
 $warning-600: #d97706;
 $warning-700: #b45309;
 
-// Semantic — info / sky
 $info-50:     #eff6ff;
 $info-100:    #dbeafe;
 $info-200:    #bfdbfe;
-$info-500:    #3b82f6;
-$info-600:    #2563eb;
-$info-700:    #1d4ed8;
+$info-500:    #0ea5e9;
+$info-600:    #0284c7;
+$info-700:    #0369a1;
 
 // Semantic aliases
-$color-primary:        $primary-500;
-$color-primary-hover:  $primary-600;
-$color-primary-active: $primary-700;
+$color-primary:        $primary-600;
+$color-primary-hover:  $primary-700;
+$color-primary-active: $primary-800;
 
-// Surfaces — Arctic ice tones
-$body-bg:        #eaf4f5;
+// Canvas & Surfaces
+$body-bg:        #f8fafc;
 $surface:        #ffffff;
-$surface-muted:  #F4FCFB;   // ← Arctic Reflection ice white
-$surface-raised: #f7fefe;
-$border-color:   #ACBCBF;   // ← silver mist
-$border-subtle:  #d0e0e3;
+$surface-muted:  #f8fafc;
+$surface-raised: #ffffff;
+$border-color:   #e2e8f0;
+$border-subtle:  #f1f5f9;
 
 // Text
-$text-primary:   #1e2e3a;
-$text-secondary: #3d5760;
-$text-muted:     #698696;   // ← Arctic Reflection slate
-$text-inverse:   $neutral-0;
+$text-primary:   #0f172a;
+$text-secondary: #475569;
+$text-muted:     #64748b;
+$text-inverse:   #ffffff;
 
 // ---------------------------------------------------------------------
-//  GRADIENT PRESETS  (Arctic Reflection)
+//  GRADIENT PRESETS
 // ---------------------------------------------------------------------
+$gradient-primary:  linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #818cf8 100%);
+$gradient-indigo:   linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+$gradient-dark:     linear-gradient(180deg, #0b0f19 0%, #0f172a 100%);
+$gradient-sky:      linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+$gradient-amber:    linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+$gradient-emerald:  linear-gradient(135deg, #10b981 0%, #059669 100%);
+$gradient-rose:     linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
 
-// Hero / banner gradients — icy blues
-$gradient-hero:    linear-gradient(135deg, #edf4f9 0%, #F4FCFB 40%, #e8f4f3 100%);
-$gradient-hero-alt: linear-gradient(160deg, #d5e7f2 0%, #ACBCBF 50%, #F4FCFB 100%);
-
-// Feature / card accent gradients
-$gradient-primary:  linear-gradient(135deg, $primary-500 0%, $accent-500 100%);
-$gradient-indigo:   linear-gradient(135deg, #5289AD 0%, #698696 60%, #ACBCBF 100%);
-$gradient-sky:      linear-gradient(135deg, #5289AD 0%, #3f6f90 60%, #243C4C 100%);
-$gradient-amber:    linear-gradient(135deg, #f59e0b 0%, #f97316 60%, #fb923c 100%);
-$gradient-emerald:  linear-gradient(135deg, #10b981 0%, #059669 60%, #34d399 100%);
-$gradient-rose:     linear-gradient(135deg, #f43f5e 0%, #ec4899 60%, #f97316 100%);
-$gradient-violet:   linear-gradient(135deg, #698696 0%, #5289AD 60%, #243C4C 100%);
-$gradient-dark:     linear-gradient(135deg, #243C4C 0%, #172530 100%);
-
-// Mesh / subtle surface gradients
-$gradient-surface-soft: linear-gradient(135deg, rgba($primary-50, 0.7) 0%, rgba($accent-100, 0.5) 50%, rgba(#F4FCFB, 0.4) 100%);
+// Dashboard and Storefront gradient aliases
+$gradient-card-blue:    $gradient-indigo;
+$gradient-card-cyan:    $gradient-sky;
+$gradient-card-orange:  $gradient-amber;
+$gradient-card-green:   $gradient-emerald;
+$gradient-surface-soft: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+$gradient-hero:         linear-gradient(135deg, #0b0f19 0%, #1e1b4b 50%, #312e81 100%);
 
 // ---------------------------------------------------------------------
 //  TYPOGRAPHY
 // ---------------------------------------------------------------------
-$font-family-sans-serif: 'Exo 2', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-$font-family-brand:      'Exo 2', 'Plus Jakarta Sans', 'Poppins', $font-family-sans-serif;
+$font-family-sans-serif: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+$font-family-brand:      'Plus Jakarta Sans', $font-family-sans-serif;
 $font-family-base:       $font-family-sans-serif;
-$font-weight-default:    700;
+$font-weight-default:    400;
 
 $font-size-xs:   0.75rem;    // 12px
-$font-size-sm:   0.875rem;   // 14px
-$font-size-base: 1rem;       // 16px
-$font-size-md:   1.125rem;   // 18px
-$font-size-lg:   1.25rem;    // 20px
-$font-size-xl:   1.5rem;     // 24px
-$font-size-2xl:  1.875rem;   // 30px
-$font-size-3xl:  2.25rem;    // 36px
-$font-size-4xl:  3rem;       // 48px
-$font-size-5xl:  3.75rem;    // 60px
+$font-size-sm:   0.84rem;    // 13.5px
+$font-size-base: 0.925rem;   // 14.8px
+$font-size-md:   1.05rem;    // 16.8px
+$font-size-lg:   1.2rem;     // 19.2px
+$font-size-xl:   1.4rem;     // 22.4px
+$font-size-2xl:  1.75rem;    // 28px
+$font-size-3xl:  2.2rem;     // 35.2px
+$font-size-4xl:  2.75rem;    // 44px
+$font-size-5xl:  3.5rem;     // 56px
 
 $font-weight-normal:    400;
 $font-weight-medium:    500;
@@ -145,11 +136,11 @@ $font-weight-black:     900;
 
 $line-height-tight:  1.25;
 $line-height-snug:   1.375;
-$line-height-base:   1.6;
-$line-height-loose:  1.8;
+$line-height-base:   1.55;
+$line-height-loose:  1.75;
 
 // ---------------------------------------------------------------------
-//  SPACING SCALE  (4px base grid)
+//  SPACING SCALE (4px base)
 // ---------------------------------------------------------------------
 $space-0:  0;
 $space-1:  0.25rem;  //  4px
@@ -165,46 +156,39 @@ $space-12: 3rem;     // 48px
 $space-14: 3.5rem;   // 56px
 $space-16: 4rem;     // 64px
 $space-20: 5rem;     // 80px
-$space-24: 6rem;     // 96px
 
 // ---------------------------------------------------------------------
 //  BORDER RADIUS
 // ---------------------------------------------------------------------
 $radius-xs:   0.25rem;  //  4px
-$radius-sm:   0.375rem;  //  6px
-$radius-md:   0.625rem;  // 10px
-$radius-lg:   0.875rem;  // 14px
-$radius-xl:   1.125rem;  // 18px
-$radius-2xl:  1.5rem;    // 24px
-$radius-3xl:  2rem;      // 32px
-$radius-4xl:  2.5rem;    // 40px
+$radius-sm:   0.375rem; //  6px
+$radius-md:   0.625rem; // 10px
+$radius-lg:   0.875rem; // 14px
+$radius-xl:   1.125rem; // 18px
+$radius-2xl:  1.5rem;   // 24px
+$radius-3xl:  2rem;     // 32px
 $radius-pill: 9999px;
 
 // ---------------------------------------------------------------------
-//  SHADOWS — layered for realism
+//  SHADOWS (SaaS-grade subtle elevation)
 // ---------------------------------------------------------------------
-$shadow-xs:    0 1px 2px 0 rgba(36, 60, 76, 0.05);
-$shadow-sm:    0 1px 3px 0 rgba(36, 60, 76, 0.09), 0 1px 2px -1px rgba(36, 60, 76, 0.06);
-$shadow-md:    0 4px 12px -1px rgba(36, 60, 76, 0.11), 0 2px 6px -2px rgba(36, 60, 76, 0.07);
-$shadow-lg:    0 10px 24px -3px rgba(36, 60, 76, 0.13), 0 4px 10px -4px rgba(36, 60, 76, 0.08);
-$shadow-xl:    0 20px 40px -6px rgba(36, 60, 76, 0.15), 0 8px 16px -6px rgba(36, 60, 76, 0.08);
-$shadow-2xl:   0 32px 56px -8px rgba(36, 60, 76, 0.22);
-$shadow-3xl:   0 48px 80px -12px rgba(36, 60, 76, 0.30);
-$shadow-focus: 0 0 0 3px rgba(82, 137, 173, 0.30);
-$shadow-primary: 0 6px 20px -4px rgba(82, 137, 173, 0.45);
-$shadow-inset: inset 0 1px 3px rgba(36, 60, 76, 0.07);
-$shadow-inner: inset 0 2px 4px rgba(36, 60, 76, 0.09);
-
-// Colored shadows — Arctic palette
-$shadow-indigo:  0 8px 24px -4px rgba(82, 137, 173, 0.40);
-$shadow-sky:     0 8px 24px -4px rgba(82, 137, 173, 0.35);
-$shadow-amber:   0 8px 24px -4px rgba(245, 158, 11, 0.40);
-$shadow-emerald: 0 8px 24px -4px rgba(16, 185, 129, 0.40);
-$shadow-rose:    0 8px 24px -4px rgba(244, 63, 94, 0.40);
-$shadow-violet:  0 8px 24px -4px rgba(105, 134, 150, 0.40);
+$shadow-xs:    0 1px 2px 0 rgba(15, 23, 42, 0.04);
+$shadow-sm:    0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+$shadow-md:    0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+$shadow-lg:    0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+$shadow-xl:    0 20px 25px -5px rgba(15, 23, 42, 0.10), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+$shadow-2xl:   0 25px 50px -12px rgba(15, 23, 42, 0.18);
+$shadow-3xl:   0 35px 60px -15px rgba(15, 23, 42, 0.25);
+$shadow-focus:   0 0 0 3px rgba(99, 102, 241, 0.22);
+$shadow-primary: 0 4px 14px rgba(79, 70, 229, 0.28);
+$shadow-inset:   inset 0 1px 2px rgba(15, 23, 42, 0.05);
+$shadow-indigo:  0 10px 25px -5px rgba(99, 102, 241, 0.4);
+$shadow-sky:     0 10px 25px -5px rgba(14, 165, 233, 0.4);
+$shadow-amber:   0 10px 25px -5px rgba(245, 158, 11, 0.4);
+$shadow-emerald: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
 
 // ---------------------------------------------------------------------
-//  BREAKPOINTS  (align with Bootstrap 5)
+//  BREAKPOINTS
 // ---------------------------------------------------------------------
 $breakpoints: (
     'xs':  480px,
@@ -233,15 +217,6 @@ $breakpoints: (
     }
 }
 
-// Convenience: range between two breakpoints
-@mixin bp-between($lower, $upper) {
-    $min: map.get($breakpoints, $lower);
-    $max: map.get($breakpoints, $upper);
-    @if $min and $max {
-        @media (min-width: $min) and (max-width: ($max - 0.02px)) { @content; }
-    }
-}
-
 // ---------------------------------------------------------------------
 //  Z-INDEX SCALE
 // ---------------------------------------------------------------------
@@ -250,83 +225,46 @@ $z-dropdown:  1000;
 $z-sticky:    1020;
 $z-fixed:     1030;
 $z-backdrop:  1040;
+$z-overlay:   1040;
 $z-sidebar:   1050;
 $z-modal:     1055;
 $z-popover:   1070;
 $z-tooltip:   1080;
 $z-toast:     1090;
-$z-overlay:   1100;
 
 // ---------------------------------------------------------------------
-//  TRANSITIONS & EASINGS
+//  TRANSITIONS
 // ---------------------------------------------------------------------
 $ease-out:          cubic-bezier(0, 0, 0.2, 1);
 $ease-in-out:       cubic-bezier(0.4, 0, 0.2, 1);
 $ease-bounce:       cubic-bezier(0.34, 1.56, 0.64, 1);
-
-$transition-fast:   0.14s $ease-out;
-$transition-base:   0.25s $ease-in-out;
-$transition-slow:   0.40s $ease-in-out;
+$ease-spring:       cubic-bezier(0.175, 0.885, 0.32, 1.275);
+$transition-fast:   0.15s $ease-out;
+$transition-base:   0.22s $ease-in-out;
+$transition-slow:   0.35s $ease-in-out;
 $transition-bounce: 0.35s $ease-bounce;
-$transition-spring: 0.50s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+$transition-spring: 0.4s $ease-spring;
 
 // ---------------------------------------------------------------------
-//  SIDEBAR TOKENS — Arctic deep navy
+//  SIDEBAR TOKENS
 // ---------------------------------------------------------------------
-$sidebar-width:           264px;
+$sidebar-width:           268px;
 $sidebar-collapsed-width: 72px;
 
-// Deep navy surface — #243C4C family
-$sidebar-bg:         #1a2f3d;
-$sidebar-bg-header:  #152532;
-$sidebar-bg-footer:  #152532;
-$sidebar-bg-hover:   rgba(82, 137, 173, 0.12);
-$sidebar-bg-active:  rgba(82, 137, 173, 0.22);
-$sidebar-border:     rgba(172, 188, 191, 0.10);
-$sidebar-accent:     $primary-400;
-$sidebar-accent-glow: rgba(82, 137, 173, 0.35);
+$sidebar-bg:         #0b0f19;
+$sidebar-bg-header:  #080c14;
+$sidebar-bg-hover:   rgba(255, 255, 255, 0.06);
+$sidebar-bg-active:  rgba(99, 102, 241, 0.16);
+$sidebar-border:     rgba(255, 255, 255, 0.07);
+$sidebar-accent:     #818cf8;
+
+// Topbar
+$topbar-height: 62px;
 
 // ---------------------------------------------------------------------
-//  GLASSMORPHISM SURFACE TOKENS — Arctic tinted
-// ---------------------------------------------------------------------
-$glass-bg:           rgba(244, 252, 251, 0.78);
-$glass-bg-dark:      rgba(26, 47, 61, 0.80);
-$glass-border:       rgba(255, 255, 255, 0.22);
-$glass-border-dark:  rgba(172, 188, 191, 0.10);
-$glass-blur:         blur(20px) saturate(1.6);
-$glass-blur-lg:      blur(32px) saturate(1.8);
-
-// Topbar (glass-morphism on scroll)
-$topbar-height:      60px;
-$topbar-bg-solid:    $neutral-0;
-$topbar-bg-glass:    rgba(244, 252, 251, 0.92);
-
-// Auth pages — Arctic night-to-deep-blue gradient
-$auth-bg:            linear-gradient(135deg, #152532 0%, #243C4C 40%, #1a2f3d 100%);
-$auth-card-bg:       rgba(255, 255, 255, 0.97);
-$auth-card-radius:   1.75rem;
-
-// ---------------------------------------------------------------------
-//  EXTENDED GRADIENT LIBRARY — Arctic Reflection
-// ---------------------------------------------------------------------
-$gradient-mesh-1: radial-gradient(ellipse 80% 60% at 10% 10%, rgba(82,137,173,0.18) 0%, transparent 60%),
-                  radial-gradient(ellipse 60% 40% at 90% 90%, rgba(105,134,150,0.12) 0%, transparent 60%);
-$gradient-mesh-2: radial-gradient(ellipse 70% 50% at 80% 10%, rgba(82,137,173,0.14) 0%, transparent 60%),
-                  radial-gradient(ellipse 50% 40% at 20% 90%, rgba(172,188,191,0.10) 0%, transparent 60%);
-
-// Card gradient accents
-$gradient-card-blue:    linear-gradient(135deg, #5289AD 0%, #3f6f90 100%);
-$gradient-card-cyan:    linear-gradient(135deg, #698696 0%, #3d5760 100%);
-$gradient-card-green:   linear-gradient(135deg, #10b981 0%, #059669 100%);
-$gradient-card-orange:  linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-$gradient-card-rose:    linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
-$gradient-card-violet:  linear-gradient(135deg, #698696 0%, #3d5760 100%);
-
-// ---------------------------------------------------------------------
-//  RUNTIME CSS CUSTOM PROPERTIES
+//  RUNTIME CSS CUSTOM PROPERTIES (:root)
 // ---------------------------------------------------------------------
 :root {
-    // Brand — Arctic steel blue
     --color-primary:        #{$color-primary};
     --color-primary-hover:  #{$color-primary-hover};
     --color-primary-active: #{$color-primary-active};
@@ -345,6 +283,7 @@ $gradient-card-violet:  linear-gradient(135deg, #698696 0%, #3d5760 100%);
     --neutral-700: #{$neutral-700};
     --neutral-800: #{$neutral-800};
     --neutral-900: #{$neutral-900};
+    --neutral-950: #{$neutral-950};
 
     // Semantic
     --color-success: #{$success-500};
@@ -363,23 +302,9 @@ $gradient-card-violet:  linear-gradient(135deg, #698696 0%, #3d5760 100%);
     --text-secondary: #{$text-secondary};
     --text-muted:     #{$text-muted};
 
-    // Gradients
-    --gradient-primary:        #{$gradient-primary};
-    --gradient-hero:           #{$gradient-hero};
-    --gradient-surface-soft:   #{$gradient-surface-soft};
-    --gradient-card-blue:      #{$gradient-card-blue};
-    --gradient-card-cyan:      #{$gradient-card-cyan};
-    --gradient-card-green:     #{$gradient-card-green};
-    --gradient-card-orange:    #{$gradient-card-orange};
-    --gradient-card-rose:      #{$gradient-card-rose};
-    --gradient-card-violet:    #{$gradient-card-violet};
-
     // Typography
     --font-family-base:    #{$font-family-base};
     --font-family-brand:   #{$font-family-brand};
-    --font-size-base:      #{$font-size-base};
-    --line-height-base:    #{$line-height-base};
-    --font-weight-default: #{$font-weight-default};
 
     // Radius
     --radius-sm:   #{$radius-sm};
@@ -390,46 +315,22 @@ $gradient-card-violet:  linear-gradient(135deg, #698696 0%, #3d5760 100%);
     --radius-pill: #{$radius-pill};
 
     // Shadows
-    --shadow-xs:         #{$shadow-xs};
-    --shadow-sm:         #{$shadow-sm};
-    --shadow-md:         #{$shadow-md};
-    --shadow-lg:         #{$shadow-lg};
-    --shadow-xl:         #{$shadow-xl};
-    --shadow-2xl:        #{$shadow-2xl};
-    --shadow-focus:      #{$shadow-focus};
-    --card-shadow:       #{$shadow-sm};
-    --card-shadow-hover: #{$shadow-lg};
+    --shadow-xs:    #{$shadow-xs};
+    --shadow-sm:    #{$shadow-sm};
+    --shadow-md:    #{$shadow-md};
+    --shadow-lg:    #{$shadow-lg};
+    --shadow-xl:    #{$shadow-xl};
+    --shadow-focus: #{$shadow-focus};
 
-    // Transitions
-    --transition-speed:  0.25s;
-    --transition-fast:   #{$transition-fast};
-    --transition-base:   #{$transition-base};
-    --transition-bounce: #{$transition-bounce};
-    --transition-spring: #{$transition-spring};
-
-    // Topbar
-    --topbar-height:    #{$topbar-height};
-
-    // Sidebar — Arctic deep navy
-    --sidebar-width:            #{$sidebar-width};
-    --sidebar-collapsed-width:  #{$sidebar-collapsed-width};
-    --sidebar-bg:               #{$sidebar-bg};
-    --sidebar-bg-header:        #{$sidebar-bg-header};
-    --sidebar-border:           #{$sidebar-border};
-    --sidebar-accent:           #{$sidebar-accent};
-    --sidebar-accent-glow:      #{$sidebar-accent-glow};
-    --sidebar-accent-hover:     #{$primary-300};
-    --sidebar-text-primary:     #{$neutral-100};
-    --sidebar-text-secondary:   #{$neutral-200};
-    --sidebar-text-muted:       #{$neutral-300};
-    --sidebar-hover-bg:         #{$sidebar-bg-hover};
-    --sidebar-active-bg:        #{$sidebar-bg-active};
+    // Layout
+    --topbar-height:           #{$topbar-height};
+    --sidebar-width:           #{$sidebar-width};
+    --sidebar-collapsed-width: #{$sidebar-collapsed-width};
 }
 
-// ---------------------------------------------------------------------
-//  GLOBAL BODY DEFAULTS
-// ---------------------------------------------------------------------
 body {
     font-family: var(--font-family-base);
-    font-weight: $font-weight-bold; // 700 — Exo 2 weight 700
+    font-weight: 400;
+    color: var(--text-primary);
+    background-color: var(--body-bg);
 }

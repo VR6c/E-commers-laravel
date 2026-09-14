@@ -20,15 +20,17 @@ class PaymentGatewayController extends Controller
             $gateways = PaymentGateway::select('payment_gateways.*');
 
             return DataTables::of($gateways)
-                ->addColumn('status', fn ($row) => $row->is_active ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>')
+                ->addColumn('status', fn ($row) => $row->is_active ? '<span class="vp-badge vp-badge--active"><i class="bi bi-check-circle-fill me-1"></i>Active</span>' : '<span class="vp-badge vp-badge--inactive"><i class="bi bi-dash-circle-fill me-1"></i>Inactive</span>')
                 ->addColumn('action', function ($row) {
                     return '
-                        <a href="'.route('admin.payment-gateways.edit', $row->id).'" class="btn btn-sm btn-primary me-1">
-                            <i class="bi bi-pencil-fill"></i>
-                        </a>
-                        <span class="border border-danger dt-trash rounded-3 d-inline-block" onclick="deleteGateway('.$row->id.')">
-                            <i class="bi bi-trash-fill text-danger"></i>
-                        </span>
+                        <div class="dt-actions">
+                            <a href="'.route('admin.payment-gateways.edit', $row->id).'" class="btn-action btn-action-edit" title="Edit Gateway" aria-label="Edit gateway '.$row->id.'">
+                                <i class="bi bi-pencil-fill"></i>
+                            </a>
+                            <button type="button" class="btn-action btn-action-delete" onclick="deleteGateway('.$row->id.')" title="Delete Gateway" aria-label="Delete gateway '.$row->id.'">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </div>
                     ';
                 })
                 ->rawColumns(['status', 'action'])

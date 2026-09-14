@@ -1,103 +1,90 @@
 @extends('admin.layouts.admin')
+
+@section('title', 'Edit Brand — Admin')
+
 @section('content')
 
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center">
-            <h4 class="mb-0 fw-bold">{{ 'Brands' }}</h4>
-            <a href="{{ route('admin.brands.index') }}" class="btn btn-outline-secondary shadow-sm">
-                <i class="bi bi-arrow-left me-1"></i> {{ 'Back' }}
-            </a>
-        </div>
-    </div>
-</div>
+<x-admin.page-header
+    :title="'Edit Brand'"
+    :subtitle="$brand->name"
+    :breadcrumbs="['Brands' => route('admin.brands.index'), 'Edit' => '']">
+    <x-slot:actions>
+        <a href="{{ route('admin.brands.index') }}" class="btn btn-secondary shadow-xs">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
+        </a>
+    </x-slot:actions>
+</x-admin.page-header>
 
-<form action="{{ route('admin.brands.update', $brand->id) }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('admin.brands.update', $brand->id) }}" method="POST" enctype="multipart/form-data" id="brandEditForm">
     @csrf
     @method('PUT')
 
-    @php $brand_en = $brand; @endphp
-
-    <div class="row">
+    <div class="row g-4">
         <!-- Main Content -->
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold">{{ 'Name' }}</label>
-                        <input type="text" name="name"
-                            class="form-control border-0 bg-light"
-                            value="{{ old('name', $brand->name ?? '') }}" placeholder="Enter brand name...">
-                        @error('name')
+            <x-admin.form-card :title="'Brand Details'" :icon="'bi bi-tag'">
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-dark">{{ 'Brand Name' }} <span class="text-danger">*</span></label>
+                    <input type="text"
+                           name="name"
+                           class="form-control @error('name') is-invalid @enderror"
+                           value="{{ old('name', $brand->name) }}"
+                           required>
+                    @error('name')
                         <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-0">
-                        <label class="form-label fw-semibold">{{ 'Description' }}</label>
-                        <textarea name="description"
-                            class="form-control ck-editor">{{ old('description', $brand->description ?? '') }}</textarea>
-                    </div>
+                    @enderror
                 </div>
-            </div>
+
+                <div class="mb-0">
+                    <label class="form-label fw-semibold text-dark">{{ 'Description' }}</label>
+                    <textarea id="description"
+                              name="description"
+                              class="form-control ck-editor @error('description') is-invalid @enderror"
+                              rows="4">{{ old('description', $brand->description) }}</textarea>
+                    @error('description')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                </div>
+            </x-admin.form-card>
         </div>
 
         <!-- Sidebar -->
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <h6 class="fw-bold mb-3">Logo</h6>
-                    <div class="image-upload-wrapper border rounded-3 p-4 text-center bg-light mb-3">
-                        <div class="mt-2 mb-3" id="logo_preview" style="{{ $brand->logo_url ? '' : 'display:none;' }}">
-                            <img id="logo_preview_img" src="{{ $brand->logo_url ? asset('storage/'.$brand->logo_url) : '#' }}"
-                                alt="Logo" class="img-thumbnail shadow-sm" style="max-height: 150px;">
-                        </div>
-                        <div class="upload-controls">
-                            <label class="btn btn-outline-primary shadow-sm" for="logo_file">
-                                <i class="bi bi-cloud-arrow-up me-1"></i> {{ 'Choose File' }}
-                            </label>
-                            <input type="file" name="logo_url" accept="image/*" class="form-control d-none" id="logo_file">
-                        </div>
-                    </div>
-                    @error('logo_url')
-                    <div class="alert alert-danger p-2 small mb-3">{{ $message }}</div>
-                    @enderror
+            <x-admin.form-card :title="'Brand Logo'" :icon="'bi bi-image'">
+                <x-admin.image-uploader
+                    name="logo_url"
+                    :current-image="$brand->logo_url"
+                    :hint="'Square logo recommended. PNG, SVG or JPG (Max 5MB)'"
+                    aspect-ratio="square" />
 
-                    <hr class="my-4">
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary shadow-sm py-2">
-                            <i class="bi bi-save me-1"></i> {{ 'Update Brand' }}
-                        </button>
-                    </div>
+                <hr class="my-4" style="border-color: var(--border-subtle);">
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary shadow-sm py-2-5">
+                        <i class="bi bi-save me-1 fs-6"></i> {{ 'Update Brand' }}
+                    </button>
+                    <a href="{{ route('admin.brands.index') }}" class="btn btn-secondary py-2">
+                        {{ 'Cancel' }}
+                    </a>
                 </div>
-            </div>
+            </x-admin.form-card>
         </div>
     </div>
 </form>
 @endsection
 
 @section('js')
-<script>
-document.getElementById('logo_file').addEventListener('change', function(event) {
-    var file = event.target.files[0];
-    var previewElement = document.getElementById('logo_preview');
-    var previewImage = document.getElementById('logo_preview_img');
-    if (file) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            previewElement.style.display = 'block';
-            previewImage.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    } else {
-        previewElement.style.display = 'none';
-    }
-});
-</script>
 <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
 <script>
-document.querySelectorAll('.ck-editor').forEach((element) => {
-    ClassicEditor.create(element).catch(error => { console.error(error); });
+let ckEditor;
+ClassicEditor.create(document.getElementById('description'))
+    .then(editor => { ckEditor = editor; })
+    .catch(error => { console.error('CKEditor error', error); });
+
+document.getElementById('brandEditForm').addEventListener('submit', function () {
+    if (ckEditor) {
+        document.getElementById('description').value = ckEditor.getData();
+    }
 });
 </script>
 @endsection

@@ -24,6 +24,7 @@ use App\Repositories\Vendor\SocialMediaLink\SocialMediaLinkRepository as VendorS
 use App\Repositories\Vendor\SocialMediaLink\SocialMediaLinkRepositoryInterface as VendorSocialMediaLinkRepositoryInterface;
 use App\Services\Shared\ImageService;
 use App\Services\Admin\MenuService;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -74,6 +75,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         error_reporting(E_ALL & ~E_DEPRECATED);
+
+        Paginator::useBootstrapFive();
 
         if ($this->app->environment('production') || isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
             \Illuminate\Support\Facades\URL::forceScheme('https');

@@ -13,6 +13,20 @@
         </div>
     @endif
 
+    @if (session('warning'))
+        <div class="vl-alert" style="background:#fffbeb;border-color:#fde68a;color:#b45309;">
+            <i class="fas fa-triangle-exclamation"></i>
+            <span>{{ session('warning') }}</span>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="vl-alert">
+            <i class="fas fa-circle-exclamation"></i>
+            <span>{{ session('error') }}</span>
+        </div>
+    @endif
+
     @if ($errors->any())
         <div class="vl-alert">
             <i class="fas fa-circle-exclamation"></i>

@@ -864,16 +864,16 @@ body {
 @include bp-down('lg') {
     .main-sidebar {
         transform: translateX(-100%);
-        width: $sidebar-width;
+        width: $sidebar-width !important;
         box-shadow: none;
         transition: transform $transition-base;
+        z-index: 1040;
     }
 
     // Toggled open on mobile: slide in as full drawer
-    .main-sidebar.collapsed {
-        width: $sidebar-width;
+    .main-sidebar.mobile-open {
         transform: translateX(0);
-        box-shadow: 8px 0 40px rgba(0, 0, 0, 0.40);
+        box-shadow: 12px 0 40px rgba(0, 0, 0, 0.55);
 
         .brand-text,
         .user-panel-info,
@@ -883,15 +883,12 @@ body {
         .nav-treeview { display: revert !important; }
 
         .brand-link { justify-content: flex-start; padding: 0 $space-4; }
-
         .nav-sidebar > .nav-item { padding: 1px $space-2; }
 
         .nav-pills.nav-sidebar .nav-link {
             justify-content: flex-start;
-            padding: 8px 10px;
-
+            padding: 8px 12px;
             .nav-icon { font-size: 0.85rem; }
-
             &:hover::after { content: none; }
             &.active::before { display: block; }
         }
@@ -905,9 +902,7 @@ body {
         margin-left: 0 !important;
     }
 
-
-
     #content > .navbar {
-        padding: 0 $space-4 !important;
+        padding: 0 $space-3 !important;
     }
 }

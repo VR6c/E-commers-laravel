@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Shop;
+use App\Services\ImageUploadService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -22,7 +24,10 @@ class ShopController extends Controller
         return DataTables::of($query)
             ->addColumn('logo', function ($shop) {
                 if ($shop->logo) {
-                    return '<img src="'.asset('storage/'.$shop->logo).'" width="50" class="img-thumbnail">';
+                    $logoUrl = ImageUploadService::isRemoteUrl($shop->logo)
+                        ? $shop->logo
+                        : asset('storage/' . $shop->logo);
+                    return '<img src="' . e($logoUrl) . '" width="50" class="img-thumbnail">';
                 }
                 return 'No Logo';
             })
@@ -55,7 +60,7 @@ class ShopController extends Controller
         $data['slug'] = Str::slug($request->name);
 
         if ($request->hasFile('logo')) {
-            $data['logo'] = $request->file('logo')->store('shops', 'public');
+            $data['logo'] = ImageUploadService::upload($request->file('logo'), 'shops');
         }
 
         Shop::create($data);
@@ -81,7 +86,10 @@ class ShopController extends Controller
         $data['slug'] = Str::slug($request->name);
 
         if ($request->hasFile('logo')) {
-            $data['logo'] = $request->file('logo')->store('shops', 'public');
+            if ($shop->logo && !ImageUploadService::isRemoteUrl($shop->logo) && Storage::disk('public')->exists($shop->logo)) {
+                Storage::disk('public')->delete($shop->logo);
+            }
+            $data['logo'] = ImageUploadService::upload($request->file('logo'), 'shops');
         }
 
         $shop->update($data);
@@ -91,6 +99,10 @@ class ShopController extends Controller
 
     public function destroy(Shop $shop)
     {
+        if ($shop->logo && !ImageUploadService::isRemoteUrl($shop->logo) && Storage::disk('public')->exists($shop->logo)) {
+            Storage::disk('public')->delete($shop->logo);
+        }
+
         $shop->delete();
 
         return response()->json(['success' => true, 'message' => 'Shop deleted successfully.']);

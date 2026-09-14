@@ -93,6 +93,10 @@ class CheckoutController extends Controller
 
     public function process(Request $request)
     {
+        $request->validate([
+            'gateway' => 'required|string|max:50',
+        ]);
+
         $gatewayCode = $request->input('gateway');
 
         $cart = Session::get('cart', []);

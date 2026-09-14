@@ -33,12 +33,17 @@ class SocialMediaLinkController extends Controller
         return DataTables::of($socialMediaLinks)
             ->addColumn('action', function ($link) {
                 return '
-                    <a href="' . route('vendor.social-media-links.edit', $link->id) . '"
-                       class="btn btn-sm btn-primary">Edit</a>
-                    <button type="button"
-                            class="btn btn-sm btn-danger"
-                            onclick="deleteLink(' . $link->id . ')">Delete</button>
-                ';
+                    <div class="dt-actions">
+                        <a href="' . route('vendor.social-media-links.edit', $link->id) . '"
+                           class="btn-action btn-action-edit" title="Edit">
+                            <i class="bi bi-pencil-fill"></i>
+                        </a>
+                        <button type="button"
+                                class="btn-action btn-action-delete"
+                                onclick="deleteLink(' . $link->id . ')" title="Delete">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </div>';
             })
             ->rawColumns(['action'])
             ->make(true);

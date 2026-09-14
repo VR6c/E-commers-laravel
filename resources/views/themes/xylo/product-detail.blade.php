@@ -222,7 +222,7 @@
                                     @if ($review->is_approved)
                                         <li class="xsf-review">
                                             <div class="review-customer-info">
-                                                <img src="{{ $review->customer->profile_image ? asset('storage/' . $review->customer->profile_image) : 'https://ui-avatars.com/api/?name=' . urlencode($review->customer->name) . '&background=0D8ABC&color=fff&size=70' }}"
+                                                <img src="{{ $review->customer->profile_image ? (\Illuminate\Support\Str::startsWith($review->customer->profile_image, ['http://', 'https://']) ? $review->customer->profile_image : asset('storage/' . $review->customer->profile_image)) : 'https://ui-avatars.com/api/?name=' . urlencode($review->customer->name) . '&background=0D8ABC&color=fff&size=70' }}"
                                                     alt="{{ $review->customer->name }}" class="review-customer-avatar" />
                                                 <strong>{{ ucwords($review->customer->name) }}</strong>
                                             </div>

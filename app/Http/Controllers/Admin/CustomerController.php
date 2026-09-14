@@ -62,11 +62,14 @@ class CustomerController extends Controller
         return DataTables::of($customers)
             ->addColumn('status', function ($customer) {
                 return $customer->status == 'active' ?
-                    '<span class="badge bg-success">Active</span>' :
-                    '<span class="badge bg-danger">Inactive</span>';
+                    '<span class="vp-badge vp-badge--active"><i class="bi bi-check-circle-fill me-1"></i>Active</span>' :
+                    '<span class="vp-badge vp-badge--inactive"><i class="bi bi-dash-circle-fill me-1"></i>Inactive</span>';
             })
             ->addColumn('action', function ($customer) {
-                return '<span class="border border-danger dt-trash rounded-3 d-inline-block" onclick="deleteCustomer('.$customer->id.')"><i class="bi bi-trash-fill text-danger"></i></span>';
+                return '<div class="dt-actions">
+                    <a href="'.route('admin.customers.edit', $customer->id).'" class="btn-action btn-action-edit" title="Edit Customer" aria-label="Edit customer '.$customer->id.'"><i class="bi bi-pencil-fill"></i></a>
+                    <button type="button" class="btn-action btn-action-delete" onclick="deleteCustomer('.$customer->id.')" title="Delete Customer" aria-label="Delete customer '.$customer->id.'"><i class="bi bi-trash-fill"></i></button>
+                </div>';
             })
             ->rawColumns(['status', 'action'])
             ->make(true);

@@ -2,7 +2,11 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Product Reviews'" />
+<x-admin.page-header
+    :title="'Product Reviews'"
+    icon="bi bi-star-fill"
+    :subtitle="'Moderate customer product feedback, approval statuses and ratings'"
+    :breadcrumbs="['Reviews' => '#']" />
 
 <x-admin.data-card>
     <div class="table-responsive">

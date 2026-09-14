@@ -22,26 +22,26 @@ class ProductReviewController extends Controller
             ->whereHas('product', fn ($q) => $q->where('vendor_id', $vendorId));
 
         return DataTables::of($reviews)
-            // Column keys match the JS DataTable columns config: 'product_name', 'customer_name', 'status', 'action'
             ->addColumn('product_name', fn ($r) => $r->product?->name ?? 'N/A')
             ->addColumn('customer_name', fn ($r) => optional($r->customer)->name ?? 'Guest')
             ->addColumn('status', function ($review) {
-                // Fixed: use is_approved (boolean), not the non-existent 'status' field
                 return $review->is_approved
-                    ? '<span class="badge bg-success">Approved</span>'
-                    : '<span class="badge bg-warning text-dark">Pending</span>';
+                    ? '<span class="badge bg-success-soft">Approved</span>'
+                    : '<span class="badge bg-warning-soft">Pending</span>';
             })
             ->addColumn('action', function ($review) {
                 return '
-                    <a href="' . route('vendor.reviews.show', $review->id) . '"
-                       class="vp-action-btn vp-action-btn--view" title="View">
-                        <i class="fas fa-eye"></i>
-                    </a>
-                    <button class="vp-action-btn vp-action-btn--delete"
-                            onclick="deleteReview(' . $review->id . ')" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                ';
+                    <div class="dt-actions">
+                        <a href="' . route('vendor.reviews.show', $review->id) . '"
+                           class="btn-action btn-action-view" title="View Review">
+                            <i class="bi bi-eye-fill"></i>
+                        </a>
+                        <button type="button"
+                                class="btn-action btn-action-delete"
+                                onclick="deleteReview(' . $review->id . ')" title="Delete">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </div>';
             })
             ->rawColumns(['status', 'action'])
             ->make(true);
@@ -64,7 +64,7 @@ class ProductReviewController extends Controller
     {
         $vendorId = auth()->guard('vendor')->id();
 
-        if ($review->product->vendor_id !== $vendorId) {
+        if (! $review->product || $review->product->vendor_id !== $vendorId) {
             return response()->json(['success' => false, 'message' => 'Unauthorized']);
         }
 

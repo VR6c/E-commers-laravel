@@ -2,9 +2,13 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Brands'"
+<x-admin.page-header
+    :title="'Brands'"
+    icon="bi bi-tags-fill"
+    :subtitle="'Manage manufacturer and product brand profiles'"
+    :breadcrumbs="['Brands' => '#']"
     :create-route="route('admin.brands.create')"
-    :create-label="'Add New'" />
+    :create-label="'Add Brand'" />
 
 <x-admin.data-card>
     <div class="table-responsive">

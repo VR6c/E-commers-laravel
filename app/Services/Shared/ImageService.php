@@ -56,13 +56,20 @@ class ImageService
             return null;
         }
 
+        // Convert palette/indexed images to truecolor (imagewebp requires a truecolor buffer)
+        if (function_exists('imageistruecolor') && ! imageistruecolor($image)) {
+            if (function_exists('imagepalettetotruecolor')) {
+                imagepalettetotruecolor($image);
+            }
+        }
+
         // Handle transparency for PNG
         if ($mime === 'image/png') {
             imagealphablending($image, false);
             imagesavealpha($image, true);
         }
 
-        $success = imagewebp($image, $destinationPath, $quality);
+        $success = @imagewebp($image, $destinationPath, $quality);
         imagedestroy($image);
 
         return $success ? $destinationPath : null;

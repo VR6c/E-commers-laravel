@@ -143,3 +143,57 @@
     outline: none;
     background: transparent;
 }
+
+// ---------------------------------------------------------------------
+//  GRACEFUL PRE-INITIALIZATION FALLBACKS (prevents vertical FOUC)
+// ---------------------------------------------------------------------
+.banner-slider:not(.slick-initialized) {
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+
+    > div:not(:first-child) {
+        display: none !important;
+    }
+
+    > div:first-child {
+        width: 100% !important;
+    }
+}
+
+.category-slider:not(.slick-initialized) {
+    display: flex !important;
+    gap: 1.5rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.5rem 0 1rem;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    > div {
+        flex: 0 0 auto !important;
+    }
+}
+
+.product-slider:not(.slick-initialized) {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
+    overflow: hidden;
+
+    @media (max-width: 1200px) {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: 480px) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

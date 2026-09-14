@@ -2,7 +2,11 @@
 
 @section('content')
 
-<x-admin.page-header :title="'Payments'" />
+<x-admin.page-header
+    :title="'Payments'"
+    icon="bi bi-credit-card-fill"
+    :subtitle="'Audit customer payments, transaction states and payment logs'"
+    :breadcrumbs="['Payments' => '#']" />
 
 <x-admin.data-card>
     <div class="table-responsive">

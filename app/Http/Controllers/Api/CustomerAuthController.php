@@ -51,7 +51,33 @@ class CustomerAuthController extends Controller
     {
         $customer = Customer::where('email', $request->email)->first();
 
-        if (! $customer || ! Hash::check($request->password, $customer->password)) {
+        if (! $customer) {
+            return $this->problemResponse(
+                'https://api.example.com/errors/unauthorized',
+                'Unauthorized',
+                401,
+                'Invalid login credentials provided.',
+                $request->path()
+            );
+        }
+
+        $passwordValid = false;
+        try {
+            $info = password_get_info($customer->password);
+            if ($info['algo'] === 0) {
+                if ($request->password === $customer->password) {
+                    $customer->password = $request->password;
+                    $customer->save();
+                    $passwordValid = true;
+                }
+            } else {
+                $passwordValid = Hash::check($request->password, $customer->password);
+            }
+        } catch (\Throwable $e) {
+            $passwordValid = false;
+        }
+
+        if (! $passwordValid) {
             return $this->problemResponse(
                 'https://api.example.com/errors/unauthorized',
                 'Unauthorized',

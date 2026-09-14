@@ -1,28 +1,29 @@
 @props([
     'id',
     'confirmId',
-    'title' => 'Are you sure?',
-    'message' => 'This action cannot be undone.',
+    'title'        => 'Confirm Deletion',
+    'message'      => 'Are you sure you want to delete this item? This action cannot be undone.',
     'confirmLabel' => 'Delete',
-    'cancelLabel' => 'Cancel',
+    'cancelLabel'  => 'Cancel',
 ])
 
-<div class="modal fade" id="{{ $id }}" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header border-bottom-0 pb-0">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center py-4">
-                <div class="admin-delete-modal__icon">
-                    <i class="bi bi-exclamation-triangle"></i>
+<div class="modal fade" id="{{ $id }}" tabindex="-1" aria-labelledby="{{ $id }}Label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <div class="modal-content border-0 shadow-xl rounded-4 overflow-hidden">
+            <div class="modal-body text-center p-4 pt-5">
+                <div class="admin-delete-modal__icon mb-3">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
                 </div>
-                <h5 class="fw-bold mb-2">{{ $title }}</h5>
-                <p class="text-muted mb-0">{{ $message }}</p>
+                <h5 class="fw-bold text-dark mb-2" id="{{ $id }}Label">{{ $title }}</h5>
+                <p class="text-muted small mb-0 px-2" style="line-height: 1.5;">{{ $message }}</p>
             </div>
-            <div class="modal-footer border-top-0 justify-content-center pb-4">
-                <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">{{ $cancelLabel }}</button>
-                <button type="button" class="btn btn-danger px-4" id="{{ $confirmId }}">{{ $confirmLabel }}</button>
+            <div class="modal-footer bg-light border-0 justify-content-center p-3 gap-2 pb-4">
+                <button type="button" class="btn btn-secondary px-4 py-2" data-bs-dismiss="modal">
+                    {{ $cancelLabel }}
+                </button>
+                <button type="button" class="btn btn-danger px-4 py-2 shadow-sm" id="{{ $confirmId }}">
+                    <i class="bi bi-trash-fill me-1"></i> {{ $confirmLabel }}
+                </button>
             </div>
         </div>
     </div>
