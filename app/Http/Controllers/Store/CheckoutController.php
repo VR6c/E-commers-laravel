@@ -146,6 +146,7 @@ class CheckoutController extends Controller
                     'guest_email' => $request->input('email'),
                     'total_amount' => $total,
                     'status' => 'pending',
+                    'payment_method' => 'abapayway',
                 ]);
 
                 // 2. Save order details
@@ -290,6 +291,7 @@ class CheckoutController extends Controller
                 if ($order) {
                     if ($status === '0') {
                         $order->status = 'completed';
+                        $order->payment_method = 'abapayway';
                         $order->save();
 
                         $gateway = PaymentGateway::where('code', 'abapayway')->first();
@@ -346,10 +348,9 @@ class CheckoutController extends Controller
             if ($paymentStatus === 'APPROVED' || ($result['data']['payment_status_code'] ?? null) === 0) {
                 $order = Order::find($orderId);
                 if ($order) {
-                    if ($order->status !== 'completed') {
-                        $order->status = 'completed';
-                        $order->save();
-                    }
+                    $order->status = 'completed';
+                    $order->payment_method = 'abapayway';
+                    $order->save();
 
                     $gateway = PaymentGateway::where('code', 'abapayway')->first();
 
@@ -443,8 +444,9 @@ class CheckoutController extends Controller
                 $orderId = Session::get('last_order_id');
                 if ($orderId) {
                     $order = Order::find($orderId);
-                    if ($order && $order->status !== 'completed') {
+                    if ($order) {
                         $order->status = 'completed';
+                        $order->payment_method = 'abapayway';
                         $order->save();
 
                         $gateway = PaymentGateway::where('code', 'abapayway')->first();

@@ -53,6 +53,27 @@
         @vite(['resources/views/themes/xylo/js/app.js'])
     @endif
 
+    {{-- Global Toastr Configuration --}}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (window.toastr) {
+                window.toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    newestOnTop: true,
+                    positionClass: "toast-top-right",
+                    preventDuplicates: false,
+                    timeOut: 2500,
+                    extendedTimeOut: 1000,
+                    showDuration: 250,
+                    hideDuration: 250,
+                    showMethod: "fadeIn",
+                    hideMethod: "fadeOut",
+                };
+            }
+        });
+    </script>
+
     {{-- Session Flash Notifications --}}
     @if (session('error'))
         <script>

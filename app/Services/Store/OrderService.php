@@ -33,11 +33,12 @@ class OrderService
         }
 
         $order = Order::create([
-            'vendor_id'    => $vendorId,
-            'customer_id'  => Auth::check() ? Auth::id() : null,
-            'guest_email'  => $payer['email_address'] ?? null,
-            'total_amount' => $amount,
-            'status'       => 'completed',
+            'vendor_id'      => $vendorId,
+            'customer_id'    => Auth::check() ? Auth::id() : null,
+            'guest_email'    => $payer['email_address'] ?? null,
+            'total_amount'   => $amount,
+            'status'         => 'completed',
+            'payment_method' => 'paypal',
         ]);
 
         // Create Order Details from cart session

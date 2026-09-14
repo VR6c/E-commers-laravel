@@ -310,9 +310,19 @@
                         <div class="row g-3">
                             <div class="col-sm-6">
                                 <div class="xsf-info-label">{{ 'Payment Method' }}</div>
-                                <div class="xsf-info-value text-uppercase">
+                                <div class="xsf-info-value">
                                     <i class="fa-solid fa-wallet me-1 text-muted"></i>
-                                    {{ $order->payment_method ?: 'Cash on Delivery (COD)' }}
+                                    @php
+                                        $friendlyMethods = [
+                                            'abapayway' => 'ABA PayWay',
+                                            'aba_payway' => 'ABA PayWay',
+                                            'paypal' => 'PayPal',
+                                            'stripe' => 'Stripe',
+                                            'cod' => 'Cash on Delivery (COD)',
+                                        ];
+                                        $methodKey = strtolower($order->payment_method ?? 'cod');
+                                    @endphp
+                                    {{ $friendlyMethods[$methodKey] ?? strtoupper($order->payment_method ?? 'COD') }}
                                 </div>
                             </div>
                             <div class="col-sm-6">

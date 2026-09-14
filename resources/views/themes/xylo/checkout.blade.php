@@ -968,12 +968,17 @@ document.addEventListener("DOMContentLoaded", function () {
                         const tranId = result.tran_id ?? paywayData.status?.tran_id ?? paywayData.tran_id ?? '';
 
                         // ── Poll for payment status every 3 s ──
+                        let isPolling = false;
+                        let paymentApproved = false;
                         let pollInterval = setInterval(function () {
-                            if (!tranId) return;
+                            if (!tranId || isPolling || paymentApproved) return;
+                            isPolling = true;
+
                             fetch("/checkout/payway/status/" + encodeURIComponent(tranId))
                                 .then(res => res.json())
                                 .then(statusResult => {
-                                    if (statusResult.success && statusResult.approved) {
+                                    if (statusResult.success && statusResult.approved && !paymentApproved) {
+                                        paymentApproved = true;
                                         clearInterval(pollInterval);
                                         paywayModal.hide();
                                         toastr.success("Payment completed successfully!");
@@ -982,11 +987,15 @@ document.addEventListener("DOMContentLoaded", function () {
                                         }, 1200);
                                     }
                                 })
-                                .catch(err => console.error("Error polling status:", err));
+                                .catch(err => console.error("Error polling status:", err))
+                                .finally(() => {
+                                    isPolling = false;
+                                });
                         }, 3000);
 
                         // ── Cancel handler ──
                         document.getElementById('payway-cancel-btn').addEventListener('click', function () {
+                            paymentApproved = true;
                             clearInterval(pollInterval);
                             paywayModal.hide();
                             window.location.href = "{{ route('payway.cancel') }}";

@@ -304,8 +304,19 @@
                                     </div>
                                     <div class="xsf-order-card__meta-item">
                                         <span class="xsf-order-card__meta-label">{{ 'Payment Method' }}</span>
-                                        <span class="xsf-order-card__meta-val text-uppercase small">
-                                            <i class="fa-solid fa-credit-card me-1 text-muted"></i>{{ $order->payment_method ?: 'COD' }}
+                                        <span class="xsf-order-card__meta-val small">
+                                            <i class="fa-solid fa-credit-card me-1 text-muted"></i>
+                                            @php
+                                                $friendlyMethods = [
+                                                    'abapayway' => 'ABA PayWay',
+                                                    'aba_payway' => 'ABA PayWay',
+                                                    'paypal' => 'PayPal',
+                                                    'stripe' => 'Stripe',
+                                                    'cod' => 'COD',
+                                                ];
+                                                $methodKey = strtolower($order->payment_method ?? 'cod');
+                                            @endphp
+                                            {{ $friendlyMethods[$methodKey] ?? strtoupper($order->payment_method ?? 'COD') }}
                                         </span>
                                     </div>
                                 </div>

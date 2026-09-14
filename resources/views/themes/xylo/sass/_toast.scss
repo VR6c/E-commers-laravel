@@ -20,13 +20,18 @@
 // ---------------------------------------------------------------------
 #toast-container > .toast {
     // Layout
-    display: flex !important;
+    display: flex;
     align-items: flex-start !important;
     gap: $space-3 !important;
     padding: $space-4 $space-5 !important;
     min-width: 320px !important;
     max-width: 400px !important;
     width: auto !important;
+
+    // Ensure inline display: none takes effect
+    &[style*="display: none"] {
+        display: none !important;
+    }
 
     // Shape
     border-radius: $radius-xl !important;
@@ -47,11 +52,11 @@
     font-weight: 500 !important;
     line-height: $line-height-snug !important;
     color: $text-primary !important;
-    opacity: 1 !important;
+    opacity: 1;
     text-shadow: none !important;
 
     // Entrance animation
-    animation: toast-slide-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+    animation: toast-slide-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 
     // FA icon — colour set per variant below
     &::before {
@@ -240,22 +245,22 @@
 
 #toast-container > .toast-success .toast-progress::after {
     background: $success-500 !important;
-    animation: toast-progress-fill var(--toast-timeout, 5s) linear forwards !important;
+    animation: toast-progress-fill var(--toast-timeout, 2.5s) linear forwards !important;
 }
 
 #toast-container > .toast-error .toast-progress::after {
     background: $danger-500 !important;
-    animation: toast-progress-fill var(--toast-timeout, 5s) linear forwards !important;
+    animation: toast-progress-fill var(--toast-timeout, 2.5s) linear forwards !important;
 }
 
 #toast-container > .toast-warning .toast-progress::after {
     background: $warning-500 !important;
-    animation: toast-progress-fill var(--toast-timeout, 5s) linear forwards !important;
+    animation: toast-progress-fill var(--toast-timeout, 2.5s) linear forwards !important;
 }
 
 #toast-container > .toast-info .toast-progress::after {
     background: $info-500 !important;
-    animation: toast-progress-fill var(--toast-timeout, 5s) linear forwards !important;
+    animation: toast-progress-fill var(--toast-timeout, 2.5s) linear forwards !important;
 }
 
 // ---------------------------------------------------------------------

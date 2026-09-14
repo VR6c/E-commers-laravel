@@ -273,12 +273,11 @@
                             <div class="xsf-ty-items">
                                 @foreach ($order->details as $detail)
                                     @php
+                                        $product   = $detail->product;
                                         $thumbUrl  = $product?->thumbnail?->image_url
                                                      ? product_image_url($product->thumbnail->image_url)
-                                                     : null;
-                                        $name = $product
-                                            ? ($product->name ?? 'Product Name Not Available')
-                                            : 'Product Name Not Available';
+                                                     : ($product?->image_url ? product_image_url($product->image_url) : null);
+                                        $name = $product?->name ?? 'Product Name Not Available';
                                     @endphp
                                     <div class="xsf-ty-item">
                                         @if($thumbUrl)

@@ -320,23 +320,28 @@ function initSliders() {
 }
 
 // Global Toastr defaults
-if (typeof window.toastr !== 'undefined') {
-    window.toastr.options = {
-        closeButton: true,
-        progressBar: true,
-        newestOnTop: true,
-        positionClass: 'toast-top-right',
-        preventDuplicates: false,
-        timeOut: 4000,
-        showDuration: 250,
-        hideDuration: 250,
-        showMethod: 'fadeIn',
-        hideMethod: 'fadeOut',
-    };
+export function configureToastr() {
+    if (typeof window.toastr !== 'undefined') {
+        window.toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            newestOnTop: true,
+            positionClass: 'toast-top-right',
+            preventDuplicates: false,
+            timeOut: 2500,
+            extendedTimeOut: 1000,
+            showDuration: 250,
+            hideDuration: 250,
+            showMethod: 'fadeIn',
+            hideMethod: 'fadeOut',
+        };
+    }
 }
+configureToastr();
 
 // Bootstrap initialization on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
+    configureToastr();
     initCartEvents();
     initWishlistEvents();
     initLiveSearch();
