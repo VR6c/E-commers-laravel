@@ -10,7 +10,6 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductAttributeValue;
-use App\Models\Shop;
 use App\Models\Vendor;
 use App\Services\Admin\CategoryService;
 use App\Services\Admin\ProductService;
@@ -70,17 +69,9 @@ class ProductController extends Controller
 
     public function store(ProductRequest $request)
     {
-        // Resolve the shop for the selected vendor — required for data integrity.
-        $shop = Shop::where('vendor_id', $request->vendor_id)->first();
-
-        if (! $shop) {
-            return back()->withErrors(['vendor_id' => 'No shop found for the selected vendor.'])->withInput();
-        }
-
-        DB::transaction(function () use ($request, $shop) {
+        DB::transaction(function () use ($request) {
             $slug    = $this->generateUniqueSlug($request->input('name'));
             $product = Product::create([
-                'shop_id'           => $shop->id,
                 'vendor_id'         => $request->vendor_id,
                 'slug'              => $slug,
                 'name'              => $request->input('name'),
@@ -139,11 +130,6 @@ class ProductController extends Controller
                 'short_description' => $en['short_description'] ?? $product->short_description,
             ]);
 
-            // If the vendor changed, update the shop_id accordingly.
-            $shop = Shop::where('vendor_id', $request->vendor_id)->first();
-            if ($shop) {
-                $product->update(['shop_id' => $shop->id]);
-            }
 
             $newAttrValueIds = collect($request->variants)
                 ->flatMap(fn ($v) => array_filter([$v['size_id'] ?? null, $v['color_id'] ?? null]))

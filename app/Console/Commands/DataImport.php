@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Shop;
 use App\Models\StoreSetting;
 use App\Models\Vendor;
 use Illuminate\Console\Command;
@@ -64,16 +63,6 @@ class DataImport extends Command
                 'password' => Hash::make('abc123'),
                 'phone' => '+923001234567',
                 'profile_image' => 'https://i.postimg.cc/FHxQs4Br/images-10.jpg',
-            ]
-        );
-
-        $shop = Shop::firstOrCreate(
-            ['name' => 'Soft Shoes'],
-            [
-                'vendor_id' => 1,
-                'name' => 'Soft Shoes',
-                'logo' => 'N/A',
-                'description' => 'Luxurious comfort in every step. Crafted with premium materials for a soft, stylish, and effortless walking experience. ',
             ]
         );
 

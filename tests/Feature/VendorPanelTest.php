@@ -6,7 +6,6 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
-use App\Models\Shop;
 use App\Models\Vendor;
 use App\Traits\SyncsProductVariants;
 use Illuminate\Support\Facades\DB;
@@ -104,14 +103,7 @@ class VendorPanelTest extends TestCase
             'password' => Hash::make('password123'),
             'status'   => 'active',
         ]);
-        $shop = Shop::create([
-            'vendor_id' => $vendor->id,
-            'name'      => 'Test Shop',
-            'slug'      => 'test-shop-' . uniqid(),
-            'status'    => 'active',
-        ]);
         $product = Product::create([
-            'shop_id'      => $shop->id,
             'vendor_id'    => $vendor->id,
             'name'         => 'Test Variable Product',
             'slug'         => 'test-var-prod-' . uniqid(),
@@ -155,12 +147,9 @@ class VendorPanelTest extends TestCase
             'password' => Hash::make('password123'),
             'status'   => 'active',
         ]);
-        $shopA = Shop::create(['vendor_id' => $vendorA->id, 'name' => 'Shop A', 'slug' => 'shop-a-' . uniqid()]);
-        $shopB = Shop::create(['vendor_id' => $vendorB->id, 'name' => 'Shop B', 'slug' => 'shop-b-' . uniqid()]);
         $cat = Category::firstOrCreate(['name' => 'Order Cat', 'slug' => 'order-cat-' . uniqid()]);
 
         $prodA = Product::create([
-            'shop_id'      => $shopA->id,
             'vendor_id'    => $vendorA->id,
             'name'         => 'Item Vendor A',
             'slug'         => 'prod-a-' . uniqid(),
@@ -168,7 +157,6 @@ class VendorPanelTest extends TestCase
             'product_type' => 'simple',
         ]);
         $prodB = Product::create([
-            'shop_id'      => $shopB->id,
             'vendor_id'    => $vendorB->id,
             'name'         => 'Item Vendor B',
             'slug'         => 'prod-b-' . uniqid(),

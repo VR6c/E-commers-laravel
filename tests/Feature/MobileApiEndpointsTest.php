@@ -7,7 +7,6 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Product;
-use App\Models\Shop;
 use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -101,15 +100,7 @@ class MobileApiEndpointsTest extends TestCase
             'status' => 'active',
         ]);
 
-        $shop = Shop::create([
-            'vendor_id' => $vendor->id,
-            'name' => 'Mobile Shop',
-            'slug' => 'mobile-shop',
-            'status' => 'active',
-        ]);
-
         Product::create([
-            'shop_id' => $shop->id,
             'vendor_id' => $vendor->id,
             'slug' => 'mobile-smartphone',
             'category_id' => $category->id,

@@ -9,7 +9,6 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariant;
-use App\Models\Shop;
 use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -22,7 +21,6 @@ final class ProductSearchTest extends TestCase
     use RefreshDatabase;
 
     private Vendor $vendor;
-    private Shop $shop;
 
     protected function setUp(): void
     {
@@ -43,13 +41,6 @@ final class ProductSearchTest extends TestCase
             'phone' => '1234567890',
             'status' => 'active',
         ]);
-
-        $this->shop = Shop::create([
-            'vendor_id' => $this->vendor->id,
-            'name' => 'Test Shop',
-            'slug' => 'test-shop',
-            'status' => 'active',
-        ]);
     }
 
     private function createProduct(string $name, float $price, array $attributes = []): Product
@@ -57,7 +48,6 @@ final class ProductSearchTest extends TestCase
         $category = $attributes['category_id'] ?? Category::create(['name' => 'Default Cat', 'slug' => 'default-cat-' . Str::random(5)])->id;
 
         $product = Product::create(array_merge([
-            'shop_id' => $this->shop->id,
             'vendor_id' => $this->vendor->id,
             'category_id' => $category,
             'name' => $name,

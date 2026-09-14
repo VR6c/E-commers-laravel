@@ -8,7 +8,6 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductAttributeValue;
-use App\Models\Shop;
 use App\Models\Vendor;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -60,13 +59,6 @@ class BulkProductSeeder extends Seeder
             'status'   => 'active',
         ]);
 
-        $shop = Shop::first() ?? Shop::create([
-            'vendor_id'   => $vendor->id,
-            'name'        => 'Official Store',
-            'slug'        => 'official-store',
-            'description' => 'Official verified shop.',
-            'status'      => 'active',
-        ]);
 
         // 3. Ensure Categories exist
         $existingCategories = Category::where('status', true)->get();
@@ -188,7 +180,6 @@ class BulkProductSeeder extends Seeder
             try {
                 // Create Product
                 $product = Product::create([
-                    'shop_id'           => $shop->id,
                     'vendor_id'         => $vendor->id,
                     'category_id'       => $categoryObj->id,
                     'brand_id'          => $brandObj->id,

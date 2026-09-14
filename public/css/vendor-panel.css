@@ -1069,6 +1069,12 @@ button.dt-paging-button:focus-visible,
     position: relative !important;
 }
 
+.dataTables_wrapper,
+.dt-container {
+    position: relative !important;
+}
+
+/* ── Top Gradient Laser Progress Beam ── */
 .dataTables_wrapper::before,
 .dt-container::before {
     content: '' !important;
@@ -1077,37 +1083,45 @@ button.dt-paging-button:focus-visible,
     left: 0 !important;
     right: 0 !important;
     height: 3px !important;
-    background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #3b82f6 100%) !important;
-    background-size: 200% 100% !important;
+    background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 35%, #06b6d4 70%, #6366f1 100%) !important;
+    background-size: 250% 100% !important;
     opacity: 0 !important;
     transform: scaleX(0) !important;
     transform-origin: left !important;
-    transition: opacity 0.25s ease, transform 0.3s ease !important;
-    z-index: 60 !important;
+    transition: opacity 0.22s ease, transform 0.26s ease !important;
+    z-index: 70 !important;
     pointer-events: none !important;
+    box-shadow: 0 1px 8px rgba(99, 102, 241, 0.45) !important;
 }
 
 .dataTables_wrapper.dt-is-processing::before,
 .dt-container.dt-is-processing::before {
     opacity: 1 !important;
     transform: scaleX(1) !important;
-    animation: dtProgressPulse 1.5s ease-in-out infinite alternate !important;
+    animation: dtLaserBeam 1.3s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
 }
 
-@keyframes dtProgressPulse {
+@keyframes dtLaserBeam {
     0%   { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
-/* Row dimming during processing */
+/* ── Row dimming during processing ── */
 .dataTables_wrapper.dt-is-processing tbody tr:not(.dt-skeleton-row) {
-    opacity: 0.35 !important;
-    filter: blur(0.4px) !important;
-    transition: opacity 0.22s ease, filter 0.22s ease !important;
+    opacity: 0.42 !important;
+    filter: blur(0.45px) !important;
+    transition: opacity 0.2s ease, filter 0.2s ease !important;
     pointer-events: none !important;
 }
 
-/* Modern Frosted Glass Processing Indicator Overlay */
+/* Hide empty row while processing if skeleton rows are present */
+.dataTables_wrapper.dt-is-processing tbody tr:has(.dataTables_empty),
+.dt-container.dt-is-processing tbody tr:has(.dataTables_empty) {
+    display: none !important;
+}
+
+/* ── Option A: Modern Floating Micro-Chip Loader (Bottom-Center) ── */
 div.dataTables_processing,
 .dt-processing,
 .dataTables_wrapper .dataTables_processing,
@@ -1115,12 +1129,11 @@ div.dataTables_processing,
 .dt-container .dt-processing,
 .dt-container div.dt-processing {
     position: absolute !important;
-    top: 50% !important;
+    bottom: 22px !important;
+    top: auto !important;
     left: 50% !important;
-    transform: translate(-50%, -50%) !important;
+    transform: translateX(-50%) !important;
     margin: 0 !important;
-    margin-left: 0 !important;
-    margin-top: 0 !important;
     padding: 0 !important;
     width: auto !important;
     min-width: 0 !important;
@@ -1128,10 +1141,8 @@ div.dataTables_processing,
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
-    font-size: 0 !important;
-    color: transparent !important;
     z-index: 100 !important;
-    display: flex;
+    display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     pointer-events: none !important;
@@ -1149,126 +1160,67 @@ div.dt-processing.dt-hidden {
     opacity: 0 !important;
 }
 
-/* Hide any default DataTables 1.13 nested spinner div or extra elements */
-div.dataTables_processing > :not(.dt-loader-card),
-.dt-processing > :not(.dt-loader-card),
-.dataTables_wrapper .dataTables_processing > :not(.dt-loader-card),
-.dt-container .dt-processing > :not(.dt-loader-card) {
+/* Hide any legacy nested spinner elements */
+div.dataTables_processing > :not(.dt-loader-chip),
+.dt-processing > :not(.dt-loader-chip),
+.dataTables_wrapper .dataTables_processing > :not(.dt-loader-chip),
+.dt-container .dt-processing > :not(.dt-loader-chip) {
     display: none !important;
 }
 
-/* Hide duplicate dataTables_empty text while processing */
-.dt-is-processing .dataTables_empty,
-.dataTables_wrapper.dt-is-processing tbody td.dataTables_empty,
-.dt-container.dt-is-processing tbody td.dataTables_empty {
-    color: transparent !important;
-    font-size: 0 !important;
-    line-height: 0 !important;
-}
-
-.dt-loader-card {
+.dt-loader-chip {
     display: inline-flex !important;
     align-items: center !important;
-    gap: 14px !important;
-    padding: 10px 22px !important;
+    gap: 10px !important;
+    padding: 7px 18px !important;
     background: rgba(255, 255, 255, 0.94) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    border: 1px solid rgba(203, 213, 225, 0.9) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    border: 1px solid rgba(203, 213, 225, 0.85) !important;
     border-radius: 9999px !important;
-    box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.14),
-                0 4px 10px -2px rgba(99, 102, 241, 0.10) !important;
-    animation: dtCardPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) both !important;
-    pointer-events: auto !important;
+    box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.12),
+                0 4px 10px -2px rgba(99, 102, 241, 0.08) !important;
+    animation: dtChipPop 0.22s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+    pointer-events: none !important;
 }
 
-@keyframes dtCardPop {
+@keyframes dtChipPop {
     from {
         opacity: 0;
-        transform: scale(0.92) translateY(6px);
+        transform: translateY(8px) scale(0.94);
     }
     to {
         opacity: 1;
-        transform: scale(1) translateY(0);
+        transform: translateY(0) scale(1);
     }
 }
 
-.dt-spinner-ring {
-    position: relative !important;
-    width: 20px !important;
-    height: 20px !important;
-    flex-shrink: 0 !important;
-}
-
-.dt-spinner-ring::before {
-    content: '' !important;
-    position: absolute !important;
-    inset: 0 !important;
+.dt-chip-spinner {
+    width: 14px !important;
+    height: 14px !important;
     border-radius: 50% !important;
     border: 2px solid #e0e7ff !important;
-}
-
-.dt-spinner-ring::after {
-    content: '' !important;
-    position: absolute !important;
-    inset: 0 !important;
-    border-radius: 50% !important;
-    border: 2px solid transparent !important;
     border-top-color: #6366f1 !important;
-    border-right-color: #a855f7 !important;
-    animation: dtSpin 0.75s cubic-bezier(0.42, 0, 0.58, 1) infinite !important;
-    filter: drop-shadow(0 1px 3px rgba(99, 102, 241, 0.35)) !important;
+    border-right-color: #06b6d4 !important;
+    animation: dtSpin 0.65s linear infinite !important;
+    flex-shrink: 0 !important;
 }
 
 @keyframes dtSpin {
     to { transform: rotate(360deg); }
 }
 
-.dt-spinner-inner {
-    position: absolute !important;
-    inset: 5px !important;
-    border-radius: 50% !important;
-    background: radial-gradient(circle, #6366f1 35%, transparent 70%) !important;
-    opacity: 0.7 !important;
-    animation: dtPulseDot 1.4s ease-in-out infinite !important;
-}
-
-@keyframes dtPulseDot {
-    0%, 100% { transform: scale(0.7); opacity: 0.4; }
-    50%      { transform: scale(1.15); opacity: 0.95; }
-}
-
-.dt-loader-text {
-    font-size: 0.8125rem !important;
+.dt-chip-text {
+    font-size: 0.775rem !important;
     font-weight: 600 !important;
     color: #334155 !important;
-    letter-spacing: 0.01em !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 1px !important;
+    letter-spacing: 0.015em !important;
+    white-space: nowrap !important;
     user-select: none !important;
 }
 
-.dt-loader-dots span {
-    display: inline-block !important;
-    animation: dtDotBlink 1.4s infinite !important;
-    opacity: 0 !important;
-    font-weight: 700 !important;
-    color: #6366f1 !important;
-}
-
-.dt-loader-dots span:nth-child(1) { animation-delay: 0s !important; }
-.dt-loader-dots span:nth-child(2) { animation-delay: 0.2s !important; }
-.dt-loader-dots span:nth-child(3) { animation-delay: 0.4s !important; }
-
-@keyframes dtDotBlink {
-    0%, 20%   { opacity: 0; transform: translateY(0); }
-    50%       { opacity: 1; transform: translateY(-2px); }
-    80%, 100% { opacity: 0; transform: translateY(0); }
-}
-
 /* ============================================================
-   SKELETON SHIMMER LOADING ROWS
+   HIGH-FIDELITY SKELETON SHIMMER PLACEHOLDERS
    ============================================================ */
 @keyframes dtShimmerWave {
     0%   { background-position: -200% 0; }
@@ -1276,26 +1228,157 @@ div.dataTables_processing > :not(.dt-loader-card),
 }
 
 .dt-skeleton-row td {
-    padding: 15px 20px !important;
+    padding: 13px 18px !important;
     border-bottom: 1px solid #f1f5f9 !important;
     background: transparent !important;
     vertical-align: middle !important;
 }
 
-.dt-skeleton-bar {
-    height: 16px;
-    border-radius: 6px;
-    background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 40%, #f8fafc 60%, #f1f5f9 100%);
-    background-size: 200% 100%;
-    animation: dtShimmerWave 1.8s ease-in-out infinite;
+.dt-skel-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 8px !important;
+    background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 35%, #ffffff 50%, #e2e8f0 65%, #f1f5f9 100%) !important;
+    background-size: 250% 100% !important;
+    animation: dtShimmerWave 1.6s ease-in-out infinite !important;
+    display: inline-block !important;
 }
 
-.dt-skeleton-bar-1 { width: 52px; height: 20px; border-radius: 6px; } /* ID badge */
-.dt-skeleton-bar-2 { width: 70%; max-width: 170px; height: 16px; }    /* Customer / Title */
-.dt-skeleton-bar-3 { width: 95px; height: 16px; }                     /* Order Date */
-.dt-skeleton-bar-4 { width: 82px; height: 24px; border-radius: 9999px; } /* Status Pill */
-.dt-skeleton-bar-5 { width: 68px; height: 18px; }                     /* Price */
-.dt-skeleton-bar-6 { width: 64px; height: 28px; margin-left: auto; border-radius: 8px; } /* Actions */
+.dt-skel-badge {
+    height: 22px !important;
+    border-radius: 9999px !important;
+    background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 35%, #ffffff 50%, #e2e8f0 65%, #f1f5f9 100%) !important;
+    background-size: 250% 100% !important;
+    animation: dtShimmerWave 1.6s ease-in-out infinite !important;
+    display: inline-block !important;
+}
+
+.dt-skel-badge.dt-skel-id {
+    width: 44px !important;
+    height: 20px !important;
+    border-radius: 6px !important;
+}
+
+.dt-skel-badge.dt-skel-cat {
+    width: 78px !important;
+    height: 22px !important;
+}
+
+.dt-skel-badge.dt-skel-stock {
+    width: 38px !important;
+    height: 22px !important;
+}
+
+.dt-skel-bar {
+    height: 14px !important;
+    border-radius: 6px !important;
+    background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 35%, #ffffff 50%, #e2e8f0 65%, #f1f5f9 100%) !important;
+    background-size: 250% 100% !important;
+    animation: dtShimmerWave 1.6s ease-in-out infinite !important;
+    display: block !important;
+}
+
+.dt-skel-text-group {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+}
+
+.dt-skel-title {
+    width: 78% !important;
+    max-width: 190px !important;
+    height: 14px !important;
+}
+
+.dt-skel-subtitle {
+    width: 45% !important;
+    max-width: 110px !important;
+    height: 10px !important;
+    opacity: 0.7 !important;
+}
+
+.dt-skel-price {
+    width: 60px !important;
+    height: 16px !important;
+}
+
+.dt-skel-date {
+    width: 86px !important;
+    height: 14px !important;
+}
+
+.dt-skel-toggle {
+    width: 40px !important;
+    height: 20px !important;
+    border-radius: 9999px !important;
+    background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 35%, #ffffff 50%, #e2e8f0 65%, #f1f5f9 100%) !important;
+    background-size: 250% 100% !important;
+    animation: dtShimmerWave 1.6s ease-in-out infinite !important;
+    display: inline-block !important;
+}
+
+.dt-skel-actions {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 6px !important;
+}
+
+.dt-skel-btn {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 7px !important;
+    background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 35%, #ffffff 50%, #e2e8f0 65%, #f1f5f9 100%) !important;
+    background-size: 250% 100% !important;
+    animation: dtShimmerWave 1.6s ease-in-out infinite !important;
+    display: inline-block !important;
+}
+
+/* ── Fail-Safe Error State ── */
+.dt-table-error-state {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 36px 20px !important;
+    color: #64748b !important;
+}
+
+.dt-table-error-icon {
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 50% !important;
+    background: #fef2f2 !important;
+    color: #ef4444 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.25rem !important;
+    margin-bottom: 12px !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.12) !important;
+}
+
+.dt-table-error-title {
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    margin-bottom: 4px !important;
+}
+
+.dt-table-error-desc {
+    font-size: 0.8125rem !important;
+    color: #64748b !important;
+    max-width: 360px !important;
+    margin-bottom: 14px !important;
+}
+
+.dt-retry-btn {
+    padding: 6px 16px !important;
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+}
 
 
 /* ============================================================

@@ -18,7 +18,9 @@ class ProductService
 
     public function getProductsForDataTable($request)
     {
-        $products = Product::with(['images', 'category', 'primaryVariant']);
+        $products = Product::query()
+            ->select(['id', 'name', 'category_id', 'status', 'created_at'])
+            ->with(['images', 'category', 'primaryVariant']);
 
         return DataTables::of($products)
             ->filterColumn('name', fn ($q, $kw) => $q->where('name', 'like', "%{$kw}%"))

@@ -4,7 +4,6 @@ namespace App\Repositories\Admin\Product;
 
 use App\Models\Product;
 use App\Models\ProductImage;
-use App\Models\Shop;
 use App\Services\Shared\ImageService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -41,15 +40,8 @@ class ProductRepository implements ProductRepositoryInterface
 
         $defaultCurrencyCode = getWebConfig('default_currency', 'USD');
 
-        $shop = Shop::where('vendor_id', 1)->first();
-
-        if (! $shop) {
-            throw new Exception('No shop found for this vendor.');
-        }
-
         $product = Product::create([
             'vendor_id' => 1,
-            'shop_id' => $shop->id,
             'category_id' => $data['category_id'],
             'price' => currency_to_usd($data['price'], $defaultCurrencyCode),
             'stock' => $data['stock'],

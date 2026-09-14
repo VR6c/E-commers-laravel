@@ -45,7 +45,6 @@
 @endsection
 
 @section('js')
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 @php
 $datatableLang = null;
 @endphp
@@ -121,7 +120,7 @@ $datatableLang = null;
                 }
             ],
             pageLength: 10,
-            language: @json($datatableLang)
+            language: @json($datatableLang) || {}
         });
 
         $(document).on('change', '.toggle-status', function() {

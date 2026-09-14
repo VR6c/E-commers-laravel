@@ -44,8 +44,6 @@ class VendorProductSeeder extends Seeder
                 $category = Category::create(['slug' => 'general', 'name' => 'General', 'status' => true]);
             }
 
-            $shopId = DB::table('shops')->where('vendor_id', $vendor->id)->value('id') ?? 1;
-
             $products = [
                 ['name' => 'Classic White T-Shirt',         'min' => 10,  'max' => 25,  'type' => 'variable'],
                 ['name' => 'Slim Fit Jeans',                'min' => 30,  'max' => 80,  'type' => 'variable'],
@@ -116,7 +114,6 @@ class VendorProductSeeder extends Seeder
                 $product = Product::firstOrCreate(
                     ['slug' => $slug],
                     [
-                        'shop_id'      => $shopId,
                         'vendor_id'    => $vendor->id,
                         'name'         => $item['name'],
                         'description'  => "Premium quality {$item['name']}. Great value for money with fast delivery.",

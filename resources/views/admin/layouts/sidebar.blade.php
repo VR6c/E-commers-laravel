@@ -261,31 +261,6 @@
                     </ul>
                 </li>
 
-                {{-- Shops --}}
-                @php $shopsActive = in_array(Route::currentRouteName(), ['admin.shops.create','admin.shops.index','admin.shops.edit']); @endphp
-                <li class="nav-item {{ $shopsActive ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ $shopsActive ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-shop"></i>
-                        <p>Shops <i class="right fas fa-angle-left"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('admin.shops.create') }}"
-                               class="nav-link {{ Route::currentRouteName() == 'admin.shops.create' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Add New</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.shops.index') }}"
-                               class="nav-link {{ Route::currentRouteName() == 'admin.shops.index' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>All Shops</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
                 {{-- ─── COMMERCE ────────────────────────────────── --}}
                 <li class="nav-header">COMMERCE</li>
 

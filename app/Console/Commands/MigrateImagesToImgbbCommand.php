@@ -8,7 +8,6 @@ use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Page;
 use App\Models\ProductImage;
-use App\Models\Shop;
 use App\Models\SiteSetting;
 use App\Models\User;
 use App\Models\Vendor;
@@ -56,7 +55,6 @@ class MigrateImagesToImgbbCommand extends Command
             'banners'       => [Banner::class, 'image_url', 'banner_images'],
             'categories'    => [Category::class, 'image_url', 'categories'],
             'brands'        => [Brand::class, 'logo_url', 'brands'],
-            'shops'         => [Shop::class, 'logo', 'shops'],
             'pages'         => [Page::class, 'image_url', 'pages'],
             'site_settings' => [SiteSetting::class, 'logo', 'site_settings'],
             'users'         => [User::class, 'profile_image', 'admin_profiles'],

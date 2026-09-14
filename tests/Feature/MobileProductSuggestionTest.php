@@ -6,7 +6,6 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariant;
-use App\Models\Shop;
 use App\Models\Vendor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -43,15 +42,7 @@ class MobileProductSuggestionTest extends TestCase
             'status'   => 'active',
         ]);
 
-        $shop = Shop::create([
-            'vendor_id' => $vendor->id,
-            'name'      => 'Mobile Shop',
-            'slug'      => 'mobile-shop',
-            'status'    => 'active',
-        ]);
-
         $iphone15 = Product::create([
-            'shop_id'      => $shop->id,
             'vendor_id'    => $vendor->id,
             'slug'         => 'apple-iphone-15-pro',
             'name'         => 'Apple iPhone 15 Pro',
@@ -73,7 +64,6 @@ class MobileProductSuggestionTest extends TestCase
         ]);
 
         $iphone14 = Product::create([
-            'shop_id'      => $shop->id,
             'vendor_id'    => $vendor->id,
             'slug'         => 'apple-iphone-14',
             'name'         => 'Apple iPhone 14',
@@ -95,7 +85,6 @@ class MobileProductSuggestionTest extends TestCase
         ]);
 
         $macbook = Product::create([
-            'shop_id'      => $shop->id,
             'vendor_id'    => $vendor->id,
             'slug'         => 'macbook-pro-16',
             'name'         => 'Apple MacBook Pro 16',
@@ -118,7 +107,6 @@ class MobileProductSuggestionTest extends TestCase
 
         // Inactive product to verify exclusion
         Product::create([
-            'shop_id'      => $shop->id,
             'vendor_id'    => $vendor->id,
             'slug'         => 'disabled-iphone',
             'name'         => 'Disabled iPhone',

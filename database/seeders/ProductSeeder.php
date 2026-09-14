@@ -58,13 +58,6 @@ class ProductSeeder extends Seeder
             'password' => bcrypt('password'),
             'status'   => 'active',
         ]);
-
-        $shop = \App\Models\Shop::first() ?? \App\Models\Shop::create([
-            'vendor_id'   => $vendor->id,
-            'name'        => 'Default Shop',
-            'description' => 'The default store shop.',
-            'status'      => 'active',
-        ]);
         $categories  = Category::whereIn('slug', ['electronics','fashion','smartphones','t-shirts'])->get()->keyBy('slug');
         $electronics = $categories->get('electronics') ?? Category::first();
         $fashion     = $categories->get('fashion')     ?? Category::first();
@@ -439,7 +432,6 @@ class ProductSeeder extends Seeder
                 $product = Product::firstOrCreate(
                     ['slug' => $slug],
                     [
-                        'shop_id'           => $shop->id,
                         'vendor_id'         => $vendor->id,
                         'name'              => $item['name'],
                         'description'       => $item['short'],

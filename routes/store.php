@@ -51,6 +51,13 @@ Route::middleware('auth.customer')->group(function () {
 
 Route::prefix('customer')->name('customer.')->group(function () {
 
+    Route::get('/', function () {
+        if (auth('customer')->check()) {
+            return redirect()->route('customer.profile.edit');
+        }
+        return redirect()->route('customer.login');
+    })->name('index');
+
     // Guest routes
     Route::middleware('guest:customer')->group(function () {
         Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -69,7 +76,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
     // Authenticated routes
     Route::middleware('auth.customer')->group(function () {
         Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
-        Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+        Route::match(['get', 'post'], 'logout', [LoginController::class, 'logout'])->name('logout');
         Route::post('/wishlist', [WishlistController::class, 'store'])->name('wishlist.store');
         Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
 
@@ -83,7 +90,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
 Route::get('/stripe/checkout', [StripeController::class, 'checkout'])->name('stripe.checkout.process');
 
 Route::get('/{slug}', [StoreController::class, 'showPage'])
-    ->where('slug', '^(?!api|admin|checkout|vendor).*$')
+    ->where('slug', '^(?!api|admin|checkout|vendor|customer).*$')
     ->middleware('optimize.response')
     ->name('store.page');
 

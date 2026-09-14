@@ -29,7 +29,6 @@ class AdminSmokeTest extends TestCase
             ['admin.coupons.index'],
             ['admin.currencies.index'],
             ['admin.languages.index'],
-            ['admin.shops.index'],
             ['admin.product_variants.index'],
             ['admin.site-settings.index'],
         ];

@@ -10,11 +10,18 @@ use App\Http\Controllers\Vendor\SocialMediaLinkController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('vendor')->group(function () {
+    Route::get('/', function () {
+        if (auth('vendor')->check()) {
+            return redirect()->route('vendor.dashboard');
+        }
+        return redirect()->route('vendor.login');
+    })->name('vendor.index');
+
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('vendor.login');
     Route::post('/login', [AuthController::class, 'login'])->name('vendor.login.submit');
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('vendor.register');
     Route::post('/register', [AuthController::class, 'register'])->name('vendor.register.submit');
-    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth.vendor')->name('vendor.logout');
+    Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->middleware('auth.vendor')->name('vendor.logout');
 
     Route::middleware('auth.vendor')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('vendor.dashboard');

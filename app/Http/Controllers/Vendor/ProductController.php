@@ -10,7 +10,6 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductAttributeValue;
-use App\Models\Shop;
 use App\Services\Admin\CategoryService;
 use App\Services\Vendor\ProductService;
 use App\Traits\GeneratesUniqueSlug;
@@ -72,25 +71,11 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         $vendorId = Auth::guard('vendor')->id();
-        $vendor   = Auth::guard('vendor')->user();
-
-        // Resolve or auto-create the vendor's shop.
-        $shop = Shop::firstOrCreate(
-            ['vendor_id' => $vendorId],
-            [
-                'name'        => $vendor->name . "'s Shop",
-                'slug'        => \Illuminate\Support\Str::slug($vendor->name . '-shop-' . $vendorId),
-                'description' => null,
-                'status'      => 'active',
-            ]
-        );
-
-        DB::transaction(function () use ($request, $vendorId, $shop) {
+        DB::transaction(function () use ($request, $vendorId) {
             $slug = $this->generateUniqueSlug($request->input('name'));
             $en   = $request->only(['name', 'description', 'short_description']);
 
             $product = Product::create([
-                'shop_id'           => $shop->id,
                 'vendor_id'         => $vendorId,
                 'slug'              => $slug,
                 'name'              => $en['name'],

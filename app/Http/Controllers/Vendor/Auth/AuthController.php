@@ -80,15 +80,6 @@ class AuthController extends Controller
             'status'   => 'pending',
         ]);
 
-        // Auto-create a default shop for the new vendor.
-        \App\Models\Shop::create([
-            'vendor_id'   => $vendor->id,
-            'name'        => $vendor->name . "'s Shop",
-            'slug'        => \Illuminate\Support\Str::slug($vendor->name . '-shop-' . $vendor->id),
-            'description' => null,
-            'status'      => 'active',
-        ]);
-
         return redirect()->route('vendor.login')
             ->with('success', 'Your vendor account has been created and is pending approval. You will be notified once it is approved.');
     }

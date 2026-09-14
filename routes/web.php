@@ -20,7 +20,6 @@ use App\Http\Controllers\Admin\ProductReviewController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\RefundController;
-use App\Http\Controllers\Admin\ShopController;
 use App\Http\Controllers\Admin\SocialMediaLinkController;
 use App\Http\Controllers\Admin\VendorController;
 use App\Http\Controllers\SiteSettingsController;
@@ -29,9 +28,60 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/home', '/');
 
+/*
+|--------------------------------------------------------------------------
+| Portal Entry Points (Admin, Vendor, Customer)
+|--------------------------------------------------------------------------
+| Handles direct navigation to the three primary application portals:
+| - http://127.0.0.1:8000/admin    -> Admin Dashboard or Admin Login
+| - http://127.0.0.1:8000/vendor   -> Vendor Dashboard or Vendor Login
+| - http://127.0.0.1:8000/customer -> Customer Profile or Customer Login
+*/
+
+// --- 1. Admin Portal ---
+Route::get('/admin', function () {
+    if (auth()->check()) {
+        return redirect()->route('admin.dashboard');
+    }
+    return redirect()->route('admin.login');
+})->name('admin.index');
+
+Route::get('/admin/login', function () {
+    if (auth()->check()) {
+        return redirect()->route('admin.dashboard');
+    }
+    return view('admin.auth.login');
+})->name('admin.login');
+
+Route::match(['get', 'post'], '/logout', function () {
+    auth()->logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/admin/login');
+})->name('logout');
+
 Route::get('/login', function () {
+    if (auth()->check()) {
+        return redirect()->route('admin.dashboard');
+    }
     return view('admin.auth.login');
 });
+
+// --- 2. Vendor Portal ---
+Route::get('/vendor', function () {
+    if (auth('vendor')->check()) {
+        return redirect()->route('vendor.dashboard');
+    }
+    return redirect()->route('vendor.login');
+})->name('vendor.index');
+
+// --- 3. Customer Portal ---
+Route::get('/customer', function () {
+    if (auth('customer')->check()) {
+        return redirect()->route('customer.profile.edit');
+    }
+    return redirect()->route('customer.login');
+})->name('customer.index');
 
 Route::get('/migrate', function () {
     try {
@@ -256,10 +306,6 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     /* Currencies */
     Route::resource('currencies', CurrencyController::class);
     Route::get('currencies/data', [CurrencyController::class, 'getData'])->name('currencies.data');
-
-    /* Shops */
-    Route::resource('shops', ShopController::class);
-    Route::get('shops/data', [ShopController::class, 'getData'])->name('shops.data');
 
     /* Payment Gateways Configs */
     Route::get('payment_gateway_configs/getData', [PaymentGatewayConfigController::class, 'getData'])->name('payment_gateway_configs.getData');

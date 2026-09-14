@@ -37,7 +37,7 @@
     <link href="{{ asset('css/admin-select.css') }}?v=4" rel="stylesheet">
     {{-- DataTables Core CSS --}}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    <link href="{{ asset('css/vendor-panel.css') }}?v=11" rel="stylesheet">
+    <link href="{{ asset('css/vendor-panel.css') }}?v=12" rel="stylesheet">
 
     {{-- Toastr --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
@@ -468,7 +468,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 {{-- DataTables Core & Hybrid Loading UX Enhancer --}}
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-<script src="{{ asset('js/admin-datatables.js') }}?v=3"></script>
+<script src="{{ asset('js/admin-datatables.js') }}?v=4"></script>
 
 @yield('js')
 </body>
