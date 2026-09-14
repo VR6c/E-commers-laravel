@@ -426,19 +426,33 @@
     // ── AJAX product fetch ───────────────────────────────────────────
     function fetchProducts(url) {
         const list = document.getElementById('productList');
+        if (!list) return;
         list.classList.add('is-loading');
 
-        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(r => r.text())
-            .then(html => {
-                list.innerHTML = html;
-                list.classList.remove('is-loading');
-                list.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                syncSizeChipState();
-            })
-            .catch(() => {
-                list.classList.remove('is-loading');
-            });
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'text/html, */*'
+            }
+        })
+        .then(r => {
+            if (!r.ok) {
+                throw new Error('HTTP ' + r.status);
+            }
+            return r.text();
+        })
+        .then(html => {
+            list.innerHTML = html;
+            list.classList.remove('is-loading');
+            list.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            syncSizeChipState();
+        })
+        .catch(err => {
+            console.error('Fetch products error:', err);
+            list.classList.remove('is-loading');
+            // Graceful fallback to regular page navigation if AJAX fails
+            window.location.href = url;
+        });
     }
 
     function buildFilterUrl() {
@@ -458,7 +472,7 @@
         if (sort) { params.append('sort', sort); }
 
         url.search = params.toString();
-        return url.toString();
+        return url.pathname + url.search;
     }
 
     function sendFilterRequest() {
@@ -479,15 +493,24 @@
         const pageLink = e.target.closest('.page-link-custom');
         if (pageLink && pageLink.tagName === 'A') {
             e.preventDefault();
-            const url = pageLink.getAttribute('href');
-            if (url) {
-                fetchProducts(url);
-                window.history.pushState({}, '', url);
+            const rawUrl = pageLink.getAttribute('href');
+            if (rawUrl && rawUrl !== '#') {
+                try {
+                    const parsed = new URL(rawUrl, window.location.origin);
+                    const safeUrl = parsed.pathname + parsed.search;
+                    fetchProducts(safeUrl);
+                    window.history.pushState({}, '', safeUrl);
+                } catch (err) {
+                    window.location.href = rawUrl;
+                }
             }
         }
     });
 
-    window.addEventListener('popstate', () => fetchProducts(window.location.href));
+    window.addEventListener('popstate', () => {
+        const safeUrl = window.location.pathname + window.location.search;
+        fetchProducts(safeUrl);
+    });
 
     // ── Size chip toggle visual state ────────────────────────────────
     function syncSizeChipState() {

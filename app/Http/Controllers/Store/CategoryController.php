@@ -78,7 +78,7 @@ class CategoryController extends Controller
             $query->latest();
         }
 
-        $products = $query->paginate(12);
+        $products = $query->paginate(12)->withQueryString();
 
         $breadcrumbs = [];
         $parent = $category;

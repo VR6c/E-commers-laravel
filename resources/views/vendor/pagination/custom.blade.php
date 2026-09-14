@@ -64,21 +64,13 @@
         @endif
 
     </ul>
-
-    {{-- Page info --}}
-    <p class="pagination-info">
-        Showing <strong>{{ $paginator->firstItem() }}</strong>–<strong>{{ $paginator->lastItem() }}</strong>
-        of <strong>{{ $paginator->total() }}</strong> results
-    </p>
 </nav>
 
 <style>
 .custom-pagination-nav {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 12px;
-    margin-top: 2rem;
+    justify-content: flex-end;
 }
 
 .custom-pagination {
@@ -137,16 +129,6 @@
     background: transparent;
     color: #aaa;
     letter-spacing: 1px;
-}
-
-.pagination-info {
-    font-size: 0.82rem;
-    color: #888;
-    margin: 0;
-}
-
-.pagination-info strong {
-    color: #444;
 }
 </style>
 @endif

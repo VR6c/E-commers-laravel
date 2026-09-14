@@ -39,7 +39,8 @@ class SearchController extends Controller
             ->with(['thumbnail', 'primaryVariant'])
             ->withCount('reviews')
             ->orderBy('id', 'desc')
-            ->paginate(12);
+            ->paginate(12)
+            ->withQueryString();
 
         $wishlistIds = $this->getWishlistIds();
 

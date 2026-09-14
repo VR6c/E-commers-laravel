@@ -78,8 +78,16 @@ class AppServiceProvider extends ServiceProvider
 
         Paginator::useBootstrapFive();
 
-        if ($this->app->environment('production') || isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+        if ($this->app->environment('production')
+            || isset($_SERVER['HTTP_X_FORWARDED_PROTO'])
+            || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || str_starts_with(config('app.url'), 'https://')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
+
+            Paginator::currentPathResolver(function () {
+                $url = app('request')->url();
+                return preg_replace('/^http:/i', 'https:', $url);
+            });
         }
     }
 }
