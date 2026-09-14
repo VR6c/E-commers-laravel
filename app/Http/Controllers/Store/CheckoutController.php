@@ -28,7 +28,7 @@ class CheckoutController extends Controller
         }
 
         $paymentGateways = PaymentGateway::with('configs')
-            ->where('is_active', 1)
+            ->where('is_active', true)
             ->get();
 
         $paypal = $paymentGateways->firstWhere('code', 'paypal');

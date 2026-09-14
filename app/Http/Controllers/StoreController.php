@@ -22,7 +22,7 @@ class StoreController extends Controller
         });
 
         $categories = \Illuminate\Support\Facades\Cache::remember('storefront_home_categories', 600, function () {
-            return Category::where('status', 1)
+            return Category::where('status', true)
                 ->orderBy('id', 'desc')
                 ->take(10)
                 ->get();
@@ -45,7 +45,7 @@ class StoreController extends Controller
     public function showPage($slug)
     {
         $page = Page::where('slug', $slug)
-            ->where('status', 1)
+            ->where('status', true)
             ->firstOrFail();
 
         return view('themes.xylo.page', compact('page'));

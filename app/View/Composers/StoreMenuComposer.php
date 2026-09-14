@@ -31,7 +31,7 @@ class StoreMenuComposer
             if (self::$cachedHeaderMenu === null) {
                 self::$cachedHeaderMenu = Cache::remember('storefront_header_menu', 86400, function () {
                     try {
-                        return Menu::where('status', 1)
+                        return Menu::where('status', true)
                             ->with([
                                 'menuItems' => function ($query) {
                                     $query->orderBy('order_number', 'asc');

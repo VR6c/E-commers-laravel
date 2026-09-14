@@ -36,6 +36,6 @@ class ProductReview extends Model
 
     public function scopeApproved($query)
     {
-        return $query->where('is_approved', 1);
+        return $query->where('is_approved', true);
     }
 }

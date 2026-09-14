@@ -23,10 +23,10 @@ class CategoryController extends Controller
 
         $query = Product::with(['primaryVariant', 'reviews', 'images'])
             ->withCount(['reviews' => function ($q) {
-                $q->where('is_approved', 1);
+                $q->where('is_approved', true);
             }])
             ->withAvg(['reviews' => function ($q) {
-                $q->where('is_approved', 1);
+                $q->where('is_approved', true);
             }], 'rating')
             ->where('status', 1)
             ->where('category_id', $category->id);

@@ -45,7 +45,7 @@ class ReviewController extends Controller
             'product_id'  => $productId,
             'rating'      => $request->rating,
             'review'      => $request->review,
-            'is_approved' => 1,
+            'is_approved' => true,
         ]);
 
         return back()->with('success', 'Review submitted successfully.');

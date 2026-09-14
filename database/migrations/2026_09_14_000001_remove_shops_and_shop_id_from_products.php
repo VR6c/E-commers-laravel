@@ -15,10 +15,12 @@ return new class extends Migration
     {
         if (Schema::hasTable('products') && Schema::hasColumn('products', 'shop_id')) {
             Schema::table('products', function (Blueprint $table) {
-                try {
-                    $table->dropForeign(['shop_id']);
-                } catch (\Throwable $e) {
-                    // Foreign key might have already been removed or named differently
+                if (\Illuminate\Support\Facades\DB::getDriverName() !== 'sqlite') {
+                    try {
+                        $table->dropForeign(['shop_id']);
+                    } catch (\Throwable $e) {
+                        // Foreign key might have already been removed or named differently
+                    }
                 }
                 $table->dropColumn('shop_id');
             });

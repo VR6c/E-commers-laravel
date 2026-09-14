@@ -76,11 +76,11 @@ class ShopController extends Controller
         $products = $query->paginate(12)->withQueryString();
 
         $brands = \Illuminate\Support\Facades\Cache::remember('storefront_shop_brands', 3600, function () {
-            return Brand::where('status', 1)->withCount('products')->get();
+            return Brand::where('status', 'active')->withCount('products')->get();
         });
 
         $categories = \Illuminate\Support\Facades\Cache::remember('storefront_shop_categories', 3600, function () {
-            return Category::where('status', 1)->withCount('products')->get();
+            return Category::where('status', true)->withCount('products')->get();
         });
 
         $wishlistIds = $this->getWishlistIds();
