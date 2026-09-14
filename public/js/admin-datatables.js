@@ -53,7 +53,8 @@
             $.fn.dataTable.__customDefaultsApplied = true;
             $.extend(true, $.fn.dataTable.defaults, {
                 language: {
-                    processing: LOADER_HTML
+                    processing: LOADER_HTML,
+                    loadingRecords: '&nbsp;'
                 }
             });
         }
@@ -73,19 +74,30 @@
             injectSkeletonIfEmpty($table);
         });
 
+        $(document).on('init.dt', function (e, settings) {
+            const $wrapper = $(settings.nTableWrapper || settings.nTable).closest('.dataTables_wrapper, .dt-container, .table-responsive');
+            const $proc = $(settings.nTableWrapper || settings.nTable).find('div.dataTables_processing, .dt-processing')
+                .add($wrapper.find('div.dataTables_processing, .dt-processing'));
+            if ($proc.length) {
+                $proc.empty().append(LOADER_HTML);
+            }
+        });
+
         // 2. Processing state toggling
         $(document).on('processing.dt', function (e, settings, processing) {
             const $wrapper = $(settings.nTableWrapper || settings.nTable).closest('.dataTables_wrapper, .dt-container, .table-responsive');
-            const $proc = $(settings.nTableWrapper || settings.nTable).find('.dataTables_processing, .dt-processing')
-                .add($wrapper.find('.dataTables_processing, .dt-processing'));
+            const $proc = $(settings.nTableWrapper || settings.nTable).find('div.dataTables_processing, .dt-processing')
+                .add($wrapper.find('div.dataTables_processing, .dt-processing'));
 
             if (processing) {
                 $wrapper.addClass('dt-is-processing');
-                if ($proc.length && !$proc.find('.dt-loader-card').length) {
-                    $proc.html(LOADER_HTML);
-                }
+                $proc.removeClass('dt-hidden');
+                $proc.empty().append(LOADER_HTML);
+                $proc.attr('style', 'display: flex !important; visibility: visible !important; opacity: 1 !important;');
             } else {
                 $wrapper.removeClass('dt-is-processing');
+                $proc.addClass('dt-hidden');
+                $proc.attr('style', 'display: none !important; visibility: hidden !important; opacity: 0 !important;');
             }
         });
 
@@ -104,6 +116,10 @@
             $table.find('.dt-skeleton-row').remove();
             const $wrapper = $(settings.nTableWrapper || settings.nTable).closest('.dataTables_wrapper, .dt-container, .table-responsive');
             $wrapper.removeClass('dt-is-processing');
+            const $proc = $(settings.nTableWrapper || settings.nTable).find('div.dataTables_processing, .dt-processing')
+                .add($wrapper.find('div.dataTables_processing, .dt-processing'));
+            $proc.addClass('dt-hidden');
+            $proc.attr('style', 'display: none !important; visibility: hidden !important; opacity: 0 !important;');
         });
 
         // On DOM ready, auto-populate skeleton in any table intended for DataTables that is currently empty

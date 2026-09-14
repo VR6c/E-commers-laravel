@@ -26,7 +26,9 @@
     {{-- Tom Select & Overrides --}}
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.6.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
     <link href="{{ asset('css/admin-select.css') }}?v=4" rel="stylesheet">
-    <link href="{{ asset('css/vendor-panel.css') }}?v=3" rel="stylesheet">
+    {{-- DataTables Core CSS --}}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <link href="{{ asset('css/vendor-panel.css') }}?v=11" rel="stylesheet">
 
     {{-- Core Shell Styles --}}
     <style>
@@ -545,8 +547,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 @stack('modals')
 
-{{-- DataTables Hybrid Loading UX Enhancer --}}
-<script src="{{ asset('js/admin-datatables.js') }}?v=1"></script>
+{{-- DataTables Core & Hybrid Loading UX Enhancer --}}
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="{{ asset('js/admin-datatables.js') }}?v=3"></script>
 
 @yield('js')
 @stack('js')

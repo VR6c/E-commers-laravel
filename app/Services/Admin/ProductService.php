@@ -18,11 +18,7 @@ class ProductService
 
     public function getProductsForDataTable($request)
     {
-        $products = Product::with([
-            'images',
-            'category',
-            'primaryVariant' => fn ($q) => $q->whereRaw('is_primary is true'),
-        ]);
+        $products = Product::with(['images', 'category', 'primaryVariant']);
 
         return DataTables::of($products)
             ->filterColumn('name', fn ($q, $kw) => $q->where('name', 'like', "%{$kw}%"))
@@ -42,11 +38,11 @@ class ProductService
                 return '<span class="dt-category-badge">' . $name . '</span>';
             })
             ->addColumn('price', function ($product) {
-                $pv = $product->variants->firstWhere('is_primary', true);
+                $pv = $product->primaryVariant;
                 return $pv ? '$' . number_format($pv->price, 2) : '<span class="text-muted">—</span>';
             })
             ->addColumn('stock', function ($product) {
-                $pv = $product->variants->firstWhere('is_primary', true);
+                $pv = $product->primaryVariant;
                 if (!$pv) return '<span class="text-muted">—</span>';
                 $stock = (int) $pv->stock;
                 if ($stock === 0) return '<span class="dt-stock-badge dt-stock-badge--out">Out of stock</span>';

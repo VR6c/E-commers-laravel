@@ -1108,31 +1108,62 @@ button.dt-paging-button:focus-visible,
 }
 
 /* Modern Frosted Glass Processing Indicator Overlay */
+div.dataTables_processing,
 .dt-processing,
 .dataTables_wrapper .dataTables_processing,
-.dt-container .dt-processing {
+.dataTables_wrapper div.dataTables_processing,
+.dt-container .dt-processing,
+.dt-container div.dt-processing {
     position: absolute !important;
     top: 50% !important;
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
     margin: 0 !important;
+    margin-left: 0 !important;
+    margin-top: 0 !important;
     padding: 0 !important;
     width: auto !important;
+    min-width: 0 !important;
     height: auto !important;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
+    font-size: 0 !important;
+    color: transparent !important;
     z-index: 100 !important;
-    display: flex !important;
+    display: flex;
     align-items: center !important;
     justify-content: center !important;
     pointer-events: none !important;
 }
 
-/* Hide any default DataTables 1.13 nested spinner div */
-.dataTables_wrapper .dataTables_processing > div:not(.dt-loader-card),
-.dt-container .dt-processing > div:not(.dt-loader-card) {
+/* Explicitly enforce display: none when DataTables hides it */
+div.dataTables_processing[style*="display: none"],
+div.dt-processing[style*="display: none"],
+.dataTables_wrapper div.dataTables_processing[style*="display: none"],
+.dt-container div.dt-processing[style*="display: none"],
+div.dataTables_processing.dt-hidden,
+div.dt-processing.dt-hidden {
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+/* Hide any default DataTables 1.13 nested spinner div or extra elements */
+div.dataTables_processing > :not(.dt-loader-card),
+.dt-processing > :not(.dt-loader-card),
+.dataTables_wrapper .dataTables_processing > :not(.dt-loader-card),
+.dt-container .dt-processing > :not(.dt-loader-card) {
+    display: none !important;
+}
+
+/* Hide duplicate dataTables_empty text while processing */
+.dt-is-processing .dataTables_empty,
+.dataTables_wrapper.dt-is-processing tbody td.dataTables_empty,
+.dt-container.dt-is-processing tbody td.dataTables_empty {
+    color: transparent !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
 }
 
 .dt-loader-card {
