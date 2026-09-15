@@ -67,6 +67,67 @@ class MobileApiEndpointsTest extends TestCase
             ]);
     }
 
+    public function test_customer_token_refresh_flow(): void
+    {
+        $customer = Customer::create([
+            'name' => 'Refresh Test User',
+            'email' => 'refresh.test@example.com',
+            'password' => bcrypt('password123'),
+            'status' => 'active',
+        ]);
+
+        $originalToken = $customer->createToken('CustomerToken')->plainTextToken;
+
+        // 1. Refresh using Bearer header
+        $refreshResponse = $this->withHeader('Authorization', 'Bearer ' . $originalToken)
+            ->postJson('/api/customer/refresh');
+
+        $refreshResponse->assertStatus(200)
+            ->assertJson([
+                'status' => true,
+                'message' => 'Token refreshed successfully',
+            ])
+            ->assertJsonStructure([
+                'data' => [
+                    'token',
+                    'customer' => ['id', 'email', 'name'],
+                ],
+            ]);
+
+        $newToken = $refreshResponse->json('data.token');
+        $this->assertNotEmpty($newToken);
+        $this->assertNotEquals($originalToken, $newToken);
+
+        // 2. Verify new token works on authenticated profile endpoint
+        $this->withHeader('Authorization', 'Bearer ' . $newToken)
+            ->getJson('/api/customer/profile')
+            ->assertStatus(200)
+            ->assertJsonPath('data.email', 'refresh.test@example.com');
+
+        // 3. Verify old token was revoked (rotation)
+        app('auth')->forgetGuards();
+        $this->withHeader('Authorization', 'Bearer ' . $originalToken)
+            ->getJson('/api/customer/profile')
+            ->assertStatus(401);
+
+        // 4. Test refresh using body payload with the new token
+        app('auth')->forgetGuards();
+        $bodyRefreshResponse = $this->postJson('/api/customer/refresh', [
+            'refresh_token' => $newToken,
+        ]);
+
+        $bodyRefreshResponse->assertStatus(200)
+            ->assertJson(['status' => true]);
+
+        // 5. Test refresh-token alias route
+        app('auth')->forgetGuards();
+        $aliasResponse = $this->withHeader('Authorization', 'Bearer ' . $bodyRefreshResponse->json('data.token'))
+            ->postJson('/api/customer/refresh-token');
+
+        $aliasResponse->assertStatus(200)
+            ->assertJson(['status' => true]);
+    }
+
     public function test_public_catalog_api_endpoints(): void
     {
         $category = Category::create([

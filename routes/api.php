@@ -25,8 +25,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Authentication
 // ──────────────────────────────────────────────────────────────
 Route::prefix('customer')->group(function () {
-    Route::post('register', [CustomerAuthController::class, 'register']);
-    Route::post('login',    [CustomerAuthController::class, 'login']);
+    Route::post('register',      [CustomerAuthController::class, 'register']);
+    Route::post('login',         [CustomerAuthController::class, 'login']);
+    Route::post('refresh',       [CustomerAuthController::class, 'refresh']);
+    Route::post('refresh-token', [CustomerAuthController::class, 'refresh']);
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('profile',  [CustomerAuthController::class, 'profile']);
@@ -88,6 +90,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/wishlist/ids',                 [WishlistApiController::class, 'ids']);
     Route::post('/wishlist/toggle',             [WishlistApiController::class, 'toggle']);
     Route::delete('/wishlist/{product_id}',     [WishlistApiController::class, 'destroy']);
+
+    // Wishlist aliases (support plural form for backward compatibility)
+    Route::get('/wishlists',                    [WishlistApiController::class, 'index']);
+    Route::post('/wishlists/toggle',            [WishlistApiController::class, 'toggle']);
+    Route::post('/wishlists/{product_id}/toggle', function (Request $request, $productId) {
+        $request->merge(['product_id' => $productId]);
+        return app(WishlistApiController::class)->toggle($request);
+    });
 
     // Recipes — unlocked recipes for the authenticated customer
     Route::get('/recipes/unlocked', [RecipeApiController::class, 'unlocked']);
