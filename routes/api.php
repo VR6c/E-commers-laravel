@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\ProductReviewController;
 use App\Http\Controllers\Api\SocialMediaLinkController;
 use App\Http\Controllers\Api\CheckoutApiController;
 use App\Http\Controllers\Api\WishlistApiController;
+use App\Http\Controllers\Api\RecipeApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -56,6 +57,11 @@ Route::get('/products/{slug}/suggestions', [ProductController::class, 'related']
 Route::get('/products',                    [ProductController::class, 'index']);
 Route::get('/products/{slug}',             [ProductController::class, 'show']);
 
+// Recipes — featured & list (public), detail (public summary / gated full)
+Route::get('/recipes/featured', [RecipeApiController::class, 'featured']);
+Route::get('/recipes',          [RecipeApiController::class, 'index']);
+Route::get('/recipes/{slug}',   [RecipeApiController::class, 'show']);
+
 // Product reviews — read is public, write requires auth
 Route::get('/products/{slug}/reviews', [ProductReviewController::class, 'index']);
 Route::post('/products/{slug}/reviews', [ProductReviewController::class, 'store'])
@@ -81,6 +87,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/wishlist/ids',                 [WishlistApiController::class, 'ids']);
     Route::post('/wishlist/toggle',             [WishlistApiController::class, 'toggle']);
     Route::delete('/wishlist/{product_id}',     [WishlistApiController::class, 'destroy']);
+
+    // Recipes — unlocked recipes for the authenticated customer
+    Route::get('/recipes/unlocked', [RecipeApiController::class, 'unlocked']);
 });
 
 Route::get('/seed-products', function () {
