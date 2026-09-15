@@ -81,6 +81,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Orders
     Route::get('/orders',      [OrderApiController::class, 'index']);
     Route::get('/orders/{id}', [OrderApiController::class, 'show']);
+    Route::get('/orders/{id}/receipt', [OrderApiController::class, 'receipt']);
 
     // Wishlist
     Route::get('/wishlist',                     [WishlistApiController::class, 'index']);

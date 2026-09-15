@@ -53,6 +53,7 @@ class OrderApiController extends Controller
                 'last_name'       => $lastName,
                 'phone'           => $shipping?->phone,
                 'email'           => $order->guest_email,
+                'receipt_url'     => url("/orders/{$order->id}/download-receipt?token=" . app(\App\Services\Store\RecipeAccessService::class)->generateOrderToken($order)),
                 'address'         => $shipping?->address,
                 'city'            => $shipping?->city,
                 'country'         => $shipping?->country,
@@ -116,6 +117,7 @@ class OrderApiController extends Controller
                 'total'           => (float) $order->total_amount,
                 'gateway'         => $order->payment_method ?? 'cod',
                 'email'           => $order->guest_email,
+                'receipt_url'     => url("/orders/{$order->id}/download-receipt?token=" . app(\App\Services\Store\RecipeAccessService::class)->generateOrderToken($order)),
                 'shipping'        => $shipping ? [
                     'first_name' => $nameParts[0] ?? '',
                     'last_name'  => $nameParts[1] ?? '',
@@ -131,5 +133,25 @@ class OrderApiController extends Controller
                 'updated_at' => $order->updated_at?->toISOString(),
             ],
         ]);
+    }
+
+    public function receipt(Request $request, int $id)
+    {
+        $customer = $request->user('sanctum') ?? $request->user();
+        $token = $request->input('token');
+        $order = Order::with(['details.product', 'shippingAddress', 'payments'])->findOrFail($id);
+
+        $accessService = app(\App\Services\Store\RecipeAccessService::class);
+        $isOwner = ($customer && $order->customer_id === $customer->id);
+        $isValidToken = ($token && $accessService->verifyOrderToken($order, $token));
+
+        if (!$isOwner && !$isValidToken) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized to download this order receipt.'], 403);
+        }
+
+        $stream = $request->boolean('preview', false);
+        $pdfService = app(\App\Services\Store\RecipePdfService::class);
+
+        return $pdfService->generateOrderReceiptPdf($order, $stream);
     }
 }

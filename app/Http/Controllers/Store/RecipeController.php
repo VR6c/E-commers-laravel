@@ -48,7 +48,11 @@ class RecipeController extends Controller
         $recipes = $query->latest()->paginate(12)->withQueryString();
 
         // Get list of unlocked recipe IDs for current user / session
-        $customer = Auth::guard('customer')->user();
+        $customer = Auth::guard('sanctum')->user() ?? Auth::guard('customer')->user();
+        if (!$customer && $request->bearerToken()) {
+            $pat = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
+            $customer = $pat?->tokenable;
+        }
         $unlockedRecipeIds = [];
 
         if ($customer) {
@@ -68,7 +72,11 @@ class RecipeController extends Controller
     {
         $recipe = Recipe::where('slug', $slug)->with('products.thumbnail')->firstOrFail();
 
-        $customer = Auth::guard('customer')->user();
+        $customer = Auth::guard('sanctum')->user() ?? Auth::guard('customer')->user();
+        if (!$customer && $request->bearerToken()) {
+            $pat = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
+            $customer = $pat?->tokenable;
+        }
         $orderId = $request->get('order_id');
         $token = $request->get('token');
 
@@ -100,7 +108,11 @@ class RecipeController extends Controller
     {
         $recipe = Recipe::where('slug', $slug)->with('products')->firstOrFail();
 
-        $customer = Auth::guard('customer')->user();
+        $customer = Auth::guard('sanctum')->user() ?? Auth::guard('customer')->user();
+        if (!$customer && $request->bearerToken()) {
+            $pat = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
+            $customer = $pat?->tokenable;
+        }
         $orderId = $request->get('order_id');
         $token = $request->get('token');
 
@@ -129,7 +141,11 @@ class RecipeController extends Controller
         $order = Order::with(['details.product', 'shippingAddress', 'payments'])->findOrFail($id);
 
         // Security check: owner, guest session, valid token, or admin
-        $customer = Auth::guard('customer')->user();
+        $customer = Auth::guard('sanctum')->user() ?? Auth::guard('customer')->user();
+        if (!$customer && $request->bearerToken()) {
+            $pat = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
+            $customer = $pat?->tokenable;
+        }
         $token = $request->get('token');
         $isOwner = ($customer && $order->customer_id === $customer->id);
         $isGuestSession = (session('last_order_id') == $order->id);
