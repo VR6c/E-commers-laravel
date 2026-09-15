@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Recipe;
 use Illuminate\Support\Facades\URL;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Illuminate\Support\Collection;
 
 class RecipeAccessService
@@ -16,17 +17,12 @@ class RecipeAccessService
      */
     public function hasAccess(Recipe $recipe, ?Customer $customer = null, ?int $orderId = null, ?string $token = null): bool
     {
-        // 1. If admin is logged in, always granted
-        if (auth()->check()) {
-            return true;
-        }
-
-        // 2. Free recipe with no linked products
+        // 1. Free recipe with no linked products
         if ((float) $recipe->price === 0.0 && $recipe->products()->count() === 0) {
             return true;
         }
 
-        // 3. Check specific Order ID if provided
+        // 2. Check specific Order ID if provided
         if ($orderId) {
             $order = Order::with('details')->find($orderId);
             if ($order && in_array(strtolower($order->status), ['completed', 'processing'])) {
@@ -44,7 +40,7 @@ class RecipeAccessService
             }
         }
 
-        // 4. Check guest session last_order_id
+        // 3. Check guest session last_order_id
         $sessionOrderId = session('last_order_id');
         if ($sessionOrderId) {
             $sessionOrder = Order::with('details')->find($sessionOrderId);
@@ -57,7 +53,7 @@ class RecipeAccessService
             }
         }
 
-        // 5. Check customer history
+        // 4. Check customer history
         if ($customer) {
             $linkedProductIds = $recipe->products()->pluck('products.id')->toArray();
             if (!empty($linkedProductIds)) {
@@ -113,12 +109,23 @@ class RecipeAccessService
      */
     public function generateDownloadUrl(Recipe $recipe, ?Order $order = null): string
     {
+        // Build the URL without relying on a named route that may not exist in all environments
         $params = ['slug' => $recipe->slug];
         if ($order) {
             $params['order_id'] = $order->id;
-            $params['token'] = $this->generateOrderToken($order);
+            $params['token']    = $this->generateOrderToken($order);
         }
 
-        return route('recipes.download-pdf', $params);
+        try {
+            return route('recipes.download-pdf', $params);
+        } catch (\Symfony\Component\Routing\Exception\RouteNotFoundException $e) {
+            // Fallback: return a plain URL if the named route is not registered
+            return url('/recipes/' . $recipe->slug . '/download?' . http_build_query(
+                array_filter($params, fn ($v, $k) => $k !== 'slug'),
+                '',
+                '&',
+                PHP_QUERY_RFC3986
+            ));
+        }
     }
 }

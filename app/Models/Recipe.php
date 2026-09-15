@@ -105,8 +105,8 @@ class Recipe extends Model
      */
     public function isUnlockedFor(?Customer $customer = null, ?Order $order = null): bool
     {
-        // 1. If user is logged-in admin, always permit access for testing / reviewing
-        if (auth()->check()) {
+        // 1. If customer is authenticated via Sanctum, always permit access for their own unlocked list
+        if (auth('sanctum')->check()) {
             return true;
         }
 
