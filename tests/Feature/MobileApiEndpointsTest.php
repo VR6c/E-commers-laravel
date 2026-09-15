@@ -112,6 +112,7 @@ class MobileApiEndpointsTest extends TestCase
 
         // 4. Test refresh using body payload with the new token
         app('auth')->forgetGuards();
+        $this->flushHeaders();
         $bodyRefreshResponse = $this->postJson('/api/customer/refresh', [
             'refresh_token' => $newToken,
         ]);
@@ -121,6 +122,7 @@ class MobileApiEndpointsTest extends TestCase
 
         // 5. Test refresh-token alias route
         app('auth')->forgetGuards();
+        $this->flushHeaders();
         $aliasResponse = $this->withHeader('Authorization', 'Bearer ' . $bodyRefreshResponse->json('data.token'))
             ->postJson('/api/customer/refresh-token');
 
@@ -221,12 +223,17 @@ class MobileApiEndpointsTest extends TestCase
 
         // Test Single Product Detail
         $this->getJson('/api/products/mobile-smartphone')->assertStatus(200);
+
+        // Test Product Reviews (public read)
+        $this->getJson('/api/products/mobile-smartphone/reviews')->assertStatus(200)
+            ->assertJson(['status' => true]);
     }
 
     public function test_wishlist_endpoints_require_authentication(): void
     {
         // Unauthenticated request should fail with 401
         $this->getJson('/api/wishlist')->assertStatus(401);
+        $this->getJson('/api/wishlists')->assertStatus(401);
 
         // Authenticated request
         $customer = Customer::create([
@@ -238,12 +245,18 @@ class MobileApiEndpointsTest extends TestCase
 
         $token = $customer->createToken('mobile_app')->plainTextToken;
 
+        // Canonical singular routes
         $this->withHeader('Authorization', 'Bearer ' . $token)
             ->getJson('/api/wishlist')
             ->assertStatus(200);
 
         $this->withHeader('Authorization', 'Bearer ' . $token)
             ->getJson('/api/wishlist/ids')
+            ->assertStatus(200);
+
+        // Plural alias routes
+        $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->getJson('/api/wishlists')
             ->assertStatus(200);
     }
 }

@@ -108,6 +108,20 @@ if [ -n "$TOKEN" ]; then
     
     UPDATE_PAYLOAD="{\"name\":\"Mobile Tester Updated\",\"phone\":\"098765432\"}"
     test_endpoint "PUT" "/api/customer/profile" "$UPDATE_PAYLOAD" "$TOKEN" 200 "Update Customer Profile"
+
+    # Token Refresh
+    echo -n "Testing Customer Token Refresh [POST /api/customer/refresh]... "
+    REFRESH_RESP=$(curl -s -X POST -H "Authorization: Bearer $TOKEN" -H "Accept: application/json" "${BASE_URL}/api/customer/refresh")
+    NEW_TOKEN=$(echo "$REFRESH_RESP" | grep -o '"token":"[^"]*' | grep -o '[^"]*$')
+    if [ -n "$NEW_TOKEN" ]; then
+        echo -e "${GREEN}PASS (Token refreshed successfully)${NC}"
+        ((PASSED_TESTS++))
+        TOKEN="$NEW_TOKEN"
+    else
+        echo -e "${RED}FAIL (Could not refresh token)${NC}"
+        echo "Response: $REFRESH_RESP"
+        ((FAILED_TESTS++))
+    fi
     
     # 3. AUTHENTICATED WISHLIST & ORDERS
     echo -e "\n${YELLOW}--- 3. Testing Wishlist & Orders ---${NC}"

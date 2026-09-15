@@ -125,9 +125,9 @@ class CustomerAuthController extends Controller
             $accessToken = $customer->currentAccessToken();
         }
 
-        // 2. If not resolved yet, extract token from header or body
+        // 2. If not resolved yet, extract token from body or header
         if (! $customer || ! $accessToken) {
-            $plainToken = $request->bearerToken() ?? $request->input('refresh_token') ?? $request->input('token');
+            $plainToken = $request->input('refresh_token') ?? $request->bearerToken() ?? $request->input('token');
 
             if (! $plainToken) {
                 return $this->problemResponse(
