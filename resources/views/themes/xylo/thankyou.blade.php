@@ -316,6 +316,45 @@
                             </div>
                         @endif
 
+                        {{-- Unlocked Recipes Section --}}
+                        @if(isset($unlockedRecipes) && $unlockedRecipes->isNotEmpty())
+                            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px; margin: 24px 40px; padding: 20px; text-align: left;">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <span style="font-size: 1.25rem;">🎉</span>
+                                    <div>
+                                        <h3 class="h6 fw-bold mb-0 text-dark">Bonus Chef Recipes Unlocked!</h3>
+                                        <span class="text-muted small">Your purchased items unlocked the following recipe guides:</span>
+                                    </div>
+                                </div>
+                                @foreach($unlockedRecipes as $recipe)
+                                    @php
+                                        $token = app(\App\Services\Store\RecipeAccessService::class)->generateOrderToken($order);
+                                    @endphp
+                                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 py-2 border-top border-success-subtle">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img src="{{ $recipe->image_src }}" alt="{{ $recipe->title }}" style="width: 44px; height: 44px; border-radius: 8px; object-fit: cover;" onerror="this.src='https://placehold.co/44x44/eee/999?text=Recipe';">
+                                            <div>
+                                                <a href="{{ route('recipes.show', ['slug' => $recipe->slug, 'order_id' => $order->id, 'token' => $token]) }}" class="fw-bold text-dark text-decoration-none small d-block">
+                                                    {{ $recipe->title }}
+                                                </a>
+                                                <span class="text-muted small">
+                                                    {{ $recipe->total_time ? $recipe->total_time . ' min' : '30 min' }} &bull; {{ ucfirst($recipe->difficulty) }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <a href="{{ route('recipes.show', ['slug' => $recipe->slug, 'order_id' => $order->id, 'token' => $token]) }}" class="btn btn-outline-success btn-pill btn-sm">
+                                                <i class="fa-solid fa-eye me-1"></i> View
+                                            </a>
+                                            <a href="{{ route('recipes.download-pdf', ['slug' => $recipe->slug, 'order_id' => $order->id, 'token' => $token]) }}" class="btn btn-success btn-pill btn-sm">
+                                                <i class="fa-solid fa-file-pdf me-1"></i>PDF
+                                            </a>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
                         {{-- Total dark bar --}}
                         <div class="xsf-ty-total-bar">
                             <span class="xsf-ty-total-bar__label">{{ 'Total Paid' }}</span>
@@ -326,6 +365,12 @@
 
                         {{-- Actions --}}
                         <div class="xsf-ty-actions">
+                            @php
+                                $receiptToken = app(\App\Services\Store\RecipeAccessService::class)->generateOrderToken($order);
+                            @endphp
+                            <a href="{{ route('orders.download-receipt', ['id' => $order->id, 'token' => $receiptToken]) }}" class="btn btn-outline-dark btn-pill">
+                                <i class="fa-solid fa-file-invoice me-2"></i>{{ 'Download Receipt (PDF)' }}
+                            </a>
                             <a href="{{ route('xylo.home') }}" class="btn btn-primary btn-pill">
                                 <i class="fa fa-bag-shopping me-2"></i>{{ 'Continue Shopping' }}
                             </a>

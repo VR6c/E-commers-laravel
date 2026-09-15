@@ -89,13 +89,22 @@ Route::prefix('customer')->name('customer.')->group(function () {
         // Customer Order History Routes
         Route::get('/orders', [CustomerOrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{id}', [CustomerOrderController::class, 'show'])->name('orders.show');
+
+        // Customer Unlocked Recipes Library
+        Route::get('/recipes', [\App\Http\Controllers\Store\Customer\RecipeController::class, 'index'])->name('recipes.index');
     });
 });
+
+/* Recipes Storefront Routes */
+Route::get('/recipes', [\App\Http\Controllers\Store\RecipeController::class, 'index'])->name('recipes.index');
+Route::get('/recipes/{slug}', [\App\Http\Controllers\Store\RecipeController::class, 'show'])->name('recipes.show');
+Route::get('/recipes/{slug}/download-pdf', [\App\Http\Controllers\Store\RecipeController::class, 'downloadPdf'])->name('recipes.download-pdf');
+Route::get('/orders/{id}/download-receipt', [\App\Http\Controllers\Store\RecipeController::class, 'downloadReceiptPdf'])->name('orders.download-receipt');
 
 Route::get('/stripe/checkout', [StripeController::class, 'checkout'])->name('stripe.checkout.process');
 
 Route::get('/{slug}', [StoreController::class, 'showPage'])
-    ->where('slug', '^(?!api|admin|checkout|vendor|customer).*$')
+    ->where('slug', '^(?!api|admin|checkout|vendor|customer|recipes|orders).*$')
     ->middleware('optimize.response')
     ->name('store.page');
 

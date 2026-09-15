@@ -53,4 +53,19 @@ class Order extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
+    /**
+     * Retrieve all active recipes unlocked by products in this order.
+     */
+    public function unlockedRecipes()
+    {
+        $productIds = $this->details->pluck('product_id')->filter()->unique()->toArray();
+        if (empty($productIds)) {
+            return collect();
+        }
+
+        return Recipe::whereHas('products', function ($q) use ($productIds) {
+            $q->whereIn('products.id', $productIds);
+        })->where('is_active', true)->get();
+    }
 }

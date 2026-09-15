@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductReviewController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\RecipeController;
 use App\Http\Controllers\Admin\RefundController;
 use App\Http\Controllers\Admin\SocialMediaLinkController;
 use App\Http\Controllers\Admin\VendorController;
@@ -218,6 +219,11 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::resource('products', ProductController::class);
     Route::post('products/data', [ProductController::class, 'getProducts'])->name('products.data');
     Route::post('products/updateStatus', [ProductController::class, 'updateStatus'])->name('products.updateStatus');
+
+    /* Recipes */
+    Route::resource('recipes', RecipeController::class);
+    Route::post('recipes/data', [RecipeController::class, 'getData'])->name('recipes.data');
+    Route::post('recipes/update-status', [RecipeController::class, 'updateStatus'])->name('recipes.updateStatus');
 
     /* Brands */
     Route::resource('brands', BrandController::class);

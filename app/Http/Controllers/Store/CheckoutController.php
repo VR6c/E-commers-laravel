@@ -408,12 +408,14 @@ class CheckoutController extends Controller
             return redirect()->route('xylo.home');
         }
 
-        $order = Order::with(['details.product.thumbnail'])->find($orderId);
+        $order = Order::with(['details.product.thumbnail', 'details.product.recipes'])->find($orderId);
         if (!$order) {
             return redirect()->route('xylo.home');
         }
 
-        return view('themes.xylo.thankyou', compact('order'));
+        $unlockedRecipes = $order->unlockedRecipes();
+
+        return view('themes.xylo.thankyou', compact('order', 'unlockedRecipes'));
     }
 
     /**

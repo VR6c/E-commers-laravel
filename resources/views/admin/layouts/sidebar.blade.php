@@ -83,6 +83,31 @@
                     </ul>
                 </li>
 
+                {{-- Recipes --}}
+                @php $recipesActive = in_array(Route::currentRouteName(), ['admin.recipes.create','admin.recipes.index','admin.recipes.edit']); @endphp
+                <li class="nav-item {{ $recipesActive ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ $recipesActive ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-book-open"></i>
+                        <p>Recipes <i class="right fas fa-angle-left"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.recipes.create') }}"
+                               class="nav-link {{ Route::currentRouteName() == 'admin.recipes.create' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add New</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.recipes.index') }}"
+                               class="nav-link {{ Route::currentRouteName() == 'admin.recipes.index' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>All Recipes</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 {{-- Categories --}}
                 @php $catsActive = in_array(Route::currentRouteName(), ['admin.categories.create','admin.categories.index']); @endphp
                 <li class="nav-item {{ $catsActive ? 'menu-open' : '' }}">

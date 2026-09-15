@@ -71,6 +71,12 @@ class Product extends Model
         return $this->belongsToMany(Customer::class, 'wishlists');
     }
 
+    public function recipes()
+    {
+        return $this->belongsToMany(Recipe::class, 'product_recipe')
+            ->withTimestamps();
+    }
+
     // ------------------------------------------------------------------
     // Accessors / helpers
     // ------------------------------------------------------------------

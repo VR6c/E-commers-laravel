@@ -240,7 +240,10 @@
                     {{ 'Placed on' }} {{ $order->created_at ? $order->created_at->format('F d, Y \a\t h:i A') : 'N/A' }}
                 </p>
             </div>
-            <div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ route('orders.download-receipt', $order->id) }}" class="btn btn-outline-primary btn-pill btn-sm px-3">
+                    <i class="fa-solid fa-file-pdf me-1"></i> {{ 'Download Receipt' }}
+                </a>
                 <button type="button" class="btn btn-outline-dark btn-pill btn-sm btn-print px-3" onclick="window.print();">
                     <i class="fa-solid fa-print me-1"></i> {{ 'Print Receipt' }}
                 </button>
@@ -297,6 +300,46 @@
                         @endforeach
                     </div>
                 </div>
+
+                @php
+                    $orderRecipes = $order->unlockedRecipes();
+                @endphp
+
+                @if($orderRecipes->isNotEmpty())
+                    <div class="xsf-detail-card" style="border: 1px solid #bbf7d0;">
+                        <div class="xsf-detail-card__header" style="background: #f0fdf4;">
+                            <h2 class="xsf-detail-card__title" style="color: #15803d;">
+                                <i class="fa-solid fa-utensils text-success"></i>
+                                {{ 'Bonus Recipes Unlocked with this Order' }} ({{ $orderRecipes->count() }})
+                            </h2>
+                        </div>
+                        <div class="xsf-detail-card__body">
+                            @foreach($orderRecipes as $recipe)
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 py-2 border-bottom">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="{{ $recipe->image_src }}" alt="{{ $recipe->title }}" style="width: 50px; height: 50px; border-radius: 10px; object-fit: cover;" onerror="this.src='https://placehold.co/50x50/eee/999?text=Recipe';">
+                                        <div>
+                                            <a href="{{ route('recipes.show', $recipe->slug) }}" class="fw-bold text-dark text-decoration-none">
+                                                {{ $recipe->title }}
+                                            </a>
+                                            <div class="text-muted small">
+                                                {{ $recipe->total_time ? $recipe->total_time . ' min' : '30 min' }} &bull; {{ ucfirst($recipe->difficulty) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a href="{{ route('recipes.show', $recipe->slug) }}" class="btn btn-outline-dark btn-pill btn-sm">
+                                            <i class="fa-solid fa-eye me-1"></i> View
+                                        </a>
+                                        <a href="{{ route('recipes.download-pdf', $recipe->slug) }}" class="btn btn-success btn-pill btn-sm">
+                                            <i class="fa-solid fa-file-pdf me-1"></i> Download PDF
+                                        </a>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
 
                 {{-- Payment & Transaction Card --}}
                 <div class="xsf-detail-card">

@@ -152,6 +152,10 @@
                                     <i class="fa-solid fa-box-archive me-2 text-muted"></i>
                                     {{ 'My Orders' }}
                                 </a>
+                                <a class="dropdown-item" href="{{ route('customer.recipes.index') }}">
+                                    <i class="fa-solid fa-utensils me-2 text-muted"></i>
+                                    {{ 'My Recipes' }}
+                                </a>
                                 <a class="dropdown-item" href="{{ route('customer.wishlist.index') }}">
                                     <i class="fa-regular fa-heart me-2 text-muted"></i>
                                     {{ 'Wishlist' }}
@@ -216,6 +220,7 @@
                 @else
                     <li class="xsf-nav__item"><a class="xsf-nav__link" href="{{ url('/') }}">Home</a></li>
                     <li class="xsf-nav__item"><a class="xsf-nav__link" href="{{ route('shop.index') }}">Shop All</a></li>
+                    <li class="xsf-nav__item"><a class="xsf-nav__link" href="{{ route('recipes.index') }}">Recipes</a></li>
                 @endif
             </ul>
         </div>
@@ -245,6 +250,7 @@
             @else
                 <li><a class="xsf-mobile-nav__link" href="{{ url('/') }}">Home</a></li>
                 <li><a class="xsf-mobile-nav__link" href="{{ route('shop.index') }}">Shop All</a></li>
+                <li><a class="xsf-mobile-nav__link" href="{{ route('recipes.index') }}">Recipes</a></li>
             @endif
         </ul>
 
