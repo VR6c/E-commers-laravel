@@ -1,0 +1,4 @@
+storage
+*.php
+.htaccess
+.DS_Store
