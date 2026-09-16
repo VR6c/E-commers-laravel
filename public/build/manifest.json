@@ -1,22 +1,22 @@
 {
   "resources/js/app.js": {
-    "file": "assets/app-DBKeLq54.js",
+    "file": "assets/app-DtpSTaT5.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
   },
   "resources/sass/admin.scss": {
-    "file": "assets/admin-BulLOYVs.css",
+    "file": "assets/admin-_Ie9pAZo.css",
     "src": "resources/sass/admin.scss",
     "isEntry": true
   },
   "resources/sass/app.scss": {
-    "file": "assets/app-txWP9923.css",
+    "file": "assets/app-BDZZh7oJ.css",
     "src": "resources/sass/app.scss",
     "isEntry": true
   },
   "resources/views/themes/xylo/css/animate.min.css": {
-    "file": "assets/animate-BnB_Ifri.css",
+    "file": "assets/animate-AOWKfFXv.css",
     "src": "resources/views/themes/xylo/css/animate.min.css",
     "isEntry": true
   },
@@ -41,13 +41,13 @@
     "isEntry": true
   },
   "resources/views/themes/xylo/js/slick.min.js": {
-    "file": "assets/slick.min-C6idbfyY.js",
+    "file": "assets/slick.min-BSMoKty8.js",
     "name": "slick.min",
     "src": "resources/views/themes/xylo/js/slick.min.js",
     "isEntry": true
   },
   "resources/views/themes/xylo/sass/app.scss": {
-    "file": "assets/app-D_4uYsqo.css",
+    "file": "assets/app-rLLvDHCU.css",
     "src": "resources/views/themes/xylo/sass/app.scss",
     "isEntry": true
   }
