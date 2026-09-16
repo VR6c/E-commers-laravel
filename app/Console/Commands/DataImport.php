@@ -68,8 +68,8 @@ class DataImport extends Command
 
         StoreSetting::insert([
             ['key' => 'default_currency', 'value' => 'USD'],
-            ['key' => 'meta_title', 'value' => 'Welcome to TVR - Your Laravel eCommerce Journey Begins!'],
-            ['key' => 'meta_description', 'value' => 'Welcome to TVR! You have successfully installed the ultimate Laravel eCommerce boilerplate. Set up your store, configure settings, and start selling with a powerful multi-vendor, multilingual platform.'],
+            ['key' => 'meta_title', 'value' => 'Welcome to TVR - Your eCommerce Journey Begins!'],
+            ['key' => 'meta_description', 'value' => 'Welcome to TVR! You have successfully installed the ultimate eCommerce boilerplate. Set up your store, configure settings, and start selling with a powerful multi-vendor, multilingual platform.'],
             ['key' => 'phone_number', 'value' => '071 675 5350'],
         ]);
     }

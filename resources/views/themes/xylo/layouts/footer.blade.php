@@ -74,7 +74,7 @@
                     <i class="fab fa-cc-mastercard" title="Mastercard"></i>
                     <i class="fab fa-cc-paypal" title="PayPal"></i>
                 </div>
-                <span>{{ 'Powered by Laravel' }}</span>
+                <span>{{ 'Powered by TVR' }}</span>
             </div>
         </div>
     </div>
