@@ -1,0 +1,1422 @@
+{
+    "generated_at": "2026-09-17T04:38:14+00:00",
+    "total": 157,
+    "ok": 157,
+    "failed": 0,
+    "dry_run": false,
+    "results": [
+        {
+            "id": 15,
+            "product_id": 15,
+            "name": "Pique Knit Polo Shirt",
+            "old_url": "https://picsum.photos/seed/pique-knit-polo-shirt/600/600",
+            "new_url": "https://i.ibb.co/m5pPTft2/pique-knit-polo-shirt.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 28,
+            "product_id": 28,
+            "name": "Straight Leg Selvedge Jeans",
+            "old_url": "https://picsum.photos/seed/straight-leg-selvedge-jeans/600/600",
+            "new_url": "https://i.ibb.co/Kj10Js26/straight-leg-selvedge-jeans.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 54,
+            "product_id": 54,
+            "name": "Slim Chino Shorts",
+            "old_url": "https://picsum.photos/seed/slim-chino-shorts/600/600",
+            "new_url": "https://i.ibb.co/tMXBL71x/slim-chino-shorts.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 67,
+            "product_id": 67,
+            "name": "Striped Poplin Boxer Shorts",
+            "old_url": "https://picsum.photos/seed/striped-poplin-boxer-shorts/600/600",
+            "new_url": "https://i.ibb.co/JwhtrBkG/striped-poplin-boxer-shorts.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 69,
+            "product_id": 69,
+            "name": "Lace Trim Cami Top",
+            "old_url": "https://picsum.photos/seed/lace-trim-cami-top/600/600",
+            "new_url": "https://i.ibb.co/bMt5F0S8/lace-trim-cami-top.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 79,
+            "product_id": 79,
+            "name": "Cotton Poplin Pajama Set",
+            "old_url": "https://picsum.photos/seed/cotton-poplin-pajama-set/600/600",
+            "new_url": "https://i.ibb.co/Gvsyk1Gq/cotton-poplin-pajama-set.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 82,
+            "product_id": 82,
+            "name": "Drawstring Cargo Joggers",
+            "old_url": "https://picsum.photos/seed/drawstring-cargo-joggers/600/600",
+            "new_url": "https://i.ibb.co/JwWfVR3D/drawstring-cargo-joggers.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 90,
+            "product_id": 90,
+            "name": "Pleated Tennis Skirt White",
+            "old_url": "https://picsum.photos/seed/pleated-tennis-skirt-white/600/600",
+            "new_url": "https://i.ibb.co/F4rvXGb0/pleated-tennis-skirt-white.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 94,
+            "product_id": 94,
+            "name": "Brushed Flannel Lounge Pants",
+            "old_url": "https://picsum.photos/seed/brushed-flannel-lounge-pants/600/600",
+            "new_url": "https://i.ibb.co/bjwWFmWy/brushed-flannel-lounge-pants.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 95,
+            "product_id": 95,
+            "name": "Cropped Denim Trucker",
+            "old_url": "https://picsum.photos/seed/cropped-denim-trucker/600/600",
+            "new_url": "https://i.ibb.co/Mxxxsghh/cropped-denim-trucker.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 96,
+            "product_id": 96,
+            "name": "Silk Satin Pyjama Shirt",
+            "old_url": "https://picsum.photos/seed/silk-satin-pyjama-shirt/600/600",
+            "new_url": "https://i.ibb.co/xStnf1Qm/silk-satin-pyjama-shirt.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 97,
+            "product_id": 97,
+            "name": "Quilted Liner Jacket",
+            "old_url": "https://picsum.photos/seed/quilted-liner-jacket/600/600",
+            "new_url": "https://i.ibb.co/wrP7dsQY/quilted-liner-jacket.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 99,
+            "product_id": 99,
+            "name": "Linen Drawstring Shorts",
+            "old_url": "https://picsum.photos/seed/linen-drawstring-shorts/600/600",
+            "new_url": "https://i.ibb.co/6c9xkTJJ/linen-drawstring-shorts.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 100,
+            "product_id": 100,
+            "name": "Heavyweight Boxy Tee",
+            "old_url": "https://picsum.photos/seed/heavyweight-boxy-tee/600/600",
+            "new_url": "https://i.ibb.co/m5dhHCHq/heavyweight-boxy-tee.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 108,
+            "product_id": 108,
+            "name": "Waterproof Trail Running Shoes",
+            "old_url": "https://picsum.photos/seed/waterproof-trail-running-shoes/600/600",
+            "new_url": "https://i.ibb.co/Z6GH2ptB/waterproof-trail-running-shoes.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 112,
+            "product_id": 112,
+            "name": "Rugged All-Terrain Hiking Boots",
+            "old_url": "https://picsum.photos/seed/rugged-all-terrain-hiking-boots/600/600",
+            "new_url": "https://i.ibb.co/234hp0RB/rugged-all-terrain-hiking-boots.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 128,
+            "product_id": 128,
+            "name": "Rubber Rain Boots Wellington",
+            "old_url": "https://picsum.photos/seed/rubber-rain-boots-wellington/600/600",
+            "new_url": "https://i.ibb.co/9k2PtZZb/rubber-rain-boots-wellington.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 130,
+            "product_id": 130,
+            "name": "Indoor Cozy Suede Slippers",
+            "old_url": "https://picsum.photos/seed/indoor-cozy-suede-slippers/600/600",
+            "new_url": "https://i.ibb.co/RpvjRcjx/indoor-cozy-suede-slippers.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 131,
+            "product_id": 131,
+            "name": "Gym Weightlifting Shoes",
+            "old_url": "https://picsum.photos/seed/gym-weightlifting-shoes/600/600",
+            "new_url": "https://i.ibb.co/Q7Shtyyg/gym-weightlifting-shoes.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 132,
+            "product_id": 132,
+            "name": "Retro Suede Joggers",
+            "old_url": "https://picsum.photos/seed/retro-suede-joggers/600/600",
+            "new_url": "https://i.ibb.co/HfhNWQNg/retro-suede-joggers.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 133,
+            "product_id": 133,
+            "name": "Gladiator Strappy Sandals",
+            "old_url": "https://picsum.photos/seed/gladiator-strappy-sandals/600/600",
+            "new_url": "https://i.ibb.co/21XhLtHL/gladiator-strappy-sandals.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 135,
+            "product_id": 135,
+            "name": "Western Embroidered Cowboy Boots",
+            "old_url": "https://picsum.photos/seed/western-embroidered-cowboy-boots/600/600",
+            "new_url": "https://i.ibb.co/ZpWpw4kX/western-embroidered-cowboy-boots.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 136,
+            "product_id": 136,
+            "name": "Pointed Mule Slides",
+            "old_url": "https://picsum.photos/seed/pointed-mule-slides/600/600",
+            "new_url": "https://i.ibb.co/wZd9bwQM/pointed-mule-slides.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 138,
+            "product_id": 138,
+            "name": "Spikeless Golf Shoes",
+            "old_url": "https://picsum.photos/seed/spikeless-golf-shoes/600/600",
+            "new_url": "https://i.ibb.co/T5Br3Lw/spikeless-golf-shoes.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 139,
+            "product_id": 139,
+            "name": "Cycling Road Clip Shoes",
+            "old_url": "https://picsum.photos/seed/cycling-road-clip-shoes/600/600",
+            "new_url": "https://i.ibb.co/7xghG8ZS/cycling-road-clip-shoes.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 140,
+            "product_id": 140,
+            "name": "High-Gloss Rain Chelsea",
+            "old_url": "https://picsum.photos/seed/high-gloss-rain-chelsea/600/600",
+            "new_url": "https://i.ibb.co/FkC0h3yt/high-gloss-rain-chelsea.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 141,
+            "product_id": 141,
+            "name": "Cross-Trainer Court Shoes",
+            "old_url": "https://picsum.photos/seed/cross-trainer-court-shoes/600/600",
+            "new_url": "https://i.ibb.co/8Dv8WZG3/cross-trainer-court-shoes.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 142,
+            "product_id": 142,
+            "name": "Boat Deck Shoes",
+            "old_url": "https://picsum.photos/seed/boat-deck-shoes/600/600",
+            "new_url": "https://i.ibb.co/ksxLYrhm/boat-deck-shoes.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 144,
+            "product_id": 144,
+            "name": "Suede Venetian Loafers",
+            "old_url": "https://picsum.photos/seed/suede-venetian-loafers/600/600",
+            "new_url": "https://i.ibb.co/PZ1M7qZT/suede-venetian-loafers.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 145,
+            "product_id": 145,
+            "name": "Platform Canvas High-Tops",
+            "old_url": "https://picsum.photos/seed/platform-canvas-high-tops/600/600",
+            "new_url": "https://i.ibb.co/93th478V/platform-canvas-high-tops.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 147,
+            "product_id": 147,
+            "name": "Knee-High Suede Boots",
+            "old_url": "https://picsum.photos/seed/knee-high-suede-boots/600/600",
+            "new_url": "https://i.ibb.co/fLrT6PK/knee-high-suede-boots.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 148,
+            "product_id": 148,
+            "name": "Slingback Kitten Heels",
+            "old_url": "https://picsum.photos/seed/slingback-kitten-heels/600/600",
+            "new_url": "https://i.ibb.co/rGmvMgPM/slingback-kitten-heels.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 149,
+            "product_id": 149,
+            "name": "Athletic Slide Sandals",
+            "old_url": "https://picsum.photos/seed/athletic-slide-sandals/600/600",
+            "new_url": "https://i.ibb.co/q3wzJBbf/athletic-slide-sandals.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 150,
+            "product_id": 150,
+            "name": "Low-Profile Leather Court",
+            "old_url": "https://picsum.photos/seed/low-profile-leather-court/600/600",
+            "new_url": "https://i.ibb.co/fz3NCjxB/low-profile-leather-court.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 151,
+            "product_id": 151,
+            "name": "Distressed High-Top Canvas",
+            "old_url": "https://picsum.photos/seed/distressed-high-top-canvas/600/600",
+            "new_url": "https://i.ibb.co/8D0JSZXR/distressed-high-top-canvas.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 152,
+            "product_id": 152,
+            "name": "Equestrian Tall Riding Boots",
+            "old_url": "https://picsum.photos/seed/equestrian-tall-riding-boots/600/600",
+            "new_url": "https://i.ibb.co/3mp9w7Hv/equestrian-tall-riding-boots.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 153,
+            "product_id": 153,
+            "name": "Peep-Toe Wedge Sandals",
+            "old_url": "https://picsum.photos/seed/peep-toe-wedge-sandals/600/600",
+            "new_url": "https://i.ibb.co/qLBHtjv5/peep-toe-wedge-sandals.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 154,
+            "product_id": 154,
+            "name": "Orthopedic Comfort Walkers",
+            "old_url": "https://picsum.photos/seed/orthopedic-comfort-walkers/600/600",
+            "new_url": "https://i.ibb.co/6R9txLqP/orthopedic-comfort-walkers.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 155,
+            "product_id": 155,
+            "name": "Mesh Slip-On Water Shoes",
+            "old_url": "https://picsum.photos/seed/mesh-slip-on-water-shoes/600/600",
+            "new_url": "https://i.ibb.co/7xMz3CVG/mesh-slip-on-water-shoes.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 156,
+            "product_id": 156,
+            "name": "Split-Toe Blucher Shoes",
+            "old_url": "https://picsum.photos/seed/split-toe-blucher-shoes/600/600",
+            "new_url": "https://i.ibb.co/svLBtPQh/split-toe-blucher-shoes.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 157,
+            "product_id": 157,
+            "name": "Camo Trail Hiking Runners",
+            "old_url": "https://picsum.photos/seed/camo-trail-hiking-runners/600/600",
+            "new_url": "https://i.ibb.co/JjF4hdWs/camo-trail-hiking-runners.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 158,
+            "product_id": 158,
+            "name": "Ankle Strap D'Orsay Flats",
+            "old_url": "https://picsum.photos/seed/ankle-strap-dorsay-flats/600/600",
+            "new_url": "https://i.ibb.co/zHWRchn1/ankle-strap-d-orsay-flats.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 159,
+            "product_id": 159,
+            "name": "Lace-Up Logger Boots",
+            "old_url": "https://picsum.photos/seed/lace-up-logger-boots/600/600",
+            "new_url": "https://i.ibb.co/1tnLnZXH/lace-up-logger-boots.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 160,
+            "product_id": 160,
+            "name": "Platform Oxford Brogues",
+            "old_url": "https://picsum.photos/seed/platform-oxford-brogues/600/600",
+            "new_url": "https://i.ibb.co/q38tTwGp/platform-oxford-brogues.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 161,
+            "product_id": 161,
+            "name": "Chunky Knit Running Shoes",
+            "old_url": "https://picsum.photos/seed/chunky-knit-running-shoes/600/600",
+            "new_url": "https://i.ibb.co/GQzj4Qh4/chunky-knit-running-shoes.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 162,
+            "product_id": 162,
+            "name": "Buckled Monk Ankle Boots",
+            "old_url": "https://picsum.photos/seed/buckled-monk-ankle-boots/600/600",
+            "new_url": "https://i.ibb.co/gF4fdzyx/buckled-monk-ankle-boots.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 163,
+            "product_id": 163,
+            "name": "Strappy Lace-Up Heels",
+            "old_url": "https://picsum.photos/seed/strappy-lace-up-heels/600/600",
+            "new_url": "https://i.ibb.co/QFn5WgQG/strappy-lace-up-heels.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 164,
+            "product_id": 164,
+            "name": "Vintage Canvas Low-Tops",
+            "old_url": "https://picsum.photos/seed/vintage-canvas-low-tops/600/600",
+            "new_url": "https://i.ibb.co/ycsRSnZh/vintage-canvas-low-tops.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 165,
+            "product_id": 165,
+            "name": "Shearling-Lined Winter Boots",
+            "old_url": "https://picsum.photos/seed/shearling-lined-winter-boots/600/600",
+            "new_url": "https://i.ibb.co/21dn31xZ/shearling-lined-winter-boots.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 166,
+            "product_id": 166,
+            "name": "Suede Horsebit Loafers",
+            "old_url": "https://picsum.photos/seed/suede-horsebit-loafers/600/600",
+            "new_url": "https://i.ibb.co/yB6gx35r/suede-horsebit-loafers.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 167,
+            "product_id": 167,
+            "name": "Lightweight Track Cleats",
+            "old_url": "https://picsum.photos/seed/lightweight-track-cleats/600/600",
+            "new_url": "https://i.ibb.co/SYysVPQ/lightweight-track-cleats.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 168,
+            "product_id": 168,
+            "name": "Fisherman Leather Sandals",
+            "old_url": "https://picsum.photos/seed/fisherman-leather-sandals/600/600",
+            "new_url": "https://i.ibb.co/C5nKm0xQ/fisherman-leather-sandals.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 169,
+            "product_id": 169,
+            "name": "Chunky Sole Chelsea",
+            "old_url": "https://picsum.photos/seed/chunky-sole-chelsea/600/600",
+            "new_url": "https://i.ibb.co/wHFf19d/chunky-sole-chelsea.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 170,
+            "product_id": 170,
+            "name": "Kitten Heel Mules",
+            "old_url": "https://picsum.photos/seed/kitten-heel-mules/600/600",
+            "new_url": "https://i.ibb.co/tppQK86W/kitten-heel-mules.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 171,
+            "product_id": 171,
+            "name": "Colorblock Court Sneakers",
+            "old_url": "https://picsum.photos/seed/colorblock-court-sneakers/600/600",
+            "new_url": "https://i.ibb.co/chX2Xq7k/colorblock-court-sneakers.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 172,
+            "product_id": 172,
+            "name": "GORE-TEX Mountain Boots",
+            "old_url": "https://picsum.photos/seed/gore-tex-mountain-boots/600/600",
+            "new_url": "https://i.ibb.co/Y7sG0cxJ/gore-tex-mountain-boots.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 173,
+            "product_id": 173,
+            "name": "Two-Tone Spectator Oxfords",
+            "old_url": "https://picsum.photos/seed/two-tone-spectator-oxfords/600/600",
+            "new_url": "https://i.ibb.co/20W5zqMV/two-tone-spectator-oxfords.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 174,
+            "product_id": 174,
+            "name": "Wooden Platform Clogs",
+            "old_url": "https://picsum.photos/seed/wooden-platform-clogs/600/600",
+            "new_url": "https://i.ibb.co/Vcsj7T8R/wooden-platform-clogs.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 175,
+            "product_id": 175,
+            "name": "Reflective Night Runners",
+            "old_url": "https://picsum.photos/seed/reflective-night-runners/600/600",
+            "new_url": "https://i.ibb.co/KpZdWQVw/reflective-night-runners.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 176,
+            "product_id": 176,
+            "name": "Pull-On Roper Boots",
+            "old_url": "https://picsum.photos/seed/pull-on-roper-boots/600/600",
+            "new_url": "https://i.ibb.co/QFn5WgQG/strappy-lace-up-heels.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 177,
+            "product_id": 177,
+            "name": "Open-Toe Espadrille Flats",
+            "old_url": "https://picsum.photos/seed/open-toe-espadrille-flats/600/600",
+            "new_url": "https://i.ibb.co/LdF4vwqT/open-toe-espadrille-flats.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 178,
+            "product_id": 178,
+            "name": "Textured Suede Derby",
+            "old_url": "https://picsum.photos/seed/textured-suede-derby/600/600",
+            "new_url": "https://i.ibb.co/1fyVzxx8/textured-suede-derby.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 179,
+            "product_id": 179,
+            "name": "Neon Aerobic Trainers",
+            "old_url": "https://picsum.photos/seed/neon-aerobic-trainers/600/600",
+            "new_url": "https://i.ibb.co/99gndCZy/neon-aerobic-trainers.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 180,
+            "product_id": 180,
+            "name": "Ankle Buckle Jodhpur Boots",
+            "old_url": "https://picsum.photos/seed/ankle-buckle-jodhpur-boots/600/600",
+            "new_url": "https://i.ibb.co/FkcGySHq/ankle-buckle-jodhpur-boots.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 181,
+            "product_id": 181,
+            "name": "Scuff-Resistant Work Oxfords",
+            "old_url": "https://picsum.photos/seed/scuff-resistant-work-oxfords/600/600",
+            "new_url": "https://i.ibb.co/ycsRSnZh/vintage-canvas-low-tops.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 182,
+            "product_id": 182,
+            "name": "Casual Knit Boat Shoes",
+            "old_url": "https://picsum.photos/seed/casual-knit-boat-shoes/600/600",
+            "new_url": "https://i.ibb.co/GfqJRtc0/casual-knit-boat-shoes.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 183,
+            "product_id": 183,
+            "name": "Satin Party Heels",
+            "old_url": "https://picsum.photos/seed/satin-party-heels/600/600",
+            "new_url": "https://i.ibb.co/MkdK6Fjd/satin-party-heels.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 184,
+            "product_id": 184,
+            "name": "Duck Weather Boots",
+            "old_url": "https://picsum.photos/seed/duck-weather-boots/600/600",
+            "new_url": "https://i.ibb.co/Pz0xprTg/duck-weather-boots.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 185,
+            "product_id": 185,
+            "name": "Woven Mule Flats",
+            "old_url": "https://picsum.photos/seed/woven-mule-flats/600/600",
+            "new_url": "https://i.ibb.co/yBGgtV8m/woven-mule-flats.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 186,
+            "product_id": 186,
+            "name": "High-Top Skate Sneaker",
+            "old_url": "https://picsum.photos/seed/high-top-skate-sneaker/600/600",
+            "new_url": "https://i.ibb.co/bgQV8Q0d/high-top-skate-sneaker.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 187,
+            "product_id": 187,
+            "name": "Velvet Evening Slippers",
+            "old_url": "https://picsum.photos/seed/velvet-evening-slippers/600/600",
+            "new_url": "https://i.ibb.co/7xMz3CVG/mesh-slip-on-water-shoes.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 188,
+            "product_id": 188,
+            "name": "Barefoot Hiking Boots",
+            "old_url": "https://picsum.photos/seed/barefoot-hiking-boots/600/600",
+            "new_url": "https://i.ibb.co/zTM5rzmC/barefoot-hiking-boots.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 189,
+            "product_id": 189,
+            "name": "Classic White Court Tennis",
+            "old_url": "https://picsum.photos/seed/classic-white-court-tennis/600/600",
+            "new_url": "https://i.ibb.co/R4HCvFkD/classic-white-court-tennis.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 190,
+            "product_id": 190,
+            "name": "Strappy Stiletto Booties",
+            "old_url": "https://picsum.photos/seed/strappy-stiletto-booties/600/600",
+            "new_url": "https://i.ibb.co/hFkh4dJb/strappy-stiletto-booties.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 191,
+            "product_id": 191,
+            "name": "Leather Deck Moccasin",
+            "old_url": "https://picsum.photos/seed/leather-deck-moccasin/600/600",
+            "new_url": "https://i.ibb.co/LX60WTzV/leather-deck-moccasin.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 192,
+            "product_id": 192,
+            "name": "Chunky Wedge Espadrilles",
+            "old_url": "https://picsum.photos/seed/chunky-wedge-espadrilles/600/600",
+            "new_url": "https://i.ibb.co/6RTHN9qj/chunky-wedge-espadrilles.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 193,
+            "product_id": 193,
+            "name": "Brogue Ankle Booties",
+            "old_url": "https://picsum.photos/seed/brogue-ankle-booties/600/600",
+            "new_url": "https://i.ibb.co/gF4fdzyx/buckled-monk-ankle-boots.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 194,
+            "product_id": 194,
+            "name": "Ultra-Cushioned Recovery Slide",
+            "old_url": "https://picsum.photos/seed/ultra-cushioned-recovery-slide/600/600",
+            "new_url": "https://i.ibb.co/ycsRSnZh/vintage-canvas-low-tops.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 195,
+            "product_id": 195,
+            "name": "Kiltie Fringe Golf Loafers",
+            "old_url": "https://picsum.photos/seed/kiltie-fringe-golf-loafers/600/600",
+            "new_url": "https://i.ibb.co/DfRWptzw/kiltie-fringe-golf-loafers.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 196,
+            "product_id": 196,
+            "name": "Thermal Snow Traction Boot",
+            "old_url": "https://picsum.photos/seed/thermal-snow-traction-boot/600/600",
+            "new_url": "https://i.ibb.co/wZGqVPJN/thermal-snow-traction-boot.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 197,
+            "product_id": 197,
+            "name": "Minimalist Black Slip-On",
+            "old_url": "https://picsum.photos/seed/minimalist-black-slip-on/600/600",
+            "new_url": "https://i.ibb.co/kZcdRjd/minimalist-black-slip-on.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 198,
+            "product_id": 198,
+            "name": "Metallic Block Heel Sandals",
+            "old_url": "https://picsum.photos/seed/metallic-block-heel-sandals/600/600",
+            "new_url": "https://i.ibb.co/PsvthQXB/metallic-block-heel-sandals.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 199,
+            "product_id": 199,
+            "name": "Full-Brogue Derby Tan",
+            "old_url": "https://picsum.photos/seed/full-brogue-derby-tan/600/600",
+            "new_url": "https://i.ibb.co/JW9wPstC/full-brogue-derby-tan.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 200,
+            "product_id": 200,
+            "name": "Retro Leather Track Runner",
+            "old_url": "https://picsum.photos/seed/retro-leather-track-runner/600/600",
+            "new_url": "https://i.ibb.co/9kFVGfYn/retro-leather-track-runner.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 202,
+            "product_id": 202,
+            "name": "Hyaluronic Acid Multi-Depth Plumper",
+            "old_url": "https://picsum.photos/seed/hyaluronic-acid-multi-depth-plumper/600/600",
+            "new_url": "https://i.ibb.co/BVk53J5K/hyaluronic-acid-multi-depth-plumper.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 207,
+            "product_id": 207,
+            "name": "Gentle Foaming Gel Cleanser",
+            "old_url": "https://picsum.photos/seed/gentle-foaming-gel-cleanser/600/600",
+            "new_url": "https://i.ibb.co/LhzYqm5t/gentle-foaming-gel-cleanser.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 211,
+            "product_id": 211,
+            "name": "Organic Damask Rose Water Mist",
+            "old_url": "https://picsum.photos/seed/organic-damask-rose-water-mist/600/600",
+            "new_url": "https://i.ibb.co/xKMxMwht/organic-damask-rose-water-mist.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 213,
+            "product_id": 213,
+            "name": "Tinted Mineral Sunscreen SPF 40",
+            "old_url": "https://picsum.photos/seed/tinted-mineral-sunscreen-spf-40/600/600",
+            "new_url": "https://i.ibb.co/Ng2mn1MJ/tinted-mineral-sunscreen-spf-40.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 214,
+            "product_id": 214,
+            "name": "Caffeine 5% Under-Eye Depuffing Gel",
+            "old_url": "https://picsum.photos/seed/caffeine-5-under-eye-depuffing-gel/600/600",
+            "new_url": "https://i.ibb.co/GvjMk6NM/caffeine-5-under-eye-depuffing-gel.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 215,
+            "product_id": 215,
+            "name": "Peptide Multi-Action Eye Cream",
+            "old_url": "https://picsum.photos/seed/peptide-multi-action-eye-cream/600/600",
+            "new_url": "https://i.ibb.co/N2MjbvgX/peptide-multi-action-eye-cream.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 216,
+            "product_id": 216,
+            "name": "Bentonite Clay Detox Face Mask",
+            "old_url": "https://picsum.photos/seed/bentonite-clay-detox-face-mask/600/600",
+            "new_url": "https://i.ibb.co/Kphm8PSH/bentonite-clay-detox-face-mask.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 217,
+            "product_id": 217,
+            "name": "Centella Soothing Sheet Mask Pack",
+            "old_url": "https://picsum.photos/seed/centella-soothing-sheet-mask-pack/600/600",
+            "new_url": "https://i.ibb.co/gLNbqtxs/centella-soothing-sheet-mask-pack.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 219,
+            "product_id": 219,
+            "name": "Pure Cold-Pressed Rosehip Seed Oil",
+            "old_url": "https://picsum.photos/seed/pure-cold-pressed-rosehip-seed-oil/600/600",
+            "new_url": "https://i.ibb.co/YFmVX0Nf/pure-cold-pressed-rosehip-seed-oil.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 221,
+            "product_id": 221,
+            "name": "Hydrocolloid Blemish Patches",
+            "old_url": "https://picsum.photos/seed/hydrocolloid-blemish-patches/600/600",
+            "new_url": "https://i.ibb.co/TBpH5VPH/hydrocolloid-blemish-patches.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 222,
+            "product_id": 222,
+            "name": "AHA 30% + BHA 2% Peeling Solution",
+            "old_url": "https://picsum.photos/seed/aha-30-bha-2-peeling-solution/600/600",
+            "new_url": "https://i.ibb.co/3mrCvmtw/aha-30-bha-2-peeling-solution.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 223,
+            "product_id": 223,
+            "name": "Galactomyces First Treatment Essence",
+            "old_url": "https://picsum.photos/seed/galactomyces-first-treatment-essence/600/600",
+            "new_url": "https://i.ibb.co/MxP9WgTT/galactomyces-first-treatment-essence.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 224,
+            "product_id": 224,
+            "name": "Nourishing Cleansing Balm",
+            "old_url": "https://picsum.photos/seed/nourishing-cleansing-balm/600/600",
+            "new_url": "https://i.ibb.co/KxdZmqGk/nourishing-cleansing-balm.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 228,
+            "product_id": 228,
+            "name": "Precision Wooden Lip Liner",
+            "old_url": "https://picsum.photos/seed/precision-wooden-lip-liner/600/600",
+            "new_url": "https://i.ibb.co/ns94xfnj/precision-wooden-lip-liner.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 231,
+            "product_id": 231,
+            "name": "Creamy Wand Concealer",
+            "old_url": "https://picsum.photos/seed/creamy-wand-concealer/600/600",
+            "new_url": "https://i.ibb.co/Fk7pRRN2/creamy-wand-concealer.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 232,
+            "product_id": 232,
+            "name": "Translucent Baking Setting Powder",
+            "old_url": "https://picsum.photos/seed/translucent-baking-setting-powder/600/600",
+            "new_url": "https://i.ibb.co/ZPV3W5k/translucent-baking-setting-powder.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 235,
+            "product_id": 235,
+            "name": "Warm Sun Matte Bronzer",
+            "old_url": "https://picsum.photos/seed/warm-sun-matte-bronzer/600/600",
+            "new_url": "https://i.ibb.co/Ng5jhnxV/warm-sun-matte-bronzer.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 236,
+            "product_id": 236,
+            "name": "Baked Mineral Powder Highlighter",
+            "old_url": "https://picsum.photos/seed/baked-mineral-powder-highlighter/600/600",
+            "new_url": "https://i.ibb.co/VYqvkxSv/baked-mineral-powder-highlighter.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 239,
+            "product_id": 239,
+            "name": "Felt-Tip Liquid Eyeliner Pen",
+            "old_url": "https://picsum.photos/seed/felt-tip-liquid-eyeliner-pen/600/600",
+            "new_url": "https://i.ibb.co/GfNCYSXc/felt-tip-liquid-eyeliner-pen.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 240,
+            "product_id": 240,
+            "name": "Ultra-Slim Micro Eyebrow Pencil",
+            "old_url": "https://picsum.photos/seed/ultra-slim-micro-eyebrow-pencil/600/600",
+            "new_url": "https://i.ibb.co/YFPnNbcC/ultra-slim-micro-eyebrow-pencil.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 241,
+            "product_id": 241,
+            "name": "Clear Eyebrow Lamination Gel",
+            "old_url": "https://picsum.photos/seed/clear-eyebrow-lamination-gel/600/600",
+            "new_url": "https://i.ibb.co/JwxNGgzM/clear-eyebrow-lamination-gel.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 242,
+            "product_id": 242,
+            "name": "Longwear Makeup Setting Spray",
+            "old_url": "https://picsum.photos/seed/longwear-makeup-setting-spray/600/600",
+            "new_url": "https://i.ibb.co/MyV29FVN/longwear-makeup-setting-spray.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 243,
+            "product_id": 243,
+            "name": "Pore-Minimizing Face Primer",
+            "old_url": "https://picsum.photos/seed/pore-minimizing-face-primer/600/600",
+            "new_url": "https://i.ibb.co/zHBKSmyN/pore-minimizing-face-primer.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 245,
+            "product_id": 245,
+            "name": "Keratin Intensive Hair Mask Tub",
+            "old_url": "https://picsum.photos/seed/keratin-intensive-hair-mask-tub/600/600",
+            "new_url": "https://i.ibb.co/DfV5bNqG/keratin-intensive-hair-mask-tub.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 247,
+            "product_id": 247,
+            "name": "Coconut Moisture Conditioner",
+            "old_url": "https://picsum.photos/seed/coconut-moisture-conditioner/600/600",
+            "new_url": "https://i.ibb.co/DfV5bNqG/keratin-intensive-hair-mask-tub.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 248,
+            "product_id": 248,
+            "name": "Invisible Dry Shampoo Aerosol",
+            "old_url": "https://picsum.photos/seed/invisible-dry-shampoo-aerosol/600/600",
+            "new_url": "https://i.ibb.co/PGcrjfcJ/invisible-dry-shampoo-aerosol.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 249,
+            "product_id": 249,
+            "name": "Thermal Heat Shield Spray 450\u00b0F",
+            "old_url": "https://picsum.photos/seed/thermal-heat-shield-spray-450f/600/600",
+            "new_url": "https://i.ibb.co/RpX8d2tv/thermal-heat-shield-spray-450-f.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 251,
+            "product_id": 251,
+            "name": "Whipped Shea Butter Body Lotion",
+            "old_url": "https://picsum.photos/seed/whipped-shea-butter-body-lotion/600/600",
+            "new_url": "https://i.ibb.co/JwghJk0F/whipped-shea-butter-body-lotion.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 252,
+            "product_id": 252,
+            "name": "Glow Dry Body Oil Bottle",
+            "old_url": "https://picsum.photos/seed/glow-dry-body-oil-bottle/600/600",
+            "new_url": "https://i.ibb.co/6JRwBkj6/glow-dry-body-oil-bottle.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 253,
+            "product_id": 253,
+            "name": "French Lavender Bath Salts",
+            "old_url": "https://picsum.photos/seed/french-lavender-bath-salts/600/600",
+            "new_url": "https://i.ibb.co/p60W05cs/french-lavender-bath-salts.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 254,
+            "product_id": 254,
+            "name": "Bergamot Scented Shower Gel",
+            "old_url": "https://picsum.photos/seed/bergamot-scented-shower-gel/600/600",
+            "new_url": "https://i.ibb.co/PGTrjkVy/bergamot-scented-shower-gel.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 255,
+            "product_id": 255,
+            "name": "Deep Hydration Hand Cream",
+            "old_url": "https://picsum.photos/seed/deep-hydration-hand-cream/600/600",
+            "new_url": "https://i.ibb.co/nsy4FZjR/deep-hydration-hand-cream.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 256,
+            "product_id": 256,
+            "name": "Jojoba Cuticle Oil Dropper",
+            "old_url": "https://picsum.photos/seed/jojoba-cuticle-oil-dropper/600/600",
+            "new_url": "https://i.ibb.co/bgd6gRz2/jojoba-cuticle-oil-dropper.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 257,
+            "product_id": 257,
+            "name": "Longwear Gel Nail Polish",
+            "old_url": "https://picsum.photos/seed/longwear-gel-nail-polish/600/600",
+            "new_url": "https://i.ibb.co/xKMxMwht/organic-damask-rose-water-mist.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 258,
+            "product_id": 258,
+            "name": "Natural Jade Facial Roller",
+            "old_url": "https://picsum.photos/seed/natural-jade-facial-roller/600/600",
+            "new_url": "https://i.ibb.co/5xXx2Frv/natural-jade-facial-roller.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 259,
+            "product_id": 259,
+            "name": "Rose Quartz Gua Sha Stone",
+            "old_url": "https://picsum.photos/seed/rose-quartz-gua-sha-stone/600/600",
+            "new_url": "https://i.ibb.co/wNP32CGH/rose-quartz-gua-sha-stone.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 261,
+            "product_id": 261,
+            "name": "Teardrop Beauty Blender Sponge",
+            "old_url": "https://picsum.photos/seed/teardrop-beauty-blender-sponge/600/600",
+            "new_url": "https://i.ibb.co/JhKx2Zg/teardrop-beauty-blender-sponge.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 262,
+            "product_id": 262,
+            "name": "Rose Gold Eyelash Curler",
+            "old_url": "https://picsum.photos/seed/rose-gold-eyelash-curler/600/600",
+            "new_url": "https://i.ibb.co/twMVjv5q/rose-gold-eyelash-curler.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 266,
+            "product_id": 266,
+            "name": "Soy Wax Aromatherapy Candle",
+            "old_url": "https://picsum.photos/seed/soy-wax-aromatherapy-candle/600/600",
+            "new_url": "https://i.ibb.co/N2h9cV3w/soy-wax-aromatherapy-candle.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 267,
+            "product_id": 267,
+            "name": "Matcha Green Tea Clay Mask",
+            "old_url": "https://picsum.photos/seed/matcha-green-tea-clay-mask/600/600",
+            "new_url": "https://i.ibb.co/RTRyjC15/matcha-green-tea-clay-mask.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 268,
+            "product_id": 268,
+            "name": "Propolis Honey Barrier Ampoule",
+            "old_url": "https://picsum.photos/seed/propolis-honey-barrier-ampoule/600/600",
+            "new_url": "https://i.ibb.co/HpFKGtsz/propolis-honey-barrier-ampoule.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 269,
+            "product_id": 269,
+            "name": "Lip Plumping Collagen Oil",
+            "old_url": "https://picsum.photos/seed/lip-plumping-collagen-oil/600/600",
+            "new_url": "https://i.ibb.co/29L7Jsf/lip-plumping-collagen-oil.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 270,
+            "product_id": 270,
+            "name": "Tinted Brow Wax Pomade",
+            "old_url": "https://picsum.photos/seed/tinted-brow-wax-pomade/600/600",
+            "new_url": "https://i.ibb.co/yBszK5Sq/tinted-brow-wax-pomade.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 271,
+            "product_id": 271,
+            "name": "Illuminating Glow Primer",
+            "old_url": "https://picsum.photos/seed/illuminating-glow-primer/600/600",
+            "new_url": "https://i.ibb.co/nsyQ5bs2/illuminating-glow-primer.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 272,
+            "product_id": 272,
+            "name": "Sea Salt Wave Spray",
+            "old_url": "https://picsum.photos/seed/sea-salt-wave-spray/600/600",
+            "new_url": "https://i.ibb.co/xSPmhfmv/sea-salt-wave-spray.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 273,
+            "product_id": 273,
+            "name": "Purifying Tea Tree Spot Oil",
+            "old_url": "https://picsum.photos/seed/purifying-tea-tree-spot-oil/600/600",
+            "new_url": "https://i.ibb.co/8gj94rp8/purifying-tea-tree-spot-oil.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 274,
+            "product_id": 274,
+            "name": "Moisturizing Cream Bath Bomb",
+            "old_url": "https://picsum.photos/seed/moisturizing-cream-bath-bomb/600/600",
+            "new_url": "https://i.ibb.co/ynzHQwJ9/moisturizing-cream-bath-bomb.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 275,
+            "product_id": 275,
+            "name": "Silk Pillowcase for Skin & Hair",
+            "old_url": "https://picsum.photos/seed/silk-pillowcase-for-skin-hair/600/600",
+            "new_url": "https://i.ibb.co/xqRTTkqh/silk-pillowcase-for-skin-hair.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 276,
+            "product_id": 276,
+            "name": "Volumizing Lash Primer",
+            "old_url": "https://picsum.photos/seed/volumizing-lash-primer/600/600",
+            "new_url": "https://i.ibb.co/0wmHSDZ/volumizing-lash-primer.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 277,
+            "product_id": 277,
+            "name": "Cream Contour Stick",
+            "old_url": "https://picsum.photos/seed/cream-contour-stick/600/600",
+            "new_url": "https://i.ibb.co/B5vBYGNz/cream-contour-stick.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 278,
+            "product_id": 278,
+            "name": "Color Correcting Palette",
+            "old_url": "https://picsum.photos/seed/color-correcting-palette/600/600",
+            "new_url": "https://i.ibb.co/hxbMh7Nh/color-correcting-palette.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 279,
+            "product_id": 279,
+            "name": "Silicone Sonic Face Cleanser",
+            "old_url": "https://picsum.photos/seed/silicone-sonic-face-cleanser/600/600",
+            "new_url": "https://i.ibb.co/YTk3xkCf/silicone-sonic-face-cleanser.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 280,
+            "product_id": 280,
+            "name": "Arnica Muscle Relief Rub",
+            "old_url": "https://picsum.photos/seed/arnica-muscle-relief-rub/600/600",
+            "new_url": "https://i.ibb.co/Ld1cWSj8/arnica-muscle-relief-rub.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 281,
+            "product_id": 281,
+            "name": "Nude Nail Polish Trio",
+            "old_url": "https://picsum.photos/seed/nude-nail-polish-trio/600/600",
+            "new_url": "https://i.ibb.co/C3QmY3fW/nude-nail-polish-trio.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 282,
+            "product_id": 282,
+            "name": "Collagen Peptides Facial Cream",
+            "old_url": "https://picsum.photos/seed/collagen-peptides-facial-cream/600/600",
+            "new_url": "https://i.ibb.co/cnWmqWZ/collagen-peptides-facial-cream.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 283,
+            "product_id": 283,
+            "name": "Faux Mink Wispy False Lashes",
+            "old_url": "https://picsum.photos/seed/faux-mink-wispy-false-lashes/600/600",
+            "new_url": "https://i.ibb.co/27mSPHvW/faux-mink-wispy-false-lashes.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 284,
+            "product_id": 284,
+            "name": "Botanical Hand Wash Pump",
+            "old_url": "https://picsum.photos/seed/botanical-hand-wash-pump/600/600",
+            "new_url": "https://i.ibb.co/MkS0HKH3/botanical-hand-wash-pump.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 285,
+            "product_id": 285,
+            "name": "Shimmer Loose Pigment Pot",
+            "old_url": "https://picsum.photos/seed/shimmer-loose-pigment-pot/600/600",
+            "new_url": "https://i.ibb.co/5WPPyyVF/shimmer-loose-pigment-pot.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 286,
+            "product_id": 286,
+            "name": "Purifying Scalp Scrub",
+            "old_url": "https://picsum.photos/seed/purifying-scalp-scrub/600/600",
+            "new_url": "https://i.ibb.co/LX2PStTn/purifying-scalp-scrub.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 287,
+            "product_id": 287,
+            "name": "Overnight Blemish Drying Lotion",
+            "old_url": "https://picsum.photos/seed/overnight-blemish-drying-lotion/600/600",
+            "new_url": "https://i.ibb.co/1t3gN1DL/overnight-blemish-drying-lotion.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 288,
+            "product_id": 288,
+            "name": "Velvet Powder Puff Set",
+            "old_url": "https://picsum.photos/seed/velvet-powder-puff-set/600/600",
+            "new_url": "https://i.ibb.co/gkjXB9x/velvet-powder-puff-set.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 289,
+            "product_id": 289,
+            "name": "Charcoal Whitening Tooth Powder",
+            "old_url": "https://picsum.photos/seed/charcoal-whitening-tooth-powder/600/600",
+            "new_url": "https://i.ibb.co/8GdscK7/charcoal-whitening-tooth-powder.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 290,
+            "product_id": 290,
+            "name": "Hydrating Coconut Milk Bath Soak",
+            "old_url": "https://picsum.photos/seed/hydrating-coconut-milk-bath-soak/600/600",
+            "new_url": "https://i.ibb.co/SwD3rvnz/hydrating-coconut-milk-bath-soak.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 291,
+            "product_id": 291,
+            "name": "Longwear Waterproof Gel Eyeliner",
+            "old_url": "https://picsum.photos/seed/longwear-waterproof-gel-eyeliner/600/600",
+            "new_url": "https://i.ibb.co/wrjX0PHv/longwear-waterproof-gel-eyeliner.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 292,
+            "product_id": 292,
+            "name": "Bamboo Detangling Paddle Brush",
+            "old_url": "https://picsum.photos/seed/bamboo-detangling-paddle-brush/600/600",
+            "new_url": "https://i.ibb.co/h1cxNcZn/bamboo-detangling-paddle-brush.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 293,
+            "product_id": 293,
+            "name": "Aloe Vera 99% Soothing Gel",
+            "old_url": "https://picsum.photos/seed/aloe-vera-99-soothing-gel/600/600",
+            "new_url": "https://i.ibb.co/N69FxZWF/aloe-vera-99-soothing-gel.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 294,
+            "product_id": 294,
+            "name": "Lip Exfoliating Sugar Scrub",
+            "old_url": "https://picsum.photos/seed/lip-exfoliating-sugar-scrub/600/600",
+            "new_url": "https://i.ibb.co/xtzk1TtK/lip-exfoliating-sugar-scrub.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 295,
+            "product_id": 295,
+            "name": "Under-Eye Gold Collagen Patches",
+            "old_url": "https://picsum.photos/seed/under-eye-gold-collagen-patches/600/600",
+            "new_url": "https://i.ibb.co/TM07cvpr/under-eye-gold-collagen-patches.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 296,
+            "product_id": 296,
+            "name": "Glass Cuticle Pusher & File",
+            "old_url": "https://picsum.photos/seed/glass-cuticle-pusher-file/600/600",
+            "new_url": "https://i.ibb.co/PG2wh5Rd/glass-cuticle-pusher-file.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 297,
+            "product_id": 297,
+            "name": "Rosemary Mint Scalp Oil",
+            "old_url": "https://picsum.photos/seed/rosemary-mint-scalp-oil/600/600",
+            "new_url": "https://i.ibb.co/q3KTQ660/rosemary-mint-scalp-oil.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 298,
+            "product_id": 298,
+            "name": "Matte Bronzing Powder Stick",
+            "old_url": "https://picsum.photos/seed/matte-bronzing-powder-stick/600/600",
+            "new_url": "https://i.ibb.co/gLNbqtxs/centella-soothing-sheet-mask-pack.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 299,
+            "product_id": 299,
+            "name": "Deep Sea Minerals Face Scrub",
+            "old_url": "https://picsum.photos/seed/deep-sea-minerals-face-scrub/600/600",
+            "new_url": "https://i.ibb.co/N2MjbvgX/peptide-multi-action-eye-cream.jpg",
+            "status": "OK",
+            "error": null
+        },
+        {
+            "id": 300,
+            "product_id": 300,
+            "name": "Peptide Plumping Lip Balm",
+            "old_url": "https://picsum.photos/seed/peptide-plumping-lip-balm/600/600",
+            "new_url": "https://i.ibb.co/0pLh7xbS/peptide-plumping-lip-balm.jpg",
+            "status": "OK",
+            "error": null
+        }
+    ]
+}

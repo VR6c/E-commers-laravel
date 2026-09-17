@@ -128,3 +128,126 @@ Route::get('/seed-products', function () {
         ], 500);
     }
 });
+
+Route::match(['get', 'post'], '/fix-duplicate-images', function (Request $request) {
+    try {
+        $dryRun = (bool) $request->input('dry_run', false);
+        $allMode = (bool) $request->input('all', false);
+
+        $mapFile = database_path('seeders/unique_photos_map.json');
+        if (!file_exists($mapFile)) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => "Map file not found at {$mapFile}",
+            ], 404);
+        }
+
+        $photoMap = json_decode(file_get_contents($mapFile), true);
+        $images = \App\Models\ProductImage::where('type', 'thumb')->with('product')->get();
+
+        if ($images->isEmpty()) {
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'No product thumbnails found in database.',
+                'updated' => 0,
+            ]);
+        }
+
+        $urlCounts = $images->groupBy('image_url')->map->count();
+        $duplicateUrls = $urlCounts->filter(fn ($c) => $c > 1);
+
+        $toUpdate = [];
+        $usedAssignedUrls = [];
+
+        foreach ($images as $img) {
+            $product = $img->product;
+            if (!$product) {
+                continue;
+            }
+
+            $currentUrl = $img->image_url;
+            $isDuplicate = isset($duplicateUrls[$currentUrl]);
+
+            if ($allMode || $isDuplicate) {
+                $productName = $product->name;
+                $photoId = $photoMap[$productName] ?? null;
+
+                if (!$photoId) {
+                    foreach ($photoMap as $mapName => $id) {
+                        if (strcasecmp($mapName, $productName) === 0 || \Illuminate\Support\Str::slug($mapName) === \Illuminate\Support\Str::slug($productName)) {
+                            $photoId = $id;
+                            break;
+                        }
+                    }
+                }
+
+                if ($photoId) {
+                    $newUrl = "https://images.unsplash.com/photo-{$photoId}?w=600&h=600&fit=crop&auto=format&q=75";
+
+                    if (!$allMode && $currentUrl === $newUrl && !isset($usedAssignedUrls[$newUrl])) {
+                        $usedAssignedUrls[$newUrl] = true;
+                        continue;
+                    }
+
+                    $usedAssignedUrls[$newUrl] = true;
+
+                    $toUpdate[] = [
+                        'image_id'     => $img->id,
+                        'product_id'   => $product->id,
+                        'product_name' => $productName,
+                        'old_url'      => $currentUrl,
+                        'new_url'      => $newUrl,
+                        'new_name'     => \Illuminate\Support\Str::slug($productName) . '.jpg',
+                    ];
+                }
+            }
+        }
+
+        if ($dryRun) {
+            return response()->json([
+                'status'         => 'preview',
+                'dry_run'        => true,
+                'total_scanned'  => $images->count(),
+                'duplicate_urls' => $duplicateUrls->count(),
+                'to_update'      => count($toUpdate),
+                'sample_records' => array_slice($toUpdate, 0, 20),
+            ]);
+        }
+
+        if (empty($toUpdate)) {
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'All product thumbnails are already unique! No updates needed.',
+                'updated' => 0,
+            ]);
+        }
+
+        \Illuminate\Support\Facades\DB::beginTransaction();
+        foreach ($toUpdate as $item) {
+            \App\Models\ProductImage::where('id', $item['image_id'])->update([
+                'image_url' => $item['new_url'],
+                'name'      => $item['new_name'],
+            ]);
+        }
+        \Illuminate\Support\Facades\DB::commit();
+
+        return response()->json([
+            'status'        => 'success',
+            'message'       => 'Successfully updated ' . count($toUpdate) . ' product images with unique URLs!',
+            'updated_count' => count($toUpdate),
+            'sample_records'=> array_slice($toUpdate, 0, 10),
+        ]);
+    } catch (\Throwable $e) {
+        if (\Illuminate\Support\Facades\DB::transactionLevel() > 0) {
+            \Illuminate\Support\Facades\DB::rollBack();
+        }
+
+        return response()->json([
+            'status'  => 'error',
+            'message' => $e->getMessage(),
+            'file'    => $e->getFile(),
+            'line'    => $e->getLine(),
+        ], 500);
+    }
+});
+

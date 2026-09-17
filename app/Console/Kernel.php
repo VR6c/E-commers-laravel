@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\DataImport;
+use App\Console\Commands\FixDuplicateProductImages;
 use App\Console\Commands\Install;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -12,6 +13,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Install::class,
         DataImport::class,
+        FixDuplicateProductImages::class,
     ];
     protected function schedule(Schedule $schedule): void
     {
