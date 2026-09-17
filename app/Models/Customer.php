@@ -19,6 +19,11 @@ class Customer extends Authenticatable
         'address',
         'status',
         'profile_image',
+        'avatar_type',
+    ];
+
+    protected $appends = [
+        'avatar_url',
     ];
 
     protected $hidden = [
@@ -56,9 +61,10 @@ class Customer extends Authenticatable
             if (\Illuminate\Support\Str::startsWith($this->profile_image, ['http://', 'https://'])) {
                 return $this->profile_image;
             }
-            return asset('storage/' . $this->profile_image);
+
+            return asset('storage/'.$this->profile_image);
         }
 
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=6366f1&color=fff&size=80';
+        return 'https://ui-avatars.com/api/?name='.urlencode($this->name).'&background=6366f1&color=fff&size=80';
     }
 }

@@ -145,6 +145,75 @@
           }
         },
         {
+          "name": "Upload Customer Avatar",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "avatar_type",
+                  "value": "photo",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/customer/avatar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "customer",
+                "avatar"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Customer Avatar",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/customer/avatar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "customer",
+                "avatar"
+              ]
+            }
+          }
+        },
+        {
           "name": "Logout",
           "request": {
             "method": "POST",
