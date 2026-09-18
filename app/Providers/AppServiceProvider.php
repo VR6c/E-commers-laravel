@@ -22,8 +22,9 @@ use App\Repositories\Vendor\Product\ProductRepository as VendorProductRepository
 use App\Repositories\Vendor\Product\ProductRepositoryInterface as VendorProductRepositoryInterface;
 use App\Repositories\Vendor\SocialMediaLink\SocialMediaLinkRepository as VendorSocialMediaLinkRepository;
 use App\Repositories\Vendor\SocialMediaLink\SocialMediaLinkRepositoryInterface as VendorSocialMediaLinkRepositoryInterface;
-use App\Services\Shared\ImageService;
 use App\Services\Admin\MenuService;
+use App\Services\Shared\ImageService;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 
@@ -76,6 +77,10 @@ class AppServiceProvider extends ServiceProvider
     {
         error_reporting(E_ALL & ~E_DEPRECATED);
 
+        // Guard against N+1 queries and silent failures in development/testing
+        Model::preventLazyLoading(! $this->app->isProduction());
+        Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
+
         Paginator::useBootstrapFive();
 
         if ($this->app->environment('production')
@@ -86,6 +91,7 @@ class AppServiceProvider extends ServiceProvider
 
             Paginator::currentPathResolver(function () {
                 $url = app('request')->url();
+
                 return preg_replace('/^http:/i', 'https:', $url);
             });
         }

@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Store;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\WithWishlistIds;
+use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
     use WithWishlistIds;
+
     public function suggestions(Request $request)
     {
         $query = $request->input('q');
@@ -21,10 +22,10 @@ class SearchController extends Controller
             ->get(['id', 'slug', 'name']);
 
         $data = $products->map(fn ($p) => [
-            'id'        => $p->id,
-            'slug'      => $p->slug,
+            'id' => $p->id,
+            'slug' => $p->slug,
             'thumbnail' => product_image_url(optional($p->thumbnail)->image_url),
-            'name'      => $p->name,
+            'name' => $p->name,
         ]);
 
         return response()->json($data);
@@ -34,10 +35,14 @@ class SearchController extends Controller
     {
         $query = $request->input('q');
 
-        $products = Product::where('name', 'like', "%{$query}%")
-            ->orWhere('slug', 'like', "%{$query}%")
+        $products = Product::where('status', 1)
+            ->where(function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%")
+                    ->orWhere('slug', 'like', "%{$query}%");
+            })
             ->with(['thumbnail', 'primaryVariant'])
             ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
             ->orderBy('id', 'desc')
             ->paginate(12)
             ->withQueryString();

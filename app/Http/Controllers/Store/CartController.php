@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Store;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
-use App\Models\ProductVariant;
 use App\Services\Store\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -40,10 +39,14 @@ class CartController extends Controller
         }
 
         $attributePairs = [];
-        foreach ($attributeValueIds as $attributeValueId) {
-            $attributeValue = \App\Models\AttributeValue::with('attribute')->find($attributeValueId);
-            if ($attributeValue && $attributeValue->attribute) {
-                $attributePairs[$attributeValue->attribute->id] = $attributeValue->id;
+        if (! empty($attributeValueIds)) {
+            $attributeValues = \App\Models\AttributeValue::with('attribute')
+                ->whereIn('id', $attributeValueIds)
+                ->get();
+            foreach ($attributeValues as $attributeValue) {
+                if ($attributeValue && $attributeValue->attribute) {
+                    $attributePairs[$attributeValue->attribute->id] = $attributeValue->id;
+                }
             }
         }
 
@@ -103,12 +106,12 @@ class CartController extends Controller
         $totals = $this->cartService->calculateTotals($cart);
 
         return view('themes.xylo.cart', [
-            'cart'           => $cart,
-            'hydratedCart'   => $hydratedCart,
-            'subtotal'       => $totals['subtotal'],
+            'cart' => $cart,
+            'hydratedCart' => $hydratedCart,
+            'subtotal' => $totals['subtotal'],
             'discountAmount' => $totals['discount_amount'],
-            'total'          => $totals['total'],
-            'coupon'         => Session::get('cart_coupon'),
+            'total' => $totals['total'],
+            'coupon' => Session::get('cart_coupon'),
         ]);
     }
 

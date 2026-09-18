@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\PasswordResetOtpMail;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 
 class PasswordResetController extends Controller
 {
@@ -29,7 +29,7 @@ class PasswordResetController extends Controller
         // Always return success to avoid email enumeration
         if (! $customer) {
             return response()->json([
-                'status'  => true,
+                'status' => true,
                 'message' => 'If that email is registered, a reset code has been sent.',
             ]);
         }
@@ -42,22 +42,16 @@ class PasswordResetController extends Controller
         DB::table('password_resets')->updateOrInsert(
             ['email' => $customer->email],
             [
-                'token'      => $token,
+                'token' => $token,
                 'created_at' => now(),
             ]
         );
 
-        // Send OTP via email
-        Mail::raw(
-            "Your password reset code is: {$otp}\n\nThis code expires in 60 minutes.",
-            function ($message) use ($customer) {
-                $message->to($customer->email)
-                        ->subject('Password Reset Code');
-            }
-        );
+        // Send OTP via queued email (non-blocking)
+        Mail::to($customer->email)->queue(new PasswordResetOtpMail($otp));
 
         return response()->json([
-            'status'  => true,
+            'status' => true,
             'message' => 'If that email is registered, a reset code has been sent.',
         ]);
     }
@@ -71,9 +65,9 @@ class PasswordResetController extends Controller
     public function reset(Request $request)
     {
         $request->validate([
-            'email'                 => 'required|email',
-            'otp'                   => 'required|string|size:6',
-            'password'              => 'required|string|min:6|confirmed',
+            'email' => 'required|email',
+            'otp' => 'required|string|size:6',
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
         $record = DB::table('password_resets')
@@ -82,7 +76,7 @@ class PasswordResetController extends Controller
 
         if (! $record) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Invalid or expired reset code.',
             ], 422);
         }
@@ -91,8 +85,9 @@ class PasswordResetController extends Controller
         $createdAt = \Carbon\Carbon::parse($record->created_at);
         if ($createdAt->diffInMinutes(now()) > 60) {
             DB::table('password_resets')->where('email', $request->email)->delete();
+
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Reset code has expired. Please request a new one.',
             ], 422);
         }
@@ -100,7 +95,7 @@ class PasswordResetController extends Controller
         // Verify OTP
         if (! Hash::check($request->otp, $record->token)) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Invalid reset code.',
             ], 422);
         }
@@ -109,7 +104,7 @@ class PasswordResetController extends Controller
         $customer = Customer::where('email', $request->email)->first();
         if (! $customer) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Customer not found.',
             ], 404);
         }
@@ -124,7 +119,7 @@ class PasswordResetController extends Controller
         $customer->tokens()->delete();
 
         return response()->json([
-            'status'  => true,
+            'status' => true,
             'message' => 'Password has been reset successfully. Please log in again.',
         ]);
     }

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Store;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\WithWishlistIds;
+use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -21,7 +21,7 @@ class CategoryController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
-        $query = Product::with(['primaryVariant', 'reviews', 'images'])
+        $query = Product::with(['thumbnail', 'primaryVariant'])
             ->withCount(['reviews' => function ($q) {
                 $q->where('is_approved', true);
             }])

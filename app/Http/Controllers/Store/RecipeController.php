@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 class RecipeController extends Controller
 {
     protected RecipeAccessService $accessService;
+
     protected RecipePdfService $pdfService;
 
     public function __construct(RecipeAccessService $accessService, RecipePdfService $pdfService)
@@ -32,8 +33,8 @@ class RecipeController extends Controller
             $keyword = trim($request->q);
             $query->where(function ($q) use ($keyword) {
                 $q->where('title', 'like', "%{$keyword}%")
-                  ->orWhere('summary', 'like', "%{$keyword}%")
-                  ->orWhere('cuisine', 'like', "%{$keyword}%");
+                    ->orWhere('summary', 'like', "%{$keyword}%")
+                    ->orWhere('cuisine', 'like', "%{$keyword}%");
             });
         }
 
@@ -49,7 +50,7 @@ class RecipeController extends Controller
 
         // Get list of unlocked recipe IDs for current user / session
         $customer = Auth::guard('sanctum')->user() ?? Auth::guard('customer')->user();
-        if (!$customer && $request->bearerToken()) {
+        if (! $customer && $request->bearerToken()) {
             $pat = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
             $customer = $pat?->tokenable;
         }
@@ -59,7 +60,9 @@ class RecipeController extends Controller
             $unlockedRecipeIds = $this->accessService->getUnlockedRecipesForCustomer($customer)->pluck('id')->toArray();
         }
 
-        $cuisines = Recipe::active()->whereNotNull('cuisine')->distinct()->pluck('cuisine');
+        $cuisines = \Illuminate\Support\Facades\Cache::remember('recipe_distinct_cuisines', 3600, function () {
+            return Recipe::active()->whereNotNull('cuisine')->distinct()->pluck('cuisine');
+        });
         $currency = activeCurrency();
 
         return view('themes.xylo.recipes.index', compact('recipes', 'unlockedRecipeIds', 'cuisines', 'currency'));
@@ -73,7 +76,7 @@ class RecipeController extends Controller
         $recipe = Recipe::where('slug', $slug)->with('products.thumbnail')->firstOrFail();
 
         $customer = Auth::guard('sanctum')->user() ?? Auth::guard('customer')->user();
-        if (!$customer && $request->bearerToken()) {
+        if (! $customer && $request->bearerToken()) {
             $pat = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
             $customer = $pat?->tokenable;
         }
@@ -85,15 +88,15 @@ class RecipeController extends Controller
             $order = Order::with(['details.product'])->find($orderId);
         }
 
-        $isUnlocked = $this->accessService->hasAccess($recipe, $customer, $orderId ? (int)$orderId : null, $token);
+        $isUnlocked = $this->accessService->hasAccess($recipe, $customer, $orderId ? (int) $orderId : null, $token);
         $currency = activeCurrency();
 
         // Check if there is an associated completed order for the current user
-        if (!$order && $customer) {
+        if (! $order && $customer) {
             $linkedProductIds = $recipe->products->pluck('id')->toArray();
             $order = Order::where('customer_id', $customer->id)
                 ->whereIn('status', ['completed', 'processing'])
-                ->whereHas('details', fn($q) => $q->whereIn('product_id', $linkedProductIds))
+                ->whereHas('details', fn ($q) => $q->whereIn('product_id', $linkedProductIds))
                 ->latest()
                 ->first();
         }
@@ -109,7 +112,7 @@ class RecipeController extends Controller
         $recipe = Recipe::where('slug', $slug)->with('products')->firstOrFail();
 
         $customer = Auth::guard('sanctum')->user() ?? Auth::guard('customer')->user();
-        if (!$customer && $request->bearerToken()) {
+        if (! $customer && $request->bearerToken()) {
             $pat = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
             $customer = $pat?->tokenable;
         }
@@ -121,9 +124,9 @@ class RecipeController extends Controller
             $order = Order::find($orderId);
         }
 
-        $isUnlocked = $this->accessService->hasAccess($recipe, $customer, $orderId ? (int)$orderId : null, $token);
+        $isUnlocked = $this->accessService->hasAccess($recipe, $customer, $orderId ? (int) $orderId : null, $token);
 
-        if (!$isUnlocked) {
+        if (! $isUnlocked) {
             return redirect()->route('recipes.show', $slug)
                 ->with('error', 'Purchase the recipe or linked product to unlock this A5 PDF download.');
         }
@@ -142,7 +145,7 @@ class RecipeController extends Controller
 
         // Security check: owner, guest session, valid token, or admin
         $customer = Auth::guard('sanctum')->user() ?? Auth::guard('customer')->user();
-        if (!$customer && $request->bearerToken()) {
+        if (! $customer && $request->bearerToken()) {
             $pat = \Laravel\Sanctum\PersonalAccessToken::findToken($request->bearerToken());
             $customer = $pat?->tokenable;
         }
@@ -152,7 +155,7 @@ class RecipeController extends Controller
         $isValidToken = ($token && $this->accessService->verifyOrderToken($order, $token));
         $isAdmin = auth()->check();
 
-        if (!$isOwner && !$isGuestSession && !$isValidToken && !$isAdmin) {
+        if (! $isOwner && ! $isGuestSession && ! $isValidToken && ! $isAdmin) {
             abort(403, 'Unauthorized to download this order receipt.');
         }
 

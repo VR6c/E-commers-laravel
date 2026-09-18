@@ -14,8 +14,9 @@ class WishlistController extends Controller
         $customer = Auth::guard('customer')->user();
 
         $products = $customer->wishlistProducts()
-            ->with(['thumbnail', 'primaryVariant', 'reviews'])
+            ->with(['thumbnail', 'primaryVariant'])
             ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
             ->orderBy('wishlists.created_at', 'desc')
             ->get();
 
@@ -42,23 +43,23 @@ class WishlistController extends Controller
             $count = $customer->wishlistProducts()->count();
 
             return response()->json([
-                'status'  => 'removed',
+                'status' => 'removed',
                 'message' => 'Removed from wishlist.',
-                'count'   => $count,
+                'count' => $count,
             ]);
         }
 
         Wishlist::create([
             'customer_id' => $customer->id,
-            'product_id'  => $request->product_id,
+            'product_id' => $request->product_id,
         ]);
 
         $count = $customer->wishlistProducts()->count();
 
         return response()->json([
-            'status'  => 'added',
+            'status' => 'added',
             'message' => 'Added to wishlist.',
-            'count'   => $count,
+            'count' => $count,
         ]);
     }
 }
