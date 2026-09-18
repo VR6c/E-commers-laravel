@@ -9,9 +9,6 @@
 .env.*.local
 .env.*
 
-# Keep .env.example tracked
-!.env.example
-
 # Laravel storage & build
 /public/storage
 /public/hot
@@ -46,4 +43,12 @@ pnpm-debug.log*
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# Agent & AI Configs
 .agents
+
+# Temporary Audit, Scripts & Test Reports
+audit_performance.php
+picsum_to_imgbb_report.json
+test_mobile_api.sh
+*.sh

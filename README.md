@@ -10,7 +10,7 @@
 ## Tech Stack
 - Backend: Laravel 10+
 
-- Database: MySQL
+- Database: PGSQL
 - Frontend: Blade (with Laravel UI)
 - Authentication: Laravel Sanctum
 - DataTables: Yajra Laravel Datatables
