@@ -57,7 +57,7 @@ class Product extends Model
 
     public function primaryVariant()
     {
-        return $this->hasOne(ProductVariant::class)->whereRaw('is_primary is true');
+        return $this->hasOne(ProductVariant::class)->where('is_primary', true);
     }
 
     public function attributeValues()
@@ -121,5 +121,10 @@ class Product extends Model
     public function getTranslationAttribute()
     {
         return $this;
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('products.status', 1);
     }
 }

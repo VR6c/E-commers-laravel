@@ -3,10 +3,13 @@
 namespace Tests\Feature;
 
 use App\Models\Customer;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class CustomerAccountTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_profile_requires_customer_login(): void
     {
         $response = $this->get(route('customer.profile.edit'));
@@ -15,18 +18,11 @@ class CustomerAccountTest extends TestCase
 
     public function test_profile_renders_for_authenticated_customer(): void
     {
-        $customer = Customer::query()->first();
-        if (! $customer) {
-            // Fall back to an in-memory customer so the view still renders.
-            $customer = (new Customer)->forceFill([
-                'id' => 999999,
-                'name' => 'Test Customer',
-                'email' => 'test.customer@example.com',
-                'phone' => null,
-                'address' => null,
-                'profile_image' => null,
-            ]);
-        }
+        $customer = Customer::create([
+            'name' => 'Test Customer',
+            'email' => 'test.customer@example.com',
+            'password' => 'password123',
+        ]);
 
         $response = $this->actingAs($customer, 'customer')->get(route('customer.profile.edit'));
 

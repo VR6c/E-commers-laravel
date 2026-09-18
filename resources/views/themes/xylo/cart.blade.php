@@ -90,14 +90,16 @@
 
                 <div class="col-lg-4">
                     @php
-                        $coupon = session('cart_coupon');
-                        $discountAmount = 0;
-                        if ($coupon) {
-                            $discountAmount = $coupon['type'] === 'percentage'
-                                ? $total * ($coupon['discount'] / 100)
-                                : $coupon['discount'];
+                        $coupon = $coupon ?? session('cart_coupon');
+                        $subtotal = $subtotal ?? $total;
+                        $discountAmount = $discountAmount ?? 0;
+                        if (!isset($finalTotal)) {
+                            if (isset($total) && $total !== $subtotal) {
+                                $finalTotal = $total;
+                            } else {
+                                $finalTotal = max(0, $subtotal - $discountAmount);
+                            }
                         }
-                        $finalTotal = max(0, $total - $discountAmount);
                     @endphp
 
                     <div class="card xsf-summary">

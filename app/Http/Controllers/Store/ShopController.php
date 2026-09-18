@@ -67,7 +67,7 @@ class ShopController extends Controller
             $dir = $sort === 'price_asc' ? 'asc' : 'desc';
             $query->leftJoin('product_variants', function ($join) {
                 $join->on('products.id', '=', 'product_variants.product_id')
-                    ->whereRaw('product_variants.is_primary is true');
+                    ->where('product_variants.is_primary', true);
             })->select('products.*')->orderBy('product_variants.price', $dir);
         } else {
             $query->orderBy('products.id', 'desc');

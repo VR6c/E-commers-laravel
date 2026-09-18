@@ -1,14 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $categories = Category::with(['children' => function ($q) {
                 $q->where('status', true)->withCount('products');
@@ -21,25 +25,11 @@ class CategoryController extends Controller
                 $totalProducts = $cat->products_count + $cat->children->sum('products_count');
                 return $totalProducts > 0;
             })
-            ->values()
-            ->map(fn ($cat) => [
-                'id'             => $cat->id,
-                'slug'           => $cat->slug,
-                'name'           => $cat->name,
-                'description'    => $cat->description,
-                'image_url'      => $cat->image_url,
-                'products_count' => $cat->products_count + $cat->children->sum('products_count'),
-                'children'       => $cat->children->filter(fn ($c) => $c->products_count > 0)->values()->map(fn ($child) => [
-                    'id'             => $child->id,
-                    'slug'           => $child->slug,
-                    'name'           => $child->name,
-                    'description'    => $child->description,
-                    'image_url'      => $child->image_url,
-                    'products_count' => $child->products_count,
-                ]),
-            ]);
+            ->values();
 
-        return response()->json(['status' => true, 'data' => $categories])
-            ->header('Cache-Control', 'public, max-age=1800, s-maxage=86400, stale-while-revalidate=86400');
+        return response()->json([
+            'status' => true,
+            'data'   => CategoryResource::collection($categories),
+        ])->header('Cache-Control', 'public, max-age=1800, s-maxage=86400, stale-while-revalidate=86400');
     }
 }

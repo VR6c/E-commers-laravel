@@ -499,3 +499,142 @@
         font-size: $font-size-sm;
     }
 }
+
+// =====================================================================
+//  STOREFRONT COMBOBOX (Searchable Dropdown)
+// =====================================================================
+.xsf-combobox {
+    position: relative;
+
+    &__trigger {
+        width: 100%;
+        min-height: 44px;
+        padding: 0.5rem 2.4rem 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: $space-2;
+        background-color: $neutral-0;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23698696' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 14px 11px;
+        border: 1px solid $border-color;
+        border-radius: $radius-lg;
+        color: $neutral-900;
+        font-size: $font-size-sm;
+        font-family: inherit;
+        cursor: pointer;
+        text-align: left;
+        transition: border-color $transition-fast, box-shadow $transition-fast;
+        appearance: none;
+
+        &:hover { border-color: $neutral-400; }
+        &:focus-visible,
+        &:focus {
+            outline: none;
+            border-color: $color-primary;
+            box-shadow: $shadow-focus;
+        }
+
+        &.is-invalid { border-color: var(--color-danger); }
+        &:disabled {
+            background-color: $surface-muted;
+            opacity: 0.65;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+    }
+
+    &__label {
+        flex: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
+        &--placeholder { color: $text-muted; }
+    }
+
+    &__panel {
+        position: fixed;
+        background: $neutral-0;
+        border: 1px solid $border-subtle;
+        border-radius: $radius-xl;
+        box-shadow: $shadow-lg;
+        z-index: 9999;
+        overflow: hidden;
+        animation: xsf-cb-in 0.15s ease both;
+    }
+
+    @keyframes xsf-cb-in {
+        from { opacity: 0; transform: translateY(-4px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    &__search-wrap {
+        display: flex;
+        align-items: center;
+        gap: $space-2;
+        padding: 8px 12px;
+        border-bottom: 1px solid $border-subtle;
+        background: $surface-muted;
+    }
+
+    &__search-icon { flex-shrink: 0; color: $text-muted; }
+    &__search {
+        flex: 1; border: none; background: transparent;
+        outline: none; font-size: $font-size-sm; color: $neutral-900; font-family: inherit;
+        &::placeholder { color: $text-muted; }
+    }
+
+    &__options {
+        max-height: 220px;
+        overflow-y: auto;
+        padding: $space-1;
+        scrollbar-width: thin;
+    }
+
+    &__option {
+        padding: 8px 12px;
+        border-radius: $radius-md;
+        font-size: $font-size-sm;
+        color: $neutral-900;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: background $transition-fast;
+
+        &:hover,
+        &--highlighted { background: $primary-50; color: $color-primary; }
+        &--selected { font-weight: $font-weight-bold; color: $color-primary; }
+    }
+}
+
+// =====================================================================
+//  KHQR MODAL & BRANDED ASSETS
+// =====================================================================
+.khqr-modal-content {
+    background: $neutral-0;
+}
+
+.khqr-header {
+    background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+}
+
+.khqr-badge {
+    background: #ffffff;
+    color: #e11d48;
+    font-weight: 800;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: $radius-pill;
+    letter-spacing: 0.05em;
+}
+
+.khqr-qr-box {
+    background: $surface-muted;
+    border: 1px dashed $border-color;
+    min-height: 200px;
+}
+

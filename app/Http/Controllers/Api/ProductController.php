@@ -1,15 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProductResource;
+use App\Http\Resources\ProductSuggestionResource;
 use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * GET /api/products
+     * Filterable and sortable paginated product list.
+     */
+    public function index(Request $request): JsonResponse
     {
         $query = Product::with([
                 'category',
@@ -56,16 +65,16 @@ class ProductController extends Controller
             });
         }
 
-        // Sorting
+        // Sorting (database-agnostic boolean check)
         $sort = $request->input('sort', 'latest');
         match ($sort) {
             'price_asc'  => $query->join('product_variants as pv_sort', function ($join) {
                                 $join->on('pv_sort.product_id', '=', 'products.id')
-                                     ->whereRaw('pv_sort.is_primary is true');
+                                     ->where('pv_sort.is_primary', true);
                             })->orderBy('pv_sort.price', 'asc')->select('products.*'),
             'price_desc' => $query->join('product_variants as pv_sort', function ($join) {
                                 $join->on('pv_sort.product_id', '=', 'products.id')
-                                     ->whereRaw('pv_sort.is_primary is true');
+                                     ->where('pv_sort.is_primary', true);
                             })->orderBy('pv_sort.price', 'desc')->select('products.*'),
             'name_asc'   => $query->orderBy('name', 'asc'),
             'name_desc'  => $query->orderBy('name', 'desc'),
@@ -76,11 +85,9 @@ class ProductController extends Controller
         $perPage = min((int) $request->input('per_page', 20), 100);
         $paginated = $query->paginate($perPage);
 
-        $data = $paginated->getCollection()->map(fn ($p) => $this->formatProduct($p));
-
         return response()->json([
             'status' => true,
-            'data'   => $data,
+            'data'   => ProductResource::collection($paginated->getCollection()),
             'meta'   => [
                 'current_page' => $paginated->currentPage(),
                 'last_page'    => $paginated->lastPage(),
@@ -94,7 +101,7 @@ class ProductController extends Controller
      * GET /api/products/suggestions
      * Suggestions for mobile: live search autocomplete, recommended items, and matching keywords/categories.
      */
-    public function suggestions(Request $request)
+    public function suggestions(Request $request): JsonResponse
     {
         $search = trim((string) ($request->input('q') ?? $request->input('search') ?? ''));
         $categoryId = $request->input('category_id');
@@ -182,11 +189,9 @@ class ProductController extends Controller
             $keywords = $collectedKeywords->unique()->values()->take(8)->all();
         }
 
-        $data = $products->map(fn ($p) => $this->formatSuggestionProduct($p))->values()->all();
-
         return response()->json([
             'status'     => true,
-            'data'       => $data,
+            'data'       => ProductSuggestionResource::collection($products),
             'keywords'   => $keywords,
             'categories' => $matchingCategories,
         ])->header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
@@ -196,7 +201,7 @@ class ProductController extends Controller
      * GET /api/products/{slug}/suggestions
      * Related product suggestions for single product view on mobile.
      */
-    public function related(string $slug, Request $request)
+    public function related(string $slug, Request $request): JsonResponse
     {
         $product = Product::where('slug', $slug)
             ->where('status', 1)
@@ -252,8 +257,6 @@ class ProductController extends Controller
             $relatedProducts = $relatedProducts->concat($fallback);
         }
 
-        $data = $relatedProducts->map(fn ($p) => $this->formatSuggestionProduct($p))->values()->all();
-
         return response()->json([
             'status'  => true,
             'product' => [
@@ -261,7 +264,7 @@ class ProductController extends Controller
                 'name' => $product->name,
                 'slug' => $product->slug,
             ],
-            'data'    => $data,
+            'data'    => ProductSuggestionResource::collection($relatedProducts),
         ])->header('Cache-Control', 'public, max-age=120, s-maxage=600, stale-while-revalidate=1200');
     }
 
@@ -269,7 +272,7 @@ class ProductController extends Controller
      * GET /api/products/{slug}
      * Single product detail with full gallery, variants, and reviews summary.
      */
-    public function show(string $slug)
+    public function show(string $slug): JsonResponse
     {
         $product = Product::with([
                 'category',
@@ -291,78 +294,7 @@ class ProductController extends Controller
 
         return response()->json([
             'status' => true,
-            'data'   => $this->formatProduct($product, true),
+            'data'   => new ProductResource($product, true),
         ])->header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
-    }
-
-    // ── Private helpers ──────────────────────────────────────────────
-
-    private function formatProduct(Product $p, bool $full = false): array
-    {
-        $base = [
-            'id'                => $p->id,
-            'slug'              => $p->slug,
-            'name'              => $p->name,
-            'description'       => $full ? $p->description : null,
-            'short_description' => $p->short_description,
-            'price'             => $p->getConvertedPriceAttribute(),
-            'thumbnail'         => $p->thumbnail ? product_image_url($p->thumbnail->image_url) : null,
-            'category'          => $p->category?->name ?? '',
-            'category_id'       => $p->category_id,
-            'brand'             => $p->brand?->name ?? null,
-            'brand_id'          => $p->brand_id,
-            'rating'            => round((float) ($p->reviews_avg_rating ?? 0), 1),
-            'reviews_count'     => $p->reviews_count ?? 0,
-            'variants'          => $p->variants->map(fn ($v) => [
-                'id'             => $v->id,
-                'name'           => $v->name,
-                'price'          => $v->converted_price,
-                'discount_price' => $v->converted_discount_price,
-                'stock'          => $v->stock,
-                'sku'            => $v->SKU,
-                'is_primary'     => (bool) $v->is_primary,
-                'attributes'     => $v->attributeValues->map(fn ($av) => [
-                    'id'    => $av->id,
-                    'name'  => $av->attribute?->name ?? '',
-                    'value' => $av->value,
-                ])->values()->all(),
-            ])->values()->all(),
-        ];
-
-        if ($full) {
-            $base['gallery'] = $p->images
-                ->where('type', '!=', 'thumb')
-                ->map(fn ($img) => product_image_url($img->image_url))
-                ->values()
-                ->all();
-            $base['tags']   = $p->tags;
-            $base['weight'] = $p->weight;
-            $base['sku']    = $p->SKU;
-        }
-
-        // Remove null description from list view
-        if (! $full) {
-            unset($base['description']);
-        }
-
-        return $base;
-    }
-
-    private function formatSuggestionProduct(Product $p): array
-    {
-        return [
-            'id'             => $p->id,
-            'slug'           => $p->slug,
-            'name'           => $p->name,
-            'price'          => $p->getConvertedPriceAttribute(),
-            'discount_price' => $p->getConvertedDiscountPriceAttribute(),
-            'thumbnail'      => $p->thumbnail ? product_image_url($p->thumbnail->image_url) : null,
-            'category'       => $p->category?->name ?? '',
-            'category_id'    => $p->category_id,
-            'brand'          => $p->brand?->name ?? null,
-            'brand_id'       => $p->brand_id,
-            'rating'         => round((float) ($p->reviews_avg_rating ?? 0), 1),
-            'reviews_count'  => (int) ($p->reviews_count ?? 0),
-        ];
     }
 }

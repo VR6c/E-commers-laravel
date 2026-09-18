@@ -3,11 +3,13 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class StorefrontListingTest extends TestCase
 {
+    use RefreshDatabase;
     public function test_shop_index_renders_listing(): void
     {
         $response = $this->get(route('shop.index'));

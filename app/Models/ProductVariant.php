@@ -56,4 +56,9 @@ class ProductVariant extends Model
     {
         return $this->discount_price ? convert_price($this->discount_price) : null;
     }
+
+    public function scopePrimary($query)
+    {
+        return $query->where('is_primary', true);
+    }
 }

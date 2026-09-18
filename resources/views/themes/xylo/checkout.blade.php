@@ -1,500 +1,5 @@
 @extends('themes.xylo.layouts.master')
 
-@section('css')
-<style>
-/* ─────────────────────────────────────────────
-   Arctic Reflection palette
-   #5289AD  steel blue (primary)
-   #243C4C  deep navy
-   #ACBCBF  silver mist
-   #F4FCFB  ice white
-   #698696  slate
-   ───────────────────────────────────────────── */
-
-/* ─────────────────────────────────────────────
-   XSF COMBOBOX – storefront searchable select
-   ───────────────────────────────────────────── */
-.xsf-combobox { position: relative; }
-
-.xsf-combobox__trigger {
-    width: 100%;
-    min-height: 42px;
-    padding: 0.375rem 2.4rem 0.375rem 0.85rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    background-color: #ffffff;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23698696' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    background-size: 14px 11px;
-    border: 1px solid #ACBCBF;
-    border-radius: 0.375rem;
-    color: #243C4C;
-    font-size: 1rem;
-    font-family: inherit;
-    cursor: pointer;
-    text-align: left;
-    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-    appearance: none;
-}
-.xsf-combobox__trigger:hover { border-color: #698696; }
-.xsf-combobox__trigger:focus-visible {
-    outline: none;
-    border-color: #5289AD;
-    box-shadow: 0 0 0 0.25rem rgba(82, 137, 173, 0.25);
-}
-.xsf-combobox--open .xsf-combobox__trigger {
-    border-color: #5289AD;
-    box-shadow: 0 0 0 0.25rem rgba(82, 137, 173, 0.25);
-}
-.xsf-combobox__trigger.is-invalid { border-color: #dc3545; }
-.xsf-combobox__trigger:disabled,
-.xsf-combobox--disabled .xsf-combobox__trigger {
-    background-color: #eaf4f5;
-    opacity: 0.65;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-
-.xsf-combobox__label { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.xsf-combobox__label--placeholder { color: #698696; }
-
-/* panel — appended to <body> via JS portal */
-.xsf-combobox__panel {
-    position: fixed;
-    background: #ffffff;
-    border: 1px solid rgba(172, 188, 191, 0.6);
-    border-radius: 0.5rem;
-    box-shadow: 0 8px 24px rgba(36, 60, 76, 0.14);
-    z-index: 9999;
-    overflow: hidden;
-    animation: xsf-cb-in .12s ease both;
-}
-@keyframes xsf-cb-in {
-    from { opacity: 0; transform: translateY(-5px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-.xsf-combobox__search-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-bottom: 1px solid #d0e0e3;
-    background: #F4FCFB;
-}
-.xsf-combobox__search-icon { flex-shrink: 0; color: #ACBCBF; }
-.xsf-combobox__search {
-    flex: 1; border: none; background: transparent;
-    outline: none; font-size: .9rem; color: #243C4C; font-family: inherit;
-}
-.xsf-combobox__search::placeholder { color: #ACBCBF; }
-
-.xsf-combobox__options {
-    max-height: 220px;
-    overflow-y: auto;
-    padding: 4px;
-    scrollbar-width: thin;
-    scrollbar-color: #ACBCBF transparent;
-}
-.xsf-combobox__options::-webkit-scrollbar { width: 4px; }
-.xsf-combobox__options::-webkit-scrollbar-thumb { background: #ACBCBF; border-radius: 4px; }
-
-.xsf-combobox__option {
-    padding: 7px 12px;
-    border-radius: 4px;
-    font-size: .9rem;
-    color: #243C4C;
-    cursor: pointer;
-    transition: background .1s;
-}
-.xsf-combobox__option + .xsf-combobox__option { margin-top: 1px; }
-.xsf-combobox__option:hover { background: #edf4f9; color: #5289AD; }
-.xsf-combobox__option--active { background: #5289AD !important; color: #fff !important; }
-
-.xsf-combobox__empty {
-    padding: 12px; text-align: center;
-    font-size: .85rem; color: #ACBCBF; margin: 0;
-}
-.xsf-combobox__loading {
-    padding: 12px; text-align: center;
-    font-size: .85rem; color: #698696; margin: 0;
-}
-
-/* ─────────────────────────────────────────────
-   ABA PAY / KHQR Payment Modal  –  Arctic Reflection style
-   ───────────────────────────────────────────── */
-
-/* Modal card wrapper */
-.khqr-modal-card {
-    border: none;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(36, 60, 76, 0.22);
-    background: #ffffff;
-    max-width: 340px;
-    margin: 0 auto;
-}
-
-/* ── Brand header (ABA red — kept as brand identity) ── */
-.khqr-modal-header {
-    background: #d00c18;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 20px 12px;
-}
-
-.khqr-abapay-logo { line-height: 1; }
-
-.khqr-logo-aba {
-    font-size: 22px;
-    font-weight: 900;
-    color: #ffffff;
-    letter-spacing: -0.5px;
-}
-
-.khqr-logo-pay {
-    font-size: 22px;
-    font-weight: 900;
-    color: #ffd700;
-    letter-spacing: -0.5px;
-}
-
-.khqr-logo-tm {
-    font-size: 9px;
-    color: #ffd700;
-    vertical-align: super;
-    font-weight: 400;
-}
-
-.khqr-label-badge {
-    background: #ffffff;
-    color: #d00c18;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    padding: 3px 10px;
-    border-radius: 4px;
-}
-
-/* ── Merchant name ── */
-.khqr-merchant-row {
-    text-align: center;
-    padding: 12px 16px 4px;
-    border-bottom: 1px dashed #d0e0e3;
-}
-
-.khqr-merchant-name {
-    font-size: 14px;
-    font-weight: 700;
-    color: #243C4C;
-    letter-spacing: 0.2px;
-}
-
-/* ── Amount ── */
-.khqr-amount-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 4px;
-    padding: 10px 16px 8px;
-}
-
-.khqr-amount-symbol {
-    font-size: 18px;
-    font-weight: 700;
-    color: #243C4C;
-}
-
-.khqr-amount-value {
-    font-size: 28px;
-    font-weight: 800;
-    color: #243C4C;
-    letter-spacing: -0.5px;
-}
-
-/* ── QR frame ── */
-.khqr-qr-wrapper {
-    display: flex;
-    justify-content: center;
-    padding: 8px 20px 12px;
-}
-
-.khqr-qr-frame {
-    border: 2px solid #ACBCBF;
-    border-radius: 12px;
-    padding: 10px;
-    background: #ffffff;
-    width: 220px;
-    height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    box-shadow: inset 0 0 0 4px rgba(82, 137, 173, 0.08);
-}
-
-.khqr-qr-img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    border-radius: 6px;
-}
-
-/* Loading skeleton */
-.khqr-skeleton {
-    width: 100%;
-    height: 100%;
-    border-radius: 8px;
-    background: linear-gradient(90deg, #eaf4f5 25%, #d0e0e3 50%, #eaf4f5 75%);
-    background-size: 200% 100%;
-    animation: khqr-shimmer 1.4s infinite;
-}
-
-@keyframes khqr-shimmer {
-    0%   { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
-/* ── Scan hint ── */
-.khqr-scan-hint {
-    text-align: center;
-    font-size: 11.5px;
-    color: #698696;
-    padding: 0 20px 8px;
-    line-height: 1.55;
-    margin: 0;
-}
-
-/* ── Currency strip ── */
-.khqr-currency-strip {
-    background: #F4FCFB;
-    border-top: 1px dashed #ACBCBF;
-    padding: 7px 16px;
-    text-align: center;
-}
-
-.khqr-currency-label {
-    font-size: 11px;
-    color: #698696;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* ── Waiting spinner row ── */
-.khqr-waiting-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 16px 8px;
-}
-
-.khqr-spinner {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border: 2px solid rgba(82, 137, 173, 0.2);
-    border-top-color: #5289AD;
-    border-radius: 50%;
-    animation: khqr-spin 0.8s linear infinite;
-    flex-shrink: 0;
-}
-
-@keyframes khqr-spin {
-    to { transform: rotate(360deg); }
-}
-
-.khqr-waiting-text {
-    font-size: 12px;
-    color: #698696;
-}
-
-/* ── App store badges ── */
-.khqr-stores {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-    padding: 8px 16px 4px;
-}
-
-.khqr-store-badge {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #243C4C;
-    color: #ffffff;
-    text-decoration: none;
-    border-radius: 8px;
-    padding: 7px 14px;
-    font-size: 12px;
-    line-height: 1.3;
-    flex: 1;
-    min-width: 120px;
-    transition: opacity 0.2s;
-}
-
-.khqr-store-badge:hover {
-    opacity: 0.85;
-    color: #ffffff;
-}
-
-.khqr-store-icon { font-size: 20px; }
-
-.khqr-deeplink-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #5289AD;
-    color: #ffffff;
-    text-decoration: none;
-    border-radius: 8px;
-    padding: 10px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    transition: background 0.2s;
-}
-
-.khqr-deeplink-btn:hover {
-    background: #3f6f90;
-    color: #ffffff;
-}
-
-/* ── Footer / cancel button ── */
-.khqr-footer {
-    padding: 10px 20px 18px;
-    text-align: center;
-}
-
-.khqr-cancel-btn {
-    background: transparent;
-    border: 1px solid #ACBCBF;
-    border-radius: 8px;
-    color: #698696;
-    font-size: 13px;
-    padding: 8px 28px;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s, border-color 0.15s;
-}
-
-.khqr-cancel-btn:hover {
-    background: #F4FCFB;
-    color: #243C4C;
-    border-color: #5289AD;
-}
-
-/* Backdrop dim */
-.modal-backdrop.show { opacity: 0.60; }
-
-/* ── Ensure modal-sm is wide enough for the card ── */
-@media (min-width: 576px) {
-    #paywayQRModal .modal-dialog { max-width: 360px; }
-}
-
-/* ─────────────────────────────────────────────
-   CHECKOUT PAGE — Arctic Reflection overrides
-   ───────────────────────────────────────────── */
-
-/* Section background */
-.xsf-section { background: #F4FCFB; }
-
-/* Breadcrumb links */
-.xsf-breadcrumb a { color: #5289AD; }
-.xsf-breadcrumb a:hover { color: #243C4C; }
-
-/* Form cards — shipping / contact / payment */
-.shipping_info.card {
-    border-color: #d0e0e3 !important;
-    background: #ffffff;
-}
-.shipping_info .xsf-summary__title,
-.shipping_info .cart-heading {
-    border-bottom-color: #d0e0e3;
-    color: #243C4C;
-}
-
-/* Form controls */
-.shipping_info .form-control {
-    border-color: #ACBCBF;
-    color: #243C4C;
-    background: #ffffff;
-}
-.shipping_info .form-control:focus {
-    border-color: #5289AD;
-    box-shadow: 0 0 0 0.2rem rgba(82, 137, 173, 0.22);
-}
-.shipping_info .form-control::placeholder { color: #698696; }
-
-/* Checkbox */
-.shipping_info .form-check-input:checked {
-    background-color: #5289AD;
-    border-color: #5289AD;
-}
-.shipping_info .form-check-input:focus {
-    box-shadow: 0 0 0 0.2rem rgba(82, 137, 173, 0.22);
-}
-
-/* Payment gateway selector */
-.xsf-gateway {
-    border-color: #ACBCBF;
-    background: #ffffff;
-}
-.xsf-gateway:has(input:checked) {
-    border-color: #5289AD !important;
-    background: #edf4f9 !important;
-    box-shadow: 0 0 0 3px rgba(82, 137, 173, 0.22) !important;
-}
-.xsf-gateway:has(input:checked)::after {
-    color: #5289AD !important;
-}
-.xsf-gateway:hover:not(:has(input:checked)) {
-    border-color: #698696 !important;
-    background: #F4FCFB !important;
-}
-.xsf-gateway input[type="radio"] { accent-color: #5289AD; }
-.xsf-gateway__label { color: #243C4C; }
-
-/* Steps indicator */
-.xsf-steps__item { color: #698696; }
-.xsf-steps__num { background: #ACBCBF; color: #ffffff; }
-
-.xsf-steps__item.is-active { color: #243C4C; }
-.xsf-steps__item.is-active .xsf-steps__num {
-    background: linear-gradient(135deg, #5289AD 0%, #698696 100%);
-    color: #fff;
-    box-shadow: 0 4px 14px rgba(82, 137, 173, 0.40);
-    border-color: #d5e7f2;
-}
-
-.xsf-steps__item.is-done .xsf-steps__num {
-    background: #10b981;
-    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.40);
-}
-
-/* Step connector lines */
-.xsf-steps__item:not(:last-child)::after { background: #ACBCBF; }
-.xsf-steps__item.is-done:not(:last-child)::after { background: #a7f3d0; }
-
-/* Order summary card */
-.xsf-summary {
-    border-color: #d0e0e3 !important;
-}
-.xsf-summary .card-body { background: #ffffff; }
-.xsf-summary__title {
-    border-bottom-color: #d0e0e3 !important;
-    color: #243C4C !important;
-}
-.xsf-summary__row { border-bottom-color: #d0e0e3 !important; color: #698696 !important; }
-.xsf-summary__row--total {
-    border-top-color: #ACBCBF !important;
-    color: #243C4C !important;
-}
-
 /* Place Order button */
 #place-order.btn-primary {
     background: linear-gradient(135deg, #5289AD 0%, #243C4C 100%);
@@ -712,83 +217,8 @@
         </div>
     </section>
 
-    <!-- ABA PayWay QR Code Payment Modal -->
-    <div class="modal fade" id="paywayQRModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="paywayQRModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content khqr-modal-card">
-
-                {{-- ── Top brand header ── --}}
-                <div class="khqr-modal-header">
-                    {{-- ABA PAY wordmark (text-based fallback; swap for <img> if you have the SVG) --}}
-                    <div class="khqr-abapay-logo">
-                        <span class="khqr-logo-aba">ABA</span><span class="khqr-logo-pay">PAY</span><sup class="khqr-logo-tm">™</sup>
-                    </div>
-                    <div class="khqr-label-badge">KHQR</div>
-                </div>
-
-                {{-- ── Merchant / store name ── --}}
-                <div class="khqr-merchant-row">
-                    <span id="khqr-merchant-name" class="khqr-merchant-name">{{ config('app.name') }}</span>
-                </div>
-
-                {{-- ── Amount row ── --}}
-                <div class="khqr-amount-row">
-                    <span id="khqr-currency-symbol" class="khqr-amount-symbol">$</span>
-                    <span id="khqr-amount-display" class="khqr-amount-value">0.00</span>
-                </div>
-
-                {{-- ── QR image ── --}}
-                <div class="khqr-qr-wrapper">
-                    <div class="khqr-qr-frame">
-                        {{-- Loading skeleton shown while QR loads --}}
-                        <div id="khqr-loading-skeleton" class="khqr-skeleton"></div>
-                        <img id="payway-qr-image"
-                             src=""
-                             alt="KHQR Code"
-                             class="khqr-qr-img d-none"
-                             onload="this.classList.remove('d-none'); document.getElementById('khqr-loading-skeleton').classList.add('d-none');" />
-                    </div>
-                </div>
-
-                {{-- ── Scan instruction ── --}}
-                <p class="khqr-scan-hint">
-                    Scan with ABA Mobile or any KHQR<br>supported banking app
-                </p>
-
-                {{-- ── Currency label strip ── --}}
-                <div class="khqr-currency-strip">
-                    <span id="khqr-currency-label" class="khqr-currency-label">KHQR: US Dollar</span>
-                </div>
-
-                {{-- ── Waiting / spinner ── --}}
-                <div class="khqr-waiting-row">
-                    <span class="khqr-spinner" role="status" aria-hidden="true"></span>
-                    <span class="khqr-waiting-text">Waiting for payment verification…</span>
-                </div>
-
-                {{-- ── App store badges (visible on mobile only via JS) ── --}}
-                <div id="payway-deeplink-container" class="khqr-stores d-none">
-                    <a id="payway-app-store-btn" href="#" target="_blank" rel="noopener" class="khqr-store-badge khqr-store-badge--ios" aria-label="Download on the App Store">
-                        <i class="fa-brands fa-apple khqr-store-icon"></i>
-                        <span><small>Download on the</small><br><strong>App Store</strong></span>
-                    </a>
-                    <a id="payway-play-store-btn" href="#" target="_blank" rel="noopener" class="khqr-store-badge khqr-store-badge--android" aria-label="Get it on Google Play">
-                        <i class="fa-brands fa-google-play khqr-store-icon"></i>
-                        <span><small>Get it on</small><br><strong>Google Play</strong></span>
-                    </a>
-                    <a id="payway-deeplink-btn" href="#" class="khqr-deeplink-btn w-100 mt-2">
-                        <i class="fa fa-mobile-screen-button me-2"></i>Open in ABA Mobile
-                    </a>
-                </div>
-
-                {{-- ── Cancel button ── --}}
-                <div class="khqr-footer">
-                    <button type="button" id="payway-cancel-btn" class="khqr-cancel-btn">Cancel Order</button>
-                </div>
-
-            </div>
-        </div>
-    </div>
+    <!-- ABA PayWay QR Code Payment Modal Component -->
+    <x-store.khqr-modal />
 @endsection
 
 @section('js')
@@ -810,12 +240,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let stripe = null;
     let card = null;
+    const stripePublicKey = "{{ $stripePublicKey ?? '' }}";
 
-    if (stripeContainer) {
-        stripe = Stripe("asdasd");
-        let elements = stripe.elements();
-        card = elements.create("card");
-        card.mount("#card-element");
+    if (stripeContainer && stripePublicKey && typeof Stripe !== "undefined") {
+        try {
+            stripe = Stripe(stripePublicKey);
+            let elements = stripe.elements();
+            card = elements.create("card");
+            card.mount("#card-element");
+        } catch (err) {
+            console.warn("Stripe init skipped or failed:", err);
+        }
     }
 
     // Show correct payment fields
@@ -857,7 +292,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             details: details
                         })
                     }).then(res => res.json()).then(result => {
-                        window.location.href = "/thank-you";
+                        window.location.href = "{{ route('thankyou') }}";
                     });
                 });
             }
@@ -893,7 +328,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     headers: {"X-CSRF-TOKEN": "{{ csrf_token() }}"},
                     body: formData
                 }).then(res => res.json()).then(result => {
-                    window.location.href = "/thank-you";
+                    window.location.href = "{{ route('thankyou') }}";
                 });
             }
         } else if (selectedGateway === "paypal") {
@@ -983,7 +418,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                         paywayModal.hide();
                                         toastr.success("Payment completed successfully!");
                                         setTimeout(() => {
-                                            window.location.href = "/thank-you";
+                                            window.location.href = "{{ route('thankyou') }}";
                                         }, 1200);
                                     }
                                 })
@@ -993,13 +428,17 @@ document.addEventListener("DOMContentLoaded", function () {
                                 });
                         }, 3000);
 
-                        // ── Cancel handler ──
-                        document.getElementById('payway-cancel-btn').addEventListener('click', function () {
+                        // ── Cancel & Close handlers ──
+                        const handleCancelPayway = function () {
                             paymentApproved = true;
                             clearInterval(pollInterval);
                             paywayModal.hide();
                             window.location.href = "{{ route('payway.cancel') }}";
-                        });
+                        };
+                        const cancelBtn = document.getElementById('payway-cancel-btn');
+                        if (cancelBtn) cancelBtn.addEventListener('click', handleCancelPayway);
+                        const closeBtn = document.getElementById('payway-modal-close-btn');
+                        if (closeBtn) closeBtn.addEventListener('click', handleCancelPayway);
                     }
                 } else {
                     alert(result.message || "An error occurred during checkout processing.");

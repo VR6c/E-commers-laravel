@@ -23,17 +23,7 @@ class CustomerProfileController extends Controller
 
         return response()->json([
             'status' => true,
-            'data' => [
-                'id' => $customer->id,
-                'name' => $customer->name,
-                'email' => $customer->email,
-                'phone' => $customer->phone,
-                'address' => $customer->address,
-                'status' => $customer->status ?? 'active',
-                'profile_image' => $customer->profile_image,
-                'avatar_url' => $customer->avatar_url,
-                'avatar_type' => $customer->avatar_type ?? 'default',
-            ],
+            'data'   => new \App\Http\Resources\CustomerResource($customer),
         ], 200);
     }
 
@@ -94,17 +84,7 @@ class CustomerProfileController extends Controller
 
         $customer->save();
 
-        $profileData = [
-            'id' => $customer->id,
-            'name' => $customer->name,
-            'email' => $customer->email,
-            'phone' => $customer->phone,
-            'address' => $customer->address,
-            'status' => $customer->status ?? 'active',
-            'profile_image' => $customer->profile_image,
-            'avatar_url' => $customer->avatar_url,
-            'avatar_type' => $customer->avatar_type ?? 'default',
-        ];
+        $profileData = (new \App\Http\Resources\CustomerResource($customer))->resolve();
 
         return response()->json([
             'status' => true,
@@ -147,15 +127,7 @@ class CustomerProfileController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Avatar updated successfully',
-            'data' => [
-                'id' => $customer->id,
-                'name' => $customer->name,
-                'email' => $customer->email,
-                'status' => $customer->status ?? 'active',
-                'profile_image' => $customer->profile_image,
-                'avatar_url' => $customer->avatar_url,
-                'avatar_type' => $customer->avatar_type,
-            ],
+            'data' => (new \App\Http\Resources\CustomerResource($customer))->resolve(),
         ], 200);
     }
 
@@ -176,15 +148,7 @@ class CustomerProfileController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Avatar removed successfully',
-            'data' => [
-                'id' => $customer->id,
-                'name' => $customer->name,
-                'email' => $customer->email,
-                'status' => $customer->status ?? 'active',
-                'profile_image' => null,
-                'avatar_url' => $customer->avatar_url,
-                'avatar_type' => 'default',
-            ],
+            'data' => (new \App\Http\Resources\CustomerResource($customer))->resolve(),
         ], 200);
     }
 }

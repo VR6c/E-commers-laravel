@@ -8,16 +8,32 @@ use App\Models\OrderDetail;
 use App\Models\ShippingAddress;
 use App\Models\Payment;
 use App\Models\PaymentGateway;
+use App\Models\User;
+use App\Services\Store\CartService;
 use App\Services\Store\OrderService;
 use App\Services\PaymentGateway\PaymentManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
+    public function __construct(
+        protected CartService $cartService,
+        protected OrderService $orderService
+    ) {}
+
+    protected function getCountries(): array
+    {
+        return Cache::rememberForever('storefront_countries_data', function () {
+            $json = file_get_contents(resource_path('data/countries.json'));
+            return json_decode($json, true) ?: [];
+        });
+    }
+
     public function index()
     {
         $cart = Session::get('cart', []);
@@ -36,29 +52,22 @@ class CheckoutController extends Controller
             ? $paypal->getConfigValue('client_id', 'sandbox')
             : null;
 
-        $subtotal = 0;
+        $stripe = $paymentGateways->firstWhere('code', 'stripe');
+        $stripePublicKey = $stripe
+            ? $stripe->getConfigValue('public', 'sandbox')
+            : null;
 
-        foreach ($cart as $key => $item) {
-            $subtotal += $item['price'] * $item['quantity'];
-        }
-
+        $totals = $this->cartService->calculateTotals($cart);
+        $subtotal = $totals['subtotal'];
         $shipping = null;
-
-        // Apply coupon discount if one is stored in the session
+        $discountAmount = $totals['discount_amount'];
+        $total = $totals['total'];
         $coupon = Session::get('cart_coupon');
-        $discountAmount = 0;
-        if ($coupon) {
-            $discountAmount = $coupon['type'] === 'percentage'
-                ? $subtotal * ($coupon['discount'] / 100)
-                : $coupon['discount'];
-        }
-        $total = max(0, $subtotal - $discountAmount + ($shipping ?? 0));
 
-        // Load countries for the shipping form
-        $countriesJson = file_get_contents(resource_path('data/countries.json'));
-        $countries = json_decode($countriesJson, true);
+        // Load cached countries for the shipping form
+        $countries = $this->getCountries();
 
-        return view('themes.xylo.checkout', compact('cart', 'subtotal', 'shipping', 'total', 'coupon', 'discountAmount', 'paymentGateways', 'paypalClientId', 'countries'));
+        return view('themes.xylo.checkout', compact('cart', 'subtotal', 'shipping', 'total', 'coupon', 'discountAmount', 'paymentGateways', 'paypalClientId', 'stripePublicKey', 'countries'));
     }
 
     /**
@@ -66,11 +75,8 @@ class CheckoutController extends Controller
      */
     public function countries()
     {
-        $countriesJson = file_get_contents(resource_path('data/countries.json'));
-        $countries = json_decode($countriesJson, true);
-
         return response()->json(
-            collect($countries)->map(fn($c) => ['code' => $c['code'], 'name' => $c['name']])
+            collect($this->getCountries())->map(fn ($c) => ['code' => $c['code'], 'name' => $c['name']])
         );
     }
 
@@ -79,16 +85,13 @@ class CheckoutController extends Controller
      */
     public function states(string $countryCode)
     {
-        $countriesJson = file_get_contents(resource_path('data/countries.json'));
-        $countries = collect(json_decode($countriesJson, true));
+        $country = collect($this->getCountries())->firstWhere('code', strtoupper($countryCode));
 
-        $country = $countries->firstWhere('code', strtoupper($countryCode));
-
-        if (!$country) {
+        if (! $country) {
             return response()->json([]);
         }
 
-        return response()->json($country['states']);
+        return response()->json($country['states'] ?? []);
     }
 
     public function process(Request $request)
@@ -107,28 +110,18 @@ class CheckoutController extends Controller
             ], 400);
         }
 
-        // Calculate total
-        $subtotal = 0;
-        foreach ($cart as $item) {
-            $subtotal += $item['price'] * $item['quantity'];
-        }
-        $shipping = 0;
-
-        // Apply coupon discount from session
+        // Calculate totals with domain service
+        $totals = $this->cartService->calculateTotals($cart);
+        $total = $totals['total'];
+        $discountAmount = $totals['discount_amount'];
         $coupon = Session::get('cart_coupon');
-        $discountAmount = 0;
-        if ($coupon) {
-            $discountAmount = $coupon['type'] === 'percentage'
-                ? $subtotal * ($coupon['discount'] / 100)
-                : $coupon['discount'];
-        }
-        $total = max(0, $subtotal - $discountAmount + $shipping);
+        $couponCode = is_array($coupon) ? ($coupon['code'] ?? null) : ($coupon?->code ?? null);
 
         try {
             $paymentService = PaymentManager::make($gatewayCode, 'sandbox');
 
             if ($gatewayCode === 'abapayway') {
-                $request->validate([
+                $shippingData = $request->validate([
                     'first_name' => 'required|string|max:100',
                     'last_name' => 'required|string|max:100',
                     'address' => 'required|string|max:255',
@@ -140,38 +133,18 @@ class CheckoutController extends Controller
                     'phone' => 'required|string|max:20',
                 ]);
 
-                // 1. Create order
-                $order = Order::create([
-                    'customer_id' => Auth::guard('customer')->check() ? Auth::guard('customer')->id() : null,
-                    'guest_email' => $request->input('email'),
-                    'total_amount' => $total,
-                    'status' => 'pending',
-                    'payment_method' => 'abapayway',
-                ]);
-
-                // 2. Save order details
-                foreach ($cart as $productId => $item) {
-                    OrderDetail::create([
-                        'order_id' => $order->id,
-                        'product_id' => $item['product_id'],
-                        'quantity' => $item['quantity'],
-                        'price' => $item['price'],
-                    ]);
-                }
-
-                // 3. Save shipping address
-                ShippingAddress::create([
-                    'order_id' => $order->id,
-                    'customer_id' => Auth::guard('customer')->check() ? Auth::guard('customer')->id() : null,
-                    'name' => $request->input('first_name') . ' ' . $request->input('last_name'),
-                    'phone' => $request->input('phone'),
-                    'address' => $request->input('address'),
-                    'suite' => $request->input('suite'),
-                    'city' => $request->input('city'),
-                    'state' => $request->input('state'),
-                    'postal_code' => null,
-                    'country' => $request->input('country'),
-                ]);
+                // Create order with line items and address in ACID transaction
+                $order = $this->orderService->createOrder(
+                    cartItems: $cart,
+                    shippingData: $shippingData,
+                    totalAmount: $total,
+                    gatewayCode: 'abapayway',
+                    customerId: Auth::guard('customer')->id() ?? Auth::id(),
+                    guestEmail: $request->input('email'),
+                    couponCode: $couponCode,
+                    discountAmount: $discountAmount,
+                    status: 'pending'
+                );
 
                 // 4. Build PayWay fields
                 $reqTime = now()->utc()->format('YmdHis');

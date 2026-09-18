@@ -25,17 +25,7 @@ class ProductReviewController extends Controller
             ->where('product_id', $product->id)
             ->approved()
             ->latest()
-            ->get()
-            ->map(fn ($r) => [
-                'id'           => $r->id,
-                'rating'       => (int) $r->rating,
-                'review'       => $r->review,
-                'customer'     => [
-                    'name'          => $r->customer?->name ?? 'Anonymous',
-                    'profile_image' => $r->customer?->profile_image ?? null,
-                ],
-                'created_at'   => $r->created_at?->toISOString(),
-            ]);
+            ->get();
 
         $avgRating = $reviews->avg('rating') ?? 0;
 
@@ -43,7 +33,7 @@ class ProductReviewController extends Controller
             'status'     => true,
             'avg_rating' => round((float) $avgRating, 1),
             'total'      => $reviews->count(),
-            'data'       => $reviews->values(),
+            'data'       => \App\Http\Resources\ProductReviewResource::collection($reviews),
         ]);
     }
 

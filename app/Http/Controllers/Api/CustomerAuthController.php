@@ -36,7 +36,8 @@ class CustomerAuthController extends Controller
         $customer = Customer::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'password' => $request->password,
+            'phone' => $request->phone,
             'status' => 'active',
         ]);
 
