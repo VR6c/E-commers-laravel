@@ -255,5 +255,3 @@ Route::match(['get', 'post'], '/fix-duplicate-images', function (Request $reques
         ], 500);
     }
 });
-
-Route::get('/app-version', fn() => response()->json(['commit' => 'bbb2733-real-payway']));
