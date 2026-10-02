@@ -84,7 +84,7 @@ class QRCode
     }
 
     /**
-     * Create a PNG binary string using GD.
+     * Create a PNG binary string using pure PHP (standard zlib/gzcompress, no GD extension required).
      *
      * @param int $scale Size of each QR module in pixels (default: 6)
      * @param int $quietZone Quiet zone border in modules (default: 4)
@@ -95,29 +95,70 @@ class QRCode
         $code = $this->dispatch_encode($this->data, $this->options);
         $matrix = $code['b'];
         $size = $code['s'][0];
-        $totalSize = ($size + $quietZone * 2) * $scale;
+        $totalModules = $size + ($quietZone * 2);
+        $imgSize = $totalModules * $scale;
 
-        $im = imagecreatetruecolor($totalSize, $totalSize);
-        $white = imagecolorallocate($im, 255, 255, 255);
-        $black = imagecolorallocate($im, 0, 0, 0);
-        imagefilledrectangle($im, 0, 0, $totalSize - 1, $totalSize - 1, $white);
-
-        for ($y = 0; $y < $size; $y++) {
-            for ($x = 0; $x < $size; $x++) {
-                if ($matrix[$y][$x]) {
-                    $px = ($x + $quietZone) * $scale;
-                    $py = ($y + $quietZone) * $scale;
-                    imagefilledrectangle($im, $px, $py, $px + $scale - 1, $py + $scale - 1, $black);
+        // Build raw grayscale scanlines (Color type 0, 8-bit depth)
+        $raw = '';
+        for ($y = 0; $y < $totalModules; $y++) {
+            $modY = $y - $quietZone;
+            $rowPixels = [];
+            for ($x = 0; $x < $totalModules; $x++) {
+                $modX = $x - $quietZone;
+                $isBlack = ($modY >= 0 && $modY < $size && $modX >= 0 && $modX < $size && !empty($matrix[$modY][$modX]));
+                $val = $isBlack ? 0 : 255;
+                for ($s = 0; $s < $scale; $s++) {
+                    $rowPixels[] = $val;
                 }
+            }
+            $rowBytes = pack('C*', ...$rowPixels);
+            for ($s = 0; $s < $scale; $s++) {
+                $raw .= "\x00" . $rowBytes;
             }
         }
 
-        ob_start();
-        imagepng($im);
-        $png = ob_get_clean();
-        imagedestroy($im);
+        // Standard zlib compress
+        $idatData = function_exists('gzcompress') ? gzcompress($raw, 6) : '';
+        if (!empty($idatData)) {
+            $chunk = function(string $type, string $data): string {
+                return pack('N', strlen($data)) . $type . $data . pack('N', crc32($type . $data));
+            };
 
-        return $png;
+            $png = "\x89PNG\r\n\x1a\n";
+            $ihdr = pack('NNCCCCC', $imgSize, $imgSize, 8, 0, 0, 0, 0);
+            $png .= $chunk('IHDR', $ihdr);
+            $png .= $chunk('IDAT', $idatData);
+            $png .= $chunk('IEND', '');
+
+            return $png;
+        }
+
+        // Fallback to GD if gzcompress is somehow unavailable
+        if (function_exists('imagecreatetruecolor')) {
+            $im = imagecreatetruecolor($imgSize, $imgSize);
+            $white = imagecolorallocate($im, 255, 255, 255);
+            $black = imagecolorallocate($im, 0, 0, 0);
+            imagefilledrectangle($im, 0, 0, $imgSize - 1, $imgSize - 1, $white);
+
+            for ($y = 0; $y < $size; $y++) {
+                for ($x = 0; $x < $size; $x++) {
+                    if ($matrix[$y][$x]) {
+                        $px = ($x + $quietZone) * $scale;
+                        $py = ($y + $quietZone) * $scale;
+                        imagefilledrectangle($im, $px, $py, $px + $scale - 1, $py + $scale - 1, $black);
+                    }
+                }
+            }
+
+            ob_start();
+            imagepng($im);
+            $png = ob_get_clean();
+            imagedestroy($im);
+
+            return $png;
+        }
+
+        return '';
     }
 
     /**
