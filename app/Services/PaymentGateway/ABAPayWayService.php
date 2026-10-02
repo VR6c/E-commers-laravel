@@ -18,6 +18,8 @@ class ABAPayWayService implements PaymentGatewayInterface
     protected $environment;
     protected $checkoutUrl;
     protected $mockEnabled;
+    protected $rsaPublicKey;
+    protected $rsaPrivateKey;
 
     public function __construct(string $environment = 'sandbox')
     {
@@ -37,9 +39,21 @@ class ABAPayWayService implements PaymentGatewayInterface
             $configs = collect();
         }
 
-        $this->merchantId   = $configs['merchant_id'] ?? env('PAYWAY_MERCHANT_ID', env('ABA_PAYWAY_MERCHANT_ID', 'ec476922'));
-        $this->merchantName = $configs['merchant_name'] ?? env('ABA_PAYWAY_MERCHANT_NAME', 'THARY VIREAK');
-        $this->apiKey       = $configs['api_key'] ?? env('PAYWAY_API_KEY', env('ABA_PAYWAY_API_KEY', '18e940724353f94ae7b77f4a59cb1fe76bd1e140'));
+        // Prioritize .env credentials, fallback to DB configs or defaults
+        $this->merchantId   = env('PAYWAY_MERCHANT_ID', env('ABA_PAYWAY_MERCHANT_ID', $configs['merchant_id'] ?? 'ec476922'));
+        $this->merchantName = env('ABA_PAYWAY_MERCHANT_NAME', $configs['merchant_name'] ?? 'THARY VIREAK');
+        $this->apiKey       = env('PAYWAY_API_KEY', env('ABA_PAYWAY_API_KEY', $configs['api_key'] ?? 'fde4f7ade6a1eab1c6fdb05c7823db3804ab702d'));
+
+        // Load RSA Keys with defaults
+        $pubKeyPath = base_path(env('PAYWAY_RSA_PUBLIC_KEY_PATH', 'storage/keys/payway_public.pem'));
+        $privKeyPath = base_path(env('PAYWAY_RSA_PRIVATE_KEY_PATH', 'storage/keys/payway_private.pem'));
+
+        $defaultPubKey = "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDMNVoDU0L6v5tepn0/wMTufO5u\nlrZi99mE6pYlGEefdvDAaLkIbXLwhanP7jYVIOObOS1LLxit8GXYhkj0cmAxIZ9F\n5BIZfoNbtImU1uPOxpkPgmv8QAgsGC6XbsGkPXdOzySP/VEWaRuQn6qJ+zM5REjc\nBS8ENY58CmIxNVCPkQIDAQAB\n-----END PUBLIC KEY-----";
+
+        $defaultPrivKey = "-----BEGIN RSA PRIVATE KEY-----\nMIICXAIBAAKBgQCGHHsnEsHfng47X/EplK1GsGcpJYB7OU2wUsSZd4LHE4982rvi\nlAxINjGMgWFNkGojlGTSM/1u0jAux8Y4zegvfE9l94Up8k0mlhxyAr63O2zw2lAD\nEuTpeitsaG6V2G+7XbQdC+iQPsmn6DuSp3wik+/yfWjaAGOhS6wk8AqE6QIDAQAB\nAoGABwbFIJLO2qrKqWBWkV5g11Qeqov541ToPJhxiXZu9hAMGU886DTk2D82Anj9\nmfpg4jR0CU2kgQzJdZ5LlYrQQFf/QiQDpcN5CFyNAfdzg2SN6TPV0NSjfTwfczk0\nEMsStOxNVlbgIcnclju9wMnGMdYS9ox/5V/k5DAohilSr/UCQQCGM2ojjE9xE0B6\nlZuOgbMhQWhwDV7KtwkdYvOFFWGlu3y7HQOXswMDqLsVHFOGxR0Qr+ljKTWuLAX6\nM3VG0qHdAkEA/9RAkrh2mjvDob4O7rF+vNUbZn+5oZYXdrcfvVvS5/ieHO4v1F0C\npyGXZ4qVIXd3hzGMJsifmqXlDlYS36WsfQJAEdqfQVF2dDW6e1SSGhH66263RUkS\nFlpDfSxf95Grpw/1fTNT+gev2/nDWgA9xALVZhXxN+cQpDZpKStVa/Gz5QJBANCj\nXp5EI/E2OyFknFgcyfD2Q064MJpzhw3dmAJ3uVsml4jKwUw8X4O/WvzG7Py04768\naxfAnt/FjOfOeJa9U10CQFbNABPz/naGXUrbQcK6WM6zwc/7KUOtPAtb81UccZoz\nzasylaTl4nJVo5N4/PDaF4ZVaZ1+rYJVvYbtsML0E1U=\n-----END RSA PRIVATE KEY-----";
+
+        $this->rsaPublicKey  = file_exists($pubKeyPath) ? file_get_contents($pubKeyPath) : env('PAYWAY_RSA_PUBLIC_KEY', $defaultPubKey);
+        $this->rsaPrivateKey = file_exists($privKeyPath) ? file_get_contents($privKeyPath) : env('PAYWAY_RSA_PRIVATE_KEY', $defaultPrivKey);
 
         $defaultUrl = $environment === 'live'
             ? 'https://checkout.payway.com.kh/api/payment-gateway/v1/payments/purchase'
@@ -137,10 +151,10 @@ class ABAPayWayService implements PaymentGatewayInterface
         }
 
         try {
-            // Strict timeouts: 3s connect timeout, 5s execution timeout
-            $response = Http::connectTimeout(3)
-                ->timeout(5)
-                ->asForm()
+            // ABA PayWay Purchase API requires multipart/form-data
+            $response = Http::connectTimeout(5)
+                ->timeout(10)
+                ->asMultipart()
                 ->post($this->checkoutUrl, $params);
 
             if ($response->successful()) {
@@ -264,7 +278,7 @@ class ABAPayWayService implements PaymentGatewayInterface
         $currency = $params['currency'] ?? 'USD';
 
         // Dynamically compute EMVCo KHQR string with exact order amount and merchant name
-        $khqr = self::generateKHQRString($amount, $this->merchantName, $currency);
+        $khqr = self::generateKHQRString($amount, $this->merchantName, $currency, null, $tranId);
         $deeplink = 'abamobilebank://ababank.com?type=payway&qrcode=' . urlencode($khqr);
 
         // Generate a 100% genuine, pixel-perfect, scannable QR Code PNG in Base64
@@ -288,8 +302,13 @@ class ABAPayWayService implements PaymentGatewayInterface
      * Generate EMVCo KHQR string compatible with Bakong & ABA Mobile.
      * Computes Tag 54 (amount), Tag 59 (merchant name), Tag 60 (city), Tag 53 (currency), and CRC-16 checksum.
      */
-    public static function generateKHQRString(float $amount, string $merchantName = 'THARY VIREAK', string $currency = 'USD'): string
-    {
+    public static function generateKHQRString(
+        float $amount,
+        string $merchantName = 'THARY VIREAK',
+        string $currency = 'USD',
+        ?string $bakongId = null,
+        ?string $tranId = null
+    ): string {
         $amountStr = number_format($amount, 2, '.', '');
         $tag54Len  = str_pad((string) strlen($amountStr), 2, '0', STR_PAD_LEFT);
         $tag54     = '54' . $tag54Len . $amountStr;
@@ -306,18 +325,38 @@ class ABAPayWayService implements PaymentGatewayInterface
         $cityLen  = str_pad((string) strlen($cityName), 2, '0', STR_PAD_LEFT);
         $tag60    = '60' . $cityLen . $cityName;
 
+        $bakongId = $bakongId ?: env('ABA_BAKONG_ACCOUNT_ID');
+
+        if ($bakongId) {
+            // Tag 29: Individual / Merchant Bakong KHQR
+            $sub00 = '00' . str_pad((string) strlen($bakongId), 2, '0', STR_PAD_LEFT) . $bakongId;
+            $sub02 = '0211abaakhppxxx';
+            $tag29Val = $sub00 . $sub02;
+            $tagMerchant = '29' . str_pad((string) strlen($tag29Val), 2, '0', STR_PAD_LEFT) . $tag29Val;
+        } else {
+            // Tag 30: ABA Bank Merchant Info
+            $tagMerchant = '30510016abaakhppxxx@abaa01151111111111111110208ABA Bank';
+        }
+
+        // Tag 62: Additional Data (Bill Number / Transaction ID)
+        $tag62 = '';
+        if ($tranId) {
+            $sub01 = '01' . str_pad((string) strlen($tranId), 2, '0', STR_PAD_LEFT) . $tranId;
+            $tag62 = '62' . str_pad((string) strlen($sub01), 2, '0', STR_PAD_LEFT) . $sub01;
+        }
+
         // Base EMVCo / KHQR payload up to CRC tag 6304
+        // Note: Proprietary Tag 99 is omitted to prevent ABA Mobile from attempting a fictitious PayWay session lookup
         $payload = '000201'                                    // Tag 00: Format indicator
                  . '010212'                                    // Tag 01: Dynamic QR
-                 . '30510016abaakhppxxx@abaa01151111111111111110208ABA Bank' // Tag 30: Merchant account info
+                 . $tagMerchant                                // Tag 29 or Tag 30
                  . '52045999'                                  // Tag 52: MCC
                  . $tag53                                      // Tag 53: Currency (840 = USD)
-                 . $tag54                                      // Tag 54: Amount (dynamic order total!)
+                 . $tag54                                      // Tag 54: Amount (dynamic order total)
                  . '5802KH'                                    // Tag 58: Country code
                  . $tag59                                      // Tag 59: Merchant name
                  . $tag60                                      // Tag 60: Merchant city (Phnom Penh)
-                 . '6226050701276750711T9090329509'            // Tag 62: Additional data
-                 . '9975001317909032954420113179090599523467170013F1BF016411FDA6804PONL6908purchase' // Tag 99: PayWay custom data
+                 . $tag62                                      // Tag 62: Additional data
                  . '6304';                                     // Tag 63: CRC placeholder
 
         $crc = self::calculateCRC16($payload);

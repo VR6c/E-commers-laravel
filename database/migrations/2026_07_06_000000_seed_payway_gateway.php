@@ -25,7 +25,7 @@ return new class extends Migration
             [
                 'gateway_id' => $gatewayId,
                 'key_name' => 'merchant_id',
-                'key_value' => 'ec476341',
+                'key_value' => 'ec476922',
                 'is_encrypted' => false,
                 'environment' => 'sandbox',
                 'created_at' => now(),
@@ -34,7 +34,7 @@ return new class extends Migration
             [
                 'gateway_id' => $gatewayId,
                 'key_name' => 'api_key',
-                'key_value' => '18e940724353f94ae7b77f4a59cb1fe76bd1e140',
+                'key_value' => 'fde4f7ade6a1eab1c6fdb05c7823db3804ab702d',
                 'is_encrypted' => true,
                 'environment' => 'sandbox',
                 'created_at' => now(),
