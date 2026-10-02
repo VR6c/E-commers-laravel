@@ -39,14 +39,10 @@ class ABAPayWayService implements PaymentGatewayInterface
             $configs = collect();
         }
 
-        // Prioritize .env credentials, fallback to active merchant credentials
-        $envMerchantId = env('PAYWAY_MERCHANT_ID', env('ABA_PAYWAY_MERCHANT_ID'));
-        $envApiKey     = env('PAYWAY_API_KEY', env('ABA_PAYWAY_API_KEY'));
-        $envName       = env('ABA_PAYWAY_MERCHANT_NAME');
-
-        $this->merchantId   = $envMerchantId ?: 'ec479081';
-        $this->merchantName = $envName ?: 'tharyvireak181';
-        $this->apiKey       = $envApiKey ?: 'a6647040a23f7feca7e315de37dcc776e4be1a99';
+        // Active merchant credentials requested by user
+        $this->merchantId   = 'ec479081';
+        $this->merchantName = 'tharyvireak181';
+        $this->apiKey       = 'a6647040a23f7feca7e315de37dcc776e4be1a99';
 
         // Load RSA Keys with defaults
         $pubKeyPath = base_path(env('PAYWAY_RSA_PUBLIC_KEY_PATH', 'storage/keys/payway_public.pem'));
