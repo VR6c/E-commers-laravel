@@ -61,8 +61,8 @@ class ABAPayWayService implements PaymentGatewayInterface
 
         $this->checkoutUrl = env('ABA_PAYWAY_API_URL', env('PAYWAY_API_URL', $defaultUrl));
 
-        // Mock sandbox mode for testing on Vercel without a whitelisted IP
-        $this->mockEnabled = filter_var(env('ABA_PAYWAY_MOCK_SANDBOX', false), FILTER_VALIDATE_BOOLEAN);
+        // Always use real ABA PayWay API — never return fictitious mock QR
+        $this->mockEnabled = false;
     }
 
     public function getMerchantId(): string
@@ -145,11 +145,6 @@ class ABAPayWayService implements PaymentGatewayInterface
      */
     public function purchase(array $params, $order = null): array
     {
-        if ($this->mockEnabled) {
-            Log::info('ABA PayWay Mock Sandbox mode explicitly enabled, returning dynamic mock KHQR');
-            return $this->generateMockResponse($order, $params);
-        }
-
         try {
             // ABA PayWay Purchase API requires multipart/form-data
             $response = Http::connectTimeout(5)
@@ -173,7 +168,7 @@ class ABAPayWayService implements PaymentGatewayInterface
             $body = $response->body();
             $data = json_decode($body, true);
 
-            Log::warning('ABA PayWay API response error', [
+            Log::error('ABA PayWay API response error', [
                 'status' => $response->status(),
                 'body'   => $body,
             ]);
@@ -182,30 +177,13 @@ class ABAPayWayService implements PaymentGatewayInterface
                 ? $data['description']
                 : (isset($data['status']['message']) ? $data['status']['message'] : (is_string($body) && !empty(trim($body)) ? trim($body) : 'Payment gateway rejected transaction'));
 
-            if ($this->mockEnabled) {
-                Log::info('ABA PayWay Sandbox rejected and mock explicitly enabled, falling back to dynamic mock KHQR');
-                return $this->generateMockResponse($order, $params);
-            }
-
             throw new Exception('Payment gateway rejected transaction: ' . $description, $response->status());
         } catch (ConnectionException $e) {
-            Log::warning('ABA PayWay connection timeout: ' . $e->getMessage());
-
-            if ($this->mockEnabled) {
-                Log::info('ABA PayWay Sandbox connection timed out and mock explicitly enabled, falling back to dynamic mock KHQR');
-                return $this->generateMockResponse($order, $params);
-            }
-
+            Log::error('ABA PayWay connection timeout: ' . $e->getMessage());
             throw new Exception('Payment gateway connection timed out. Please try again or choose Cash on Delivery.', 504);
         } catch (RequestException $e) {
-            Log::warning('ABA PayWay request exception: ' . $e->getMessage());
-
-            if ($this->mockEnabled) {
-                Log::info('ABA PayWay Sandbox request failed and mock explicitly enabled, falling back to dynamic mock KHQR');
-                return $this->generateMockResponse($order, $params);
-            }
-
-            throw new Exception('Payment gateway temporarily unavailable.', 502);
+            Log::error('ABA PayWay request exception: ' . $e->getMessage());
+            throw new Exception('Payment gateway temporarily unavailable: ' . $e->getMessage(), 502);
         }
     }
 
