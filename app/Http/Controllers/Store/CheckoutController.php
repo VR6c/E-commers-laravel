@@ -193,32 +193,18 @@ class CheckoutController extends Controller
                 Session::put('last_order_id', $order->id);
                 Session::put('last_tran_id', $tranId);
 
-                // Send the POST request to PayWay directly from the backend
-                $response = \Illuminate\Support\Facades\Http::asForm()->post($paymentService->getCheckoutUrl(), $paywayParams);
-                $body = $response->body();
+                // Process payment with strict timeouts and dynamic mock support
+                $paywayData = $paymentService->purchase($paywayParams, $order);
 
-                $decoded = json_decode($body, true);
-                $isJson = (json_last_error() === JSON_ERROR_NONE);
-
-                if ($isJson) {
-                    return response()->json([
-                        'success' => true,
-                        'gateway' => 'abapayway',
-                        'response_type' => 'json',
-                        'amount' => number_format($total, 2, '.', ''),
-                        'currency' => 'USD',
-                        'tran_id' => $tranId,
-                        'data' => $decoded,
-                    ]);
-                } else {
-                    Session::put('abapayway_html', $body);
-                    return response()->json([
-                        'success' => true,
-                        'gateway' => 'abapayway',
-                        'response_type' => 'html',
-                        'redirect_url' => route('payway.hosted'),
-                    ]);
-                }
+                return response()->json([
+                    'success'       => true,
+                    'gateway'       => 'abapayway',
+                    'response_type' => 'json',
+                    'amount'        => number_format($total, 2, '.', ''),
+                    'currency'      => 'USD',
+                    'tran_id'       => $tranId,
+                    'data'          => $paywayData,
+                ]);
             }
 
             $order = $paymentService->createOrder($total, 'USD');
@@ -231,10 +217,14 @@ class CheckoutController extends Controller
         } catch (\Exception $e) {
             Log::error('Payment process failed: '.$e->getMessage());
 
+            $statusCode = ($e->getCode() === 504 || $e instanceof \Illuminate\Http\Client\ConnectionException) ? 504 : 500;
+
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
-            ], 500);
+                'message' => $e instanceof \Illuminate\Http\Client\ConnectionException
+                    ? 'Payment gateway connection timed out. Please try again or choose Cash on Delivery.'
+                    : $e->getMessage(),
+            ], $statusCode);
         }
     }
 

@@ -171,12 +171,10 @@ class CheckoutApiController extends Controller
 
                 $paywayParams['hash'] = $paymentService->generateHash($paywayParams);
 
-                // Call ABA PayWay server-to-server POST
-                $response = Http::asForm()->post($paymentService->getCheckoutUrl(), $paywayParams);
-                $paywayBody = $response->body();
-                $paywayJson = json_decode($paywayBody, true);
+                // Call ABA PayWay server-to-server POST with strict timeouts and dynamic mock support
+                $paywayJson = $paymentService->purchase($paywayParams, $order);
 
-                if (json_last_error() === JSON_ERROR_NONE && isset($paywayJson['qrString'])) {
+                if (isset($paywayJson['qrString']) || isset($paywayJson['abapay_deeplink'])) {
                     return response()->json([
                         'status'  => true,
                         'message' => 'Order created successfully',
@@ -192,7 +190,7 @@ class CheckoutApiController extends Controller
                         ],
                     ]);
                 } else {
-                    Log::error('PayWay API call failed or did not return QR info: ' . $paywayBody);
+                    Log::error('PayWay API call failed or did not return QR info', ['response' => $paywayJson]);
 
                     return response()->json([
                         'status'  => false,
@@ -227,10 +225,12 @@ class CheckoutApiController extends Controller
                 'exception' => $e,
             ]);
 
+            $statusCode = ($e->getCode() === 504 || $e instanceof \Illuminate\Http\Client\ConnectionException) ? 504 : 500;
+
             return response()->json([
                 'status'  => false,
-                'message' => 'Failed to process checkout: ' . $e->getMessage(),
-            ], 500);
+                'message' => $e->getMessage(),
+            ], $statusCode);
         }
     }
 
