@@ -39,10 +39,14 @@ class ABAPayWayService implements PaymentGatewayInterface
             $configs = collect();
         }
 
-        // Prioritize .env credentials, fallback to DB configs or defaults
-        $this->merchantId   = env('PAYWAY_MERCHANT_ID', env('ABA_PAYWAY_MERCHANT_ID', $configs['merchant_id'] ?? 'ec479081'));
-        $this->merchantName = env('ABA_PAYWAY_MERCHANT_NAME', $configs['merchant_name'] ?? 'tharyvireak181');
-        $this->apiKey       = env('PAYWAY_API_KEY', env('ABA_PAYWAY_API_KEY', $configs['api_key'] ?? 'a6647040a23f7feca7e315de37dcc776e4be1a99'));
+        // Prioritize .env credentials, fallback to active merchant credentials
+        $envMerchantId = env('PAYWAY_MERCHANT_ID', env('ABA_PAYWAY_MERCHANT_ID'));
+        $envApiKey     = env('PAYWAY_API_KEY', env('ABA_PAYWAY_API_KEY'));
+        $envName       = env('ABA_PAYWAY_MERCHANT_NAME');
+
+        $this->merchantId   = $envMerchantId ?: 'ec479081';
+        $this->merchantName = $envName ?: 'tharyvireak181';
+        $this->apiKey       = $envApiKey ?: 'a6647040a23f7feca7e315de37dcc776e4be1a99';
 
         // Load RSA Keys with defaults
         $pubKeyPath = base_path(env('PAYWAY_RSA_PUBLIC_KEY_PATH', 'storage/keys/payway_public.pem'));
@@ -178,22 +182,21 @@ class ABAPayWayService implements PaymentGatewayInterface
                 'body'   => $body,
             ]);
 
-            // Auto-fallback in sandbox when ABA PayWay blocks dynamic cloud IP (403 Forbidden or policy block)
-            if ($this->environment === 'sandbox') {
-                Log::info('ABA PayWay Sandbox blocked or unparseable response, falling back to dynamic mock KHQR');
-                return $this->generateMockResponse($order, $params);
-            }
-
             $description = is_array($data) && !empty($data['description'])
                 ? $data['description']
-                : (is_string($body) && !empty(trim($body)) ? trim($body) : 'Payment gateway rejected transaction');
+                : (isset($data['status']['message']) ? $data['status']['message'] : (is_string($body) && !empty(trim($body)) ? trim($body) : 'Payment gateway rejected transaction'));
+
+            if ($this->mockEnabled) {
+                Log::info('ABA PayWay Sandbox rejected and mock explicitly enabled, falling back to dynamic mock KHQR');
+                return $this->generateMockResponse($order, $params);
+            }
 
             throw new Exception('Payment gateway rejected transaction: ' . $description, $response->status());
         } catch (ConnectionException $e) {
             Log::warning('ABA PayWay connection timeout: ' . $e->getMessage());
 
-            if ($this->environment === 'sandbox') {
-                Log::info('ABA PayWay Sandbox connection timed out, falling back to dynamic mock KHQR');
+            if ($this->mockEnabled) {
+                Log::info('ABA PayWay Sandbox connection timed out and mock explicitly enabled, falling back to dynamic mock KHQR');
                 return $this->generateMockResponse($order, $params);
             }
 
@@ -201,8 +204,8 @@ class ABAPayWayService implements PaymentGatewayInterface
         } catch (RequestException $e) {
             Log::warning('ABA PayWay request exception: ' . $e->getMessage());
 
-            if ($this->environment === 'sandbox') {
-                Log::info('ABA PayWay Sandbox request failed, falling back to dynamic mock KHQR');
+            if ($this->mockEnabled) {
+                Log::info('ABA PayWay Sandbox request failed and mock explicitly enabled, falling back to dynamic mock KHQR');
                 return $this->generateMockResponse($order, $params);
             }
 
@@ -337,8 +340,8 @@ class ABAPayWayService implements PaymentGatewayInterface
             $tag29Val = $sub00 . $sub02;
             $tagMerchant = '29' . str_pad((string) strlen($tag29Val), 2, '0', STR_PAD_LEFT) . $tag29Val;
         } else {
-            // Tag 30: ABA Bank Merchant Info for ec000262
-            $tagMerchant = '30510016abaakhppxxx@abaa01153240906164357420208ABA Bank';
+            // Tag 30: ABA Bank Merchant Info
+            $tagMerchant = '30510016abaakhppxxx@abaa01151111111111111110208ABA Bank';
         }
 
         // Tag 62: Additional Data (Bill Number / Transaction ID)
