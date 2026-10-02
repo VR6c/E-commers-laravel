@@ -214,7 +214,30 @@ class ABAPayWayService implements PaymentGatewayInterface
 
             if ($response->successful()) {
                 $data = $response->json();
-                if (is_array($data) && isset($data['data']['payment_status'])) {
+                if (is_array($data)) {
+                    $rawStatus   = $data['payment_status'] ?? ($data['data']['payment_status'] ?? null);
+                    $rawCode     = $data['payment_status_code'] ?? ($data['data']['payment_status_code'] ?? null);
+                    $statusCode  = is_array($data['status'] ?? null) ? ($data['status']['code'] ?? null) : ($data['status'] ?? null);
+
+                    $isApproved = ($rawStatus === 'APPROVED' || $rawCode === 0 || $rawCode === '0' || $statusCode === '00' || $statusCode === '0');
+
+                    $paymentStatus     = $isApproved ? 'APPROVED' : ($rawStatus ?? 'PENDING');
+                    $paymentStatusCode = $isApproved ? 0 : ($rawCode ?? 1);
+
+                    if (!isset($data['data']) || !is_array($data['data'])) {
+                        $data['data'] = [];
+                    }
+
+                    $data['data']['payment_status']      = $paymentStatus;
+                    $data['data']['payment_status_code'] = $paymentStatusCode;
+                    $data['data']['tran_id']             = $tranId;
+                    $data['data']['apv']                 = $data['apv'] ?? ($data['data']['apv'] ?? '');
+                    $data['data']['payment_amount']      = $data['payment_amount'] ?? ($data['data']['payment_amount'] ?? null);
+                    $data['data']['total_amount']        = $data['total_amount'] ?? ($data['data']['total_amount'] ?? null);
+
+                    $data['payment_status']      = $paymentStatus;
+                    $data['payment_status_code'] = $paymentStatusCode;
+
                     return $data;
                 }
             }

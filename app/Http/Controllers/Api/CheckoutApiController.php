@@ -266,8 +266,9 @@ class CheckoutApiController extends Controller
             $payway = new ABAPayWayService('sandbox');
             $result = $payway->checkTransaction($tranId);
 
-            $paymentStatus = $result['data']['payment_status'] ?? 'PENDING';
-            $approved = ($paymentStatus === 'APPROVED' || ($result['data']['payment_status_code'] ?? null) === 0);
+            $paymentStatus = $result['payment_status'] ?? ($result['data']['payment_status'] ?? 'PENDING');
+            $statusCode = $result['payment_status_code'] ?? ($result['data']['payment_status_code'] ?? null);
+            $approved = ($paymentStatus === 'APPROVED' || $statusCode === 0 || $statusCode === '0');
 
             // In sandbox: if user clicked "Verify Payment" / "I have paid", confirm and approve
             if (! $approved && $isManualVerify) {
@@ -279,7 +280,23 @@ class CheckoutApiController extends Controller
             if ($approved) {
                 if ($order->status !== 'completed') {
                     $order->status = 'completed';
+                    $order->payment_method = 'abapayway';
                     $order->save();
+
+                    $gateway = PaymentGateway::where('code', 'abapayway')->first();
+                    Payment::firstOrCreate(
+                        ['transaction_id' => $tranId],
+                        [
+                            'order_id'   => $order->id,
+                            'user_id'    => $order->customer_id ?? 1,
+                            'gateway_id' => $gateway ? $gateway->id : 1,
+                            'amount'     => $order->total_amount,
+                            'currency'   => 'USD',
+                            'status'     => 'completed',
+                            'response'   => $result,
+                            'meta'       => ['apv' => $result['apv'] ?? ($result['data']['apv'] ?? '')],
+                        ]
+                    );
                 }
             }
 

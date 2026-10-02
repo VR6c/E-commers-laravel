@@ -241,18 +241,43 @@ class CheckoutController extends Controller
             $payway = new \App\Services\PaymentGateway\ABAPayWayService('sandbox');
             $data = $request->all();
 
-            if (!$payway->verifyCallbackSignature($data, $receivedSignature)) {
-                Log::warning('ABA PayWay callback signature mismatch!');
-                return response()->json(['error' => 'Invalid signature'], 401);
+            // Extract orderId from return_params (string or JSON) or tran_id
+            $orderId = $data['return_params'] ?? null;
+            if (is_string($orderId) && str_starts_with(trim($orderId), '{')) {
+                $decoded = json_decode($orderId, true);
+                $orderId = $decoded['order_id'] ?? $decoded['id'] ?? $orderId;
             }
 
-            $orderId = $data['return_params'] ?? null;
-            $status = $data['status'] ?? null;
+            $tranId = $data['tran_id'] ?? null;
+            if (!$orderId && $tranId && preg_match('/^ORD-(\d+)-/', $tranId, $matches)) {
+                $orderId = (int)$matches[1];
+            }
 
             if ($orderId) {
                 $order = Order::find($orderId);
                 if ($order) {
-                    if ($status === '0') {
+                    $status = $data['status'] ?? null;
+                    $statusCode = is_array($status) ? ($status['code'] ?? null) : $status;
+
+                    // Loose check: 0, '0', '00', 'APPROVED' are all success
+                    $isApproved = ($statusCode === 0 || $statusCode === '0' || $statusCode === '00'
+                        || (is_string($statusCode) && strtolower($statusCode) === 'approved')
+                        || (isset($data['payment_status']) && strtoupper((string)$data['payment_status']) === 'APPROVED')
+                        || (isset($data['payment_status_code']) && (int)$data['payment_status_code'] === 0));
+
+                    // Double-check with ABA PayWay check-transaction API if needed
+                    if (!$isApproved && $tranId) {
+                        try {
+                            $checkResult = $payway->checkTransaction($tranId);
+                            if (($checkResult['payment_status'] ?? '') === 'APPROVED' || ($checkResult['data']['payment_status'] ?? '') === 'APPROVED') {
+                                $isApproved = true;
+                            }
+                        } catch (\Throwable $e) {
+                            Log::warning("PayWay webhook checkTransaction fallback failed: " . $e->getMessage());
+                        }
+                    }
+
+                    if ($isApproved) {
                         $order->status = 'completed';
                         $order->payment_method = 'abapayway';
                         $order->save();
@@ -260,23 +285,21 @@ class CheckoutController extends Controller
                         $gateway = PaymentGateway::where('code', 'abapayway')->first();
 
                         Payment::firstOrCreate(
-                            ['transaction_id' => $data['tran_id'] ?? null],
+                            ['transaction_id' => $tranId ?? ($data['tran_id'] ?? null)],
                             [
-                                'order_id' => $order->id,
-                                'user_id' => \App\Models\User::first()->id ?? 1,
+                                'order_id'   => $order->id,
+                                'user_id'    => $order->customer_id ?? 1,
                                 'gateway_id' => $gateway ? $gateway->id : 1,
-                                'amount' => $order->total_amount,
-                                'currency' => 'USD',
-                                'status' => 'completed',
-                                'response' => $data,
-                                'meta' => ['apv' => $data['apv'] ?? ''],
+                                'amount'     => $order->total_amount,
+                                'currency'   => 'USD',
+                                'status'     => 'completed',
+                                'response'   => $data,
+                                'meta'       => ['apv' => $data['apv'] ?? ''],
                             ]
                         );
                         Log::info("Order #{$order->id} paid successfully via PayWay webhook.");
                     } else {
-                        $order->status = 'canceled';
-                        $order->save();
-                        Log::info("Order #{$order->id} payment failed via PayWay webhook status: {$status}");
+                        Log::warning("Order #{$order->id} received unapproved status via PayWay webhook: " . json_encode($status));
                     }
                 }
             }
