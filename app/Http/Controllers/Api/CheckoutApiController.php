@@ -162,11 +162,6 @@ class CheckoutApiController extends Controller
                     'currency'             => 'USD',
                     'custom_fields'        => '',
                     'return_params'        => (string) $order->id,
-                    'payout'               => '',
-                    'lifetime'             => 45,
-                    'additional_params'    => '',
-                    'google_pay_token'     => '',
-                    'skip_success_page'    => 1,
                 ];
 
                 $paywayParams['hash'] = $paymentService->generateHash($paywayParams);

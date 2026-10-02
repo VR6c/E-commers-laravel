@@ -40,9 +40,9 @@ class ABAPayWayService implements PaymentGatewayInterface
         }
 
         // Prioritize .env credentials, fallback to DB configs or defaults
-        $this->merchantId   = env('PAYWAY_MERCHANT_ID', env('ABA_PAYWAY_MERCHANT_ID', $configs['merchant_id'] ?? 'ec476922'));
-        $this->merchantName = env('ABA_PAYWAY_MERCHANT_NAME', $configs['merchant_name'] ?? 'THARY VIREAK');
-        $this->apiKey       = env('PAYWAY_API_KEY', env('ABA_PAYWAY_API_KEY', $configs['api_key'] ?? 'fde4f7ade6a1eab1c6fdb05c7823db3804ab702d'));
+        $this->merchantId   = env('PAYWAY_MERCHANT_ID', env('ABA_PAYWAY_MERCHANT_ID', $configs['merchant_id'] ?? 'ec000262'));
+        $this->merchantName = env('ABA_PAYWAY_MERCHANT_NAME', $configs['merchant_name'] ?? 'BobDevTeam');
+        $this->apiKey       = env('PAYWAY_API_KEY', env('ABA_PAYWAY_API_KEY', $configs['api_key'] ?? '308f1c5f450ff6d971bf8a805b4d18a6ef142464'));
 
         // Load RSA Keys with defaults
         $pubKeyPath = base_path(env('PAYWAY_RSA_PUBLIC_KEY_PATH', 'storage/keys/payway_public.pem'));
@@ -162,6 +162,9 @@ class ABAPayWayService implements PaymentGatewayInterface
                 if (is_array($data) && (isset($data['qrString']) || isset($data['abapay_deeplink']))) {
                     if (empty($data['qrImage']) && !empty($data['qrString'])) {
                         $data['qrImage'] = self::generateQrPngBase64($data['qrString']);
+                    } elseif (!empty($data['qrImage'])) {
+                        // Strip data:image/...;base64, prefix if present so Flutter Image.memory(base64Decode(...)) works cleanly
+                        $data['qrImage'] = preg_replace('/^data:image\/[^;]+;base64,/', '', $data['qrImage']);
                     }
                     return $data;
                 }
@@ -334,8 +337,8 @@ class ABAPayWayService implements PaymentGatewayInterface
             $tag29Val = $sub00 . $sub02;
             $tagMerchant = '29' . str_pad((string) strlen($tag29Val), 2, '0', STR_PAD_LEFT) . $tag29Val;
         } else {
-            // Tag 30: ABA Bank Merchant Info
-            $tagMerchant = '30510016abaakhppxxx@abaa01151111111111111110208ABA Bank';
+            // Tag 30: ABA Bank Merchant Info for ec000262
+            $tagMerchant = '30510016abaakhppxxx@abaa01153240906164357420208ABA Bank';
         }
 
         // Tag 62: Additional Data (Bill Number / Transaction ID)
