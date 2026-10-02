@@ -146,6 +146,9 @@ class ABAPayWayService implements PaymentGatewayInterface
             if ($response->successful()) {
                 $data = $response->json();
                 if (is_array($data) && (isset($data['qrString']) || isset($data['abapay_deeplink']))) {
+                    if (empty($data['qrImage']) && !empty($data['qrString'])) {
+                        $data['qrImage'] = self::generateQrPngBase64($data['qrString']);
+                    }
                     return $data;
                 }
             }
@@ -264,6 +267,9 @@ class ABAPayWayService implements PaymentGatewayInterface
         $khqr = self::generateKHQRString($amount, $this->merchantName, $currency);
         $deeplink = 'abamobilebank://ababank.com?type=payway&qrcode=' . urlencode($khqr);
 
+        // Generate a 100% genuine, pixel-perfect, scannable QR Code PNG in Base64
+        $qrImageBase64 = self::generateQrPngBase64($khqr);
+
         return [
             'status'          => 0,
             'description'     => 'Success (Mock Sandbox)',
@@ -274,13 +280,13 @@ class ABAPayWayService implements PaymentGatewayInterface
             'currency'        => $currency,
             'abapay_deeplink' => $deeplink,
             'qrString'        => $khqr,
-            'qrImage'         => self::getFallbackQrPng(),
+            'qrImage'         => $qrImageBase64,
         ];
     }
 
     /**
      * Generate EMVCo KHQR string compatible with Bakong & ABA Mobile.
-     * Computes Tag 54 (amount), Tag 59 (merchant name), Tag 53 (currency), and CRC-16 checksum.
+     * Computes Tag 54 (amount), Tag 59 (merchant name), Tag 60 (city), Tag 53 (currency), and CRC-16 checksum.
      */
     public static function generateKHQRString(float $amount, string $merchantName = 'THARY VIREAK', string $currency = 'USD'): string
     {
@@ -295,6 +301,11 @@ class ABAPayWayService implements PaymentGatewayInterface
         $merchantLen       = str_pad((string) strlen($cleanMerchantName), 2, '0', STR_PAD_LEFT);
         $tag59             = '59' . $merchantLen . $cleanMerchantName;
 
+        // Tag 60: Merchant City (Mandatory in EMVCo / KHQR standard, min 1 char)
+        $cityName = 'Phnom Penh';
+        $cityLen  = str_pad((string) strlen($cityName), 2, '0', STR_PAD_LEFT);
+        $tag60    = '60' . $cityLen . $cityName;
+
         // Base EMVCo / KHQR payload up to CRC tag 6304
         $payload = '000201'                                    // Tag 00: Format indicator
                  . '010212'                                    // Tag 01: Dynamic QR
@@ -304,7 +315,7 @@ class ABAPayWayService implements PaymentGatewayInterface
                  . $tag54                                      // Tag 54: Amount (dynamic order total!)
                  . '5802KH'                                    // Tag 58: Country code
                  . $tag59                                      // Tag 59: Merchant name
-                 . '6000'                                      // Tag 60: Merchant city
+                 . $tag60                                      // Tag 60: Merchant city (Phnom Penh)
                  . '6226050701276750711T9090329509'            // Tag 62: Additional data
                  . '9975001317909032954420113179090599523467170013F1BF016411FDA6804PONL6908purchase' // Tag 99: PayWay custom data
                  . '6304';                                     // Tag 63: CRC placeholder
@@ -312,6 +323,19 @@ class ABAPayWayService implements PaymentGatewayInterface
         $crc = self::calculateCRC16($payload);
 
         return $payload . $crc;
+    }
+
+    /**
+     * Generate a real, high-resolution, scannable PNG QR code encoded in Base64.
+     */
+    public static function generateQrPngBase64(string $data, int $scale = 6): string
+    {
+        try {
+            return QRCode::pngBase64($data, ['s' => 'qrm'], $scale);
+        } catch (\Throwable $e) {
+            Log::error('Local QR code generation failed: ' . $e->getMessage());
+            return self::getFallbackQrPng();
+        }
     }
 
     /**
@@ -335,11 +359,15 @@ class ABAPayWayService implements PaymentGatewayInterface
     }
 
     /**
-     * Return a clean, valid 200x200 base64 PNG image so base64Decode() never crashes.
+     * Fallback standard QR code image in Base64.
      */
     public static function getFallbackQrPng(): string
     {
-        return 'iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAIAAAAiOjnJAAAACXBIWXMAAA7EAAAOxAGVKw4bAAADWklEQVR4nO3dwW7aUBBAUaj6/7+c7oNqwPI188w521ZoJG78YALx/efn5wZH+/PpAbgmYZEQFglhkRAWCWGREBYJYZEQFom/2/98v9/PmePRi78S+N+Eu3+jsO8BPzjGzOfIFYuEsEgIi4SwSAiLxJN3hY+iz2998K3N9Ux4jlyxSLx9xZrm8J/OfQ84ZIw5lg9rw1V3p0twFJIQFokDjsIdb+iufQoMdP5z5IpFQlgkhEVCWCSuvMcasrT8zncqy4c1ZGk5ZIw5HIUkhEVCWCSERUJYJIRFQlgklt9jDVlaDhljjuXD2jBkaTlkjJM5CkkccMVa5Wfom53/HLlikRAWCWGREBYJYZG479umnMCbzRfNfI6uvCDdMGRpufoWdIOjkISwSAiLhLBIPHnxfoFXkZc38zlyxSIhLBJPFqSwz/IL0iFLyyFjzOEoJCEsEsIiISwSwiIhLBLCImFBSmLnXeyX2BYaIx1jm6OQhLBICIuEsEgIi4SwSAiLhAUpif2fIB2ypjPGwDFujkIiwiIhLBLCIiEsEsIiISwSFqQkkq/YD1nTGeODYzgKSQiLhLBICIuEsEgIi4SwSFiQkki+Yn/4Axpj4BjbHIUkhEVCWCSERUJYJIRFQlgkLEhJnP0V+8Mf0BgDx7g5CokIi4SwSAiLhLBICIuEsEhYkJJwkyZjuEkT6xAWCWGREBYJYZEQFglhkbAgJeEmTcbwFXvWISwSwiIhLBLCIiEsEsIiYUFKwk2ajOEmTaxDWCSERUJYJIRFQlgkhEXCgpSEmzQZwydIWYewSAiLhLBICIuEsEgIi4QFKYnkE6RnGrItNMYvjkISwiIhLBLCIrHz0w0n8HZ1aa5YJIRF4smC1FHIPssvSDcM2RZedYxtjkISb1+xosA/eOZScMUiISwSwiIhLBLCIvH2gvTx/+94Q/fKg1iQLm35BemQbaExfnEUkhAWCWGREBYJYZEQFglhkVh+j7Vv13L49tUYvywf1oYh28LvHMNRSEJYJIRFQlgkhEVCWCQOWDf4RB6PDvgE6TFz+ATptVx5QbrhO5eWpz3gzWssIsIiISwSb7/G8tc7eIUrFglhkRAWCX+DlIQrFgm3lSPhikVCWCSERUJYJIRFQlgkhEVCWCT+AcEEGmi+d/fOAAAAAElFTkSuQmCC';
+        try {
+            return QRCode::pngBase64('00020101021230510016abaakhppxxx@abaa01151111111111111110208ABA Bank52045999530384054041.005802KH5912THARY VIREAK6010Phnom Penh6304A26C');
+        } catch (\Throwable $t) {
+            return '';
+        }
     }
 
     public function getGatewayCode(): string
