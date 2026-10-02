@@ -195,19 +195,6 @@ class ABAPayWayService implements PaymentGatewayInterface
      */
     public function checkTransaction(string $tranId): array
     {
-        if ($this->mockEnabled) {
-            return [
-                'status'      => 0,
-                'description' => 'Success (Mock Sandbox)',
-                'data'        => [
-                    'payment_status'      => 'APPROVED',
-                    'payment_status_code' => 0,
-                    'tran_id'             => $tranId,
-                    'apv'                 => 'MOCK_APV_' . time(),
-                ],
-            ];
-        }
-
         $reqTime = now()->utc()->format('YmdHis');
         $b4hash  = $reqTime . $this->merchantId . $tranId;
         $hash    = base64_encode(hash_hmac('sha512', $b4hash, $this->apiKey, true));
@@ -235,42 +222,26 @@ class ABAPayWayService implements PaymentGatewayInterface
                 }
             }
 
-            // In sandbox mode, if ABA blocks IP (policy error) or tran_id is mock, auto-approve
-            if ($this->environment === 'sandbox') {
-                Log::warning('ABA PayWay Sandbox checkTransaction policy blocked or mock tran_id. Auto-approving sandbox transaction.');
-                return [
-                    'status'      => 0,
-                    'description' => 'Success (Mock Sandbox Fallback)',
-                    'data'        => [
-                        'payment_status'      => 'APPROVED',
-                        'payment_status_code' => 0,
-                        'tran_id'             => $tranId,
-                        'apv'                 => 'MOCK_APV_' . time(),
-                    ],
-                ];
-            }
-
-            return $response->json() ?? [];
+            // Real ABA PayWay did not confirm approval, or connection blocked: keep PENDING
+            return [
+                'status'      => 0,
+                'description' => 'Payment pending',
+                'data'        => [
+                    'payment_status'      => 'PENDING',
+                    'payment_status_code' => 1,
+                    'tran_id'             => $tranId,
+                ],
+            ];
         } catch (\Throwable $e) {
-            Log::warning('ABA PayWay checkTransaction timeout: ' . $e->getMessage());
-
-            if ($this->environment === 'sandbox') {
-                return [
-                    'status'      => 0,
-                    'description' => 'Success (Mock Sandbox Fallback)',
-                    'data'        => [
-                        'payment_status'      => 'APPROVED',
-                        'payment_status_code' => 0,
-                        'tran_id'             => $tranId,
-                        'apv'                 => 'MOCK_APV_' . time(),
-                    ],
-                ];
-            }
+            Log::warning('ABA PayWay checkTransaction error/timeout: ' . $e->getMessage());
 
             return [
-                'status' => 'PENDING',
-                'data'   => [
-                    'payment_status' => 'PENDING',
+                'status'      => 0,
+                'description' => 'Payment pending',
+                'data'        => [
+                    'payment_status'      => 'PENDING',
+                    'payment_status_code' => 1,
+                    'tran_id'             => $tranId,
                 ],
             ];
         }

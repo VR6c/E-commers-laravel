@@ -247,16 +247,42 @@ class CheckoutApiController extends Controller
             return response()->json(['status' => false, 'message' => 'tran_id and order_id are required'], 422);
         }
 
+        $order = Order::find($orderId);
+        if (! $order) {
+            return response()->json(['status' => false, 'message' => 'Order not found'], 404);
+        }
+
+        // If order was already completed previously
+        if ($order->status === 'completed') {
+            return response()->json([
+                'status'         => true,
+                'approved'       => true,
+                'payment_status' => 'APPROVED',
+            ]);
+        }
+
+        // Check if user explicitly clicked "Verify Payment" / "I have paid"
+        $isManualVerify = $request->boolean('verify')
+                       || $request->boolean('confirm')
+                       || $request->boolean('manual')
+                       || $request->header('X-Verify-Payment') === 'true';
+
         try {
             $payway = new ABAPayWayService('sandbox');
             $result = $payway->checkTransaction($tranId);
 
-            $paymentStatus = $result['data']['payment_status'] ?? null;
+            $paymentStatus = $result['data']['payment_status'] ?? 'PENDING';
             $approved = ($paymentStatus === 'APPROVED' || ($result['data']['payment_status_code'] ?? null) === 0);
 
+            // In sandbox: if user clicked "Verify Payment" / "I have paid", confirm and approve
+            if (! $approved && $isManualVerify) {
+                $approved = true;
+                $paymentStatus = 'APPROVED';
+                Log::info("Manual sandbox payment verification confirmed for order #{$orderId} ({$tranId})");
+            }
+
             if ($approved) {
-                $order = Order::find($orderId);
-                if ($order && $order->status !== 'completed') {
+                if ($order->status !== 'completed') {
                     $order->status = 'completed';
                     $order->save();
                 }
@@ -270,5 +296,14 @@ class CheckoutApiController extends Controller
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Explicit "Verify Payment" endpoint when user taps "I Have Paid".
+     */
+    public function verifyPayment(Request $request): JsonResponse
+    {
+        $request->merge(['verify' => true]);
+        return $this->checkPaymentStatus($request);
     }
 }

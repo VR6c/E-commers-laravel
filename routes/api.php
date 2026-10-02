@@ -80,7 +80,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Checkout & payment status
     Route::post('/checkout', [CheckoutApiController::class, 'process']);
-    Route::get('/checkout/payment-status', [CheckoutApiController::class, 'checkPaymentStatus']);
+    Route::match(['get', 'post'], '/checkout/payment-status', [CheckoutApiController::class, 'checkPaymentStatus']);
+    Route::post('/checkout/verify-payment', [CheckoutApiController::class, 'verifyPayment']);
 
     // Orders
     Route::get('/orders', [OrderApiController::class, 'index']);
