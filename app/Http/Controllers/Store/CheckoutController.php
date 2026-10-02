@@ -265,38 +265,32 @@ class CheckoutController extends Controller
                         || (isset($data['payment_status']) && strtoupper((string)$data['payment_status']) === 'APPROVED')
                         || (isset($data['payment_status_code']) && (int)$data['payment_status_code'] === 0));
 
-                    // Double-check with ABA PayWay check-transaction API if needed
-                    if (!$isApproved && $tranId) {
-                        try {
-                            $checkResult = $payway->checkTransaction($tranId);
-                            if (($checkResult['payment_status'] ?? '') === 'APPROVED' || ($checkResult['data']['payment_status'] ?? '') === 'APPROVED') {
-                                $isApproved = true;
-                            }
-                        } catch (\Throwable $e) {
-                            Log::warning("PayWay webhook checkTransaction fallback failed: " . $e->getMessage());
-                        }
-                    }
+                    Log::info("PayWay webhook for order #{$orderId}: status=" . json_encode($status) . " isApproved=" . ($isApproved ? 'true' : 'false'));
 
                     if ($isApproved) {
                         $order->status = 'completed';
                         $order->payment_method = 'abapayway';
                         $order->save();
 
-                        $gateway = PaymentGateway::where('code', 'abapayway')->first();
+                        try {
+                            $gateway = PaymentGateway::where('code', 'abapayway')->first();
+                            Payment::firstOrCreate(
+                                ['transaction_id' => $tranId ?? ($data['tran_id'] ?? null)],
+                                [
+                                    'order_id'   => $order->id,
+                                    'user_id'    => $order->customer_id ?? 1,
+                                    'gateway_id' => $gateway ? $gateway->id : 1,
+                                    'amount'     => $order->total_amount,
+                                    'currency'   => 'USD',
+                                    'status'     => 'completed',
+                                    'response'   => $data,
+                                    'meta'       => ['apv' => $data['apv'] ?? ''],
+                                ]
+                            );
+                        } catch (\Throwable $pe) {
+                            Log::warning('paywayCallback: Payment record save skipped: ' . $pe->getMessage());
+                        }
 
-                        Payment::firstOrCreate(
-                            ['transaction_id' => $tranId ?? ($data['tran_id'] ?? null)],
-                            [
-                                'order_id'   => $order->id,
-                                'user_id'    => $order->customer_id ?? 1,
-                                'gateway_id' => $gateway ? $gateway->id : 1,
-                                'amount'     => $order->total_amount,
-                                'currency'   => 'USD',
-                                'status'     => 'completed',
-                                'response'   => $data,
-                                'meta'       => ['apv' => $data['apv'] ?? ''],
-                            ]
-                        );
                         Log::info("Order #{$order->id} paid successfully via PayWay webhook.");
                     } else {
                         Log::warning("Order #{$order->id} received unapproved status via PayWay webhook: " . json_encode($status));

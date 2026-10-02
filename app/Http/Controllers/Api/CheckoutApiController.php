@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\CheckoutProcessRequest;
 use App\Models\Coupon;
 use App\Models\Order;
+use App\Models\Payment;
+use App\Models\PaymentGateway;
 use App\Models\Product;
 use App\Services\PaymentGateway\ABAPayWayService;
 use App\Services\PaymentGateway\PaymentManager;
@@ -283,20 +285,25 @@ class CheckoutApiController extends Controller
                     $order->payment_method = 'abapayway';
                     $order->save();
 
-                    $gateway = PaymentGateway::where('code', 'abapayway')->first();
-                    Payment::firstOrCreate(
-                        ['transaction_id' => $tranId],
-                        [
-                            'order_id'   => $order->id,
-                            'user_id'    => $order->customer_id ?? 1,
-                            'gateway_id' => $gateway ? $gateway->id : 1,
-                            'amount'     => $order->total_amount,
-                            'currency'   => 'USD',
-                            'status'     => 'completed',
-                            'response'   => $result,
-                            'meta'       => ['apv' => $result['apv'] ?? ($result['data']['apv'] ?? '')],
-                        ]
-                    );
+                    // Best-effort: save Payment record — do not let this block the 200 response
+                    try {
+                        $gateway = PaymentGateway::where('code', 'abapayway')->first();
+                        Payment::firstOrCreate(
+                            ['transaction_id' => $tranId],
+                            [
+                                'order_id'   => $order->id,
+                                'user_id'    => $order->customer_id ?? 1,
+                                'gateway_id' => $gateway ? $gateway->id : 1,
+                                'amount'     => $order->total_amount,
+                                'currency'   => 'USD',
+                                'status'     => 'completed',
+                                'response'   => $result,
+                                'meta'       => ['apv' => $result['apv'] ?? ($result['data']['apv'] ?? '')],
+                            ]
+                        );
+                    } catch (\Throwable $pe) {
+                        Log::warning('checkPaymentStatus: Payment record save skipped: ' . $pe->getMessage());
+                    }
                 }
             }
 
