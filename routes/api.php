@@ -30,6 +30,12 @@ Route::prefix('customer')->group(function () {
     Route::post('refresh', [CustomerAuthController::class, 'refresh']);
     Route::post('refresh-token', [CustomerAuthController::class, 'refresh']);
 
+    // Password reset aliases for mobile app
+    Route::post('forgot-password', [PasswordResetController::class, 'forgot']);
+    Route::post('verify-otp', [PasswordResetController::class, 'verifyOtp']);
+    Route::post('resend-otp', [PasswordResetController::class, 'resendOtp']);
+    Route::post('reset-password', [PasswordResetController::class, 'reset']);
+
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('profile', [CustomerProfileController::class, 'getProfile']);
         Route::put('profile', [CustomerProfileController::class, 'updateProfile']);
@@ -44,6 +50,8 @@ Route::prefix('customer')->group(function () {
 // ──────────────────────────────────────────────────────────────
 Route::prefix('password')->group(function () {
     Route::post('forgot', [PasswordResetController::class, 'forgot']);
+    Route::post('verify-otp', [PasswordResetController::class, 'verifyOtp']);
+    Route::post('resend-otp', [PasswordResetController::class, 'resendOtp']);
     Route::post('reset', [PasswordResetController::class, 'reset']);
 });
 
