@@ -249,22 +249,14 @@ class CheckoutApiController extends Controller
             return response()->json(['status' => false, 'message' => 'Order not found'], 404);
         }
 
-        // If order was already completed previously
-        if ($order->status === 'completed') {
-            return response()->json([
-                'status'         => true,
-                'approved'       => true,
-                'payment_status' => 'APPROVED',
-            ]);
-        }
-
         try {
             $payway = new ABAPayWayService('sandbox');
             $result = $payway->checkTransaction($tranId);
 
             $paymentStatus = $result['payment_status'] ?? ($result['data']['payment_status'] ?? 'PENDING');
             $statusCode = $result['payment_status_code'] ?? ($result['data']['payment_status_code'] ?? null);
-            $approved = ($paymentStatus === 'APPROVED' || $statusCode === 0 || $statusCode === '0');
+            $approved = ($paymentStatus === 'APPROVED');
+
 
             if ($approved) {
                 if ($order->status !== 'completed') {
