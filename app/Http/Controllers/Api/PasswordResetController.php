@@ -102,6 +102,7 @@ class PasswordResetController extends Controller
             return response()->json([
                 'status'  => false,
                 'message' => 'Unable to send verification email. Please check your email configuration or try again later.',
+                'error'   => $smtpError,
             ], 500);
         }
 
