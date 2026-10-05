@@ -1,7 +1,7 @@
 ======== API CREDENTIAL ==============
 
-Merchant ID: ec000262
-API Key: 308f1c5f450ff6d971bf8a805b4d18a6ef142464
+Merchant ID: ec476922
+API Key: fde4f7ade6a1eab1c6fdb05c7823db3804ab702d
 API URL: https://checkout-sandbox.payway.com.kh/api/payment-gateway/v1/payments/purchase
 
 
