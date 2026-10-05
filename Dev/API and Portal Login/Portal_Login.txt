@@ -1,0 +1,4 @@
+Web URL: https://merchant-sandbox.payway.com.kh/login/
+
+User: ec000262
+Pass: ec000262@aba
