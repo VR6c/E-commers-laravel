@@ -46,12 +46,13 @@ class PasswordResetController extends Controller
         }
 
         $email = strtolower(trim($request->email));
-        $customer = Customer::where('email', $email)->first();
+        $customer = Customer::where('email', $email)->first()
+            ?? \App\Models\User::where('email', $email)->first();
 
         if (! $customer) {
             return response()->json([
                 'status'  => false,
-                'message' => 'No account found with this email address.',
+                'message' => 'This Email Not Found',
             ], 404);
         }
 
@@ -248,11 +249,12 @@ class PasswordResetController extends Controller
             ], 422);
         }
 
-        $customer = Customer::where('email', $email)->first();
+        $customer = Customer::where('email', $email)->first()
+            ?? \App\Models\User::where('email', $email)->first();
         if (! $customer) {
             return response()->json([
                 'status'  => false,
-                'message' => 'Customer account not found.',
+                'message' => 'This Email Not Found',
             ], 404);
         }
 

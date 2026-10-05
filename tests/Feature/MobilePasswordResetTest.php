@@ -36,7 +36,7 @@ class MobilePasswordResetTest extends TestCase
         $response->assertStatus(404)
             ->assertJson([
                 'status'  => false,
-                'message' => 'No account found with this email address.',
+                'message' => 'This Email Not Found',
             ]);
     }
 
