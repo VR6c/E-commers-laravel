@@ -217,9 +217,8 @@ class ABAPayWayService implements PaymentGatewayInterface
                 if (is_array($data)) {
                     $rawStatus   = $data['payment_status'] ?? ($data['data']['payment_status'] ?? null);
                     $rawCode     = $data['payment_status_code'] ?? ($data['data']['payment_status_code'] ?? null);
-                    $statusCode  = is_array($data['status'] ?? null) ? ($data['status']['code'] ?? null) : ($data['status'] ?? null);
 
-                    $isApproved = ($rawStatus === 'APPROVED' || $rawCode === 0 || $rawCode === '0' || $statusCode === '00' || $statusCode === '0');
+                    $isApproved = ($rawStatus === 'APPROVED');
 
                     $paymentStatus     = $isApproved ? 'APPROVED' : ($rawStatus ?? 'PENDING');
                     $paymentStatusCode = $isApproved ? 0 : ($rawCode ?? 1);
