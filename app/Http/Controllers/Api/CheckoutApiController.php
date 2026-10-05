@@ -258,12 +258,6 @@ class CheckoutApiController extends Controller
             ]);
         }
 
-        // Check if user explicitly clicked "Verify Payment" / "I have paid"
-        $isManualVerify = $request->boolean('verify')
-                       || $request->boolean('confirm')
-                       || $request->boolean('manual')
-                       || $request->header('X-Verify-Payment') === 'true';
-
         try {
             $payway = new ABAPayWayService('sandbox');
             $result = $payway->checkTransaction($tranId);
@@ -271,13 +265,6 @@ class CheckoutApiController extends Controller
             $paymentStatus = $result['payment_status'] ?? ($result['data']['payment_status'] ?? 'PENDING');
             $statusCode = $result['payment_status_code'] ?? ($result['data']['payment_status_code'] ?? null);
             $approved = ($paymentStatus === 'APPROVED' || $statusCode === 0 || $statusCode === '0');
-
-            // In sandbox: if user clicked "Verify Payment" / "I have paid", confirm and approve
-            if (! $approved && $isManualVerify) {
-                $approved = true;
-                $paymentStatus = 'APPROVED';
-                Log::info("Manual sandbox payment verification confirmed for order #{$orderId} ({$tranId})");
-            }
 
             if ($approved) {
                 if ($order->status !== 'completed') {
