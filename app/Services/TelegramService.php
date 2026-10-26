@@ -141,7 +141,38 @@ class TelegramService
                 ];
             }
 
-            $description = $response->json('description', 'Unknown Telegram API error');
+            $data = $response->json();
+
+            // Handle Telegram group migration to supergroup
+            if (isset($data['parameters']['migrate_to_chat_id'])) {
+                $migratedChatId = (string) $data['parameters']['migrate_to_chat_id'];
+                Log::info("TelegramService: Chat migrated to supergroup {$migratedChatId}. Retrying...");
+                $payload['chat_id'] = $migratedChatId;
+                $retryResp = $http->post($url, $payload);
+                if ($retryResp->successful()) {
+                    return [
+                        'success'  => true,
+                        'response' => $retryResp->json(),
+                    ];
+                }
+                $data = $retryResp->json();
+            }
+
+            // Fallback: If chat not found and ID starts with '-' but not '-100' (e.g. -5435329599 -> -1005435329599)
+            if (str_starts_with((string) $targetChatId, '-') && ! str_starts_with((string) $targetChatId, '-100')) {
+                $supergroupId = '-100' . substr((string) $targetChatId, 1);
+                $payload['chat_id'] = $supergroupId;
+                $supergroupResp = $http->post($url, $payload);
+                if ($supergroupResp->successful()) {
+                    Log::info("TelegramService: Alert sent successfully using supergroup ID {$supergroupId}.");
+                    return [
+                        'success'  => true,
+                        'response' => $supergroupResp->json(),
+                    ];
+                }
+            }
+
+            $description = $data['description'] ?? 'Unknown Telegram API error';
             Log::error("TelegramService: Failed to send message. Telegram response: {$description} (HTTP {$response->status()})");
 
             return [
