@@ -113,6 +113,9 @@ Route::match(['get', 'post'], '/orders/{id}/sync-payment', function (Request $re
             $order->payment_method = 'abapayway';
             $order->save();
 
+            // Send Telegram notification alert
+            app(\App\Services\TelegramService::class)->sendOrderNotification($order, 'checkout_success');
+
             try {
                 $gateway = \App\Models\PaymentGateway::where('code', 'abapayway')->first();
                 $userId = \App\Models\User::value('id') ?? 1;

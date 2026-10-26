@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Order;
 use App\Models\Recipe;
+use App\Observers\OrderObserver;
 use App\Observers\RecipeObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -28,6 +30,7 @@ class EventServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Recipe::observe(RecipeObserver::class);
+        Order::observe(OrderObserver::class);
     }
 
     /**

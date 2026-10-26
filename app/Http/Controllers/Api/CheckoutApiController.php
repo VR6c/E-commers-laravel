@@ -199,6 +199,9 @@ class CheckoutApiController extends Controller
                 $order->status = 'pending';
                 $order->save();
 
+                // Send Telegram notification alert
+                app(\App\Services\TelegramService::class)->sendOrderNotification($order, 'checkout_success');
+
                 return response()->json([
                     'status'  => true,
                     'message' => 'Order created successfully',
@@ -263,6 +266,9 @@ class CheckoutApiController extends Controller
                     $order->status = 'completed';
                     $order->payment_method = 'abapayway';
                     $order->save();
+
+                    // Send Telegram notification alert
+                    app(\App\Services\TelegramService::class)->sendOrderNotification($order, 'checkout_success');
 
                     // Best-effort: save Payment record — do not let this block the 200 response
                     try {

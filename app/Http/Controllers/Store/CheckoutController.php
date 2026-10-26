@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Services\Store\CartService;
 use App\Services\Store\OrderService;
 use App\Services\PaymentGateway\PaymentManager;
+use App\Services\TelegramService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -118,6 +119,49 @@ class CheckoutController extends Controller
         $couponCode = is_array($coupon) ? ($coupon['code'] ?? null) : ($coupon?->code ?? null);
 
         try {
+            if ($gatewayCode === 'cod') {
+                $shippingData = $request->validate([
+                    'first_name' => 'required|string|max:100',
+                    'last_name'  => 'required|string|max:100',
+                    'address'    => 'required|string|max:255',
+                    'suite'      => 'nullable|string|max:100',
+                    'city'       => 'required|string|max:100',
+                    'state'      => 'nullable|string|max:100',
+                    'country'    => 'required|string|max:100',
+                    'email'      => 'required|email|max:50',
+                    'phone'      => 'required|string|max:20',
+                ]);
+
+                // Create order with line items and address in ACID transaction
+                $order = $this->orderService->createOrder(
+                    cartItems: $cart,
+                    shippingData: $shippingData,
+                    totalAmount: $total,
+                    gatewayCode: 'cod',
+                    customerId: Auth::guard('customer')->id() ?? Auth::id(),
+                    guestEmail: $request->input('email'),
+                    couponCode: $couponCode,
+                    discountAmount: $discountAmount,
+                    status: 'pending'
+                );
+
+                Session::put('last_order_id', $order->id);
+                Session::forget('cart');
+
+                // Send Telegram notification alert
+                app(TelegramService::class)->sendOrderNotification($order, 'checkout_success');
+
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'success'      => true,
+                        'gateway'      => 'cod',
+                        'redirect_url' => route('thankyou'),
+                    ]);
+                }
+
+                return redirect()->route('thankyou')->with('success', 'Order placed successfully!');
+            }
+
             $paymentService = PaymentManager::make($gatewayCode, 'sandbox');
 
             if ($gatewayCode === 'abapayway') {
@@ -272,6 +316,9 @@ class CheckoutController extends Controller
                         $order->payment_method = 'abapayway';
                         $order->save();
 
+                        // Send Telegram notification alert
+                        app(TelegramService::class)->sendOrderNotification($order, 'checkout_success');
+
                         try {
                             $gateway = PaymentGateway::where('code', 'abapayway')->first();
                             Payment::firstOrCreate(
@@ -331,6 +378,9 @@ class CheckoutController extends Controller
                     $order->status = 'completed';
                     $order->payment_method = 'abapayway';
                     $order->save();
+
+                    // Send Telegram notification alert
+                    app(TelegramService::class)->sendOrderNotification($order, 'checkout_success');
 
                     $gateway = PaymentGateway::where('code', 'abapayway')->first();
 
@@ -431,6 +481,9 @@ class CheckoutController extends Controller
                         $order->payment_method = 'abapayway';
                         $order->save();
 
+                        // Send Telegram notification alert
+                        app(TelegramService::class)->sendOrderNotification($order, 'checkout_success');
+
                         $gateway = PaymentGateway::where('code', 'abapayway')->first();
                         Payment::firstOrCreate(
                             ['transaction_id' => $tranId],
@@ -473,6 +526,9 @@ class CheckoutController extends Controller
 
             if (($result['status'] ?? null) === 'COMPLETED') {
                 $order = $orderService->createOrderFromPaypal($result);
+
+                // Send Telegram notification alert
+                app(TelegramService::class)->sendOrderNotification($order, 'checkout_success');
 
                 return response()->json([
                     'success' => true,
