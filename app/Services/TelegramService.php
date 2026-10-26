@@ -69,7 +69,11 @@ class TelegramService
 
         try {
             $url = "https://api.telegram.org/bot{$this->botToken}/getMe";
-            $response = Http::timeout(8)->get($url);
+            $http = Http::timeout(8);
+            if (app()->environment('local')) {
+                $http = $http->withoutVerifying();
+            }
+            $response = $http->get($url);
 
             if ($response->successful()) {
                 return [
@@ -123,7 +127,11 @@ class TelegramService
                 'disable_web_page_preview' => true,
             ];
 
-            $response = Http::timeout(10)->post($url, $payload);
+            $http = Http::timeout(10);
+            if (app()->environment('local')) {
+                $http = $http->withoutVerifying();
+            }
+            $response = $http->post($url, $payload);
 
             if ($response->successful()) {
                 Log::info("TelegramService: Alert sent successfully to chat {$targetChatId}.");
