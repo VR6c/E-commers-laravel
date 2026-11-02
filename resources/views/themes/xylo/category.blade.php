@@ -16,7 +16,7 @@
                 </a>
                 @foreach ($breadcrumbs as $crumb)
                     <i class="fa-solid fa-angle-right" aria-hidden="true"></i>
-                    <a href="{{ route('category.show', $crumb->slug) }}">{{ $crumb->name }}</a>
+                    <a href="{{ route('category.show', $crumb->slug) }}" @if ($loop->last) aria-current="page" @endif>{{ $crumb->name }}</a>
                 @endforeach
             </nav>
 
@@ -25,7 +25,7 @@
                 <div class="xsf-listing-head__left">
                     <h1 class="xsf-listing-head__title">{{ $category->name }}</h1>
                     @if ($products->total() > 0)
-                        <span class="xsf-listing-head__count">
+                        <span class="xsf-listing-head__count" role="status">
                             {{ $products->total() }} {{ 'products' }}
                         </span>
                     @endif
@@ -36,7 +36,8 @@
                         type="button"
                         data-bs-toggle="offcanvas"
                         data-bs-target="#filterSidebar"
-                        aria-controls="filterSidebar">
+                        aria-controls="filterSidebar"
+                        aria-expanded="false">
                     <i class="fa-solid fa-sliders" aria-hidden="true"></i>
                     {{ 'Filters' }}
                 </button>
@@ -46,14 +47,14 @@
             <div class="xsf-listing-layout">
 
                 {{-- ═══ FILTER SIDEBAR (offcanvas on mobile, inline on ≥lg) ═══ --}}
-                <aside class="xsf-filter offcanvas-lg offcanvas-start" id="filterSidebar" aria-label="{{ 'Filters' }}">
+                <aside class="xsf-filter offcanvas-lg offcanvas-bottom" tabindex="-1" id="filterSidebar" aria-labelledby="filterSidebarTitle">
 
                     {{-- Mobile offcanvas header --}}
                     <div class="offcanvas-header">
-                        <h5 class="offcanvas-title">
+                        <h2 class="offcanvas-title" id="filterSidebarTitle">
                             <i class="fa-solid fa-sliders me-2" aria-hidden="true"></i>
                             {{ 'Filters' }}
-                        </h5>
+                        </h2>
                         <button type="button"
                                 class="btn-close"
                                 data-bs-dismiss="offcanvas"
@@ -63,10 +64,10 @@
 
                     {{-- Desktop header --}}
                     <div class="xsf-filter__card-header d-none d-lg-flex">
-                        <span class="xsf-filter__card-title">
+                        <h2 class="xsf-filter__card-title">
                             <i class="fa-solid fa-sliders me-2" aria-hidden="true"></i>
                             {{ 'Filters' }}
-                        </span>
+                        </h2>
                         @if (request()->hasAny(['min_price', 'max_price']))
                             <a href="{{ route('category.show', $category->slug) }}" class="xsf-filter__clear">
                                 {{ 'Clear all' }}
@@ -123,7 +124,7 @@
                                 @if (request()->hasAny(['min_price', 'max_price']))
                                     <a href="{{ route('category.show', $category->slug) }}"
                                        class="xsf-filter__clear d-flex justify-content-center mt-2">
-                                        <i class="fa-solid fa-xmark me-1"></i>
+                                        <i class="fa-solid fa-xmark me-1" aria-hidden="true"></i>
                                         {{ 'Clear price filter' }}
                                     </a>
                                 @endif
@@ -137,9 +138,8 @@
                 <div class="xsf-listing-main">
 
                     {{-- Toolbar --}}
-                    <div class="xsf-toolbar">
+                    <div class="xsf-toolbar" role="region" aria-label="{{ 'Sort and results' }}">
                         <div class="xsf-toolbar__left">
-                            <i class="fa-solid fa-grid-2 xsf-toolbar__grid-icon" aria-hidden="true"></i>
                             @if ($products->total() > 0)
                                 <span class="xsf-toolbar__count">
                                     {{ 'Showing' }}
@@ -172,12 +172,12 @@
 
                     {{-- Active filter chips --}}
                     @if (request()->hasAny(['min_price', 'max_price']))
-                        <div class="xsf-filter__active-chips mb-3">
+                        <div class="xsf-filter__active-chips" role="group" aria-label="{{ 'Active filters' }}">
                             @if (request('min_price'))
                                 <span class="xsf-filter__chip">
                                     {{ 'Min' }}: {{ $currency->symbol ?? '$' }}{{ request('min_price') }}
                                     <a href="{{ route('category.show', $category->slug) . '?' . http_build_query(array_merge(request()->except('min_price'))) }}" aria-label="{{ 'Remove min price filter' }}">
-                                        <i class="fa-solid fa-xmark"></i>
+                                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                                     </a>
                                 </span>
                             @endif
@@ -185,7 +185,7 @@
                                 <span class="xsf-filter__chip">
                                     {{ 'Max' }}: {{ $currency->symbol ?? '$' }}{{ request('max_price') }}
                                     <a href="{{ route('category.show', $category->slug) . '?' . http_build_query(array_merge(request()->except('max_price'))) }}" aria-label="{{ 'Remove max price filter' }}">
-                                        <i class="fa-solid fa-xmark"></i>
+                                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                                     </a>
                                 </span>
                             @endif
@@ -208,7 +208,7 @@
                                     <div class="xsf-empty__icon-wrap">
                                         <i class="fa-regular fa-bag-shopping xsf-empty__icon" aria-hidden="true"></i>
                                     </div>
-                                    <h3 class="xsf-empty__title">{{ 'No products found' }}</h3>
+                                    <h2 class="xsf-empty__title">{{ 'No products found' }}</h2>
                                     <p class="xsf-empty__text">
                                         {{ 'Try adjusting your price range, or browse the full catalog.' }}
                                     </p>
@@ -230,7 +230,7 @@
 
                     {{-- Pagination --}}
                     @if ($products->hasPages())
-                        <div class="xsf-pagination d-flex justify-content-between align-items-center mt-5">
+                        <div class="xsf-pagination mt-4">
                             <p class="xsf-pagination__info mb-0">
                                 {{ 'Showing' }}
                                 <strong>{{ $products->firstItem() }}–{{ $products->lastItem() }}</strong>
@@ -264,6 +264,15 @@
         }
         window.location.href = url.toString();
     }
+
+    // ── Filter sheet: sync trigger aria-expanded (Esc handled by Bootstrap) ──
+    (function () {
+        const sheet = document.getElementById('filterSidebar');
+        const btn   = document.querySelector('[aria-controls="filterSidebar"]');
+        if (!sheet || !btn) return;
+        sheet.addEventListener('shown.bs.offcanvas',  () => btn.setAttribute('aria-expanded', 'true'));
+        sheet.addEventListener('hidden.bs.offcanvas', () => btn.setAttribute('aria-expanded', 'false'));
+    })();
 
     // ── Add to cart ───────────────────────────────────────────────────
     function addToCart(productId) {

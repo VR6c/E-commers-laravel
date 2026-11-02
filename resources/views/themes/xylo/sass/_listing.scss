@@ -1,272 +1,276 @@
 // =====================================================================
-//  PRODUCT LISTING — shop / category / search (token-driven)
-//  Breadcrumb · listing head · two-col layout · toolbar ·
-//  filter sidebar · price inputs · active chips · pagination
+//  PRODUCT LISTING — shop / category / search / wishlist
+//  Mobile-first. Flat surfaces, 1px borders, 8px controls / 12px cards.
+//  Filters: bottom sheet below lg, sticky sidebar from lg up.
+//  Sticky offset below the site header: --xsf-sticky-top (override-able).
 // =====================================================================
 @use 'variables' as *;
 
+:root { --xsf-sticky-top: 64px; }
+
+@include bp-up('lg') {
+    :root { --xsf-sticky-top: 88px; }
+}
+
 // =====================================================================
-//  SECTION WRAPPER
+//  SECTION + LAYOUT
 // =====================================================================
 .xsf-listing-section {
-    padding-top: $space-8;
-    padding-bottom: $space-16;
+    padding-top: $space-4;
+    padding-bottom: $space-10;
+
+    @include bp-up('md') { padding-top: $space-6; padding-bottom: $space-12; }
 }
 
-// =====================================================================
-//  TWO-COLUMN LAYOUT  — sidebar (≥lg) + main content
-// =====================================================================
 .xsf-listing-layout {
     display: grid;
-    grid-template-columns: 1fr;       // mobile: single column, sidebar in offcanvas
-    gap: $space-6;
+    grid-template-columns: minmax(0, 1fr);
+    gap: $space-4;
 
     @include bp-up('lg') {
-        grid-template-columns: 260px 1fr;
+        grid-template-columns: 260px minmax(0, 1fr);
         align-items: start;
-    }
-
-    @include bp-up('xl') {
-        grid-template-columns: 280px 1fr;
-        gap: $space-8;
+        gap: $space-6;
     }
 }
 
-// Main content column — no special sizing needed, just a semantic hook
-.xsf-listing-main {
-    min-width: 0;   // prevent grid blowout on long product names
-}
+.xsf-listing-main { min-width: 0; }
+
+// Shop page uses Bootstrap .row; keep columns from overflowing
+.main-shop .row > * { min-width: 0; }
 
 // =====================================================================
-//  BREADCRUMB
+//  BREADCRUMB — plain inline trail, no box
 // =====================================================================
 .xsf-breadcrumb {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: $space-2;
+    gap: $space-1 $space-2;
     font-size: $font-size-xs;
-    font-weight: $font-weight-medium;
     color: $text-muted;
-    margin-bottom: $space-5;
-    padding: $space-3 $space-4;
-    background: $surface-muted;
-    border: 1px solid $border-subtle;
-    border-radius: $radius-lg;
+    margin-bottom: $space-3;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
 
     a {
+        display: inline-flex;
+        align-items: center;
+        gap: $space-1;
+        min-height: 32px;
         color: $text-secondary;
-        font-weight: $font-weight-semibold;
         text-decoration: none;
-        transition: color $transition-fast;
 
-        &:hover { color: $color-primary; }
+        &:hover { color: $color-primary; text-decoration: underline; }
+        &:focus-visible { outline: 2px solid $color-primary; outline-offset: 2px; border-radius: $radius-sm; }
     }
 
-    i { font-size: 0.58rem; color: $neutral-300; }
-
+    i { font-size: 0.58rem; color: $neutral-400; }
     span { color: $text-muted; }
 }
 
 // =====================================================================
-//  LISTING HEADER
+//  LISTING HEADER — h1 + count, filter trigger on the right
 // =====================================================================
 .xsf-listing-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: $space-3;
-    margin-bottom: $space-5;
+    gap: $space-2 $space-3;
+    margin-bottom: $space-3;
 
     &__left {
         display: flex;
         align-items: baseline;
         gap: $space-3;
         flex-wrap: wrap;
+        min-width: 0;
     }
 
     &__title {
-        font-size: $font-size-2xl;
-        font-weight: $font-weight-extrabold;
-        color: $neutral-900;
+        font-size: $font-size-xl;
+        font-weight: $font-weight-bold;
+        color: $text-primary;
         margin: 0;
-        letter-spacing: -0.025em;
-        line-height: 1.2;
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+
+        @include bp-up('md') { font-size: $font-size-2xl; }
     }
 
-    &__query { color: $color-primary; }
+    &__query { color: $text-primary; }
 
+    // Plain text count, no pill
     &__count {
-        display: inline-flex;
-        align-items: center;
-        padding: 2px $space-3;
-        background: $surface-muted;
-        border: 1px solid $border-subtle;
-        border-radius: $radius-pill;
-        font-size: $font-size-xs;
+        font-size: $font-size-sm;
         color: $text-muted;
-        font-weight: $font-weight-medium;
         white-space: nowrap;
     }
 
-    // Mobile filter toggle button
     &__filter-btn {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: $space-2;
-        background: $neutral-0;
-        border: 1.5px solid $border-color;
-        border-radius: $radius-lg;
-        color: $text-secondary;
+        min-height: 44px;
+        padding: 0 $space-4;
+        background: $surface;
+        border: 1px solid $border-color;
+        border-radius: $radius-md;
+        color: $text-primary;
         font-size: $font-size-sm;
         font-weight: $font-weight-semibold;
-        padding: $space-2 $space-4;
-        transition: all $transition-fast;
+        transition: border-color $transition-fast, color $transition-fast;
 
-        i { color: $color-primary; }
+        i { color: $text-secondary; }
 
-        &:hover {
-            border-color: $primary-300;
-            background: $primary-50;
-            color: $color-primary;
-        }
+        &:hover { border-color: $color-primary; color: $color-primary; }
+        &:focus-visible { outline: 2px solid $color-primary; outline-offset: 2px; }
     }
 }
 
 // =====================================================================
-//  TOOLBAR  (result count + sort select)
+//  TOOLBAR — sticky count + sort
 // =====================================================================
 .xsf-toolbar {
+    position: sticky;
+    top: var(--xsf-sticky-top);
+    z-index: 20;
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: $space-3;
-    padding: $space-3 $space-5;
-    background: $neutral-0;
-    border: 1px solid $border-subtle;
-    border-radius: $radius-xl;
-    box-shadow: $shadow-xs;
-    margin-bottom: $space-6;
+    padding: $space-2 0;
+    margin-bottom: $space-3;
+    background: $body-bg;
+    border-bottom: 1px solid $border-color;
 
     &__left {
         display: flex;
         align-items: center;
         gap: $space-2;
+        min-width: 0;
     }
 
-    &__grid-icon {
-        color: $text-muted;
-        font-size: $font-size-sm;
-    }
+    &__grid-icon { display: none; }
 
     &__count {
-        font-size: $font-size-xs;
-        color: $text-muted;
-        font-weight: $font-weight-medium;
+        font-size: $font-size-sm;
+        color: $text-secondary;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        strong { color: $text-primary; font-weight: $font-weight-semibold; }
     }
 
     &__right {
         display: flex;
         align-items: center;
         gap: $space-2;
+        flex-shrink: 0;
     }
 
     &__sort-label {
         display: flex;
         align-items: center;
         gap: $space-1;
-        font-size: $font-size-xs;
-        font-weight: $font-weight-semibold;
-        color: $text-muted;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        white-space: nowrap;
         margin: 0;
-        cursor: default;
+        font-size: $font-size-sm;
+        color: $text-muted;
+        white-space: nowrap;
 
-        i { color: $color-primary; font-size: 0.75rem; }
+        i { display: none; }
+
+        // Label is redundant with the select's aria-label on phones
+        @include bp-down('sm') {
+            position: absolute;
+            width: 1px; height: 1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
+        }
     }
 
     &__sort-select {
-        min-width: 180px;
-        border-radius: $radius-lg;
+        width: auto;
+        min-width: 140px;
+        max-width: 100%;
+        min-height: 44px;
+        border-radius: $radius-md;
         font-size: $font-size-sm;
         border-color: $border-color;
-        color: $text-secondary;
-        font-weight: $font-weight-medium;
+        color: $text-primary;
         cursor: pointer;
-        transition: border-color $transition-fast, box-shadow $transition-fast;
 
         &:focus {
-            border-color: $primary-400;
+            border-color: $color-primary;
             box-shadow: $shadow-focus;
             outline: none;
         }
+
+        @include bp-up('md') { min-width: 180px; }
     }
 }
 
 // =====================================================================
-//  FILTER SIDEBAR
+//  FILTER PANEL
+//  <lg : bottom sheet (Bootstrap offcanvas-bottom)   >=lg : sticky card
 // =====================================================================
 .xsf-filter {
-    background: $neutral-0;
-    border: 1px solid $border-subtle;
-    border-radius: $radius-2xl;
-    box-shadow: $shadow-xs;
+    background: $surface;
+    border: 1px solid $border-color;
+    border-radius: $radius-xl;
 
-    // Sticky on desktop so it follows scroll
-    @include bp-up('lg') {
-        position: sticky !important;
-        top: 90px;
-        max-height: calc(100vh - 110px);
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: $border-color transparent;
-
-        &::-webkit-scrollbar       { width: 4px; }
-        &::-webkit-scrollbar-track { background: transparent; }
-        &::-webkit-scrollbar-thumb { background: $border-color; border-radius: $radius-pill; }
-    }
-
-    // Mobile offcanvas
+    // ---- Bottom sheet ----
     &.offcanvas-lg {
         @include bp-down('lg') {
-            border-radius: 0 $radius-3xl $radius-3xl 0;
-            border: none;
-            box-shadow: $shadow-2xl;
-            max-width: 320px;
+            border: 0;
+            border-top: 1px solid $border-color;
+            border-radius: $radius-xl $radius-xl 0 0;
+            box-shadow: $shadow-md;
+            height: auto;
+            max-height: 85vh;
+            max-height: 85dvh;
 
             .offcanvas-header {
-                padding: $space-5 $space-5 $space-3;
-                border-bottom: 1px solid $border-subtle;
-                background: $surface-muted;
+                padding: $space-3 $space-4;
+                border-bottom: 1px solid $border-color;
+                background: $surface;
 
                 .offcanvas-title {
-                    font-family: 'Plus Jakarta Sans', var(--font-family-brand);
-                    font-weight: $font-weight-extrabold;
-                    font-size: $font-size-md;
-                    color: $neutral-900;
-                    margin: 0;
-                    letter-spacing: -0.02em;
                     display: flex;
                     align-items: center;
+                    margin: 0;
+                    font-size: $font-size-md;
+                    font-weight: $font-weight-bold;
+                    color: $text-primary;
                 }
 
                 .btn-close {
-                    font-size: 0.82rem;
-                    transition: transform $transition-fast;
-                    &:hover { transform: scale(1.15) rotate(90deg); }
+                    width: 44px;
+                    height: 44px;
+                    margin: 0 (-$space-2) 0 0;
+                    padding: 0;
+                    background-size: 14px;
                 }
             }
 
-            .offcanvas-body { padding: $space-5; }
+            .offcanvas-body { padding: 0 0 $space-4; overscroll-behavior: contain; }
         }
     }
 
-    // Bootstrap offcanvas-lg: inline on ≥lg
+    // ---- Sticky sidebar ----
     @include bp-up('lg') {
+        position: sticky !important;
+        top: var(--xsf-sticky-top);
+        max-height: calc(100vh - var(--xsf-sticky-top) - #{$space-4});
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: $border-color transparent;
         transform: none !important;
         visibility: visible !important;
         display: flex !important;
@@ -278,102 +282,91 @@
         .offcanvas-body   { padding: 0 !important; display: block !important; overflow: visible !important; }
     }
 
-    // ---- Desktop card header ----
     &__card-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: $space-4 $space-5;
-        border-bottom: 1px solid $border-subtle;
-        background: $surface-muted;
-        border-radius: $radius-2xl $radius-2xl 0 0;
+        padding: $space-3 $space-4;
+        border-bottom: 1px solid $border-color;
         flex-shrink: 0;
     }
 
     &__card-title {
-        font-size: $font-size-sm;
-        font-weight: $font-weight-bold;
-        color: $neutral-900;
-        letter-spacing: -0.01em;
+        margin: 0;
         display: flex;
         align-items: center;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-bold;
+        color: $text-primary;
     }
 
-    // ---- Filter groups ----
     &__group {
-        padding: $space-4 $space-5;
-        border-bottom: 1px solid $border-subtle;
+        padding: $space-4;
+        border-bottom: 1px solid $border-color;
 
         &:last-child { border-bottom: 0; }
     }
 
     &__title {
-        font-size: $font-size-xs;
-        font-weight: $font-weight-bold;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: $neutral-700;
-        margin-bottom: $space-3;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-semibold;
+        color: $text-primary;
+        margin: 0 0 $space-2;
     }
 
     .form-check {
-        margin-bottom: $space-2;
+        display: flex;
+        align-items: center;
+        gap: $space-2;
+        min-height: 44px;
+        margin: 0;
+        padding: 0;
 
-        &:last-child { margin-bottom: 0; }
+        @include bp-up('lg') { min-height: 36px; }
 
         .form-check-input {
+            flex-shrink: 0;
+            float: none;
+            margin: 0;
+            width: 1.125rem;
+            height: 1.125rem;
             cursor: pointer;
-            border-color: $border-color;
+            border-color: $neutral-400;
 
-            &:checked {
-                background-color: $color-primary;
-                border-color: $color-primary;
-            }
+            &:checked { background-color: $color-primary; border-color: $color-primary; }
+            &:focus-visible { box-shadow: $shadow-focus; border-color: $color-primary; outline: none; }
         }
 
         .form-check-label {
+            flex: 1;
             display: flex;
             align-items: center;
             gap: $space-2;
+            align-self: stretch;
             font-size: $font-size-sm;
             color: $text-secondary;
-            font-weight: $font-weight-medium;
             cursor: pointer;
-            transition: color $transition-fast;
-
-            &:hover { color: $color-primary; }
         }
 
-        .form-check-input:checked + .form-check-label { color: $color-primary; }
+        .form-check-input:checked + .form-check-label { color: $text-primary; font-weight: $font-weight-medium; }
     }
 
     &__count {
         color: $text-muted;
         font-size: $font-size-xs;
-        font-weight: $font-weight-normal;
         margin-left: auto;
     }
 
-    // ---- Color dot ----
     &__color-dot {
         display: inline-block;
         width: 12px;
         height: 12px;
         border-radius: 50%;
-        border: 1.5px solid rgba(0,0,0,0.12);
+        border: 1px solid rgba(0, 0, 0, 0.2);
         flex-shrink: 0;
     }
 
-    // ---- Price range display ----
-    &__price {
-        font-weight: $font-weight-semibold;
-        color: $neutral-900;
-        font-size: $font-size-sm;
-        margin-bottom: $space-3;
-        letter-spacing: -0.01em;
-    }
-
-    // ── Current value badges (above slider) ──────────────────────
+    // ---- Price range (dual slider, flat) ----
     .rs-values {
         display: flex;
         align-items: center;
@@ -383,58 +376,47 @@
         &__badge {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
+            min-width: 52px;
             padding: $space-1 $space-3;
-            background: $primary-50;
-            border: 1.5px solid $primary-200;
-            border-radius: $radius-lg;
+            background: $surface-muted;
+            border: 1px solid $border-color;
+            border-radius: $radius-md;
             font-size: $font-size-sm;
             font-weight: $font-weight-semibold;
-            color: $primary-700;
-            line-height: 1.4;
-            min-width: 52px;
-            justify-content: center;
-            transition: border-color 120ms ease, background 120ms ease;
+            color: $text-primary;
         }
 
-        &__sep {
-            font-size: $font-size-xs;
-            color: $text-muted;
-            font-weight: $font-weight-medium;
-        }
+        &__sep { color: $text-muted; }
     }
 
-    // ── Custom dual range slider ──────────────────────────────────
     .range-slider {
         position: relative;
-        height: 20px;           // height of the track area
-        margin: 0 0 $space-2;
+        height: 44px;           // 44px touch band around the 6px track
+        margin: 0 11px $space-1; // keep end thumbs inside the panel
         user-select: none;
-        touch-action: none;     // let JS handle all pointer events
+        touch-action: none;
     }
 
-    // ── Track rail ────────────────────────────────────────────────
     .rs-track {
         position: absolute;
         top: 50%;
         left: 0;
         right: 0;
-        height: 6px;
+        height: 4px;
         transform: translateY(-50%);
         background: $neutral-200;
         border-radius: $radius-pill;
-        overflow: hidden;       // clips the fill to the track shape
 
         &__fill {
             position: absolute;
             top: 0;
             height: 100%;
-            background: linear-gradient(90deg, $primary-400, $primary-600);
+            background: $color-primary;
             border-radius: $radius-pill;
-            transition: left 0ms, width 0ms; // updated live by JS, no lag
         }
     }
 
-    // ── Thumbs ────────────────────────────────────────────────────
     .rs-thumb {
         position: absolute;
         top: 50%;
@@ -442,30 +424,19 @@
         height: 22px;
         transform: translate(-50%, -50%);
         border-radius: 50%;
-        background: $neutral-0;
-        border: 2.5px solid $primary-500;
-        box-shadow:
-            0 0 0 0 rgba($primary-500, 0),
-            0 1px 4px rgba($primary-800, 0.18);
+        background: $surface;
+        border: 2px solid $color-primary;
         cursor: grab;
         z-index: 3;
-        transition:
-            box-shadow 150ms ease,
-            border-color 150ms ease,
-            transform 150ms ease;
         outline: none;
 
-        // Inner dot — gives depth without an extra element
-        &::before {
+        // Enlarge hit area to 44px without changing the visual size
+        &::after {
             content: '';
             position: absolute;
-            inset: 4px;
-            border-radius: 50%;
-            background: $primary-500;
-            transition: background 150ms ease, transform 150ms ease;
+            inset: -11px;
         }
 
-        // Tooltip chip above thumb
         &__tooltip {
             position: absolute;
             bottom: calc(100% + 8px);
@@ -473,76 +444,36 @@
             transform: translateX(-50%);
             background: $neutral-900;
             color: $neutral-0;
-            font-size: 0.68rem;
+            font-size: 0.7rem;
             font-weight: $font-weight-semibold;
             line-height: 1;
-            padding: 4px 7px;
-            border-radius: $radius-md;
+            padding: 4px 6px;
+            border-radius: $radius-sm;
             white-space: nowrap;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 120ms ease, transform 120ms ease;
-            transform: translateX(-50%) translateY(4px);
-
-            &::after {
-                content: '';
-                position: absolute;
-                top: 100%;
-                left: 50%;
-                transform: translateX(-50%);
-                border: 4px solid transparent;
-                border-top-color: $neutral-900;
-            }
         }
 
-        // Hover state
-        &:hover,
-        &:focus {
-            border-color: $primary-600;
-            box-shadow:
-                0 0 0 6px rgba($primary-500, 0.16),
-                0 2px 6px rgba($primary-800, 0.2);
+        &:hover .rs-thumb__tooltip,
+        &:focus-visible .rs-thumb__tooltip { opacity: 1; }
 
-            &::before { background: $primary-600; transform: scale(1.15); }
-        }
+        &:focus-visible { box-shadow: 0 0 0 3px $surface, 0 0 0 5px $color-primary; }
 
-        // Active / dragging state
         &.is-active {
             cursor: grabbing;
-            border-color: $primary-700;
-            transform: translate(-50%, -50%) scale(1.12);
-            box-shadow:
-                0 0 0 8px rgba($primary-500, 0.18),
-                0 3px 10px rgba($primary-800, 0.25);
+            background: $color-primary;
             z-index: 4;
 
-            &::before { background: $primary-700; }
-
-            .rs-thumb__tooltip {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-
-        // Keyboard focus ring (not mouse)
-        &:focus-visible {
-            box-shadow:
-                0 0 0 3px $neutral-0,
-                0 0 0 6px $primary-500;
+            .rs-thumb__tooltip { opacity: 1; }
         }
     }
 
-    // ── Boundary labels ───────────────────────────────────────────
     .rs-bounds {
         display: flex;
         justify-content: space-between;
         margin-top: $space-1;
 
-        span {
-            font-size: $font-size-xs;
-            color: $text-muted;
-            font-weight: $font-weight-medium;
-        }
+        span { font-size: $font-size-xs; color: $text-muted; }
     }
 
     // ---- Size chips ----
@@ -553,104 +484,108 @@
     }
 
     &__size-chip {
+        position: relative;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 40px;
-        height: 36px;
+        min-width: 44px;
+        min-height: 44px;
         padding: 0 $space-3;
-        border-radius: $radius-lg;
-        border: 1.5px solid $border-color;
-        background: $neutral-0;
+        border-radius: $radius-md;
+        border: 1px solid $border-color;
+        background: $surface;
         font-size: $font-size-sm;
         font-weight: $font-weight-semibold;
         color: $text-secondary;
         cursor: pointer;
         user-select: none;
-        transition: all $transition-fast;
+        transition: border-color $transition-fast, color $transition-fast;
 
-        &:hover {
-            border-color: $primary-300;
-            color: $color-primary;
-            background: $primary-50;
-        }
+        &:hover { border-color: $color-primary; color: $color-primary; }
+        &:focus-within { outline: 2px solid $color-primary; outline-offset: 2px; }
 
         &.is-active {
             border-color: $color-primary;
-            background: $gradient-primary;
-            color: #fff;
-            box-shadow: $shadow-primary;
+            background: $color-primary;
+            color: $neutral-0;
         }
     }
 
-    // ---- Clear all (desktop link) ----
     &__clear {
-        font-size: $font-size-xs;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        font-size: $font-size-sm;
         font-weight: $font-weight-semibold;
-        color: $danger-600;
+        color: $color-primary;
         text-decoration: none;
-        cursor: pointer;
-        transition: color $transition-fast;
         white-space: nowrap;
 
-        &:hover { color: $danger-700; text-decoration: underline; }
+        &:hover { text-decoration: underline; }
+        &:focus-visible { outline: 2px solid $color-primary; outline-offset: 2px; border-radius: $radius-sm; }
     }
 
-    // ---- Active chips row (used in main column, not inside sidebar) ----
+    // ---- Active filter chips (main column) ----
     &__active-chips {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: $space-2;
-        margin-bottom: $space-4;
+        margin-bottom: $space-3;
+        overflow-x: auto;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar { display: none; }
+
+        @include bp-up('md') { flex-wrap: wrap; overflow: visible; }
     }
 
     &__chip {
         display: inline-flex;
         align-items: center;
-        gap: $space-2;
-        background: $primary-50;
-        color: $primary-700;
-        border: 1px solid $primary-100;
+        flex-shrink: 0;
+        gap: $space-1;
+        min-height: 32px;
+        padding: 0 $space-1 0 $space-3;
+        background: $surface;
+        color: $text-primary;
+        border: 1px solid $border-color;
         border-radius: $radius-pill;
-        padding: $space-1 $space-3;
         font-size: $font-size-xs;
-        font-weight: $font-weight-semibold;
+        font-weight: $font-weight-medium;
+        white-space: nowrap;
 
         a {
             display: inline-flex;
             align-items: center;
-            color: inherit;
-            opacity: 0.65;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            color: $text-muted;
             font-size: 0.7rem;
-            line-height: 1;
             text-decoration: none;
-            transition: opacity $transition-fast;
 
-            &:hover { opacity: 1; }
+            &:hover { color: $text-primary; background: $neutral-100; }
+            &:focus-visible { outline: 2px solid $color-primary; outline-offset: 0; }
         }
     }
 }
 
 // =====================================================================
-//  PRICE FILTER INPUTS  (inside .xsf-filter__group)
+//  PRICE INPUTS (category filter form)
 // =====================================================================
 .xsf-filter-price-inputs {
     display: flex;
     align-items: flex-end;
     gap: $space-2;
 
-    &__field {
-        flex: 1;
-        min-width: 0;
-    }
+    &__field { flex: 1; min-width: 0; }
 
     &__label {
         display: block;
         font-size: $font-size-xs;
-        font-weight: $font-weight-semibold;
         color: $text-muted;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
         margin-bottom: $space-1;
     }
 
@@ -663,8 +598,7 @@
     &__symbol {
         position: absolute;
         left: $space-3;
-        font-size: $font-size-xs;
-        font-weight: $font-weight-semibold;
+        font-size: $font-size-sm;
         color: $text-muted;
         pointer-events: none;
         z-index: 1;
@@ -672,22 +606,20 @@
     }
 
     &__input {
-        padding-left: $space-6 !important;     // make room for the symbol
-        border-radius: $radius-lg !important;
+        min-height: 44px;
+        padding-left: $space-6 !important;
+        border-radius: $radius-md !important;
         border-color: $border-color !important;
         font-size: $font-size-sm !important;
-        color: $text-secondary !important;
-        font-weight: $font-weight-medium !important;
-        background: $neutral-0 !important;
-        transition: border-color $transition-fast, box-shadow $transition-fast !important;
+        color: $text-primary !important;
+        background: $surface !important;
 
         &:focus {
-            border-color: $primary-400 !important;
+            border-color: $color-primary !important;
             box-shadow: $shadow-focus !important;
             outline: none !important;
         }
 
-        // Hide browser spin arrows — cleaner look
         &::-webkit-outer-spin-button,
         &::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         &[type=number] { -moz-appearance: textfield; }
@@ -695,99 +627,339 @@
 
     &__sep {
         flex-shrink: 0;
-        font-size: $font-size-sm;
-        color: $neutral-300;
-        font-weight: $font-weight-medium;
-        padding-bottom: $space-2;   // align with input baseline
+        color: $text-muted;
+        padding-bottom: $space-3;
         line-height: 1;
     }
 }
 
+.xsf-filter .btn { min-height: 44px; border-radius: $radius-md; }
+
 // =====================================================================
-//  PRODUCT GRID  (CSS Grid — replaces Bootstrap col-* wrappers)
-//  auto-fill keeps partial last rows left-aligned at natural card size
+//  PRODUCT GRID extras (base grid lives in _redesign.scss:
+//  2-up phones, 3-up md, 4-up lg). Inside the shop/category layouts
+//  the sidebar takes 260px, so cap at 3-up until xl.
 // =====================================================================
+.xsf-listing-main .xsf-product-grid,
+.main-shop .xsf-product-grid {
+    align-items: stretch;
+
+    @include bp-up('lg') { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @include bp-up('xl') { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
 .xsf-product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: $space-5;
-    align-items: start;   // don't stretch last-row cards vertically
+    &__item { display: flex; min-width: 0; }
 
-    // Tighter column minimum on small viewports
-    @include bp-down('sm') {
-        grid-template-columns: repeat(2, 1fr);
-        gap: $space-4;
-    }
+    &__item > * { width: 100%; }
 
-    // Grid item — just a transparent pass-through so the card fills it
-    &__item {
-        display: flex;   // needed so xsf-product-card height: 100% works
-        min-width: 0;    // prevent blowout on long titles
-    }
+    &__empty { grid-column: 1 / -1; }
 
-    // Empty state spans the full row width
-    &__empty {
-        grid-column: 1 / -1;
-    }
-
-    // Pagination row spans the full row width
     &__pagination {
         grid-column: 1 / -1;
-        flex-wrap: wrap;
-        gap: $space-3;
-        padding-top: $space-4;
-        border-top: 1px solid $border-subtle;
+        margin-top: $space-2;
     }
 
-    // ── Loading skeleton ─────────────────────────────────────────
-    // Add class `is-loading` on the grid while fetching to show shimmer
+    // Loading: dim the grid, no shimmer
     &.is-loading {
         pointer-events: none;
-
-        .xsf-product-card {
-            position: relative;
-            overflow: hidden;
-
-            // Fade out real content
-            & > * { opacity: 0; }
-
-            // Shimmer overlay
-            &::after {
-                content: '';
-                position: absolute;
-                inset: 0;
-                background: linear-gradient(
-                    90deg,
-                    $neutral-100 25%,
-                    $neutral-50  50%,
-                    $neutral-100 75%
-                );
-                background-size: 200% 100%;
-                animation: xsf-shimmer 1.4s infinite linear;
-            }
-        }
+        opacity: 0.5;
+        transition: opacity $transition-fast;
     }
 }
 
-@keyframes xsf-shimmer {
-    0%   { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+// Empty state (listing flavour) — builds on .xsf-empty
+.xsf-empty {
+    &__title { margin: $space-3 0 $space-1; font-size: $font-size-lg; font-weight: $font-weight-semibold; color: $text-primary; }
+    &__text { margin: 0 auto; max-width: 36ch; font-size: $font-size-sm; color: $text-muted; }
+    &__icon { font-size: 2rem; color: $neutral-400; }
+    &__icon-wrap { line-height: 1; }
+
+    &__cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: $space-2;
+        min-height: 44px;
+        margin-top: $space-4;
+        padding: 0 $space-4;
+        border: 1px solid $color-primary;
+        border-radius: $radius-md;
+        color: $color-primary;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-semibold;
+        text-decoration: none;
+
+        &:hover { background: $primary-50; }
+        &:focus-visible { outline: 2px solid $color-primary; outline-offset: 2px; }
+    }
 }
 
 // =====================================================================
-//  PAGINATION  (custom vendor view)
+//  PAGINATION — 44px targets. Overrides the inline <style> in
+//  vendor/pagination/custom.blade.php via higher specificity.
 // =====================================================================
 .xsf-pagination {
-    flex-wrap: wrap;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
     gap: $space-3;
     padding-top: $space-4;
-    border-top: 1px solid $border-subtle;
+    border-top: 1px solid $border-color;
+
+    @include bp-up('md') { flex-direction: row; align-items: center; justify-content: space-between; }
 
     &__info {
-        font-size: $font-size-xs;
+        margin: 0;
+        font-size: $font-size-sm;
         color: $text-muted;
-        font-weight: $font-weight-medium;
+        text-align: center;
 
-        strong { color: $text-secondary; }
+        strong { color: $text-primary; font-weight: $font-weight-semibold; }
+
+        @include bp-up('md') { text-align: left; }
+    }
+
+    .paginations { max-width: 100%; }
+
+    .custom-pagination-nav { justify-content: center; max-width: 100%; }
+
+    .custom-pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: $space-1;
+    }
+
+    .page-link-custom {
+        min-width: 44px;
+        height: 44px;
+        border: 1px solid $border-color;
+        border-radius: $radius-md;
+        color: $text-primary;
+        font-weight: $font-weight-medium;
+        transition: border-color $transition-fast, color $transition-fast;
+
+        &:focus-visible { outline: 2px solid $color-primary; outline-offset: 2px; }
+    }
+
+    .page-item-custom a.page-link-custom:hover {
+        background: $surface;
+        border-color: $color-primary;
+        color: $color-primary;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .page-item-custom.active .page-link-custom {
+        background: $color-primary;
+        border-color: $color-primary;
+        color: $neutral-0;
+        box-shadow: none;
+    }
+
+    .page-item-custom.disabled .page-link-custom {
+        color: $neutral-400;
+        background: $surface-muted;
+        border-color: $border-color;
+    }
+
+    // On phones drop middle page numbers except current; keep prev / next / active
+    @include bp-down('sm') {
+        .page-item-custom:not(.active):not(:first-child):not(:last-child) { display: none; }
+    }
+}
+
+// Search / wishlist pages (no sidebar): same grid + head spacing
+.xsf-listing-page { padding-top: $space-4; padding-bottom: $space-10;
+    @include bp-up('md') { padding-top: $space-6; padding-bottom: $space-12; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .xsf-filter,
+    .xsf-filter *,
+    .xsf-toolbar *,
+    .xsf-pagination * { transition: none !important; }
+}
+
+// =====================================================================
+//  LIVEWIRE SEARCH PAGE (livewire/product-search.blade.php)
+// =====================================================================
+.xsf-lw-search {
+    &__bar {
+        display: flex;
+        align-items: center;
+        gap: $space-3;
+        flex-wrap: wrap;
+        margin-bottom: $space-4;
+    }
+
+    &__field {
+        position: relative;
+        flex: 1 1 260px;
+        min-width: 0;
+        max-width: 100%;
+
+        .form-control {
+            min-height: 44px;
+            padding-left: 2.5rem;
+            padding-right: 2.75rem;
+            border-radius: $radius-md;
+            border-color: $border-color;
+
+            &:focus { border-color: $color-primary; box-shadow: $shadow-focus; }
+        }
+    }
+
+    &__icon {
+        position: absolute;
+        left: $space-3;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $text-muted;
+        pointer-events: none;
+    }
+
+    &__clear {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 44px;
+        height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        background: transparent;
+        color: $text-muted;
+
+        &:hover { color: $text-primary; }
+        &:focus-visible { outline: 2px solid $color-primary; outline-offset: -2px; border-radius: $radius-md; }
+    }
+
+    &__status { font-size: $font-size-sm; color: $text-muted; white-space: nowrap; }
+
+    &__panel {
+        background: $surface;
+        border: 1px solid $border-color;
+        border-radius: $radius-xl;
+        padding: $space-4;
+
+        .form-select, .form-control { min-height: 44px; border-radius: $radius-md; border-color: $border-color; }
+        .form-label { font-size: $font-size-sm; font-weight: $font-weight-semibold; color: $text-primary; margin-bottom: $space-1; }
+        .form-select:focus, .form-control:focus { border-color: $color-primary; box-shadow: $shadow-focus; }
+        .input-group-text { border-color: $border-color; background: $surface-muted; }
+
+        @include bp-up('lg') { position: sticky; top: var(--xsf-sticky-top); }
+    }
+
+    // Filters collapse into a toggled panel below lg
+    &__panel-body { display: grid; gap: $space-4; }
+
+    &__toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: $space-2;
+        min-height: 44px;
+        padding: 0 $space-4;
+        background: $surface;
+        border: 1px solid $border-color;
+        border-radius: $radius-md;
+        color: $text-primary;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-semibold;
+
+        &:hover { border-color: $color-primary; color: $color-primary; }
+        &:focus-visible { outline: 2px solid $color-primary; outline-offset: 2px; }
+    }
+
+    &__chips { display: flex; flex-wrap: wrap; gap: $space-2; }
+
+    &__chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 32px;
+        padding: 0 $space-1 0 $space-3;
+        background: $surface;
+        border: 1px solid $border-color;
+        border-radius: $radius-pill;
+        font-size: $font-size-xs;
+        color: $text-primary;
+
+        button {
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 50%;
+            background: transparent;
+            color: $text-muted;
+
+            &:hover { background: $neutral-100; color: $text-primary; }
+            &:focus-visible { outline: 2px solid $color-primary; }
+        }
+    }
+
+    &__card {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        background: $surface;
+        border: 1px solid $border-color;
+        border-radius: $radius-xl;
+        overflow: hidden;
+    }
+
+    &__media {
+        display: block;
+        aspect-ratio: 1 / 1;
+        background: $surface-muted;
+
+        img { width: 100%; height: 100%; object-fit: contain; padding: $space-3; }
+    }
+
+    &__body { display: flex; flex-direction: column; gap: $space-1; padding: $space-3; flex: 1; }
+
+    &__brand { font-size: $font-size-xs; color: $text-muted; }
+
+    &__name {
+        margin: 0;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-semibold;
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+
+        a { color: $text-primary; text-decoration: none; &:hover { color: $color-primary; } }
+    }
+
+    &__foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: $space-2;
+        margin-top: auto;
+        padding-top: $space-2;
+        font-weight: $font-weight-bold;
+        color: $text-primary;
+    }
+
+    &__view {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        padding: 0 $space-3;
+        border: 1px solid $border-color;
+        border-radius: $radius-md;
+        color: $color-primary;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-semibold;
+        text-decoration: none;
+
+        &:hover { border-color: $color-primary; }
+        &:focus-visible { outline: 2px solid $color-primary; outline-offset: 2px; }
     }
 }

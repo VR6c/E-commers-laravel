@@ -8,140 +8,163 @@
 @endsection
 
 @section('content')
-    @php $currency = activeCurrency(); @endphp
+    @php
+        $currency = activeCurrency();
+        $averageRating = round($product->reviews_avg_rating, 1);
+        $galleryImages = $product->images->isNotEmpty() ? $product->images : collect();
+        $approvedReviews = $product->reviews->filter(fn ($r) => $r->is_approved);
+        $ratingBuckets = [5 => 0, 4 => 0, 3 => 0, 2 => 0, 1 => 0];
+        foreach ($approvedReviews as $r) {
+            $k = (int) max(1, min(5, round($r->rating)));
+            $ratingBuckets[$k]++;
+        }
+        $approvedCount = $approvedReviews->count();
+        $relatedProducts = \App\Models\Product::with(['thumbnail', 'primaryVariant', 'variants'])
+            ->withCount('reviews')->withAvg('reviews', 'rating')
+            ->where('status', 1)->where('id', '!=', $product->id)
+            ->when($product->category_id, fn ($q) => $q->where('category_id', $product->category_id))
+            ->latest()->limit(4)->get();
+    @endphp
 
-    <section class="xsf-section pt-4 pb-0">
+    <section class="xsf-section pt-3 pb-0">
         <div class="container">
             {{-- Breadcrumb --}}
-            <nav aria-label="breadcrumb" class="xsf-breadcrumb">
+            <nav aria-label="breadcrumb" class="xsf-breadcrumb xsf-pd__crumbs">
                 <a href="{{ url('/') }}">{{ 'Home' }}</a>
                 @foreach ($breadcrumbs as $category)
                     <i class="fa fa-angle-right" aria-hidden="true"></i>
                     <a href="{{ url('category/' . $category->slug) }}">{{ $category->name ?? $category->slug }}</a>
                 @endforeach
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
-                <span>{{ $product->name }}</span>
+                <span aria-current="page">{{ $product->name }}</span>
             </nav>
         </div>
     </section>
 
-    <div class="xsf-section pt-4">
+    <div class="xsf-section pt-3">
         <div class="container">
-            <div class="row g-5 xsf-pd">
+            <div class="xsf-pd">
                 {{-- Gallery --}}
-                <div class="col-lg-6">
-                    <div class="xsf-pd__gallery">
-                        <div class="xsf-gallery">
-                            @forelse ($product->images as $image)
-                                <div class="xsf-gallery__slide">
-                                    <img src="{{ product_image_url($image['image_url']) }}"
-                                         alt="{{ $image['name'] ?? $product->name }}"
-                                         width="600" height="600"
-                                         style="aspect-ratio: 1/1; object-fit: contain;"
-                                         @if ($loop->first)
-                                             fetchpriority="high"
-                                             loading="eager"
-                                         @else
-                                             loading="lazy"
-                                             decoding="async"
-                                         @endif
-                                    />
-                                </div>
-                            @empty
-                                <div class="xsf-gallery__slide">
-                                    <img src="{{ product_image_url(optional($product->thumbnail)->image_url) }}"
-                                         alt="{{ $product->name }}"
-                                         width="600" height="600"
-                                         style="aspect-ratio: 1/1; object-fit: contain;"
+                <div class="xsf-pd__gallery">
+                    <div class="xsf-gallery" id="pdGallery" role="region" aria-label="Product images" tabindex="0">
+                        @forelse ($galleryImages as $image)
+                            <div class="xsf-gallery__slide" id="pdSlide{{ $loop->index }}">
+                                <img src="{{ product_image_url($image['image_url']) }}"
+                                     alt="{{ $image['name'] ?? $product->name }}"
+                                     width="600" height="600"
+                                     @if ($loop->first)
                                          fetchpriority="high"
                                          loading="eager"
-                                    />
-                                </div>
-                            @endforelse
-                        </div>
+                                     @else
+                                         loading="lazy"
+                                         decoding="async"
+                                     @endif
+                                />
+                            </div>
+                        @empty
+                            <div class="xsf-gallery__slide" id="pdSlide0">
+                                <img src="{{ product_image_url(optional($product->thumbnail)->image_url) }}"
+                                     alt="{{ $product->name }}"
+                                     width="600" height="600"
+                                     fetchpriority="high"
+                                     loading="eager"
+                                />
+                            </div>
+                        @endforelse
                     </div>
+
+                    @if ($galleryImages->count() > 1)
+                        <div class="xsf-gallery__thumbs" id="pdThumbs" role="group" aria-label="Choose product image">
+                            @foreach ($galleryImages as $image)
+                                <button type="button" class="xsf-gallery__thumb{{ $loop->first ? ' is-active' : '' }}"
+                                        data-index="{{ $loop->index }}"
+                                        aria-label="Show image {{ $loop->iteration }} of {{ $galleryImages->count() }}"
+                                        @if ($loop->first) aria-current="true" @endif>
+                                    <img src="{{ product_image_url($image['image_url']) }}" alt="" width="72" height="72" loading="lazy" decoding="async">
+                                </button>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
 
-                {{-- Info --}}
-                <div class="col-lg-6">
-                    <div class="xsf-pd__info">
-                        @php $averageRating = round($product->reviews_avg_rating, 1); @endphp
+                {{-- Info / buy box --}}
+                <div class="xsf-pd__info">
+                    <div class="xsf-pd__title-row">
+                        <h1 class="xsf-pd__title">{{ $product->name }}</h1>
 
-                        <span id="product-stock" class="xsf-pd__stock {{ $inStock ? 'is-in' : 'is-out text-danger' }}">
-                            {{ $inStock ? 'IN STOCK' : 'OUT OF STOCK' }}
-                        </span>
+                        @auth('customer')
+                            @php
+                                $isFavorite = auth('customer')->user()->wishlistProducts()
+                                    ->where('product_id', $product->id)->exists();
+                            @endphp
+                        @else
+                            @php $isFavorite = false; @endphp
+                        @endauth
 
-                        <div class="xsf-pd__rating stars">
-                            @for ($i = 1; $i <= 5; $i++)
-                                @if ($i <= floor($averageRating))
-                                    <i class="fa-solid fa-star text-warning"></i>
-                                @elseif ($i - 0.5 == $averageRating)
-                                    <i class="fa-solid fa-star-half-alt text-warning"></i>
-                                @else
-                                    <i class="fa-regular fa-star text-muted"></i>
-                                @endif
-                            @endfor
-                            <span class="spanstar">({{ $product->reviews_count }} {{ 'customer reviews' }})</span>
-                        </div>
+                        <button id="wishlist-heart" type="button" class="xsf-pd__wish" aria-label="{{ 'Wishlist' }}"
+                                data-product-id="{{ $product->id }}">
+                            <i class="{{ $isFavorite ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart text-secondary' }}" aria-hidden="true"></i>
+                        </button>
+                    </div>
 
-                        <div class="xsf-pd__title-row">
-                            <h1 class="xsf-pd__title">{{ $product->name }}</h1>
+                    <div class="xsf-pd__rating stars">
+                        <x-store.rating :rating="$averageRating" />
+                        @if ($product->reviews_count > 0)
+                            <a href="#reviews" class="spanstar xsf-pd__rating-link js-open-reviews">{{ $product->reviews_count }} {{ 'customer reviews' }}</a>
+                        @else
+                            <span class="spanstar">{{ 'No reviews yet' }}</span>
+                        @endif
+                    </div>
 
-                            @auth('customer')
-                                @php
-                                    $isFavorite = auth('customer')->user()->wishlistProducts()
-                                        ->where('product_id', $product->id)->exists();
-                                @endphp
-                            @else
-                                @php $isFavorite = false; @endphp
-                            @endauth
-
-                            <button id="wishlist-heart" class="xsf-pd__wish" aria-label="{{ 'Wishlist' }}"
-                                    data-product-id="{{ $product->id }}">
-                                <i class="{{ $isFavorite ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart text-secondary' }} fs-4"></i>
-                            </button>
-                        </div>
-
+                    <div class="xsf-pd__price-row">
                         <div class="xsf-pd__price">
                             <span id="currency-symbol">{{ $currency->symbol ?? '' }}</span><span id="variant-price">{{ $product->primaryVariant->converted_price ?? 'N/A' }}</span>
                         </div>
+                        <span id="product-stock" class="xsf-pd__stock {{ $inStock ? 'is-in' : 'is-out text-danger' }}" role="status">
+                            {{ $inStock ? 'IN STOCK' : 'OUT OF STOCK' }}
+                        </span>
+                    </div>
 
+                    @if ($product->short_description)
                         <p class="xsf-pd__short">{{ $product->short_description }}</p>
+                    @endif
 
-                        <div id="product-attributes" class="product-options xsf-pd__attributes">
-                            @php $groupedAttributes = $product->attributeValues->groupBy(fn ($item) => $item->attribute->id); @endphp
+                    <div id="product-attributes" class="product-options xsf-pd__attributes">
+                        @php $groupedAttributes = $product->attributeValues->groupBy(fn ($item) => $item->attribute->id); @endphp
 
-                            @foreach ($groupedAttributes as $attributeId => $values)
-                                @php $attrName = strtolower($values->first()->attribute->name); @endphp
-                                <div class="attribute-options xsf-pd__attribute">
-                                    <h3 class="xsf-pd__attribute-label">{{ ucfirst($attrName) }}</h3>
-                                    <div class="{{ $attrName }}-wrapper xsf-pd__attribute-options">
-                                        @foreach ($values as $index => $value)
-                                            @php $inputId = $attrName . '-' . $index; @endphp
-                                            <input type="radio" name="attribute_{{ $attributeId }}" id="{{ $inputId }}"
-                                                value="{{ $value->id }}" {{ $index === 0 ? 'checked' : '' }}>
-                                            <label for="{{ $inputId }}"
-                                                class="{{ $attrName === 'color' ? 'color-circle' : 'size-box' }}"
-                                                style="{{ $attrName === 'color' ? 'background-color:' . strtolower($value->value) . ';' : '' }}">
-                                                @if ($attrName === 'size'){{ $value->translated_value }}@endif
-                                            </label>
-                                        @endforeach
-                                    </div>
+                        @foreach ($groupedAttributes as $attributeId => $values)
+                            @php $attrName = strtolower($values->first()->attribute->name); @endphp
+                            <fieldset class="attribute-options xsf-pd__attribute">
+                                <legend class="xsf-pd__attribute-label">
+                                    {{ ucfirst($attrName) }}
+                                    <span class="xsf-pd__attribute-selected js-attr-selected" data-attr="{{ $attributeId }}"></span>
+                                </legend>
+                                <div class="{{ $attrName }}-wrapper xsf-pd__attribute-options">
+                                    @foreach ($values as $index => $value)
+                                        @php $inputId = $attrName . '-' . $index; @endphp
+                                        <input type="radio" name="attribute_{{ $attributeId }}" id="{{ $inputId }}"
+                                            value="{{ $value->id }}" data-label="{{ $value->translated_value ?? $value->value }}" {{ $index === 0 ? 'checked' : '' }}>
+                                        <label for="{{ $inputId }}"
+                                            class="{{ $attrName === 'color' ? 'color-circle' : 'size-box' }}"
+                                            style="{{ $attrName === 'color' ? 'background-color:' . strtolower($value->value) . ';' : '' }}">
+                                            @if ($attrName === 'size'){{ $value->translated_value }}@else<span class="visually-hidden">{{ $value->translated_value ?? $value->value }}</span>@endif
+                                        </label>
+                                    @endforeach
                                 </div>
-                            @endforeach
-                        </div>
+                            </fieldset>
+                        @endforeach
+                    </div>
 
-                        <div class="cart-actions xsf-pd__actions">
-                            <div class="quantity xsf-pd__qty">
-                                <button type="button" onclick="changeQty(-1)" aria-label="Decrease quantity">&minus;</button>
-                                <input type="text" id="qty" value="1" inputmode="numeric" pattern="[0-9]*" aria-label="Quantity">
-                                <button type="button" onclick="changeQty(1)" aria-label="Increase quantity">+</button>
-                            </div>
-                            <button class="add-to-cart btn btn-primary btn-pill btn-lg"
-                                onclick="addToCart({{ $product->id }}, '{{ $product->product_type }}')">
-                                <i class="fa fa-shopping-bag me-2" aria-hidden="true"></i>{{ 'Add to Cart' }}
-                            </button>
+                    <div class="cart-actions xsf-pd__actions">
+                        <div class="quantity xsf-pd__qty" role="group" aria-label="Quantity">
+                            <button type="button" onclick="changeQty(-1)" aria-label="Decrease quantity">&minus;</button>
+                            <input type="text" id="qty" value="1" inputmode="numeric" pattern="[0-9]*" aria-label="Quantity">
+                            <button type="button" onclick="changeQty(1)" aria-label="Increase quantity">+</button>
                         </div>
+                        <button type="button" class="add-to-cart btn btn-primary"
+                            onclick="addToCart({{ $product->id }}, '{{ $product->product_type }}')">
+                            <i class="fa fa-shopping-bag me-2" aria-hidden="true"></i>{{ 'Add to Cart' }}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -163,40 +186,59 @@
             </ul>
 
             <div class="tab-content pt-4" id="myTabContent">
-                <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab" tabindex="0">
+                    <h2 class="visually-hidden">{{ 'Description' }}</h2>
                     <div class="xsf-pd__description">{!! $product->description !!}</div>
                 </div>
 
-                <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab" tabindex="0">
+                    <h2 class="visually-hidden">{{ 'Customer reviews' }}</h2>
                     <div class="product-detail-customer-review">
+                        @if ($approvedCount > 0)
+                            <div class="average-rating xsf-pd__summary">
+                                <div class="xsf-pd__summary-score">
+                                    <span class="rating-score">{{ number_format($product->reviews_avg_rating, 1) }}</span>
+                                    <x-store.rating :rating="$product->reviews_avg_rating" />
+                                    <span class="xsf-pd__summary-count">{{ $approvedCount }} {{ $approvedCount == 1 ? 'review' : 'reviews' }} &middot; {{ 'average rating' }}</span>
+                                </div>
+                                <ul class="xsf-pd__bars" aria-label="Rating breakdown">
+                                    @foreach ($ratingBuckets as $stars => $n)
+                                        <li>
+                                            <span class="xsf-pd__bars-label">{{ $stars }} star{{ $stars > 1 ? 's' : '' }}</span>
+                                            <span class="xsf-pd__bars-track" aria-hidden="true"><span style="width: {{ round($n / $approvedCount * 100) }}%"></span></span>
+                                            <span class="xsf-pd__bars-n">{{ $n }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
                         @auth('customer')
                             @if ($alreadyReviewed)
                                 {{-- Customer already left a review --}}
-                                <div class="xsf-review-notice xsf-review-notice--done mt-3">
-                                    <i class="fa-solid fa-circle-check me-2" style="color:var(--success-500);"></i>
+                                <div class="xsf-review-notice xsf-review-notice--done mt-3" role="status">
+                                    <i class="fa-solid fa-circle-check me-2" style="color:var(--success-500);" aria-hidden="true"></i>
                                     {{ 'You have already submitted a review for this product.' }}
                                 </div>
                             @elseif ($hasPurchased)
                                 {{-- Customer bought the product — show the review form --}}
                                 <div class="xsf-review-form">
-                                    <h5>{{ 'Write a Review' }}</h5>
+                                    <h3>{{ 'Write a Review' }}</h3>
                                     <form action="{{ route('review.store') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                                         <input type="hidden" name="rating" id="rating-value" required>
 
-                                        <div id="starWrapper" class="xsf-review-form__stars">
-                                            <span class="star" data-value="1" style="color:var(--neutral-300);cursor:pointer;font-size:1.6rem;">&#9733;</span>
-                                            <span class="star" data-value="2" style="color:var(--neutral-300);cursor:pointer;font-size:1.6rem;">&#9733;</span>
-                                            <span class="star" data-value="3" style="color:var(--neutral-300);cursor:pointer;font-size:1.6rem;">&#9733;</span>
-                                            <span class="star" data-value="4" style="color:var(--neutral-300);cursor:pointer;font-size:1.6rem;">&#9733;</span>
-                                            <span class="star" data-value="5" style="color:var(--neutral-300);cursor:pointer;font-size:1.6rem;">&#9733;</span>
+                                        <div id="starWrapper" class="xsf-review-form__stars" role="group" aria-label="Your rating">
+                                            @for ($s = 1; $s <= 5; $s++)
+                                                <button type="button" class="star" data-value="{{ $s }}" aria-label="{{ $s }} star{{ $s > 1 ? 's' : '' }}" style="color:var(--neutral-300);">&#9733;</button>
+                                            @endfor
                                         </div>
-                                        <div id="star-error" class="text-danger small mt-1 d-none">Please select a rating before submitting.</div>
+                                        <div id="star-error" class="text-danger small mt-1 d-none" role="alert">Please select a rating before submitting.</div>
 
                                         <div class="mb-3 mt-3">
-                                            <label class="form-label">{{ 'Your Review (Optional)' }}</label>
-                                            <textarea name="review" class="form-control" rows="3"></textarea>
+                                            <label class="form-label" for="review-text">{{ 'Your Review (Optional)' }}</label>
+                                            <textarea name="review" id="review-text" class="form-control" rows="3"></textarea>
                                         </div>
 
                                         <button class="btn btn-primary">{{ 'Submit Review' }}</button>
@@ -205,7 +247,7 @@
                             @else
                                 {{-- Logged in but has not purchased this product --}}
                                 <div class="xsf-review-notice xsf-review-notice--locked mt-3">
-                                    <i class="fa-solid fa-lock me-2" style="color:var(--warning-500);"></i>
+                                    <i class="fa-solid fa-lock me-2" style="color:var(--warning-500);" aria-hidden="true"></i>
                                     {{ 'You must purchase this product before reviewing it.' }}
                                 </div>
                             @endif
@@ -215,7 +257,10 @@
                         @endauth
 
                         @if ($product->reviews->isEmpty())
-                            <p class="mt-4">{{ 'No reviews yet. Be the first to review this product!' }}</p>
+                            <div class="xsf-pd__empty">
+                                <i class="fa-regular fa-comment-dots" aria-hidden="true"></i>
+                                <p>{{ 'No reviews yet. Be the first to review this product!' }}</p>
+                            </div>
                         @else
                             <ul class="xsf-review-list">
                                 @foreach ($product->reviews as $review)
@@ -223,19 +268,17 @@
                                         <li class="xsf-review">
                                             <div class="review-customer-info">
                                                 <img src="{{ $review->customer->profile_image ? (\Illuminate\Support\Str::startsWith($review->customer->profile_image, ['http://', 'https://']) ? $review->customer->profile_image : asset('storage/' . $review->customer->profile_image)) : 'https://ui-avatars.com/api/?name=' . urlencode($review->customer->name) . '&background=0D8ABC&color=fff&size=70' }}"
-                                                    alt="{{ $review->customer->name }}" class="review-customer-avatar" />
-                                                <strong>{{ ucwords($review->customer->name) }}</strong>
+                                                    alt="" width="40" height="40" loading="lazy" class="review-customer-avatar" />
+                                                <strong class="review-name">{{ ucwords($review->customer->name) }}</strong>
                                             </div>
                                             <div class="review-rating">
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    <span style="color: {{ $i <= $review->rating ? 'var(--warning-500)' : 'var(--neutral-300)' }}">&#9733;</span>
-                                                @endfor
+                                                <x-store.rating :rating="$review->rating" />
                                                 <span class="review-time">
                                                     @php
                                                         $created_at = \Carbon\Carbon::parse($review->created_at);
                                                         $diffInDays = (int) $created_at->diffInDays(\Carbon\Carbon::now());
                                                     @endphp
-                                                    ({{ $diffInDays }} {{ $diffInDays == 1 ? 'day' : 'days' }} {{ 'ago' }})
+                                                    {{ $diffInDays }} {{ $diffInDays == 1 ? 'day' : 'days' }} {{ 'ago' }}
                                                 </span>
                                             </div>
                                             @if ($review->review)
@@ -247,21 +290,6 @@
                                     @endif
                                 @endforeach
                             </ul>
-
-                            <div class="average-rating">
-                                <div class="review-rating">
-                                    @for ($i = 1; $i <= 5; $i++)
-                                        @if ($i <= floor($product->reviews_avg_rating))
-                                            <span style="color: var(--warning-500)">&#9733;</span>
-                                        @elseif ($i == ceil($product->reviews_avg_rating) && $product->reviews_avg_rating - floor($product->reviews_avg_rating) >= 0.5)
-                                            <span style="color: var(--warning-500)">&#9733;</span>
-                                        @else
-                                            <span style="color: var(--neutral-300)">&#9733;</span>
-                                        @endif
-                                    @endfor
-                                    {{ number_format($product->reviews_avg_rating, 1) }} <span>{{ 'average rating' }}</span>
-                                </div>
-                            </div>
                         @endif
                     </div>
                 </div>
@@ -269,13 +297,29 @@
         </div>
     </div>
 
-    {{-- Sticky add-to-cart bar (small screens, shown once the main button scrolls out of view) --}}
-    <div class="xsf-sticky-cta" id="stickyCta" aria-hidden="true">
+    {{-- Related products --}}
+    @if ($relatedProducts->isNotEmpty())
+        <section class="xsf-section xsf-pd-related" aria-labelledby="related-title">
+            <div class="container">
+                <h2 id="related-title" class="xsf-pd-related__title">{{ 'You may also like' }}</h2>
+                <div class="xsf-pd-related__grid">
+                    @foreach ($relatedProducts as $related)
+                        <div class="xsf-pd-related__item">
+                            <x-store.product-card :product="$related" :currency="$currency" :wishlist-ids="[]" />
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
+    {{-- Mobile buy bar: sits above the bottom tab bar, proxies clicks to the main button --}}
+    <div class="xsf-sticky-cta is-visible" id="stickyCta" role="region" aria-label="Quick add to bag">
         <div class="xsf-sticky-cta__info">
             <span class="xsf-sticky-cta__name">{{ $product->name }}</span>
             <span class="xsf-sticky-cta__price">{{ $currency->symbol ?? '' }}<span id="stickyCtaPrice">{{ $product->primaryVariant->converted_price ?? 'N/A' }}</span></span>
         </div>
-        <button type="button" class="btn btn-primary btn-pill xsf-sticky-cta__btn" id="stickyCtaBtn" tabindex="-1" @unless ($inStock) disabled @endunless>
+        <button type="button" class="btn btn-primary xsf-sticky-cta__btn" id="stickyCtaBtn" @unless ($inStock) disabled @endunless>
             <i class="fa fa-shopping-bag me-2" aria-hidden="true"></i>{{ 'Add to Cart' }}
         </button>
     </div>
@@ -374,17 +418,52 @@
             toastr.error("{{ session('error') }}");
         @endif
 
-        // Gallery slider (own class to avoid master's .product-slider 4-col init)
-        $(document).ready(function () {
-            $('.xsf-gallery').slick({
-                arrows: true,
-                dots: true,
-                infinite: true,
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                prevArrow: '<button type="button" class="slick-prev"><i class="fa fa-angle-left"></i></button>',
-                nextArrow: '<button type="button" class="slick-next"><i class="fa fa-angle-right"></i></button>',
+        // Gallery: native scroll-snap track + thumbnail buttons
+        (function () {
+            const track = document.getElementById('pdGallery');
+            const thumbs = document.querySelectorAll('#pdThumbs .xsf-gallery__thumb');
+            if (!track || !thumbs.length) return;
+            const slides = track.querySelectorAll('.xsf-gallery__slide');
+            function setActive(i) {
+                thumbs.forEach((t, k) => {
+                    t.classList.toggle('is-active', k === i);
+                    if (k === i) t.setAttribute('aria-current', 'true'); else t.removeAttribute('aria-current');
+                });
+                const strip = document.getElementById('pdThumbs');
+                const t = thumbs[i];
+                if (strip && t) {
+                    const vertical = strip.scrollHeight > strip.clientHeight + 1 && strip.scrollWidth <= strip.clientWidth + 1;
+                    if (vertical) strip.scrollTo({ top: t.offsetTop - strip.clientHeight / 2 + t.offsetHeight / 2, behavior: 'smooth' });
+                    else strip.scrollTo({ left: t.offsetLeft - strip.clientWidth / 2 + t.offsetWidth / 2, behavior: 'smooth' });
+                }
+            }
+            thumbs.forEach((t, i) => t.addEventListener('click', () => {
+                const slide = slides[i];
+                if (slide) track.scrollTo({ left: slide.offsetLeft - track.offsetLeft, behavior: 'smooth' });
+                setActive(i);
+            }));
+            let raf = null;
+            track.addEventListener('scroll', () => {
+                if (raf) return;
+                raf = requestAnimationFrame(() => {
+                    raf = null;
+                    const w = track.clientWidth || 1;
+                    setActive(Math.min(slides.length - 1, Math.round(track.scrollLeft / w)));
+                });
+            }, { passive: true });
+            track.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') { track.scrollBy({ left: track.clientWidth, behavior: 'smooth' }); e.preventDefault(); }
+                if (e.key === 'ArrowLeft') { track.scrollBy({ left: -track.clientWidth, behavior: 'smooth' }); e.preventDefault(); }
             });
+        })();
+
+        // "N customer reviews" link opens the Reviews tab
+        document.addEventListener('click', function (e) {
+            const a = e.target.closest('.js-open-reviews');
+            if (!a) return;
+            e.preventDefault();
+            const tab = document.getElementById('reviews-tab');
+            if (tab) { tab.click(); tab.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
         });
     </script>
 
@@ -412,7 +491,15 @@
                 return null;
             }
 
+            function showSelectedLabels() {
+                $('#product-attributes input[type="radio"]:checked').each(function () {
+                    const name = this.name.replace('attribute_', '');
+                    $('.js-attr-selected[data-attr="' + name + '"]').text(this.dataset.label || '');
+                });
+            }
+
             $('#product-attributes input[type="radio"]').on('change', function () {
+                showSelectedLabels();
                 const selectedAttrIds = getSelectedAttributeValueIds();
                 const variantId = findMatchingVariantId(selectedAttrIds);
                 if (!variantId) { toastr.warning('Selected variant not available.'); return; }
@@ -479,21 +566,11 @@
             if (el) { el.textContent = totalCount; el.classList.toggle('d-none', totalCount === 0); }
         }
 
-        // Sticky add-to-cart bar: mirrors price, proxies clicks to the main button.
+        // Mobile buy bar: mirrors price, proxies clicks to the main button.
         (function () {
             const mainBtn = document.querySelector('.xsf-pd__actions .add-to-cart');
-            const bar = document.getElementById('stickyCta');
             const barBtn = document.getElementById('stickyCtaBtn');
-            if (!mainBtn || !bar || !barBtn || !('IntersectionObserver' in window)) return;
-
-            new IntersectionObserver(([entry]) => {
-                // Show only once the main button has scrolled above the viewport.
-                const show = !entry.isIntersecting && entry.boundingClientRect.top < 0;
-                bar.classList.toggle('is-visible', show);
-                bar.setAttribute('aria-hidden', show ? 'false' : 'true');
-                barBtn.tabIndex = show ? 0 : -1;
-            }).observe(mainBtn);
-
+            if (!mainBtn || !barBtn) return;
             barBtn.addEventListener('click', () => mainBtn.click());
 
             const price = document.getElementById('variant-price');

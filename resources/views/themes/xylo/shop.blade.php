@@ -3,21 +3,21 @@
 @section('content')
     @php $currency = activeCurrency(); @endphp
 
-    <section class="xsf-section main-shop">
+    <section class="xsf-section xsf-listing-section main-shop">
         <div class="container">
 
             {{-- Breadcrumb --}}
             <nav aria-label="breadcrumb" class="xsf-breadcrumb">
                 <a href="{{ route('xylo.home') }}">{{ 'Home' }}</a>
                 <i class="fa-solid fa-angle-right" aria-hidden="true"></i>
-                <span>{{ 'Shop' }}</span>
+                <span aria-current="page">{{ 'Shop' }}</span>
             </nav>
 
             {{-- Listing head --}}
             <div class="xsf-listing-head">
                 <div class="xsf-listing-head__left">
                     <h1 class="xsf-listing-head__title">{{ 'Shop' }}</h1>
-                    <span class="xsf-listing-head__count" id="resultCount">
+                    <span class="xsf-listing-head__count" id="resultCount" role="status">
                         {{ $products->total() }} {{ 'results' }}
                     </span>
                 </div>
@@ -25,7 +25,8 @@
                         type="button"
                         data-bs-toggle="offcanvas"
                         data-bs-target="#filterOffcanvas"
-                        aria-controls="filterOffcanvas">
+                        aria-controls="filterOffcanvas"
+                        aria-expanded="false">
                     <i class="fa-solid fa-sliders" aria-hidden="true"></i>
                     {{ 'Filters' }}
                 </button>
@@ -34,8 +35,7 @@
             {{-- Sort / view toolbar --}}
             <div class="xsf-toolbar">
                 <div class="xsf-toolbar__left">
-                    <i class="fa-solid fa-table-cells-large xsf-toolbar__grid-icon" aria-hidden="true"></i>
-                    <span class="xsf-toolbar__count" id="toolbarCount">
+                                        <span class="xsf-toolbar__count" id="toolbarCount">
                         {{ $products->firstItem() ?? 0 }}–{{ $products->lastItem() ?? 0 }}
                         {{ 'of' }}
                         {{ $products->total() }}
@@ -58,30 +58,30 @@
                 </div>
             </div>
 
-            <div class="row g-4">
+            <div class="row g-3 g-lg-4">
 
                 {{-- ── Sidebar filters ─────────────────────────────── --}}
                 <aside class="col-lg-3">
-                    <div class="offcanvas offcanvas-lg offcanvas-start xsf-filter" tabindex="-1" id="filterOffcanvas">
+                    <div class="offcanvas offcanvas-lg offcanvas-bottom xsf-filter" tabindex="-1" id="filterOffcanvas" aria-labelledby="filterOffcanvasTitle">
 
                         {{-- Mobile offcanvas header --}}
                         <div class="offcanvas-header">
-                            <h5 class="offcanvas-title">
+                            <h2 class="offcanvas-title" id="filterOffcanvasTitle">
                                 <i class="fa-solid fa-sliders me-2" aria-hidden="true"></i>
                                 {{ 'Filters' }}
-                            </h5>
+                            </h2>
                             <button type="button" class="btn-close"
                                     data-bs-dismiss="offcanvas"
                                     data-bs-target="#filterOffcanvas"
-                                    aria-label="Close"></button>
+                                    aria-label="{{ 'Close' }}"></button>
                         </div>
 
                         {{-- Desktop card header --}}
                         <div class="xsf-filter__card-header d-none d-lg-flex">
-                            <span class="xsf-filter__card-title">
+                            <h2 class="xsf-filter__card-title">
                                 <i class="fa-solid fa-sliders me-2" aria-hidden="true"></i>
                                 {{ 'Filters' }}
-                            </span>
+                            </h2>
                             <a href="{{ route('shop.index') }}"
                                class="xsf-filter__clear"
                                id="clearAllFilters"
@@ -94,7 +94,7 @@
 
                             {{-- Brands --}}
                             <div class="xsf-filter__group">
-                                <h6 class="xsf-filter__title">{{ 'Brands' }}</h6>
+                                <h3 class="xsf-filter__title">{{ 'Brands' }}</h3>
                                 @foreach ($brands as $brand)
                                     <div class="form-check">
                                         <input class="form-check-input filter-input" type="checkbox"
@@ -112,7 +112,7 @@
 
                             {{-- Categories --}}
                             <div class="xsf-filter__group">
-                                <h6 class="xsf-filter__title">{{ 'Categories' }}</h6>
+                                <h3 class="xsf-filter__title">{{ 'Categories' }}</h3>
                                 @foreach ($categories as $category)
                                     <div class="form-check">
                                         <input class="form-check-input filter-input" type="checkbox"
@@ -130,7 +130,7 @@
 
                             {{-- Price range --}}
                             <div class="xsf-filter__group">
-                                <h6 class="xsf-filter__title">{{ 'Price' }}</h6>
+                                <h3 class="xsf-filter__title">{{ 'Price' }}</h3>
 
                                 {{-- Current range display --}}
                                 <div class="rs-values">
@@ -187,7 +187,7 @@
 
                             {{-- Colors --}}
                             <div class="xsf-filter__group">
-                                <h6 class="xsf-filter__title">{{ 'Colors' }}</h6>
+                                <h3 class="xsf-filter__title">{{ 'Colors' }}</h3>
                                 @foreach (['red', 'black'] as $color)
                                     <div class="form-check">
                                         <input class="form-check-input filter-input" type="checkbox"
@@ -206,7 +206,7 @@
 
                             {{-- Sizes --}}
                             <div class="xsf-filter__group">
-                                <h6 class="xsf-filter__title">{{ 'Size' }}</h6>
+                                <h3 class="xsf-filter__title">{{ 'Size' }}</h3>
                                 <div class="xsf-filter__size-grid">
                                     @foreach (['M' => 'M', 'L' => 'L'] as $key => $size)
                                         <label class="xsf-filter__size-chip {{ in_array($key, (array) request('size', [])) ? 'is-active' : '' }}"
@@ -223,8 +223,8 @@
                             </div>
 
                             {{-- Mobile clear-all button --}}
-                            <div class="d-lg-none mt-2">
-                                <a href="{{ route('shop.index') }}" class="btn btn-outline-danger btn-sm w-100">
+                            <div class="d-lg-none px-3 pt-3">
+                                <a href="{{ route('shop.index') }}" class="btn btn-outline-secondary w-100">
                                     <i class="fa-solid fa-xmark me-1" aria-hidden="true"></i>
                                     {{ 'Clear all filters' }}
                                 </a>
@@ -236,7 +236,7 @@
 
                 {{-- ── Products grid ──────────────────────────────── --}}
                 <div class="col-lg-9">
-                    <div class="xsf-product-grid" id="productList">
+                    <div class="xsf-product-grid" id="productList" aria-live="polite">
                         @include('themes.xylo.partials.product-list')
                     </div>
                 </div>
@@ -593,6 +593,15 @@
         })
         .catch(err => console.error('Wishlist error:', err));
     });
+
+    // ── Filter sheet: keep trigger aria-expanded in sync (Esc handled by Bootstrap)
+    (function () {
+        const sheet = document.getElementById('filterOffcanvas');
+        const btn   = document.querySelector('[aria-controls="filterOffcanvas"]');
+        if (!sheet || !btn) return;
+        sheet.addEventListener('shown.bs.offcanvas',  () => btn.setAttribute('aria-expanded', 'true'));
+        sheet.addEventListener('hidden.bs.offcanvas', () => btn.setAttribute('aria-expanded', 'false'));
+    })();
 
     // ── Init ─────────────────────────────────────────────────────────
     syncSizeChipState();

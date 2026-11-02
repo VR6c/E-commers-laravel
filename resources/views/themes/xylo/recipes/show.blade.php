@@ -1,303 +1,7 @@
 @extends('themes.xylo.layouts.master')
 
-@section('css')
-<style>
-/* ─────────────────────────────────────────────
-   Recipe Detail & Interactive Cooking Page
-   ───────────────────────────────────────────── */
-.xsf-recipe-header {
-    background: var(--neutral-0);
-    border-bottom: 1px solid var(--neutral-200);
-    padding: 32px 0 24px;
-    margin-bottom: 32px;
-}
-
-.xsf-recipe-hero-img {
-    width: 100%;
-    height: 380px;
-    object-fit: cover;
-    border-radius: 20px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-}
-
-.xsf-recipe-title {
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: var(--neutral-900);
-    letter-spacing: -0.02em;
-    margin-bottom: 12px;
-    line-height: 1.25;
-}
-
-.xsf-recipe-meta-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: var(--neutral-50);
-    border: 1px solid var(--neutral-200);
-    border-radius: 50px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--neutral-700);
-}
-
-.xsf-recipe-meta-pill i {
-    color: var(--primary-500);
-}
-
-/* ── Card Blocks ── */
-.xsf-recipe-block {
-    background: var(--neutral-0);
-    border: 1px solid var(--neutral-200);
-    border-radius: 18px;
-    padding: 28px;
-    margin-bottom: 28px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-}
-
-.xsf-recipe-block__title {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: var(--neutral-900);
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* ── Interactive Ingredients Checklist ── */
-.xsf-ingredient-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px dashed var(--neutral-200);
-    cursor: pointer;
-    user-select: none;
-    transition: background 0.15s ease;
-}
-
-.xsf-ingredient-item:last-child {
-    border-bottom: none;
-}
-
-.xsf-ingredient-item input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.xsf-ingredient-item.is-checked {
-    text-decoration: line-through;
-    color: var(--neutral-400);
-}
-
-/* ── Step-by-Step Directions ── */
-.xsf-step-row {
-    display: flex;
-    gap: 18px;
-    padding-bottom: 24px;
-    margin-bottom: 24px;
-    border-bottom: 1px solid var(--neutral-100);
-}
-
-.xsf-step-row:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-.xsf-step-num {
-    width: 36px;
-    height: 36px;
-    background: var(--neutral-900);
-    color: var(--neutral-0);
-    font-weight: 800;
-    font-size: 0.95rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    flex-shrink: 0;
-    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2);
-}
-
-.xsf-step-text {
-    flex: 1;
-    font-size: 0.95rem;
-    line-height: 1.65;
-    color: var(--neutral-700);
-}
-
-/* ── Gated Lock Overlay ── */
-.xsf-locked-card {
-    background: linear-gradient(135deg, var(--neutral-50) 0%, var(--neutral-100) 100%);
-    border: 2px dashed var(--neutral-300);
-    border-radius: 20px;
-    padding: 40px 32px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    margin-top: 20px;
-}
-
-.xsf-lock-icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: var(--danger-100);
-    color: var(--danger-600);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.8rem;
-    margin: 0 auto 16px;
-}
-
-/* ── Product Card in Recipe ── */
-.xsf-linked-product {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 12px;
-    border: 1px solid var(--neutral-200);
-    border-radius: 12px;
-    margin-bottom: 12px;
-    background: var(--neutral-0);
-    transition: all 0.2s ease;
-}
-
-.xsf-linked-product:hover {
-    border-color: var(--primary-500);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.xsf-linked-product__thumb {
-    width: 52px;
-    height: 52px;
-    object-fit: cover;
-    border-radius: 8px;
-    background: var(--neutral-100);
-}
-
-/* ── Unlocked Success Banner ── */
-.xsf-unlocked-banner {
-    background: var(--success-50);
-    border: 1px solid var(--success-200);
-    border-radius: 14px;
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 24px;
-}
-
-/* ── Mobile & Tablet Responsiveness ── */
-@media (max-width: 991.98px) {
-    .xsf-recipe-hero-img {
-        height: 280px;
-    }
-    .xsf-recipe-title {
-        font-size: 1.8rem;
-    }
-    .xsf-recipe-block {
-        padding: 20px;
-        border-radius: 14px;
-    }
-}
-
-@media (max-width: 575.98px) {
-    .xsf-recipe-hero-img {
-        height: 220px;
-        border-radius: 14px;
-    }
-    .xsf-recipe-title {
-        font-size: 1.45rem;
-    }
-    .xsf-recipe-meta-pill {
-        font-size: 0.78rem;
-        padding: 6px 12px;
-    }
-    .xsf-step-row {
-        gap: 12px;
-    }
-    .xsf-step-num {
-        width: 30px;
-        height: 30px;
-        font-size: 0.82rem;
-    }
-    .xsf-step-text {
-        font-size: 0.88rem;
-    }
-    .xsf-unlocked-banner {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 14px;
-    }
-    .xsf-unlocked-banner .d-flex.align-items-center.gap-2 {
-        width: 100%;
-        margin-top: 6px;
-    }
-    .xsf-unlocked-banner .btn {
-        flex: 1;
-        text-align: center;
-    }
-    .xsf-locked-card {
-        padding: 28px 16px;
-    }
-}
-
-/* ── Dedicated Print Layout ── */
-@media print {
-    @page {
-        size: A5 portrait;
-        margin: 8mm 10mm;
-    }
-
-    .xsf-header,
-    .xsf-footer,
-    .xsf-breadcrumb,
-    .btn,
-    .xsf-unlocked-banner,
-    .no-print {
-        display: none !important;
-    }
-
-    body {
-        background: #ffffff !important;
-        font-size: 8.5pt !important;
-        color: #000000 !important;
-    }
-
-    .xsf-recipe-hero-img {
-        max-height: 180px !important;
-        border-radius: 8px !important;
-    }
-
-    .xsf-recipe-block {
-        box-shadow: none !important;
-        border: none !important;
-        padding: 0 !important;
-        margin-bottom: 14px !important;
-    }
-
-    .xsf-step-num {
-        background: #000 !important;
-        color: #fff !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-}
-</style>
-@endsection
-
 @section('content')
-    <div class="container py-4">
+    <div class="container xsf-recipe-page">
         {{-- Breadcrumb --}}
         <nav aria-label="breadcrumb" class="xsf-breadcrumb mb-3">
             <a href="{{ route('xylo.home') }}">Home</a>
@@ -311,12 +15,12 @@
         @if($isUnlocked)
             <div class="xsf-unlocked-banner">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="text-success" style="font-size: 1.5rem;">
-                        <i class="fa-solid fa-circle-check"></i>
+                    <div class="text-success" style="font-size: 1.25rem;">
+                        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
                     </div>
                     <div>
-                        <h4 class="h6 fw-bold mb-0 text-dark">Full Recipe Unlocked</h4>
-                        <p class="text-muted small mb-0">
+                        <p class="fw-semibold mb-0 text-dark">Full recipe unlocked</p>
+                        <p class="text-secondary small mb-0">
                             @if($order)
                                 Included with Order #{{ $order->id }} &bull; Thank you for your purchase!
                             @else
@@ -325,7 +29,7 @@
                         </p>
                     </div>
                 </div>
-                <div class="d-flex align-items-center gap-2">
+                <div class="xsf-unlocked-banner__actions">
                     @php
                         $downloadUrl = route('recipes.download-pdf', array_filter([
                             'slug'     => $recipe->slug,
@@ -333,87 +37,83 @@
                             'token'    => $order ? app(\App\Services\Store\RecipeAccessService::class)->generateOrderToken($order) : null,
                         ]));
                     @endphp
-                    <a href="{{ $downloadUrl }}" class="btn btn-primary btn-pill btn-sm px-3">
+                    <a href="{{ $downloadUrl }}" class="btn btn-primary">
                         <i class="fa-solid fa-file-pdf me-1"></i> Download PDF
                     </a>
-                    <button type="button" class="btn btn-outline-dark btn-pill btn-sm px-3" onclick="window.print();">
+                    <button type="button" class="btn btn-outline-dark" onclick="window.print();">
                         <i class="fa-solid fa-print me-1"></i> Print
                     </button>
                 </div>
             </div>
         @endif
 
-        {{-- Top Header / Hero Grid --}}
-        <div class="row g-4 mb-4">
-            <div class="col-lg-6">
-                <img src="{{ $recipe->image_src }}" alt="{{ $recipe->title }}" class="xsf-recipe-hero-img" onerror="this.src='https://placehold.co/800x500/eee/999?text=Recipe';">
-            </div>
-            <div class="col-lg-6 d-flex flex-column justify-content-center">
-                @if($recipe->cuisine)
-                    <span class="text-uppercase fw-bold text-primary small mb-2 letter-spacing-1">{{ $recipe->cuisine }} Cuisine</span>
-                @endif
-                <h1 class="xsf-recipe-title">{{ $recipe->title }}</h1>
+        {{-- Intro: single readable column --}}
+        <header class="xsf-recipe-intro">
+            <img src="{{ $recipe->image_src }}" alt="{{ $recipe->title }}" class="xsf-recipe-hero-img" onerror="this.src='https://placehold.co/800x500/eee/999?text=Recipe';">
+            @if($recipe->cuisine)
+                <p class="xsf-recipe-eyebrow">{{ $recipe->cuisine }} cuisine</p>
+            @endif
+            <h1 class="xsf-recipe-title">{{ $recipe->title }}</h1>
 
-                @if($recipe->summary)
-                    <p class="text-secondary mb-4 line-height-lg">{{ $recipe->summary }}</p>
-                @endif
+            @if($recipe->summary)
+                <p class="xsf-recipe-lead">{{ $recipe->summary }}</p>
+            @endif
 
-                {{-- Meta Chips --}}
-                <div class="d-flex flex-wrap gap-2 mb-4">
-                    <div class="xsf-recipe-meta-pill">
-                        <i class="fa-regular fa-clock"></i>
-                        <span>Prep: <strong>{{ $recipe->prep_time ? $recipe->prep_time . 'm' : '15m' }}</strong></span>
-                    </div>
-                    <div class="xsf-recipe-meta-pill">
-                        <i class="fa-solid fa-fire-burner"></i>
-                        <span>Cook: <strong>{{ $recipe->cook_time ? $recipe->cook_time . 'm' : '20m' }}</strong></span>
-                    </div>
-                    <div class="xsf-recipe-meta-pill">
-                        <i class="fa-solid fa-users"></i>
-                        <span>Serves: <strong>{{ $recipe->servings ?? 2 }}</strong></span>
-                    </div>
-                    <div class="xsf-recipe-meta-pill">
-                        <i class="fa-solid fa-gauge-high"></i>
-                        <span>Difficulty: <strong>{{ ucfirst($recipe->difficulty ?? 'Medium') }}</strong></span>
-                    </div>
-                    @if($recipe->calories)
-                        <div class="xsf-recipe-meta-pill">
-                            <i class="fa-solid fa-fire"></i>
-                            <span><strong>{{ $recipe->calories }}</strong> kcal</span>
-                        </div>
-                    @endif
+            {{-- Meta row --}}
+            <div class="xsf-recipe-meta">
+                <div class="xsf-recipe-meta-pill">
+                    <span><i class="fa-regular fa-clock" aria-hidden="true"></i>Prep</span>
+                    <strong>{{ $recipe->prep_time ? $recipe->prep_time . 'm' : '15m' }}</strong>
                 </div>
-
-                @if(!$isUnlocked)
-                    <div class="p-3 bg-light rounded-4 border">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="text-primary" style="font-size: 1.4rem;">
-                                <i class="fa-solid fa-gift"></i>
-                            </div>
-                            <div class="flex-fill">
-                                <span class="fw-bold text-dark d-block">Exclusive Bonus Recipe</span>
-                                <span class="text-muted small">Buy any linked product to unlock full step-by-step directions & downloadable PDF card.</span>
-                            </div>
-                        </div>
+                <div class="xsf-recipe-meta-pill">
+                    <span><i class="fa-solid fa-fire-burner" aria-hidden="true"></i>Cook</span>
+                    <strong>{{ $recipe->cook_time ? $recipe->cook_time . 'm' : '20m' }}</strong>
+                </div>
+                <div class="xsf-recipe-meta-pill">
+                    <span><i class="fa-solid fa-users" aria-hidden="true"></i>Serves</span>
+                    <strong>{{ $recipe->servings ?? 2 }}</strong>
+                </div>
+                <div class="xsf-recipe-meta-pill">
+                    <span><i class="fa-solid fa-gauge-high" aria-hidden="true"></i>Difficulty</span>
+                    <strong>{{ ucfirst($recipe->difficulty ?? 'Medium') }}</strong>
+                </div>
+                @if($recipe->calories)
+                    <div class="xsf-recipe-meta-pill">
+                        <span><i class="fa-solid fa-fire" aria-hidden="true"></i>Calories</span>
+                        <strong>{{ $recipe->calories }} kcal</strong>
                     </div>
                 @endif
             </div>
-        </div>
+
+            @if(!$isUnlocked)
+                <div class="p-3 bg-light rounded-3 border">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="text-muted" style="font-size: 1.25rem;">
+                            <i class="fa-solid fa-gift" aria-hidden="true"></i>
+                        </div>
+                        <div class="flex-fill">
+                            <span class="fw-semibold text-dark d-block">Bonus recipe</span>
+                            <span class="text-secondary small">Buy any linked product to unlock the full step-by-step directions and a downloadable PDF card.</span>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </header>
 
         {{-- Main Recipe Body --}}
-        <div class="row g-4">
-            {{-- Left Column: Ingredients & Nutritional Info --}}
-            <div class="col-lg-4">
+        <div class="xsf-recipe-body">
+            {{-- Aside: Ingredients, products & nutrition --}}
+            <aside class="xsf-recipe-body__aside">
                 {{-- Ingredients Card --}}
                 <div class="xsf-recipe-block">
                     <h2 class="xsf-recipe-block__title">
-                        <i class="fa-solid fa-basket-shopping text-primary"></i>
+                        <i class="fa-solid fa-basket-shopping" aria-hidden="true"></i>
                         Ingredients
                     </h2>
-                    <p class="text-muted small mb-3">Click on any ingredient to mark it off while cooking:</p>
+                    <p class="xsf-recipe-block__hint">Tick ingredients off as you cook.</p>
 
                     @if(!empty($recipe->ingredients) && is_array($recipe->ingredients))
-                        <div class="xsf-ingredients-list">
+                        <div class="xsf-ingredients-list" role="group" aria-label="Ingredients">
                             @foreach($recipe->ingredients as $index => $ing)
                                 <label class="xsf-ingredient-item" for="ing-{{ $index }}">
                                     <input type="checkbox" id="ing-{{ $index }}" onchange="this.parentElement.classList.toggle('is-checked', this.checked)">
@@ -431,10 +131,10 @@
                 @if($recipe->products->isNotEmpty())
                     <div class="xsf-recipe-block">
                         <h2 class="xsf-recipe-block__title">
-                            <i class="fa-solid fa-bag-shopping text-success"></i>
+                            <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
                             Eligible Store Products
                         </h2>
-                        <p class="text-muted small mb-3">
+                        <p class="xsf-recipe-block__hint">
                             @if($isUnlocked)
                                 Products associated with this recipe:
                             @else
@@ -452,7 +152,7 @@
                                 @if($thumbUrl)
                                     <img src="{{ $thumbUrl }}" alt="{{ $p->name }}" class="xsf-linked-product__thumb">
                                 @else
-                                    <div class="xsf-linked-product__thumb d-flex align-items-center justify-content-center text-muted">
+                                    <div class="xsf-linked-product__thumb d-flex align-items-center justify-content-center text-muted" aria-hidden="true">
                                         <i class="fa-solid fa-box"></i>
                                     </div>
                                 @endif
@@ -460,11 +160,11 @@
                                     <a href="{{ route('product.show', $p->slug) }}" class="fw-bold text-dark text-decoration-none text-truncate d-block small">
                                         {{ $p->name }}
                                     </a>
-                                    <span class="text-primary fw-bold small">
+                                    <span class="text-secondary fw-semibold small">
                                         {{ $currency->symbol }}{{ number_format($p->price, 2) }}
                                     </span>
                                 </div>
-                                <a href="{{ route('product.show', $p->slug) }}" class="btn btn-outline-primary btn-sm btn-pill px-2" title="View Product">
+                                <a href="{{ route('product.show', $p->slug) }}" class="btn btn-outline-secondary btn-sm" title="View product" aria-label="View {{ $p->name }}">
                                     <i class="fa-solid fa-arrow-right"></i>
                                 </a>
                             </div>
@@ -476,60 +176,61 @@
                 @if(!empty($recipe->nutritional_info) && is_array($recipe->nutritional_info))
                     <div class="xsf-recipe-block">
                         <h2 class="xsf-recipe-block__title">
-                            <i class="fa-solid fa-heart-pulse text-danger"></i>
+                            <i class="fa-solid fa-heart-pulse" aria-hidden="true"></i>
                             Nutritional Info
                         </h2>
-                        <div class="row g-2 text-center">
-                            @foreach($recipe->nutritional_info as $nutrient => $val)
-                                <div class="col-6">
-                                    <div class="p-2 bg-light rounded-3">
-                                        <span class="d-block text-muted small text-uppercase">{{ $nutrient }}</span>
-                                        <span class="fw-bold text-dark">{{ $val }}</span>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
+                        <table class="xsf-nutrition">
+                            <tbody>
+                                @foreach($recipe->nutritional_info as $nutrient => $val)
+                                    <tr>
+                                        <th scope="row">{{ $nutrient }}</th>
+                                        <td>{{ $val }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                 @endif
-            </div>
+            </aside>
 
-            {{-- Right Column: Step-by-Step Directions / Gated State --}}
-            <div class="col-lg-8">
+            {{-- Main: Step-by-Step Directions / Gated State --}}
+            <div class="xsf-recipe-body__main">
                 <div class="xsf-recipe-block">
                     <h2 class="xsf-recipe-block__title">
-                        <i class="fa-solid fa-kitchen-set text-warning"></i>
+                        <i class="fa-solid fa-kitchen-set" aria-hidden="true"></i>
                         Step-by-Step Directions
                     </h2>
 
                     @if($isUnlocked)
                         {{-- UNLOCKED: Full Instructions --}}
                         @if(!empty($recipe->instructions) && is_array($recipe->instructions))
-                            <div class="xsf-steps-container">
+                            <ol class="xsf-steps-container list-unstyled mb-0">
                                 @foreach($recipe->instructions as $index => $step)
                                     @php
                                         $stepNum = $step['step'] ?? ($index + 1);
                                         $stepTitle = $step['title'] ?? null;
                                         $stepText = $step['text'] ?? ($step['description'] ?? (is_string($step) ? $step : ''));
                                     @endphp
-                                    <div class="xsf-step-row">
-                                        <div class="xsf-step-num">{{ $stepNum }}</div>
+                                    <li class="xsf-step-row">
+                                        <div class="xsf-step-num" aria-hidden="true">{{ $stepNum }}</div>
                                         <div class="xsf-step-text">
+                                            <span class="visually-hidden">Step {{ $stepNum }}.</span>
                                             @if($stepTitle)
-                                                <h3 class="h6 fw-bold text-dark mb-1">{{ $stepTitle }}</h3>
+                                                <h3 class="xsf-step-title">{{ $stepTitle }}</h3>
                                             @endif
                                             <p class="mb-0">{{ $stepText }}</p>
                                         </div>
-                                    </div>
+                                    </li>
                                 @endforeach
-                            </div>
+                            </ol>
                         @else
                             <p class="text-muted">Detailed culinary steps will be displayed here.</p>
                         @endif
 
                         @if($recipe->content)
-                            <div class="mt-4 p-3 bg-light rounded-4 border">
+                            <div class="mt-4 p-3 bg-light rounded-3 border">
                                 <h3 class="h6 fw-bold text-dark mb-2">
-                                    <i class="fa-solid fa-lightbulb text-warning me-1"></i> Chef's Notes & Pro Tips
+                                    <i class="fa-solid fa-lightbulb me-1" aria-hidden="true"></i> Chef's Notes & Pro Tips
                                 </h3>
                                 <div class="text-secondary small line-height-lg">
                                     {!! nl2br(e($recipe->content)) !!}
@@ -538,11 +239,11 @@
                         @endif
 
                         {{-- Action Buttons --}}
-                        <div class="mt-4 pt-3 border-top d-flex gap-3 flex-wrap">
-                            <a href="{{ $downloadUrl }}" class="btn btn-primary btn-pill px-4">
+                        <div class="mt-4 pt-3 border-top d-flex gap-2 flex-wrap no-print">
+                            <a href="{{ $downloadUrl }}" class="btn btn-primary">
                                 <i class="fa-solid fa-file-pdf me-2"></i> Download Recipe PDF
                             </a>
-                            <button type="button" class="btn btn-outline-dark btn-pill px-3" onclick="window.print();">
+                            <button type="button" class="btn btn-outline-dark" onclick="window.print();">
                                 <i class="fa-solid fa-print me-2"></i> Print Recipe
                             </button>
                         </div>
@@ -555,23 +256,26 @@
                                 $firstStepText = $firstStep['text'] ?? ($firstStep['description'] ?? (is_string($firstStep) ? $firstStep : ''));
                             @endphp
                             @if($firstStepText)
-                                <div class="xsf-step-row">
-                                    <div class="xsf-step-num">1</div>
-                                    <div class="xsf-step-text">
-                                        @if(!empty($firstStep['title']))
-                                            <h3 class="h6 fw-bold text-dark mb-1">{{ $firstStep['title'] }}</h3>
-                                        @endif
-                                        <p class="mb-0">{{ $firstStepText }}</p>
-                                    </div>
-                                </div>
+                                <ol class="list-unstyled mb-0">
+                                    <li class="xsf-step-row">
+                                        <div class="xsf-step-num" aria-hidden="true">1</div>
+                                        <div class="xsf-step-text">
+                                            <span class="visually-hidden">Step 1.</span>
+                                            @if(!empty($firstStep['title']))
+                                                <h3 class="xsf-step-title">{{ $firstStep['title'] }}</h3>
+                                            @endif
+                                            <p class="mb-0">{{ $firstStepText }}</p>
+                                        </div>
+                                    </li>
+                                </ol>
                             @endif
                         @endif
 
                         <div class="xsf-locked-card">
                             <div class="xsf-lock-icon">
-                                <i class="fa-solid fa-lock"></i>
+                                <i class="fa-solid fa-lock" aria-hidden="true"></i>
                             </div>
-                            <h3 class="h5 fw-bold text-dark mb-2">Unlock Full Recipe & PDF Download</h3>
+                            <h3 class="h5 fw-semibold text-dark mb-2">Unlock the full recipe and PDF</h3>
                             <p class="text-muted small max-w-lg mx-auto mb-4">
                                 The full step-by-step culinary instructions and printable card are exclusively unlocked when you purchase any eligible product from our store!
                             </p>
@@ -579,15 +283,15 @@
                             @if($recipe->products->isNotEmpty())
                                 <div class="d-flex justify-content-center gap-2 flex-wrap">
                                     @php $firstProduct = $recipe->products->first(); @endphp
-                                    <a href="{{ route('product.show', $firstProduct->slug) }}" class="btn btn-primary btn-pill px-4">
+                                    <a href="{{ route('product.show', $firstProduct->slug) }}" class="btn btn-primary">
                                         <i class="fa-solid fa-bag-shopping me-1"></i> Buy {{ $firstProduct->name }}
                                     </a>
-                                    <a href="{{ route('shop.index') }}" class="btn btn-outline-secondary btn-pill px-3">
+                                    <a href="{{ route('shop.index') }}" class="btn btn-outline-secondary">
                                         Browse Shop
                                     </a>
                                 </div>
                             @else
-                                <a href="{{ route('shop.index') }}" class="btn btn-primary btn-pill px-4">
+                                <a href="{{ route('shop.index') }}" class="btn btn-primary">
                                     Shop Eligible Products
                                 </a>
                             @endif

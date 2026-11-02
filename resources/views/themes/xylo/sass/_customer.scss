@@ -1,137 +1,121 @@
 // =====================================================================
-//  CUSTOMER ACCOUNT AREA (token-driven)
-//  Redesign: richer nav sidebar, elevated avatar, polished sections.
+//  CUSTOMER ACCOUNT + RECIPES (flat surfaces, 1px borders, 8/12px radii)
+//  Account nav: scrollable tabs below lg, sidebar at lg+.
 // =====================================================================
 @use 'variables' as *;
 
-// =====================================================================
-//  ACCOUNT LAYOUT WRAPPER
-// =====================================================================
+// ---------------------------------------------------------------------
+//  Shared: account layout + nav
+// ---------------------------------------------------------------------
 .xsf-account-layout {
-    padding: $space-8 0 $space-16;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: $space-4;
+    padding: $space-4 0 $space-8;
+
+    @include bp-up('lg') {
+        grid-template-columns: 240px minmax(0, 1fr);
+        gap: $space-8;
+        padding: $space-6 0 $space-12;
+        align-items: start;
+    }
+
+    &__aside { min-width: 0; @include bp-up('lg') { position: sticky; top: $space-6; } }
+    &__main  { min-width: 0; }
 }
 
-// =====================================================================
-//  ACCOUNT NAV SIDEBAR
-// =====================================================================
+.xsf-account-head {
+    margin-bottom: $space-4;
+
+    h1 {
+        font-size: $font-size-xl;
+        font-weight: $font-weight-bold;
+        color: $neutral-900;
+        margin: 0;
+    }
+    p { margin: $space-1 0 0; color: $text-muted; font-size: $font-size-sm; }
+}
+
 .xsf-account-nav {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: $space-1;
-    background: $neutral-0;
-    border: 1px solid $border-subtle;
-    border-radius: $radius-2xl;
-    padding: $space-4;
-    box-shadow: $shadow-xs;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    border-bottom: 1px solid $border-color;
 
-    // Avatar + name block at top
-    &__profile {
-        display: flex;
-        align-items: center;
-        gap: $space-3;
-        padding: $space-3 $space-2 $space-4;
-        margin-bottom: $space-2;
-        border-bottom: 1px solid $border-subtle;
+    &::-webkit-scrollbar { display: none; }
 
-        img {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid $primary-100;
-            box-shadow: $shadow-sm;
-        }
-
-        .profile-name {
-            font-size: $font-size-sm;
-            font-weight: $font-weight-bold;
-            color: $neutral-900;
-            margin: 0;
-            line-height: 1.3;
-        }
-
-        .profile-email {
-            font-size: $font-size-xs;
-            color: $text-muted;
-            margin: 2px 0 0;
-        }
+    @include bp-up('lg') {
+        flex-direction: column;
+        overflow: visible;
+        border: 1px solid $border-color;
+        border-radius: $radius-xl;
+        background: $neutral-0;
+        padding: $space-2;
     }
 
     &__link {
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        gap: $space-3;
-        padding: $space-3;
-        border-radius: $radius-xl;
+        gap: $space-2;
+        flex: 0 0 auto;
+        min-height: 44px;
+        padding: 0 $space-3;
         color: $text-secondary;
-        font-weight: $font-weight-medium;
         font-size: $font-size-sm;
-        transition: all $transition-fast;
+        font-weight: $font-weight-medium;
+        white-space: nowrap;
         text-decoration: none;
-        position: relative;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        transition: color $transition-fast, background-color $transition-fast, border-color $transition-fast;
 
-        i {
-            width: 18px;
-            text-align: center;
-            color: $text-muted;
-            font-size: 0.85rem;
-            transition: color $transition-fast;
-        }
+        i { width: 16px; text-align: center; color: $text-muted; font-size: 0.85rem; }
 
-        &:hover {
-            background: $surface-muted;
-            color: $neutral-900;
-            i { color: $color-primary; }
-        }
+        &:hover { color: $neutral-900; i { color: $neutral-700; } }
+
+        &:focus-visible { outline: 2px solid $color-primary; outline-offset: -2px; border-radius: $radius-md; }
 
         &.is-active {
-            background: $primary-50;
             color: $color-primary;
             font-weight: $font-weight-semibold;
-
+            border-bottom-color: $color-primary;
             i { color: $color-primary; }
+        }
 
-            // Left accent bar
-            &::before {
-                content: '';
-                position: absolute;
-                left: 0;
-                top: $space-2;
-                bottom: $space-2;
-                width: 3px;
-                background: $gradient-primary;
-                border-radius: 0 3px 3px 0;
-            }
+        @include bp-up('lg') {
+            border-bottom: 0;
+            margin-bottom: 0;
+            border-radius: $radius-md;
+            padding: 0 $space-3;
+
+            &:hover { background: $surface-muted; }
+            &.is-active { background: $primary-50; border-bottom: 0; }
         }
     }
 
-    // Logout link
     &__link--danger {
-        color: $danger-600;
-        i { color: $danger-500; }
-
-        &:hover {
-            background: $danger-50;
-            color: $danger-700;
-            i { color: $danger-600; }
-        }
+        color: $danger-700;
+        i { color: $danger-600; }
+        &:hover { color: $danger-700; i { color: $danger-700; } }
+        @include bp-up('lg') { &:hover { background: $danger-50; } }
     }
 }
 
-// =====================================================================
-//  MAIN CONTENT CARD
-// =====================================================================
+// ---------------------------------------------------------------------
+//  Panel (card) + headings
+// ---------------------------------------------------------------------
 .xsf-account-card {
     background: $neutral-0;
-    border: 1px solid $border-subtle;
-    border-radius: $radius-2xl;
-    box-shadow: $shadow-xs;
-    overflow: hidden;
+    border: 1px solid $border-color;
+    border-radius: $radius-xl;
+    margin-bottom: $space-4;
 
     &__header {
-        padding: $space-5 $space-6;
-        border-bottom: 1px solid $border-subtle;
-        background: $surface-muted;
+        padding: $space-3 $space-4;
+        border-bottom: 1px solid $border-color;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -140,215 +124,653 @@
 
     &__title {
         font-size: $font-size-base;
-        font-weight: $font-weight-bold;
+        font-weight: $font-weight-semibold;
         color: $neutral-900;
         margin: 0;
-        letter-spacing: -0.01em;
+        display: flex;
+        align-items: center;
+        gap: $space-2;
+        i { color: $text-muted; font-size: 0.9rem; }
     }
 
-    &__body { padding: $space-6; }
+    &__body { padding: $space-4; @include bp-up('md') { padding: $space-5; } }
 }
 
-// =====================================================================
-//  AVATAR UPLOADER
-// =====================================================================
+.xsf-account-section-title {
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $neutral-900;
+    padding-bottom: $space-2;
+    border-bottom: 1px solid $border-color;
+    margin: 0 0 $space-4;
+}
+
+// ---------------------------------------------------------------------
+//  Profile form
+// ---------------------------------------------------------------------
+.xsf-profile-form {
+    display: grid;
+    gap: $space-6;
+    max-width: 40rem;
+
+    .form-control { min-height: 44px; border-radius: $radius-md; }
+    textarea.form-control { min-height: 5.5rem; }
+    .form-label { font-weight: $font-weight-medium; font-size: $font-size-sm; margin-bottom: $space-1; }
+}
+
+.xsf-profile-identity {
+    display: flex;
+    align-items: center;
+    gap: $space-4;
+
+    &__name  { font-weight: $font-weight-semibold; color: $neutral-900; margin: 0; word-break: break-word; }
+    &__email { color: $text-muted; font-size: $font-size-sm; margin: 0; word-break: break-word; }
+}
+
 .xsf-account-avatar {
     position: relative;
-    display: inline-block;
-    margin-bottom: $space-4;
+    flex: 0 0 auto;
+    width: 88px;
+    height: 88px;
 
     img {
-        width: 120px;
-        height: 120px;
+        width: 100%;
+        height: 100%;
         border-radius: 50%;
         object-fit: cover;
-        border: 4px solid $neutral-0;
-        box-shadow: $shadow-xl;
-        transition: all $transition-base;
+        border: 1px solid $border-color;
+        background: $surface-muted;
     }
-
-    &:hover img { transform: scale(1.03); }
 
     &__btn {
         position: absolute;
-        bottom: 4px;
-        right: 4px;
-        width: 36px;
-        height: 36px;
+        right: -4px;
+        bottom: -4px;
+        width: 44px;
+        height: 44px;
         border-radius: 50%;
-        background: $neutral-900;
-        color: #fff;
+        background: $neutral-0;
+        color: $neutral-700;
+        border: 1px solid $border-color;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        box-shadow: $shadow-md;
-        transition: all $transition-fast;
-        border: 2px solid $neutral-0;
-        font-size: 0.80rem;
+        font-size: 0.85rem;
+        transition: border-color $transition-fast, color $transition-fast;
 
-        &:hover {
-            background: $color-primary;
-            transform: scale(1.10);
-            box-shadow: $shadow-primary;
-        }
+        &:hover { border-color: $color-primary; color: $color-primary; }
     }
+
+    // file input is visually hidden; keep its focus visible on the button
+    input:focus-visible + &__btn,
+    &:focus-within &__btn { outline: 2px solid $color-primary; outline-offset: 2px; }
 }
 
-// =====================================================================
-//  SECTION HEADING
-// =====================================================================
-.xsf-account-section-title {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-bold;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: $text-muted;
-    padding-bottom: $space-3;
-    border-bottom: 1px solid $border-subtle;
-    margin-bottom: $space-5;
-}
-
-// =====================================================================
-//  ORDERS TABLE  (account order history)
-// =====================================================================
-.xsf-account-orders {
-    .order-row {
-        display: flex;
-        align-items: center;
-        gap: $space-4;
-        padding: $space-4;
-        border: 1px solid $border-subtle;
-        border-radius: $radius-xl;
-        margin-bottom: $space-3;
-        background: $neutral-0;
-        transition: all $transition-fast;
-
-        &:hover {
-            border-color: $primary-200;
-            box-shadow: $shadow-md;
-            transform: translateY(-2px);
-        }
-
-        &:last-child { margin-bottom: 0; }
-    }
-
-    .order-num {
-        font-size: $font-size-sm;
-        font-weight: $font-weight-bold;
-        color: $neutral-900;
-        white-space: nowrap;
-    }
-
-    .order-date {
-        font-size: $font-size-xs;
-        color: $text-muted;
-        margin-top: 2px;
-    }
-
-    .order-amount {
-        font-size: $font-size-sm;
-        font-weight: $font-weight-bold;
-        color: $neutral-900;
-        margin-left: auto;
-    }
-}
-
-// =====================================================================
-//  WISHLIST GRID
-// =====================================================================
-.xsf-wishlist-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: $space-4;
-}
-
-// =====================================================================
-//  DANGER ZONE
-// =====================================================================
 .xsf-danger-zone {
-    text-align: left;
-    margin-top: $space-6;
-    border: 1px solid rgba($danger-500, 0.28);
+    border: 1px solid $danger-200;
     background: $danger-50;
     border-radius: $radius-xl;
-    padding: $space-5;
-    position: relative;
-    overflow: hidden;
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: 4px;
-        background: $danger-500;
-        border-radius: $radius-xs 0 0 $radius-xs;
-    }
+    padding: $space-4;
 
     &__title {
         font-size: $font-size-sm;
-        font-weight: $font-weight-bold;
+        font-weight: $font-weight-semibold;
         color: $danger-700;
-        margin-bottom: $space-2;
-        display: flex;
-        align-items: center;
-        gap: $space-2;
-
-        i { font-size: 0.85rem; }
+        margin: 0 0 $space-1;
     }
+    &__text { font-size: $font-size-sm; color: $text-secondary; margin: 0 0 $space-3; }
+}
 
-    &__text {
-        font-size: $font-size-xs;
-        color: $text-muted;
-        margin-bottom: $space-4;
-        line-height: $line-height-loose;
+// ---------------------------------------------------------------------
+//  Status badge (text + icon, never colour alone)
+// ---------------------------------------------------------------------
+.xsf-status {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    padding: 2px $space-2;
+    border-radius: $radius-md;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    text-transform: capitalize;
+
+    &--pending    { background: $warning-50; color: $warning-700; border-color: $warning-200; }
+    &--processing { background: $info-50;    color: $info-700;    border-color: $info-200; }
+    &--completed  { background: $success-50; color: $success-700; border-color: $success-200; }
+    &--canceled   { background: $danger-50;  color: $danger-700;  border-color: $danger-200; }
+}
+
+// ---------------------------------------------------------------------
+//  Orders list: cards < md, table md+
+// ---------------------------------------------------------------------
+.xsf-orders-count { color: $text-muted; font-size: $font-size-sm; }
+
+.xsf-order-cards {
+    display: grid;
+    gap: $space-3;
+    @include bp-up('md') { display: none; }
+}
+
+.xsf-order-card {
+    background: $neutral-0;
+    border: 1px solid $border-color;
+    border-radius: $radius-xl;
+    padding: $space-4;
+    display: grid;
+    gap: $space-3;
+
+    &__row { display: flex; align-items: center; justify-content: space-between; gap: $space-3; }
+    &__id { font-weight: $font-weight-semibold; color: $neutral-900; }
+    &__meta { color: $text-muted; font-size: $font-size-sm; }
+    &__total { font-weight: $font-weight-bold; color: $neutral-900; }
+}
+
+.xsf-order-thumbs {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+}
+
+.xsf-order-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: $radius-md;
+    object-fit: cover;
+    background: $surface-muted;
+    border: 1px solid $border-color;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $text-muted;
+    font-size: $font-size-xs;
+}
+
+.xsf-order-table-wrap {
+    display: none;
+    @include bp-up('md') {
+        display: block;
+        background: $neutral-0;
+        border: 1px solid $border-color;
+        border-radius: $radius-xl;
+        overflow-x: auto;
     }
 }
 
-// =====================================================================
-//  ADDRESS CARD  (billing / shipping saved addresses)
-// =====================================================================
-.xsf-address-card {
-    border: 1px solid $border-subtle;
-    border-radius: $radius-xl;
-    padding: $space-5;
-    background: $neutral-0;
-    position: relative;
-    transition: all $transition-fast;
+.xsf-order-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: $font-size-sm;
 
-    &:hover { border-color: $border-color; box-shadow: $shadow-sm; }
-
-    &.is-default {
-        border-color: $primary-200;
-        background: $primary-50;
-
-        .xsf-address-card__default-badge {
-            display: inline-flex;
-        }
+    th {
+        text-align: left;
+        font-weight: $font-weight-semibold;
+        color: $text-muted;
+        padding: $space-3 $space-4;
+        border-bottom: 1px solid $border-color;
+        white-space: nowrap;
     }
+    td {
+        padding: $space-3 $space-4;
+        border-bottom: 1px solid $border-subtle;
+        vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover td { background: $surface-muted; }
+    .is-num { text-align: right; white-space: nowrap; }
+}
 
-    &__default-badge {
-        display: none;
+// ---------------------------------------------------------------------
+//  Order detail
+// ---------------------------------------------------------------------
+.xsf-order-detail-header {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+    margin-bottom: $space-4;
+    @include bp-up('md') { flex-direction: row; align-items: flex-start; justify-content: space-between; }
+
+    h1 { font-size: $font-size-xl; font-weight: $font-weight-bold; margin: 0; color: $neutral-900; }
+}
+
+.xsf-order-detail-grid {
+    display: grid;
+    gap: $space-4;
+    grid-template-columns: minmax(0, 1fr);
+    @include bp-up('xl') { grid-template-columns: minmax(0, 1fr) 300px; align-items: start; }
+}
+
+.xsf-detail-item {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-3 0;
+    border-bottom: 1px solid $border-subtle;
+
+    &:first-child { padding-top: 0; }
+    &:last-child { border-bottom: 0; padding-bottom: 0; }
+
+    &__thumb {
+        width: 56px;
+        height: 56px;
+        border-radius: $radius-md;
+        object-fit: cover;
+        background: $surface-muted;
+        border: 1px solid $border-color;
+        flex: 0 0 auto;
+        display: flex;
         align-items: center;
-        gap: $space-1;
-        background: $gradient-primary;
-        color: #fff;
-        border-radius: $radius-pill;
-        padding: 2px 9px;
-        font-size: 0.65rem;
-        font-weight: $font-weight-bold;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        position: absolute;
-        top: $space-3;
-        right: $space-3;
+        justify-content: center;
+        color: $text-muted;
+    }
+    &__info { flex: 1; min-width: 0; }
+    &__title { font-weight: $font-weight-medium; color: $neutral-900; text-decoration: none; word-break: break-word; &:hover { color: $color-primary; } }
+    &__meta { color: $text-muted; font-size: $font-size-sm; }
+    &__total { font-weight: $font-weight-semibold; color: $neutral-900; flex: 0 0 auto; }
+}
+
+.xsf-summary-row {
+    display: flex;
+    justify-content: space-between;
+    gap: $space-3;
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    margin-bottom: $space-2;
+}
+.xsf-summary-total {
+    display: flex;
+    justify-content: space-between;
+    gap: $space-3;
+    padding-top: $space-3;
+    margin-top: $space-3;
+    border-top: 1px solid $border-color;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $neutral-900;
+}
+
+.xsf-info-label { font-size: $font-size-xs; font-weight: $font-weight-medium; color: $text-muted; margin-bottom: 2px; }
+.xsf-info-value { font-size: $font-size-sm; font-weight: $font-weight-medium; color: $neutral-900; }
+
+.xsf-recipe-row {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-3 0;
+    border-bottom: 1px solid $border-subtle;
+    flex-wrap: wrap;
+
+    &:first-child { padding-top: 0; }
+    &:last-child { border-bottom: 0; padding-bottom: 0; }
+
+    &__thumb {
+        width: 64px;
+        height: 64px;
+        border-radius: $radius-md;
+        object-fit: cover;
+        background: $surface-muted;
+        border: 1px solid $border-color;
+        flex: 0 0 auto;
+    }
+    &__body { flex: 1 1 12rem; min-width: 0; }
+    &__title { font-weight: $font-weight-semibold; color: $neutral-900; text-decoration: none; &:hover { color: $color-primary; } }
+    &__meta { color: $text-muted; font-size: $font-size-sm; }
+    &__summary { color: $text-secondary; font-size: $font-size-sm; margin: 2px 0 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    &__actions { display: flex; gap: $space-2; flex: 0 0 auto; @include bp-down('sm') { width: 100%; > .btn { flex: 1; } } }
+}
+
+@media print {
+    .xsf-header, .xsf-footer, .xsf-account-nav, .xsf-back-btn, .btn-print { display: none !important; }
+}
+
+// ---------------------------------------------------------------------
+//  Recipes catalog
+// ---------------------------------------------------------------------
+.xsf-recipes-head {
+    padding: $space-6 0 $space-4;
+
+    h1 { font-size: $font-size-2xl; font-weight: $font-weight-bold; color: $neutral-900; margin: 0 0 $space-1; }
+    p { color: $text-secondary; margin: 0; max-width: 60ch; }
+}
+
+.xsf-recipe-filter-bar {
+    display: grid;
+    gap: $space-3;
+    margin-bottom: $space-5;
+
+    @include bp-up('lg') { grid-template-columns: minmax(0, 22rem) minmax(0, 1fr); align-items: center; }
+
+    &__search {
+        display: flex;
+        align-items: center;
+        gap: $space-2;
+        min-height: 44px;
+        padding: 0 $space-3;
+        background: $neutral-0;
+        border: 1px solid $border-color;
+        border-radius: $radius-md;
+        color: $text-muted;
+
+        &:focus-within { border-color: $color-primary; box-shadow: $shadow-focus; }
+
+        input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; min-height: 42px; font-size: $font-size-sm; color: $neutral-900; }
     }
 
-    &__actions {
+    &__chips {
         display: flex;
         gap: $space-2;
-        margin-top: $space-4;
+        align-items: center;
+        overflow-x: auto;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+        &::-webkit-scrollbar { display: none; }
+        @include bp-up('lg') { justify-content: flex-end; flex-wrap: wrap; overflow: visible; }
+
+        select {
+            min-height: 44px;
+            border: 1px solid $border-color;
+            border-radius: $radius-md;
+            background-color: $neutral-0;
+            padding: 0 $space-3;
+            font-size: $font-size-sm;
+            flex: 0 0 auto;
+            &:focus-visible { outline: 2px solid $color-primary; outline-offset: 1px; }
+        }
     }
+}
+
+.xsf-recipe-filter-pill {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 0 $space-4;
+    border-radius: $radius-pill;
+    border: 1px solid $border-color;
+    background: $neutral-0;
+    color: $text-secondary;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color $transition-fast, border-color $transition-fast, color $transition-fast;
+
+    &:hover { border-color: $neutral-400; color: $neutral-900; }
+    &:focus-visible { outline: 2px solid $color-primary; outline-offset: 2px; }
+    &.active { background: $neutral-900; border-color: $neutral-900; color: $neutral-0; }
+}
+
+.xsf-recipe-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: $space-4;
+    @include bp-up('sm') { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @include bp-up('lg') { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: $space-5; }
+}
+
+.xsf-recipe-card {
+    display: flex;
+    flex-direction: column;
+    background: $neutral-0;
+    border: 1px solid $border-color;
+    border-radius: $radius-xl;
+    overflow: hidden;
+    transition: border-color $transition-fast;
+
+    &:hover, &:focus-within { border-color: $neutral-400; }
+
+    &__img-wrap {
+        position: relative;
+        aspect-ratio: 3 / 2;
+        background: $surface-muted;
+        display: block;
+    }
+    &__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+    &__unlocked-badge,
+    &__difficulty {
+        position: absolute;
+        top: $space-2;
+        padding: 2px $space-2;
+        border-radius: $radius-md;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-semibold;
+        background: $neutral-0;
+        color: $neutral-900;
+        border: 1px solid $border-color;
+        display: inline-flex;
+        align-items: center;
+        gap: $space-1;
+        text-transform: capitalize;
+    }
+    &__unlocked-badge { left: $space-2; color: $success-700; }
+    &__difficulty { right: $space-2; }
+
+    &__body { padding: $space-4; display: flex; flex-direction: column; flex: 1; gap: $space-2; }
+    &__cuisine { font-size: $font-size-xs; font-weight: $font-weight-medium; color: $text-muted; }
+    &__title { font-size: $font-size-lg; font-weight: $font-weight-semibold; line-height: 1.3; margin: 0; color: $neutral-900;
+        a { color: inherit; text-decoration: none; &:hover { color: $color-primary; } &:focus-visible { outline: 2px solid $color-primary; outline-offset: 2px; border-radius: $radius-xs; } }
+    }
+    &__summary { font-size: $font-size-sm; color: $text-secondary; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    &__meta { margin-top: auto; padding-top: $space-3; display: flex; flex-wrap: wrap; gap: $space-1 $space-4; font-size: $font-size-sm; color: $text-muted; }
+    &__meta-item { display: inline-flex; align-items: center; gap: $space-1; }
+    &__actions { display: flex; gap: $space-2; margin-top: $space-2; > .btn { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; } }
+}
+
+// ---------------------------------------------------------------------
+//  Recipe detail
+// ---------------------------------------------------------------------
+.xsf-recipe-page { padding: $space-4 0 $space-12; }
+
+.xsf-recipe-intro {
+    max-width: 70ch;
+    margin: 0 auto $space-6;
+}
+
+.xsf-recipe-hero-img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 420px;
+    object-fit: cover;
+    border-radius: $radius-xl;
+    border: 1px solid $border-color;
+    background: $surface-muted;
+    margin-bottom: $space-5;
+    display: block;
+}
+
+.xsf-recipe-eyebrow { font-size: $font-size-sm; font-weight: $font-weight-medium; color: $text-muted; margin-bottom: $space-1; }
+
+.xsf-recipe-title {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $neutral-900;
+    line-height: 1.2;
+    margin: 0 0 $space-3;
+    @include bp-up('md') { font-size: $font-size-3xl; }
+}
+
+.xsf-recipe-lead { color: $text-secondary; line-height: 1.65; margin: 0 0 $space-4; }
+
+.xsf-recipe-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0 0 $space-4;
+    border: 1px solid $border-color;
+    border-radius: $radius-xl;
+    background: $neutral-0;
+    @include bp-up('sm') { grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); }
+}
+.xsf-recipe-meta-pill {
+    padding: $space-3;
+    border-right: 1px solid $border-subtle;
+    border-bottom: 1px solid $border-subtle;
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    i { color: $text-muted; margin-right: $space-1; }
+    strong { color: $neutral-900; font-weight: $font-weight-semibold; font-size: $font-size-base; }
+}
+
+.xsf-recipe-body {
+    display: grid;
+    gap: $space-6;
+    max-width: 70ch;
+    margin: 0 auto;
+
+    @include bp-up('lg') {
+        max-width: none;
+        grid-template-columns: 340px minmax(0, 1fr);
+        gap: $space-8;
+        align-items: start;
+    }
+
+    &__aside { display: grid; gap: $space-4; min-width: 0; @include bp-up('lg') { position: sticky; top: $space-6; } }
+    &__main { min-width: 0; @include bp-up('lg') { max-width: 70ch; } }
+}
+
+.xsf-recipe-block {
+    background: $neutral-0;
+    border: 1px solid $border-color;
+    border-radius: $radius-xl;
+    padding: $space-4;
+    @include bp-up('md') { padding: $space-5; }
+
+    &__title {
+        font-size: $font-size-lg;
+        font-weight: $font-weight-semibold;
+        color: $neutral-900;
+        margin: 0 0 $space-3;
+        display: flex;
+        align-items: center;
+        gap: $space-2;
+        i { color: $text-muted; font-size: 0.95rem; }
+    }
+    &__hint { color: $text-muted; font-size: $font-size-sm; margin: 0 0 $space-3; }
+}
+
+.xsf-ingredient-item {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    min-height: 44px;
+    padding: $space-2 0;
+    border-bottom: 1px solid $border-subtle;
+    cursor: pointer;
+    font-size: $font-size-sm;
+
+    &:last-child { border-bottom: 0; }
+
+    input[type="checkbox"] { width: 20px; height: 20px; flex: 0 0 auto; margin: 0; cursor: pointer; accent-color: $color-primary; }
+    input[type="checkbox"]:focus-visible { outline: 2px solid $color-primary; outline-offset: 2px; }
+
+    &.is-checked { text-decoration: line-through; color: $text-muted; }
+}
+
+.xsf-step-row {
+    display: flex;
+    gap: $space-3;
+    padding-bottom: $space-4;
+    margin-bottom: $space-4;
+    border-bottom: 1px solid $border-subtle;
+
+    &:last-child { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
+}
+.xsf-step-num {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    border: 1px solid $neutral-900;
+    color: $neutral-900;
+    font-weight: $font-weight-semibold;
+    font-size: $font-size-sm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.xsf-step-text { flex: 1; min-width: 0; line-height: 1.65; color: $text-secondary; p { margin: 0; } }
+.xsf-step-title { font-size: $font-size-base; font-weight: $font-weight-semibold; color: $neutral-900; margin: 0 0 $space-1; }
+
+.xsf-nutrition {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: $font-size-sm;
+    th, td { padding: $space-2 0; border-bottom: 1px solid $border-subtle; text-align: left; }
+    th { font-weight: 400; color: $text-muted; text-transform: capitalize; }
+    td { text-align: right; font-weight: $font-weight-semibold; color: $neutral-900; }
+    tr:last-child th, tr:last-child td { border-bottom: 0; }
+}
+
+.xsf-locked-card {
+    border: 1px dashed $border-color;
+    border-radius: $radius-xl;
+    padding: $space-6 $space-4;
+    text-align: center;
+    background: $surface-muted;
+    margin-top: $space-4;
+}
+.xsf-lock-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid $border-color;
+    background: $neutral-0;
+    color: $neutral-700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto $space-3;
+}
+
+.xsf-linked-product {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-2 0;
+    border-bottom: 1px solid $border-subtle;
+    &:last-child { border-bottom: 0; }
+
+    &__thumb {
+        width: 48px;
+        height: 48px;
+        object-fit: cover;
+        border-radius: $radius-md;
+        border: 1px solid $border-color;
+        background: $surface-muted;
+        flex: 0 0 auto;
+    }
+}
+
+.xsf-unlocked-banner {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+    padding: $space-3 $space-4;
+    margin-bottom: $space-4;
+    background: $success-50;
+    border: 1px solid $success-200;
+    border-radius: $radius-xl;
+
+    @include bp-up('md') { flex-direction: row; align-items: center; justify-content: space-between; }
+
+    &__actions { display: flex; gap: $space-2; flex-wrap: wrap; > .btn { flex: 1 1 auto; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; } @include bp-up('md') { > .btn { flex: 0 0 auto; } } }
+}
+
+@media print {
+    @page { size: A5 portrait; margin: 8mm 10mm; }
+
+    .xsf-header, .xsf-footer, .xsf-breadcrumb, .btn, .xsf-unlocked-banner, .no-print { display: none !important; }
+
+    body { background: #fff !important; font-size: 8.5pt !important; color: #000 !important; }
+    .xsf-recipe-hero-img { max-height: 180px !important; }
+    .xsf-recipe-block { border: 0 !important; padding: 0 !important; margin-bottom: 14px !important; }
+    .xsf-recipe-body { display: block !important; max-width: none !important; }
+    .xsf-step-num { border-color: #000 !important; color: #000 !important; }
 }

@@ -1,7 +1,10 @@
 @extends('themes.xylo.layouts.master')
 
 @section('content')
-    @php $currency = activeCurrency(); @endphp
+    @php
+        $currency = activeCurrency();
+        $fa = fn ($n) => $errors->has($n) ? ' aria-invalid="true" aria-describedby="err-' . $n . '"' : '';
+    @endphp
 
     <section class="xsf-section">
         <div class="container">
@@ -10,183 +13,197 @@
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
                 <a href="{{ route('cart.view') }}">{{ 'Cart' }}</a>
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
-                <span>{{ 'Checkout' }}</span>
+                <span aria-current="page">{{ 'Checkout' }}</span>
             </nav>
+
+            <div class="xsf-listing-head">
+                <h1 class="xsf-listing-head__title">{{ 'Checkout' }}</h1>
+            </div>
 
             {{-- Step indicator --}}
             <ol class="xsf-steps" aria-label="{{ 'Checkout progress' }}">
-                <li class="xsf-steps__item is-done"><span class="xsf-steps__num"><i class="fa fa-check"></i></span>{{ 'Cart' }}</li>
-                <li class="xsf-steps__item is-active" aria-current="step"><span class="xsf-steps__num">2</span>{{ 'Checkout' }}</li>
-                <li class="xsf-steps__item"><span class="xsf-steps__num">3</span>{{ 'Complete' }}</li>
+                <li class="xsf-steps__item is-done"><span class="xsf-steps__num" aria-hidden="true"><i class="fa fa-check"></i></span>{{ 'Cart' }}</li>
+                <li class="xsf-steps__item is-active" aria-current="step"><span class="xsf-steps__num" aria-hidden="true">2</span>{{ 'Checkout' }}</li>
+                <li class="xsf-steps__item"><span class="xsf-steps__num" aria-hidden="true">3</span>{{ 'Complete' }}</li>
             </ol>
 
-            <div class="row g-4">
-                <div class="col-lg-7">
+            <div class="xsf-checkout-layout">
+                <div class="xsf-checkout-layout__main">
+                    {{-- Collapsible summary (phones / tablets) --}}
+                    <details class="xsf-summary-toggle d-lg-none">
+                        <summary>
+                            <span class="xsf-summary-toggle__label">{{ 'Order Summary' }}</span>
+                            <span class="xsf-summary-toggle__total">{{ $currency->symbol }}{{ number_format($total, 2) }}</span>
+                        </summary>
+                        <x-store.order-summary :heading="false" :subtotal="$subtotal" :discount-amount="$discountAmount" :coupon="$coupon" :total="$total" :currency="$currency" />
+                    </details>
+
                     <form id="checkout-form" method="POST" action="{{ route('checkout.store') }}">
                         @csrf
 
-                        {{-- Shipping --}}
-                        <div class="card mb-4 shipping_info">
-                            <div class="card-body">
-                                <h3 class="cart-heading xsf-summary__title">{{ 'Shipping Information' }}</h3>
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <input type="text" name="first_name" class="form-control" placeholder="{{ 'First Name' }}" aria-label="{{ 'First Name' }}" autocomplete="given-name" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input type="text" name="last_name" class="form-control" placeholder="{{ 'Last Name' }}" aria-label="{{ 'Last Name' }}" autocomplete="family-name" required>
-                                    </div>
-                                    <div class="col-12">
-                                        <input type="text" name="address" class="form-control" placeholder="{{ 'Address' }}" aria-label="{{ 'Address' }}" autocomplete="address-line1" required>
-                                    </div>
+                        {{-- 1. Contact --}}
+                        <section class="xsf-panel shipping_info" aria-labelledby="step-contact">
+                            <h2 class="xsf-step__title" id="step-contact"><span class="xsf-step__no" aria-hidden="true">1</span>{{ 'Contact Information' }}</h2>
+                            <div class="row g-3">
+                                <div class="col-md-6 xsf-field">
+                                    <label class="xsf-field__label" for="f-email">{{ 'Email Address' }}</label>
+                                    <input type="email" name="email" id="f-email" class="form-control" value="{{ old('email') }}" autocomplete="email" inputmode="email" required{!! $fa('email') !!}>
+                                    <p class="xsf-field__error" id="err-email" role="alert">{{ $errors->first('email') }}</p>
+                                </div>
+                                <div class="col-md-6 xsf-field">
+                                    <label class="xsf-field__label" for="f-phone">{{ 'Phone Number' }}</label>
+                                    <input type="tel" name="phone" id="f-phone" class="form-control" value="{{ old('phone') }}" autocomplete="tel" inputmode="tel" required{!! $fa('phone') !!}>
+                                    <p class="xsf-field__error" id="err-phone" role="alert">{{ $errors->first('phone') }}</p>
+                                </div>
+                            </div>
+                        </section>
 
-                                    {{-- Suite / Floor (removable) --}}
-                                    <div class="col-12" id="suite-row">
-                                        <div class="input-group">
-                                            <input type="text" name="suite" id="suite-input" class="form-control" placeholder="{{ 'Apartment, suite, etc.' }}" aria-label="{{ 'Apartment, suite, etc.' }}" autocomplete="address-line2">
-                                            <button type="button" id="remove-suite-btn" class="btn btn-outline-secondary" title="Remove Suite/Floor">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                        <small class="text-muted">{{ 'Apartment, suite, etc.' }} (optional)</small>
-                                    </div>
+                        {{-- 2. Shipping --}}
+                        <section class="xsf-panel shipping_info" aria-labelledby="step-shipping">
+                            <h2 class="xsf-step__title" id="step-shipping"><span class="xsf-step__no" aria-hidden="true">2</span>{{ 'Shipping Information' }}</h2>
+                            <div class="row g-3">
+                                <div class="col-md-6 xsf-field">
+                                    <label class="xsf-field__label" for="f-first_name">{{ 'First Name' }}</label>
+                                    <input type="text" name="first_name" id="f-first_name" class="form-control" value="{{ old('first_name') }}" autocomplete="given-name" required{!! $fa('first_name') !!}>
+                                    <p class="xsf-field__error" id="err-first_name" role="alert">{{ $errors->first('first_name') }}</p>
+                                </div>
+                                <div class="col-md-6 xsf-field">
+                                    <label class="xsf-field__label" for="f-last_name">{{ 'Last Name' }}</label>
+                                    <input type="text" name="last_name" id="f-last_name" class="form-control" value="{{ old('last_name') }}" autocomplete="family-name" required{!! $fa('last_name') !!}>
+                                    <p class="xsf-field__error" id="err-last_name" role="alert">{{ $errors->first('last_name') }}</p>
+                                </div>
+                                <div class="col-12 xsf-field">
+                                    <label class="xsf-field__label" for="f-address">{{ 'Address' }}</label>
+                                    <input type="text" name="address" id="f-address" class="form-control" value="{{ old('address') }}" autocomplete="address-line1" required{!! $fa('address') !!}>
+                                    <p class="xsf-field__error" id="err-address" role="alert">{{ $errors->first('address') }}</p>
+                                </div>
 
-                                    {{-- Country --}}
-                                    <div class="col-md-6">
-                                        <input type="hidden" name="country" id="country-value">
-                                        <div class="xsf-combobox" id="country-combobox" data-cb-id="country">
-                                            <button type="button" class="xsf-combobox__trigger"
-                                                    id="country-trigger"
-                                                    aria-haspopup="listbox"
-                                                    aria-expanded="false"
-                                                    aria-controls="country-panel">
-                                                <span class="xsf-combobox__label xsf-combobox__label--placeholder"
-                                                      id="country-trigger-label">{{ 'Select Country' }}</span>
-                                            </button>
-                                            <div class="xsf-combobox__panel" id="country-panel" hidden role="listbox">
-                                                <div class="xsf-combobox__search-wrap">
-                                                    <svg class="xsf-combobox__search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                                                    <input type="text" class="xsf-combobox__search" id="country-search"
-                                                           placeholder="{{ 'Search country...' }}"
-                                                           autocomplete="off" aria-label="Search country">
-                                                </div>
-                                                <div class="xsf-combobox__options" id="country-options"></div>
-                                                <p class="xsf-combobox__empty" id="country-empty" hidden>No results found</p>
+                                {{-- Suite / Floor (removable) --}}
+                                <div class="col-12 xsf-field" id="suite-row">
+                                    <label class="xsf-field__label" for="suite-input">{{ 'Apartment, suite, etc.' }} <span class="text-muted fw-normal">({{ 'optional' }})</span></label>
+                                    <div class="input-group">
+                                        <input type="text" name="suite" id="suite-input" class="form-control" value="{{ old('suite') }}" autocomplete="address-line2">
+                                        <button type="button" id="remove-suite-btn" class="btn btn-outline-secondary" title="Remove Suite/Floor" aria-label="{{ 'Remove apartment, suite field' }}">
+                                            <i class="fa fa-times" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {{-- Country --}}
+                                <div class="col-md-6 xsf-field">
+                                    <label class="xsf-field__label" for="country-trigger">{{ 'Country' }}</label>
+                                    <input type="hidden" name="country" id="country-value">
+                                    <div class="xsf-combobox" id="country-combobox" data-cb-id="country">
+                                        <button type="button" class="xsf-combobox__trigger"
+                                                id="country-trigger"
+                                                aria-haspopup="listbox"
+                                                aria-expanded="false"
+                                                aria-controls="country-panel">
+                                            <span class="xsf-combobox__label xsf-combobox__label--placeholder"
+                                                  id="country-trigger-label">{{ 'Select Country' }}</span>
+                                        </button>
+                                        <div class="xsf-combobox__panel" id="country-panel" hidden role="listbox" aria-label="{{ 'Country' }}">
+                                            <div class="xsf-combobox__search-wrap">
+                                                <svg class="xsf-combobox__search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                                <input type="text" class="xsf-combobox__search" id="country-search"
+                                                       placeholder="{{ 'Search country...' }}"
+                                                       autocomplete="off" aria-label="Search country">
                                             </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <input type="text" name="city" class="form-control" placeholder="{{ 'City' }}" aria-label="{{ 'City' }}" autocomplete="address-level2" required>
-                                    </div>
-
-                                    {{-- State (populated dynamically via AJAX) --}}
-                                    <div class="col-md-6">
-                                        <input type="hidden" name="state" id="state-value">
-                                        <div class="xsf-combobox xsf-combobox--disabled" id="state-combobox" data-cb-id="state">
-                                            <button type="button" class="xsf-combobox__trigger"
-                                                    id="state-trigger"
-                                                    aria-haspopup="listbox"
-                                                    aria-expanded="false"
-                                                    aria-controls="state-panel"
-                                                    disabled>
-                                                <span class="xsf-combobox__label xsf-combobox__label--placeholder"
-                                                      id="state-trigger-label">{{ 'Select State / Province' }}</span>
-                                            </button>
-                                            <div class="xsf-combobox__panel" id="state-panel" hidden role="listbox">
-                                                <div class="xsf-combobox__search-wrap">
-                                                    <svg class="xsf-combobox__search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                                                    <input type="text" class="xsf-combobox__search" id="state-search"
-                                                           placeholder="{{ 'Search state...' }}"
-                                                           autocomplete="off" aria-label="Search state">
-                                                </div>
-                                                <div class="xsf-combobox__options" id="state-options"></div>
-                                                <p class="xsf-combobox__empty" id="state-empty" hidden>No results found</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-12">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="use_as_billing" value="1" id="use_as_billing" checked>
-                                            <label class="form-check-label" for="use_as_billing">{{ 'Use as billing address' }}</label>
+                                            <div class="xsf-combobox__options" id="country-options"></div>
+                                            <p class="xsf-combobox__empty" id="country-empty" hidden>No results found</p>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        {{-- Contact --}}
-                        <div class="card mb-4 shipping_info">
-                            <div class="card-body">
-                                <h3 class="cart-heading xsf-summary__title">{{ 'Contact Information' }}</h3>
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <input type="email" name="email" class="form-control" placeholder="{{ 'Email Address' }}" aria-label="{{ 'Email Address' }}" autocomplete="email" inputmode="email" required>
+                                <div class="col-md-6 xsf-field">
+                                    <label class="xsf-field__label" for="f-city">{{ 'City' }}</label>
+                                    <input type="text" name="city" id="f-city" class="form-control" value="{{ old('city') }}" autocomplete="address-level2" required{!! $fa('city') !!}>
+                                    <p class="xsf-field__error" id="err-city" role="alert">{{ $errors->first('city') }}</p>
+                                </div>
+
+                                {{-- State (populated dynamically via AJAX) --}}
+                                <div class="col-md-6 xsf-field">
+                                    <label class="xsf-field__label" for="state-trigger">{{ 'State / Province' }}</label>
+                                    <input type="hidden" name="state" id="state-value">
+                                    <div class="xsf-combobox xsf-combobox--disabled" id="state-combobox" data-cb-id="state">
+                                        <button type="button" class="xsf-combobox__trigger"
+                                                id="state-trigger"
+                                                aria-haspopup="listbox"
+                                                aria-expanded="false"
+                                                aria-controls="state-panel"
+                                                disabled>
+                                            <span class="xsf-combobox__label xsf-combobox__label--placeholder"
+                                                  id="state-trigger-label">{{ 'Select State / Province' }}</span>
+                                        </button>
+                                        <div class="xsf-combobox__panel" id="state-panel" hidden role="listbox" aria-label="{{ 'State / Province' }}">
+                                            <div class="xsf-combobox__search-wrap">
+                                                <svg class="xsf-combobox__search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                                <input type="text" class="xsf-combobox__search" id="state-search"
+                                                       placeholder="{{ 'Search state...' }}"
+                                                       autocomplete="off" aria-label="Search state">
+                                            </div>
+                                            <div class="xsf-combobox__options" id="state-options"></div>
+                                            <p class="xsf-combobox__empty" id="state-empty" hidden>No results found</p>
+                                        </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <input type="tel" name="phone" class="form-control" placeholder="{{ 'Phone Number' }}" aria-label="{{ 'Phone Number' }}" autocomplete="tel" inputmode="tel" required>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="use_as_billing" value="1" id="use_as_billing" checked>
+                                        <label class="form-check-label" for="use_as_billing">{{ 'Use as billing address' }}</label>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </section>
 
-                        {{-- Payment --}}
-                        <div class="card mb-4 shipping_info">
-                            <div class="card-body">
-                                <h3 class="cart-heading xsf-summary__title">{{ 'Payment Method' }}</h3>
+                        {{-- 3. Payment --}}
+                        <section class="xsf-panel shipping_info" aria-labelledby="step-payment">
+                            <h2 class="xsf-step__title" id="step-payment"><span class="xsf-step__no" aria-hidden="true">3</span>{{ 'Payment Method' }}</h2>
 
-                                <div class="xsf-gateways">
-                                    @foreach ($paymentGateways as $gateway)
-                                        <label class="xsf-gateway" for="gateway-{{ $gateway->id }}">
-                                            <input type="radio" name="gateway" value="{{ $gateway->code }}" id="gateway-{{ $gateway->id }}" required>
+                            <fieldset class="xsf-gateways">
+                                <legend class="visually-hidden">{{ 'Payment Method' }}</legend>
+                                @foreach ($paymentGateways as $gateway)
+                                    @php
+                                        $gCode = strtolower((string) $gateway->code);
+                                        [$gIcon, $gDesc] = match (true) {
+                                            $gCode === 'stripe' => ['fa-regular fa-credit-card', 'Credit or debit card'],
+                                            $gCode === 'paypal' => ['fa-brands fa-paypal', 'Pay with your PayPal account'],
+                                            str_contains($gCode, 'aba') => ['fa-solid fa-qrcode', 'Scan KHQR with any banking app'],
+                                            str_contains($gCode, 'cash') || $gCode === 'cod' => ['fa-solid fa-money-bill-wave', 'Pay when you receive your order'],
+                                            default => ['fa-regular fa-credit-card', ''],
+                                        };
+                                    @endphp
+                                    <label class="xsf-gateway" for="gateway-{{ $gateway->id }}">
+                                        <input type="radio" name="gateway" value="{{ $gateway->code }}" id="gateway-{{ $gateway->id }}" required>
+                                        <i class="xsf-gateway__icon {{ $gIcon }}" aria-hidden="true"></i>
+                                        <span class="xsf-gateway__text">
                                             <span class="xsf-gateway__label">{{ $gateway->name }}</span>
-                                        </label>
+                                            @if ($gDesc)<span class="xsf-gateway__desc">{{ $gDesc }}</span>@endif
+                                        </span>
+                                    </label>
 
-                                        @if ($gateway->code === 'paypal')
-                                            <div id="paypal-button-container" class="mt-3" style="display: none;"></div>
-                                        @endif
-                                        @if ($gateway->code === 'stripe')
-                                            <div id="card-element" class="form-control mt-3" style="display: none;"></div>
-                                            <div id="card-errors" class="text-danger mt-2"></div>
-                                        @endif
-                                    @endforeach
+                                    @if ($gateway->code === 'paypal')
+                                        <div id="paypal-button-container" class="mt-3" style="display: none;"></div>
+                                    @endif
+                                    @if ($gateway->code === 'stripe')
+                                        <div id="card-element" class="form-control mt-3" style="display: none;"></div>
+                                        <p id="card-errors" class="mt-2" role="alert"></p>
+                                    @endif
+                                @endforeach
 
-                                    <div id="payment-fields"></div>
-                                </div>
-                            </div>
-                        </div>
+                                <div id="payment-fields"></div>
+                            </fieldset>
+                            <p class="xsf-field__error" id="err-gateway" role="alert">{{ $errors->first('gateway') }}</p>
+                        </section>
 
-                        <button type="submit" id="place-order" class="btn btn-primary btn-lg btn-pill w-100">{{ 'Place Order' }}</button>
+                        <button type="submit" id="place-order" class="btn btn-primary btn-lg">{{ 'Place Order' }}</button>
                     </form>
                 </div>
 
-                <div class="col-lg-5 order-first order-lg-last">
-                    <div class="card xsf-summary xsf-summary--sticky">
-                        <div class="card-body">
-                            <h3 class="cart-heading xsf-summary__title">{{ 'Order Summary' }}</h3>
-
-                            <div class="xsf-summary__row">
-                                <span>{{ 'Subtotal' }}</span>
-                                <span>{{ $currency->symbol }}{{ number_format($subtotal, 2) }}</span>
-                            </div>
-                            @if ($coupon && $discountAmount > 0)
-                                <div class="xsf-summary__row">
-                                    <span>{{ 'Discount' }} ({{ $coupon['code'] }})</span>
-                                    <span class="text-danger">&minus;{{ $currency->symbol }}{{ number_format($discountAmount, 2) }}</span>
-                                </div>
-                            @endif
-                            <div class="xsf-summary__row">
-                                <span>{{ 'Shipping' }}</span>
-                                <span class="text-muted"><small>{{ 'Calculated at next step' }}</small></span>
-                            </div>
-                            <div class="xsf-summary__row xsf-summary__row--total">
-                                <span>{{ 'Total' }}</span>
-                                <span>{{ $currency->symbol }}{{ number_format($total, 2) }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <aside class="xsf-checkout-layout__aside" aria-label="{{ 'Order Summary' }}">
+                    <x-store.order-summary :subtotal="$subtotal" :discount-amount="$discountAmount" :coupon="$coupon" :total="$total" :currency="$currency" />
+                </aside>
             </div>
         </div>
     </section>
@@ -672,6 +689,36 @@ document.addEventListener("DOMContentLoaded", function () {
         valueInputId: 'state-value',
         placeholder:  'Select State/Province',
         options:      [],
+    });
+});
+</script>
+
+<script>
+// Inline validation messages (replaces the native browser bubble).
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('checkout-form');
+    if (!form) return;
+    form.addEventListener('invalid', function (e) {
+        e.preventDefault();
+        const el = e.target;
+        const err = document.getElementById('err-' + el.name);
+        if (err) {
+            err.textContent = el.validationMessage;
+            el.setAttribute('aria-invalid', 'true');
+            el.setAttribute('aria-describedby', err.id);
+        }
+        if (!form.dataset.focused) {
+            form.dataset.focused = '1';
+            el.focus();
+            setTimeout(function () { delete form.dataset.focused; }, 0);
+        }
+    }, true);
+    form.addEventListener('input', function (e) {
+        const err = document.getElementById('err-' + e.target.name);
+        if (err && e.target.getAttribute('aria-invalid') === 'true') {
+            err.textContent = '';
+            e.target.removeAttribute('aria-invalid');
+        }
     });
 });
 </script>

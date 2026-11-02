@@ -1,227 +1,29 @@
 @extends('themes.xylo.layouts.master')
 
-@section('css')
-<style>
-/* ─────────────────────────────────────────────
-   Customer Order Details Page Styles
-   ───────────────────────────────────────────── */
-.xsf-order-detail-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--neutral-200);
-}
-
-.xsf-detail-card {
-    background: var(--neutral-0);
-    border: 1px solid var(--neutral-200);
-    border-radius: 16px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    overflow: hidden;
-    margin-bottom: 24px;
-}
-
-.xsf-detail-card__header {
-    padding: 16px 24px;
-    background: var(--neutral-50);
-    border-bottom: 1px solid var(--neutral-200);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.xsf-detail-card__title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--neutral-900);
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.xsf-detail-card__body {
-    padding: 24px;
-}
-
-/* Order Item Row */
-.xsf-detail-item {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--neutral-100);
-}
-
-.xsf-detail-item:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.xsf-detail-item:first-child {
-    padding-top: 0;
-}
-
-.xsf-detail-item__thumb {
-    width: 64px;
-    height: 64px;
-    border-radius: 12px;
-    object-fit: cover;
-    background: var(--neutral-50);
-    border: 1px solid var(--neutral-200);
-    flex-shrink: 0;
-}
-
-.xsf-detail-item__thumb-empty {
-    width: 64px;
-    height: 64px;
-    border-radius: 12px;
-    background: var(--neutral-50);
-    border: 1px solid var(--neutral-200);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--neutral-400);
-    font-size: 1.4rem;
-    flex-shrink: 0;
-}
-
-.xsf-detail-item__info {
-    flex: 1;
-    min-width: 0;
-}
-
-.xsf-detail-item__title {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--neutral-900);
-    margin-bottom: 4px;
-    text-decoration: none;
-    display: inline-block;
-}
-
-.xsf-detail-item__title:hover {
-    color: var(--primary-600);
-}
-
-.xsf-detail-item__meta {
-    font-size: 0.8rem;
-    color: var(--neutral-500);
-}
-
-.xsf-detail-item__total {
-    text-align: right;
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--neutral-900);
-    flex-shrink: 0;
-}
-
-/* Status Badges */
-.xsf-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    padding: 5px 12px;
-    border-radius: 50px;
-    text-transform: capitalize;
-}
-
-.xsf-badge-pending {
-    background: var(--warning-100);
-    color: var(--warning-700);
-    border: 1px solid var(--warning-200);
-}
-
-.xsf-badge-processing {
-    background: var(--info-100);
-    color: var(--info-700);
-    border: 1px solid var(--info-200);
-}
-
-.xsf-badge-completed {
-    background: var(--success-100);
-    color: var(--success-700);
-    border: 1px solid var(--success-200);
-}
-
-.xsf-badge-canceled {
-    background: var(--danger-100);
-    color: var(--danger-700);
-    border: 1px solid var(--danger-200);
-}
-
-/* Summary List */
-.xsf-summary-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.875rem;
-    color: var(--neutral-600);
-    margin-bottom: 12px;
-}
-
-.xsf-summary-total {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 14px;
-    margin-top: 14px;
-    border-top: 1px dashed var(--neutral-300);
-    font-size: 1.15rem;
-    font-weight: 800;
-    color: var(--neutral-900);
-}
-
-/* Info Details */
-.xsf-info-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--neutral-500);
-    margin-bottom: 4px;
-}
-
-.xsf-info-value {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--neutral-900);
-    line-height: 1.4;
-}
-
-@media print {
-    .xsf-header, .xsf-footer, .xsf-account-nav, .xsf-back-btn, .btn-print {
-        display: none !important;
-    }
-}
-</style>
-@endsection
-
 @section('content')
 <section class="xsf-section">
     <div class="container">
+        <div class="xsf-account-layout">
+            <div class="xsf-account-layout__aside">
+                @include('themes.xylo.customer._nav', ['active' => 'orders'])
+            </div>
+
+            <div class="xsf-account-layout__main">
         {{-- Top Back & Action Bar --}}
         <div class="xsf-order-detail-header">
             <div>
-                <a href="{{ route('customer.orders.index') }}" class="btn btn-outline-secondary btn-pill btn-sm xsf-back-btn mb-2">
+                <a href="{{ route('customer.orders.index') }}" class="btn btn-outline-secondary btn-sm xsf-back-btn mb-2">
                     <i class="fa-solid fa-arrow-left me-1"></i> {{ 'Back to Orders' }}
                 </a>
                 <div class="d-flex align-items-center gap-3 flex-wrap">
-                    <h1 class="h4 fw-bold mb-0 text-dark">{{ 'Order #' . $order->id }}</h1>
+                    <h1>{{ 'Order #' . $order->id }}</h1>
                     @php
                         $statusClass = match($order->status) {
-                            'pending'    => 'xsf-badge-pending',
-                            'processing' => 'xsf-badge-processing',
-                            'completed'  => 'xsf-badge-completed',
-                            'canceled'   => 'xsf-badge-canceled',
-                            default      => 'xsf-badge-pending',
+                            'pending'    => 'xsf-status--pending',
+                            'processing' => 'xsf-status--processing',
+                            'completed'  => 'xsf-status--completed',
+                            'canceled'   => 'xsf-status--canceled',
+                            default      => 'xsf-status--pending',
                         };
                         $statusIcon = match($order->status) {
                             'pending'    => 'fa-regular fa-clock',
@@ -231,8 +33,8 @@
                             default      => 'fa-regular fa-circle',
                         };
                     @endphp
-                    <span class="xsf-badge {{ $statusClass }}">
-                        <i class="{{ $statusIcon }}"></i>
+                    <span class="xsf-status {{ $statusClass }}">
+                        <i class="{{ $statusIcon }}" aria-hidden="true"></i>
                         {{ ucfirst($order->status) }}
                     </span>
                 </div>
@@ -240,27 +42,27 @@
                     {{ 'Placed on' }} {{ $order->created_at ? $order->created_at->format('F d, Y \a\t h:i A') : 'N/A' }}
                 </p>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('orders.download-receipt', $order->id) }}" class="btn btn-outline-primary btn-pill btn-sm px-3">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <a href="{{ route('orders.download-receipt', $order->id) }}" class="btn btn-outline-primary btn-sm">
                     <i class="fa-solid fa-file-pdf me-1"></i> {{ 'Download Receipt' }}
                 </a>
-                <button type="button" class="btn btn-outline-dark btn-pill btn-sm btn-print px-3" onclick="window.print();">
+                <button type="button" class="btn btn-outline-dark btn-sm btn-print" onclick="window.print();">
                     <i class="fa-solid fa-print me-1"></i> {{ 'Print Receipt' }}
                 </button>
             </div>
         </div>
 
-        <div class="row g-4">
+        <div class="xsf-order-detail-grid">
             {{-- Left column: Items list --}}
-            <div class="col-lg-8">
-                <div class="xsf-detail-card">
-                    <div class="xsf-detail-card__header">
-                        <h2 class="xsf-detail-card__title">
-                            <i class="fa-solid fa-box-open text-primary"></i>
+            <div>
+                <div class="xsf-account-card">
+                    <div class="xsf-account-card__header">
+                        <h2 class="xsf-account-card__title">
+                            <i class="fa-solid fa-box-open" aria-hidden="true"></i>
                             {{ 'Items in this Order' }} ({{ $order->details->count() }})
                         </h2>
                     </div>
-                    <div class="xsf-detail-card__body">
+                    <div class="xsf-account-card__body">
                         @foreach ($order->details as $detail)
                             @php
                                 $product = $detail->product;
@@ -273,7 +75,7 @@
                                 @if ($imageUrl)
                                     <img src="{{ $imageUrl }}" alt="{{ $product?->name ?? 'Product' }}" class="xsf-detail-item__thumb">
                                 @else
-                                    <div class="xsf-detail-item__thumb-empty">
+                                    <div class="xsf-detail-item__thumb">
                                         <i class="fa-solid fa-box"></i>
                                     </div>
                                 @endif
@@ -306,33 +108,29 @@
                 @endphp
 
                 @if($orderRecipes->isNotEmpty())
-                    <div class="xsf-detail-card" style="border: 1px solid var(--success-200);">
-                        <div class="xsf-detail-card__header" style="background: var(--success-50);">
-                            <h2 class="xsf-detail-card__title" style="color: var(--success-700);">
-                                <i class="fa-solid fa-utensils text-success"></i>
+                    <div class="xsf-account-card">
+                        <div class="xsf-account-card__header">
+                            <h2 class="xsf-account-card__title">
+                                <i class="fa-solid fa-utensils" aria-hidden="true"></i>
                                 {{ 'Bonus Recipes Unlocked with this Order' }} ({{ $orderRecipes->count() }})
                             </h2>
                         </div>
-                        <div class="xsf-detail-card__body">
+                        <div class="xsf-account-card__body">
                             @foreach($orderRecipes as $recipe)
-                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 py-2 border-bottom">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <img src="{{ $recipe->image_src }}" alt="{{ $recipe->title }}" style="width: 50px; height: 50px; border-radius: 10px; object-fit: cover;" onerror="this.src='https://placehold.co/50x50/eee/999?text=Recipe';">
-                                        <div>
-                                            <a href="{{ route('recipes.show', $recipe->slug) }}" class="fw-bold text-dark text-decoration-none">
-                                                {{ $recipe->title }}
-                                            </a>
-                                            <div class="text-muted small">
-                                                {{ $recipe->total_time ? $recipe->total_time . ' min' : '30 min' }} &bull; {{ ucfirst($recipe->difficulty) }}
-                                            </div>
+                                <div class="xsf-recipe-row">
+                                    <img src="{{ $recipe->image_src }}" alt="{{ $recipe->title }}" class="xsf-recipe-row__thumb" onerror="this.src='https://placehold.co/50x50/eee/999?text=Recipe';">
+                                    <div class="xsf-recipe-row__body">
+                                        <a href="{{ route('recipes.show', $recipe->slug) }}" class="xsf-recipe-row__title">{{ $recipe->title }}</a>
+                                        <div class="xsf-recipe-row__meta">
+                                            {{ $recipe->total_time ? $recipe->total_time . ' min' : '30 min' }} &bull; {{ ucfirst($recipe->difficulty) }}
                                         </div>
                                     </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <a href="{{ route('recipes.show', $recipe->slug) }}" class="btn btn-outline-dark btn-pill btn-sm">
-                                            <i class="fa-solid fa-eye me-1"></i> View
+                                    <div class="xsf-recipe-row__actions">
+                                        <a href="{{ route('recipes.show', $recipe->slug) }}" class="btn btn-outline-dark btn-sm">
+                                            <i class="fa-solid fa-eye me-1" aria-hidden="true"></i> View
                                         </a>
-                                        <a href="{{ route('recipes.download-pdf', $recipe->slug) }}" class="btn btn-success btn-pill btn-sm">
-                                            <i class="fa-solid fa-file-pdf me-1"></i> Download PDF
+                                        <a href="{{ route('recipes.download-pdf', $recipe->slug) }}" class="btn btn-primary btn-sm">
+                                            <i class="fa-solid fa-file-pdf me-1" aria-hidden="true"></i> PDF
                                         </a>
                                     </div>
                                 </div>
@@ -342,14 +140,14 @@
                 @endif
 
                 {{-- Payment & Transaction Card --}}
-                <div class="xsf-detail-card">
-                    <div class="xsf-detail-card__header">
-                        <h2 class="xsf-detail-card__title">
-                            <i class="fa-solid fa-credit-card text-success"></i>
+                <div class="xsf-account-card">
+                    <div class="xsf-account-card__header">
+                        <h2 class="xsf-account-card__title">
+                            <i class="fa-solid fa-credit-card" aria-hidden="true"></i>
                             {{ 'Payment Information' }}
                         </h2>
                     </div>
-                    <div class="xsf-detail-card__body">
+                    <div class="xsf-account-card__body">
                         <div class="row g-3">
                             <div class="col-sm-6">
                                 <div class="xsf-info-label">{{ 'Payment Method' }}</div>
@@ -372,11 +170,11 @@
                                 <div class="xsf-info-label">{{ 'Payment Status' }}</div>
                                 <div class="xsf-info-value">
                                     @if (in_array($order->status, ['completed', 'processing']))
-                                        <span class="text-success"><i class="fa-solid fa-circle-check me-1"></i>{{ 'Paid' }}</span>
+                                        <span class="text-success"><i class="fa-solid fa-circle-check me-1" aria-hidden="true"></i>{{ 'Paid' }}</span>
                                     @elseif ($order->status === 'canceled')
-                                        <span class="text-danger"><i class="fa-solid fa-circle-xmark me-1"></i>{{ 'Canceled / Refunded' }}</span>
+                                        <span class="text-danger"><i class="fa-solid fa-circle-xmark me-1" aria-hidden="true"></i>{{ 'Canceled / Refunded' }}</span>
                                     @else
-                                        <span class="text-warning"><i class="fa-regular fa-clock me-1"></i>{{ 'Pending' }}</span>
+                                        <span class="text-warning-emphasis"><i class="fa-regular fa-clock me-1" aria-hidden="true"></i>{{ 'Pending' }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -386,16 +184,16 @@
             </div>
 
             {{-- Right column: Summary & Shipping Address --}}
-            <div class="col-lg-4">
+            <div>
                 {{-- Order Summary --}}
-                <div class="xsf-detail-card">
-                    <div class="xsf-detail-card__header">
-                        <h2 class="xsf-detail-card__title">
-                            <i class="fa-solid fa-receipt text-secondary"></i>
+                <div class="xsf-account-card">
+                    <div class="xsf-account-card__header">
+                        <h2 class="xsf-account-card__title">
+                            <i class="fa-solid fa-receipt" aria-hidden="true"></i>
                             {{ 'Order Summary' }}
                         </h2>
                     </div>
-                    <div class="xsf-detail-card__body">
+                    <div class="xsf-account-card__body">
                         @php
                             $subtotal = $order->details->sum(fn($d) => $d->price * $d->quantity);
                             $discount = round($subtotal - $order->total_amount, 2);
@@ -430,14 +228,14 @@
                 </div>
 
                 {{-- Delivery / Shipping Address --}}
-                <div class="xsf-detail-card">
-                    <div class="xsf-detail-card__header">
-                        <h2 class="xsf-detail-card__title">
-                            <i class="fa-solid fa-location-dot text-danger"></i>
+                <div class="xsf-account-card">
+                    <div class="xsf-account-card__header">
+                        <h2 class="xsf-account-card__title">
+                            <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
                             {{ 'Shipping Address' }}
                         </h2>
                     </div>
-                    <div class="xsf-detail-card__body">
+                    <div class="xsf-account-card__body">
                         @if ($order->shippingAddress)
                             @php $shipping = $order->shippingAddress; @endphp
                             <div class="fw-bold text-dark mb-1">{{ $shipping->name }}</div>
@@ -465,14 +263,16 @@
                 </div>
 
                 {{-- Need Help / Support --}}
-                <div class="p-3 bg-light rounded-4 text-center border">
+                <div class="p-3 bg-light rounded-3 text-center border mb-4">
                     <p class="small text-muted mb-2">{{ 'Have a question about your order?' }}</p>
-                    <a href="{{ route('xylo.home') }}" class="btn btn-outline-primary btn-pill btn-sm px-3">
+                    <a href="{{ route('xylo.home') }}" class="btn btn-outline-primary btn-sm">
                         <i class="fa-regular fa-envelope me-1"></i> {{ 'Contact Support' }}
                     </a>
                 </div>
             </div>
         </div>
+            </div>{{-- /account main --}}
+        </div>{{-- /account layout --}}
     </div>
 </section>
 @endsection

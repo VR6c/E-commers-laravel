@@ -1,0 +1,532 @@
+// =====================================================================
+//  STOREFRONT REDESIGN LAYER (loaded last)
+//
+//  DESIGN CONTRACT
+//  Job:        help a shopper find a product and check out quickly,
+//              on a phone first.
+//  Primary:    "Add to bag" / "Shop now" — the ONLY saturated elements.
+//              Brand indigo is reserved for actions, links and focus;
+//              everything else is neutral.
+//  Radii:      one scale — 8px controls, 12px cards/panels, pill only
+//              for chips and search. No 2xl/3xl rounding.
+//  Depth:      flat surfaces + 1px borders. Shadow only on overlays
+//              (dropdown, sticky header once scrolled).
+//  Motion:     colour/border transitions only; no lift, no shimmer,
+//              none at all under prefers-reduced-motion.
+//  States:     visible :focus-visible on every control, 44px touch
+//              targets, text never below 4.5:1 contrast.
+//  Responsive: verified at 320 / 768 / 1024 / 1440. 2-up product grid
+//              on phones, bottom tab bar below lg.
+//  Rejected:   gradient buttons and glow orbs, hover-lift cards,
+//              topbar shimmer, uppercase nav, oversized padding.
+// =====================================================================
+@use 'variables' as *;
+
+:root {
+    --sf-gutter: #{$space-4};
+}
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+    background: $body-bg;
+    overflow-x: hidden;
+}
+
+img { max-width: 100%; height: auto; }
+
+.container {
+    padding-left: var(--sf-gutter);
+    padding-right: var(--sf-gutter);
+
+    @include bp-up('md') { --sf-gutter: #{$space-6}; }
+    @include bp-up('xl') { --sf-gutter: #{$space-8}; }
+}
+
+// ---------------------------------------------------------------------
+//  HEADER — calmer, compact on small screens
+// ---------------------------------------------------------------------
+.xsf-header {
+    border-bottom-color: transparent;
+    box-shadow: 0 1px 0 $border-color;
+
+    &.is-scrolled { box-shadow: $shadow-md; }
+
+    &__main { padding: $space-3 0; }
+
+    &__row { gap: $space-3; }
+
+    @include bp-up('lg') {
+        &__main { padding: $space-4 0; }
+        &__row { gap: $space-6; }
+    }
+}
+
+.xsf-topbar {
+    &__inner { padding: $space-2 0; }
+    &__msg {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    @include bp-down('sm') {
+        &__msg { font-size: 0.7rem; letter-spacing: 0; }
+        &__actions { display: none; }
+        &__inner { justify-content: center; }
+    }
+}
+
+.xsf-brand__name {
+    @include bp-down('sm') { display: none; }
+}
+
+.xsf-search {
+    &__group { border-radius: $radius-pill; }
+    &__kbd { display: none; }
+    @include bp-up('lg') { &__kbd { display: inline-block; } }
+}
+
+.xsf-search--mobile {
+    width: 100%;
+    margin-top: $space-3;
+}
+
+.xsf-actions {
+    margin-left: auto;
+    gap: $space-1;
+    @include bp-up('md') { gap: $space-2; }
+}
+
+.xsf-action {
+    @include bp-down('md') {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+// Dropdown never overflows narrow viewports
+.xsf-account__menu {
+    max-width: calc(100vw - #{$space-6});
+    border-radius: $radius-lg;
+    box-shadow: $shadow-md;
+}
+
+.xsf-nav {
+    border-top-color: $border-subtle;
+    &__link {
+        text-transform: none;
+        letter-spacing: 0;
+        font-size: $font-size-sm;
+    }
+}
+
+.xsf-mobile-nav { width: min(320px, 88vw) !important; }
+
+// ---------------------------------------------------------------------
+//  MOBILE BOTTOM TAB BAR
+// ---------------------------------------------------------------------
+.xsf-tabbar {
+    display: none;
+
+    @include bp-down('lg') {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: $z-fixed;
+        padding: $space-1 $space-2 calc(#{$space-1} + env(safe-area-inset-bottom));
+        background: rgba($neutral-0, 0.94);
+        backdrop-filter: blur(16px) saturate(1.6);
+        -webkit-backdrop-filter: blur(16px) saturate(1.6);
+        border-top: 1px solid $border-color;
+    }
+
+    &__item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        padding: $space-2 0;
+        color: $neutral-500;
+        font-size: 0.68rem;
+        font-weight: $font-weight-semibold;
+        text-decoration: none;
+        border-radius: $radius-lg;
+        transition: color $transition-fast, background $transition-fast;
+
+        i { font-size: 1.1rem; }
+
+        &:hover,
+        &.is-active {
+            color: $color-primary;
+            background: $primary-50;
+        }
+    }
+}
+
+@include bp-down('lg') {
+    // keep content and footer clear of the tab bar
+    body { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+    .xsf-footer { margin-top: $space-12; }
+    .toast-top-right { top: $space-3 !important; right: $space-3 !important; }
+}
+
+// ---------------------------------------------------------------------
+//  SECTIONS & HERO
+// ---------------------------------------------------------------------
+.xsf-section__head {
+    @include bp-down('sm') {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: $space-3;
+    }
+}
+
+.xsf-hero {
+    &__card {
+        border-radius: $radius-lg;
+        background: $neutral-900;
+        border: 0;
+        box-shadow: none;
+        overflow: hidden;
+        // drop the decorative glow orbs
+        &::before,
+        &::after { display: none; }
+    }
+
+    &__cta-row {
+        @include bp-down('sm') {
+            flex-direction: column;
+            align-items: stretch;
+            .btn { width: 100%; justify-content: center; }
+        }
+    }
+
+    &__trust {
+        @include bp-down('md') {
+            flex-wrap: wrap;
+            gap: $space-2 $space-4;
+        }
+    }
+
+    &__title { overflow-wrap: anywhere; }
+
+    // Visual stacks below copy on tablets and shrinks on phones
+    @include bp-down('lg') {
+        &__visual { margin-top: $space-6; }
+        &__floating-card { display: none; }
+    }
+}
+
+// ---------------------------------------------------------------------
+//  PRODUCT CARD
+// ---------------------------------------------------------------------
+.xsf-product-card {
+    border-radius: $radius-lg;
+    border: 1px solid $border-color;
+    background: $surface;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: border-color $transition-fast;
+
+    &:hover { border-color: $neutral-300; }
+
+    &__img-wrap { display: block; aspect-ratio: 1 / 1; }
+    &__img { width: 100%; height: 100%; object-fit: cover; }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        gap: $space-2;
+        padding: $space-3;
+        @include bp-up('md') { padding: $space-4; }
+    }
+
+    &__title {
+        font-size: $font-size-sm;
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 2.7em;
+    }
+
+    &__footer {
+        margin-top: auto;
+        gap: $space-2;
+    }
+
+    // Touch devices have no hover, so the hover-only quick view is dropped
+    @media (hover: none) {
+        &__quickview-wrap { display: none; }
+    }
+
+    @include bp-down('sm') {
+        &__price--sale,
+        &__price--regular { font-size: $font-size-sm; }
+        &__cart-btn,
+        &__wish { min-width: 36px; min-height: 36px; }
+    }
+}
+
+// Grids: 2 up on phones, tighter gutters
+.row.g-4 {
+    @include bp-down('md') {
+        --bs-gutter-x: #{$space-3};
+        --bs-gutter-y: #{$space-3};
+    }
+}
+
+.xsf-category-grid {
+    @include bp-down('sm') {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: $space-3;
+    }
+}
+
+.xsf-feature-card {
+    @include bp-down('sm') { padding: $space-4; }
+}
+
+// ---------------------------------------------------------------------
+//  FOOTER
+// ---------------------------------------------------------------------
+.xsf-footer {
+    &__top { @include bp-down('md') { padding: $space-10 0 $space-6; } }
+
+    &__bottom-row {
+        @include bp-down('md') {
+            flex-direction: column;
+            align-items: center;
+            gap: $space-3;
+            text-align: center;
+        }
+    }
+
+    &__newsletter-form { max-width: 100%; }
+    &__newsletter-input { min-width: 0; }
+}
+
+// ---------------------------------------------------------------------
+//  TABLES, FORMS & CUSTOMER PAGES
+// ---------------------------------------------------------------------
+.table-responsive,
+.xsf-table-wrap {
+    -webkit-overflow-scrolling: touch;
+}
+
+// Inputs ≥16px on phones so iOS does not zoom on focus
+@include bp-down('md') {
+    input:not([type='checkbox']):not([type='radio']),
+    select,
+    textarea,
+    .form-control,
+    .form-select { font-size: 16px; }
+}
+
+// Comfortable touch targets
+@media (pointer: coarse) {
+    .btn { min-height: 44px; }
+}
+
+// Sticky/aside panels become static on small screens
+@include bp-down('lg') {
+    .xsf-order-summary,
+    .xsf-filters,
+    .xsf-sticky { position: static !important; }
+}
+
+// Long words/emails never force horizontal scroll
+.xsf-account__user-email,
+.xsf-footer__links a,
+.xsf-product-card__title a { overflow-wrap: anywhere; }
+
+// ---------------------------------------------------------------------
+//  FLAT SURFACES — replace gradient / glow / lift with solid colour
+// ---------------------------------------------------------------------
+.xsf-topbar::after { display: none; }
+
+.xsf-footer {
+    &::before { display: none; }
+    &::after { background: $color-primary; height: 2px; }
+}
+
+.xsf-nav__link::after { background: $color-primary; }
+
+.btn-primary {
+    background: $color-primary;
+    box-shadow: none;
+    &:hover,
+    &:focus-visible {
+        background: $color-primary-hover;
+        box-shadow: none;
+        transform: none;
+    }
+    &:active { background: $color-primary-active; }
+}
+
+.btn-glass,
+.btn-outline-primary {
+    &:hover { transform: none; box-shadow: none; }
+}
+
+// Controls share the 8px radius
+.btn:not(.btn-pill),
+.form-control,
+.form-select { border-radius: $radius-md; }
+
+// ---------------------------------------------------------------------
+//  ACCESSIBILITY
+// ---------------------------------------------------------------------
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+    border-radius: $radius-sm;
+}
+
+.xsf-hero__card :where(a, button):focus-visible { outline-color: $neutral-0; }
+
+.skip-link:focus-visible { outline-offset: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+// ---------------------------------------------------------------------
+//  HOME LAYOUT
+// ---------------------------------------------------------------------
+.xsf-section--tight { padding-block: $space-6; }
+
+// Hero: on phones the image leads, copy follows; no tall empty panel
+.xsf-hero {
+    &__slide { min-height: 0; }
+    &__content { padding: $space-6 $space-5; @include bp-up('lg') { padding: $space-12; } }
+    &__visual { padding: 0; }
+    &__media {
+        aspect-ratio: 16 / 10;
+        overflow: hidden;
+        img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        @include bp-down('lg') { order: -1; border-radius: 0; }
+        @include bp-up('lg') { aspect-ratio: auto; height: 100%; min-height: 380px; }
+    }
+    @include bp-down('lg') {
+        &__slide { display: flex; flex-direction: column-reverse; margin: 0; }
+        &__slide > * { width: 100%; max-width: 100%; padding-inline: 0; }
+        &__content { padding: $space-5; }
+    }
+}
+
+// Service strip: one line, scrolls sideways on phones
+.xsf-strip {
+    padding-bottom: $space-2;
+
+    &__list {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: $space-3;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        @include bp-down('lg') {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x proximity;
+            scrollbar-width: none;
+            &::-webkit-scrollbar { display: none; }
+            > li { flex: 0 0 auto; scroll-snap-align: start; }
+        }
+    }
+
+    li {
+        display: flex;
+        align-items: center;
+        gap: $space-3;
+        padding: $space-3 $space-4;
+        background: $surface;
+        border: 1px solid $border-color;
+        border-radius: $radius-lg;
+        font-size: $font-size-sm;
+        color: $text-secondary;
+        white-space: nowrap;
+
+        i { color: $color-primary; font-size: 1.05rem; }
+        strong { color: $text-primary; font-weight: $font-weight-semibold; }
+    }
+}
+
+// Category rail: image chip + name
+.xsf-cat-rail {
+    display: flex;
+    gap: $space-3;
+    list-style: none;
+    margin: 0;
+    padding: $space-1 0 $space-2;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+
+    > li { flex: 0 0 auto; scroll-snap-align: start; }
+
+    @include bp-up('xl') { flex-wrap: wrap; overflow: visible; }
+}
+
+.xsf-cat-chip {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-2 $space-4 $space-2 $space-2;
+    min-height: 48px;
+    background: $surface;
+    border: 1px solid $border-color;
+    border-radius: $radius-pill;
+    color: $text-primary;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: border-color $transition-fast, color $transition-fast;
+
+    img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+
+    &:hover { border-color: $color-primary; color: $color-primary; }
+}
+
+// Product grid: 2 / 3 / 4 up
+.xsf-product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-3;
+
+    @include bp-up('md') { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: $space-4; }
+    @include bp-up('lg') { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: $space-5; }
+}
+
+// Empty state
+.xsf-empty {
+    text-align: center;
+    padding: $space-12 $space-4;
+    color: $text-muted;
+    border: 1px dashed $border-color;
+    border-radius: $radius-lg;
+
+    i { font-size: 2rem; color: $neutral-400; }
+    h3 { margin: $space-3 0 $space-1; font-size: $font-size-lg; color: $text-primary; }
+    p { margin: 0; }
+}

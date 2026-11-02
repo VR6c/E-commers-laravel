@@ -8,7 +8,7 @@
     <div class="xsf-product-grid__empty">
         <div class="xsf-empty">
             <i class="fa-regular fa-bag-shopping xsf-empty__icon" aria-hidden="true"></i>
-            <h3 class="xsf-empty__title">{{ 'No products found' }}</h3>
+            <h2 class="xsf-empty__title">{{ 'No products found' }}</h2>
             <p class="xsf-empty__text">{{ 'Try adjusting your filters or browse all products.' }}</p>
             <a href="{{ route('shop.index') }}" class="xsf-empty__cta">
                 <i class="fa-solid fa-arrow-rotate-left" aria-hidden="true"></i>
@@ -19,7 +19,7 @@
 @endforelse
 
 @if ($products->hasPages())
-    <div class="xsf-product-grid__pagination xsf-pagination d-flex justify-content-between align-items-center mt-2">
+    <div class="xsf-product-grid__pagination xsf-pagination">
         <p class="xsf-pagination__info mb-0">
             {{ 'Showing' }}
             <strong>{{ $products->firstItem() }}–{{ $products->lastItem() }}</strong>

@@ -44,6 +44,22 @@
 
     @include('themes.xylo.layouts.footer')
 
+    {{-- Mobile bottom tab bar (hidden on desktop via CSS) --}}
+    <nav class="xsf-tabbar" aria-label="{{ 'Mobile navigation' }}">
+        <a href="{{ route('xylo.home') }}" class="xsf-tabbar__item {{ request()->routeIs('xylo.home') ? 'is-active' : '' }}">
+            <i class="fa-solid fa-house" aria-hidden="true"></i><span>Home</span>
+        </a>
+        <a href="{{ route('shop.index') }}" class="xsf-tabbar__item {{ request()->routeIs('shop.*', 'category.*', 'product.*') ? 'is-active' : '' }}">
+            <i class="fa-solid fa-store" aria-hidden="true"></i><span>Shop</span>
+        </a>
+        <a href="{{ route('customer.wishlist.index') }}" class="xsf-tabbar__item {{ request()->routeIs('customer.wishlist.*') ? 'is-active' : '' }}">
+            <i class="fa-regular fa-heart" aria-hidden="true"></i><span>Wishlist</span>
+        </a>
+        <a href="{{ route('cart.view') }}" class="xsf-tabbar__item {{ request()->routeIs('cart.*', 'checkout.*') ? 'is-active' : '' }}">
+            <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i><span>Cart</span>
+        </a>
+    </nav>
+
     {{-- Core Scripts: jQuery, Bootstrap, Slick, Toastr --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>

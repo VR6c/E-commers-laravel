@@ -28,185 +28,146 @@
 
 @section('content')
 
-{{-- ================================================================
-     PAGE HERO
-     ================================================================ --}}
-<section class="xsp-hero">
-    <div class="xsp-hero__deco" aria-hidden="true"></div>
+{{-- PAGE HEADER: the single h1 --}}
+<header class="xsp-hero">
     <div class="container">
-        <div class="xsp-hero__inner">
-
-            {{-- Eyebrow badge --}}
-            <span class="xsp-hero__eyebrow">
-                <i class="{{ $icon }}" aria-hidden="true"></i>
-                {{ $eyebrow }}
-            </span>
-
-            {{-- Page title --}}
-            <h1 class="xsp-hero__title">{{ $title }}</h1>
-
-            {{-- Short description per page type --}}
-            @if ($isAbout)
-                <p class="xsp-hero__subtitle">
-                    Learn about our mission, the people behind TVR, and what drives us to deliver the best shopping experience.
-                </p>
-            @elseif ($isBlog)
-                <p class="xsp-hero__subtitle">
-                    Stay up to date with our latest news, product highlights, and ecommerce insights.
-                </p>
-            @elseif ($isContact)
-                <p class="xsp-hero__subtitle">
-                    Have a question or feedback? We'd love to hear from you — reach out any time.
-                </p>
-            @elseif ($isServices)
-                <p class="xsp-hero__subtitle">
-                    Explore the full range of services we provide to customers and vendors on our platform.
-                </p>
-            @endif
-
-            {{-- Breadcrumb --}}
-            <ol class="xsp-hero__breadcrumb" aria-label="Breadcrumb">
-                <li class="xsp-hero__breadcrumb-item">
-                    <a href="{{ route('xylo.home') }}"><i class="fa-solid fa-house" aria-hidden="true"></i> Home</a>
-                </li>
+        <nav aria-label="Breadcrumb">
+            <ol class="xsp-hero__breadcrumb">
+                <li class="xsp-hero__breadcrumb-item"><a href="{{ route('xylo.home') }}">Home</a></li>
                 <li class="xsp-hero__breadcrumb-item active" aria-current="page">{{ $title }}</li>
             </ol>
-
-        </div>
+        </nav>
+        <p class="xsp-hero__eyebrow"><i class="{{ $icon }}" aria-hidden="true"></i> {{ $eyebrow }}</p>
+        <h1 class="xsp-hero__title">{{ $title }}</h1>
+        @if ($isAbout)
+            <p class="xsp-hero__subtitle">Learn about our mission, the people behind TVR, and what drives us to deliver the best shopping experience.</p>
+        @elseif ($isBlog)
+            <p class="xsp-hero__subtitle">Stay up to date with our latest news, product highlights, and ecommerce insights.</p>
+        @elseif ($isContact)
+            <p class="xsp-hero__subtitle">Have a question or feedback? We'd love to hear from you. Reach out any time.</p>
+        @elseif ($isServices)
+            <p class="xsp-hero__subtitle">Explore the full range of services we provide to customers and vendors on our platform.</p>
+        @endif
     </div>
-</section>
+</header>
 
-{{-- ================================================================
-     CONTACT PAGE — info tiles + form + content card
-     ================================================================ --}}
 @if ($isContact)
-<section class="xsf-static-page">
+{{-- ================================================================ CONTACT --}}
+<div class="xsf-static-page">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-9">
+        @php
+            $email   = null;
+            $phone   = null;
+            $address = null;
+            $content = $page->content ?? '';
+            // Extract email
+            if (preg_match('/[\w.+-]+@[\w-]+\.[a-z]{2,}/i', $content, $m)) $email = $m[0];
+            // Extract phone (digits, spaces, +, -, parentheses)
+            if (preg_match('/(?:Phone|Tel)[^\d]*([+\d][\d\s\-().]{6,20})/i', $content, $m)) $phone = trim($m[1]);
+            // Extract address (after "Address:")
+            if (preg_match('/Address[:\s]+([^\n<]+)/i', $content, $m)) $address = trim(strip_tags($m[1]));
+        @endphp
 
-                {{-- Contact info tiles --}}
-                <div class="xsp-contact-tiles">
-                    @php
-                        $email   = null;
-                        $phone   = null;
-                        $address = null;
-                        $content = $page->content ?? '';
-                        // Extract email
-                        if (preg_match('/[\w.+-]+@[\w-]+\.[a-z]{2,}/i', $content, $m)) $email = $m[0];
-                        // Extract phone (digits, spaces, +, -, parentheses)
-                        if (preg_match('/(?:Phone|Tel)[^\d]*([+\d][\d\s\-().]{6,20})/i', $content, $m)) $phone = trim($m[1]);
-                        // Extract address (after "Address:")
-                        if (preg_match('/Address[:\s]+([^\n<]+)/i', $content, $m)) $address = trim(strip_tags($m[1]));
-                    @endphp
+        <div class="xsp-contact">
+            <section class="xsp-contact__details" aria-labelledby="contact-details-title">
+                <h2 class="xsp-section-title" id="contact-details-title">Contact details</h2>
+                @if ($email || $phone || $address)
+                    <ul class="xsp-contact-tiles">
+                        @if ($email)
+                        <li class="xsp-contact-tile">
+                            <span class="xsp-contact-tile__icon" aria-hidden="true"><i class="fa-solid fa-envelope"></i></span>
+                            <span>
+                                <span class="xsp-contact-tile__label">Email</span>
+                                <a class="xsp-contact-tile__value" href="mailto:{{ $email }}">{{ $email }}</a>
+                            </span>
+                        </li>
+                        @endif
+                        @if ($phone)
+                        <li class="xsp-contact-tile">
+                            <span class="xsp-contact-tile__icon" aria-hidden="true"><i class="fa-solid fa-phone"></i></span>
+                            <span>
+                                <span class="xsp-contact-tile__label">Phone</span>
+                                <span class="xsp-contact-tile__value">{{ $phone }}</span>
+                            </span>
+                        </li>
+                        @endif
+                        @if ($address)
+                        <li class="xsp-contact-tile">
+                            <span class="xsp-contact-tile__icon" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span>
+                            <span>
+                                <span class="xsp-contact-tile__label">Address</span>
+                                <span class="xsp-contact-tile__value">{{ $address }}</span>
+                            </span>
+                        </li>
+                        @endif
+                    </ul>
+                @else
+                    <p class="xsp-muted">Use the form and we'll get back to you by email.</p>
+                @endif
 
-                    @if ($email)
-                    <div class="xsp-contact-tile">
-                        <div class="xsp-contact-tile__icon">
-                            <i class="fa-solid fa-envelope" aria-hidden="true"></i>
-                        </div>
-                        <p class="xsp-contact-tile__label">Email</p>
-                        <p class="xsp-contact-tile__value">
-                            <a href="mailto:{{ $email }}" style="color:inherit;text-decoration:none;">{{ $email }}</a>
-                        </p>
+                @if ($page->image_url || !empty(strip_tags($page->content ?? '')))
+                    <div class="xsf-static-page__content xsp-contact__more">
+                        @if ($page->image_url)
+                            <img src="{{ optimized_image_url($page->image_url) }}" alt="{{ $title }}" loading="lazy" decoding="async">
+                        @endif
+                        {!! $page->content ?? '' !!}
                     </div>
-                    @endif
+                @endif
+            </section>
 
-                    @if ($phone)
-                    <div class="xsp-contact-tile">
-                        <div class="xsp-contact-tile__icon xsp-contact-tile__icon--success">
-                            <i class="fa-solid fa-phone" aria-hidden="true"></i>
-                        </div>
-                        <p class="xsp-contact-tile__label">Phone</p>
-                        <p class="xsp-contact-tile__value">{{ $phone }}</p>
-                    </div>
-                    @endif
-
-                    @if ($address)
-                    <div class="xsp-contact-tile">
-                        <div class="xsp-contact-tile__icon xsp-contact-tile__icon--warning">
-                            <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-                        </div>
-                        <p class="xsp-contact-tile__label">Address</p>
-                        <p class="xsp-contact-tile__value">{{ $address }}</p>
-                    </div>
-                    @endif
-                </div>
-
-                {{-- Contact form --}}
+            <section class="xsp-contact__form-wrap" aria-labelledby="contact-form-title">
                 <form method="POST" action="{{ route('contact.submit') }}" class="xsp-contact-form" novalidate>
                     @csrf
-                    <h2 class="xsp-contact-form__title">Send us a message</h2>
-                    <div class="row g-3">
-                        <div class="col-md-6">
+                    <h2 class="xsp-section-title" id="contact-form-title">Send us a message</h2>
+                    <div class="xsp-form-grid">
+                        <div class="xsp-field">
                             <label for="cf-name" class="form-label">Your name</label>
                             <input type="text" id="cf-name" name="name" value="{{ old('name') }}" autocomplete="name"
-                                   class="form-control @error('name') is-invalid @enderror" required maxlength="100">
-                            @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                   class="form-control @error('name') is-invalid @enderror" required maxlength="100"
+                                   @error('name') aria-invalid="true" aria-describedby="cf-name-error" @enderror>
+                            @error('name')<p class="xsp-field__error" id="cf-name-error" role="alert">{{ $message }}</p>@enderror
                         </div>
-                        <div class="col-md-6">
+                        <div class="xsp-field">
                             <label for="cf-email" class="form-label">Email</label>
                             <input type="email" id="cf-email" name="email" value="{{ old('email') }}" autocomplete="email"
-                                   class="form-control @error('email') is-invalid @enderror" required maxlength="150">
-                            @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                   class="form-control @error('email') is-invalid @enderror" required maxlength="150"
+                                   @error('email') aria-invalid="true" aria-describedby="cf-email-error" @enderror>
+                            @error('email')<p class="xsp-field__error" id="cf-email-error" role="alert">{{ $message }}</p>@enderror
                         </div>
-                        <div class="col-12">
-                            <label for="cf-subject" class="form-label">Subject <span class="text-muted">(optional)</span></label>
+                        <div class="xsp-field xsp-field--full">
+                            <label for="cf-subject" class="form-label">Subject <span class="xsp-muted">(optional)</span></label>
                             <input type="text" id="cf-subject" name="subject" value="{{ old('subject') }}"
-                                   class="form-control @error('subject') is-invalid @enderror" maxlength="150">
-                            @error('subject')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                   class="form-control @error('subject') is-invalid @enderror" maxlength="150"
+                                   @error('subject') aria-invalid="true" aria-describedby="cf-subject-error" @enderror>
+                            @error('subject')<p class="xsp-field__error" id="cf-subject-error" role="alert">{{ $message }}</p>@enderror
                         </div>
-                        <div class="col-12">
+                        <div class="xsp-field xsp-field--full">
                             <label for="cf-message" class="form-label">Message</label>
                             <textarea id="cf-message" name="message" rows="5" required minlength="10" maxlength="3000"
-                                      class="form-control @error('message') is-invalid @enderror">{{ old('message') }}</textarea>
-                            @error('message')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                      class="form-control @error('message') is-invalid @enderror"
+                                      @error('message') aria-invalid="true" aria-describedby="cf-message-error" @enderror>{{ old('message') }}</textarea>
+                            @error('message')<p class="xsp-field__error" id="cf-message-error" role="alert">{{ $message }}</p>@enderror
                         </div>
                         {{-- Honeypot --}}
                         <div class="xsp-contact-form__hp" aria-hidden="true">
                             <label>Leave this empty <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
                         </div>
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary btn-pill px-5">
-                                <i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i>Send message
-                            </button>
-                        </div>
                     </div>
+                    <button type="submit" class="btn btn-primary xsp-contact-form__submit">Send message</button>
                 </form>
-
-                {{-- Full content card --}}
-                <article class="xsf-static-page__card">
-                    @if ($page->image_url)
-                        <div class="xsf-static-page__media">
-                            <img src="{{ optimized_image_url($page->image_url) }}"
-                                 alt="{{ $title }}" class="img-fluid">
-                        </div>
-                    @endif
-                    <div class="xsf-static-page__content">
-                        {!! $page->content ?? '' !!}
-                    </div>
-                </article>
-
-            </div>
+            </section>
         </div>
     </div>
-</section>
+</div>
 
-{{-- ================================================================
-     SERVICES PAGE — feature cards, steps, details
-     ================================================================ --}}
 @elseif ($isServices)
-<section class="xsf-static-page xsp-services">
+{{-- ================================================================ SERVICES --}}
+<div class="xsf-static-page">
     <div class="container">
+        <section class="xsp-section" aria-labelledby="services-title">
+            <h2 class="xsp-section-title" id="services-title">Everything you need to shop and sell with confidence</h2>
+            <p class="xsp-lead">From the first click to the doorstep, we take care of the details so you don't have to.</p>
 
-        <div class="xsp-services__head">
-            <span class="xsp-about__kicker">What we offer</span>
-            <h2 class="xsp-about__heading">Everything you need to shop and sell with confidence</h2>
-            <p class="xsp-services__lead">From the first click to the doorstep, we take care of the details so you don't have to.</p>
-        </div>
-
-        {{-- Services --}}
-        <div class="xsp-services-grid">
             @php
                 $services = [
                     ['icon' => 'fa-solid fa-truck-fast',   'title' => 'Fast Shipping',   'desc' => 'Delivery to your doorstep with real-time tracking on every order.',           'theme' => 'indigo'],
@@ -215,263 +176,182 @@
                     ['icon' => 'fa-solid fa-headset',      'title' => '24 / 7 Support',  'desc' => 'Friendly agents are ready to assist at any hour, any day of the week.',       'theme' => 'amber'],
                 ];
             @endphp
+            <ul class="xsp-grid xsp-services-grid">
+                @foreach ($services as $svc)
+                    <li class="xsp-card xsp-service-card">
+                        <span class="xsp-icon" aria-hidden="true"><i class="{{ $svc['icon'] }}"></i></span>
+                        <h3 class="xsp-card__title">{{ $svc['title'] }}</h3>
+                        <p class="xsp-card__desc">{{ $svc['desc'] }}</p>
+                    </li>
+                @endforeach
+            </ul>
+        </section>
 
-            @foreach ($services as $svc)
-                <article class="xsp-service-card xsp-service-card--{{ $svc['theme'] }}">
-                    <div class="xsp-service-card__icon">
-                        <i class="{{ $svc['icon'] }}" aria-hidden="true"></i>
-                    </div>
-                    <div class="xsp-service-card__body">
-                        <h3 class="xsp-service-card__title">{{ $svc['title'] }}</h3>
-                        <p class="xsp-service-card__desc">{{ $svc['desc'] }}</p>
-                    </div>
-                </article>
-            @endforeach
-        </div>
+        <section class="xsp-section" aria-labelledby="steps-title">
+            <h2 class="xsp-section-title" id="steps-title">How it works</h2>
+            <ol class="xsp-grid xsp-steps">
+                @foreach ([
+                    ['fa-solid fa-magnifying-glass', 'Browse',   'Explore products from verified vendors and filter to find the right fit.'],
+                    ['fa-solid fa-bag-shopping',     'Order',    'Add to your bag and check out securely with the payment method you prefer.'],
+                    ['fa-solid fa-box-open',         'Receive',  'Track your delivery in real time and get help from our team if you need it.'],
+                ] as $i => [$icon, $name, $desc])
+                    <li class="xsp-card xsp-step">
+                        <span class="xsp-icon" aria-hidden="true"><i class="{{ $icon }}"></i></span>
+                        <h3 class="xsp-card__title"><span class="xsp-step__num">{{ $i + 1 }}.</span> {{ $name }}</h3>
+                        <p class="xsp-card__desc">{{ $desc }}</p>
+                    </li>
+                @endforeach
+            </ol>
+        </section>
 
-        {{-- How it works --}}
-        <div class="xsp-services__head xsp-services__head--steps">
-            <span class="xsp-about__kicker">How it works</span>
-            <h2 class="xsp-about__heading">Three simple steps</h2>
-        </div>
-        <ol class="xsp-steps">
-            @foreach ([
-                ['fa-solid fa-magnifying-glass', 'Browse',   'Explore products from verified vendors and filter to find the right fit.'],
-                ['fa-solid fa-bag-shopping',     'Order',    'Add to your bag and check out securely with the payment method you prefer.'],
-                ['fa-solid fa-box-open',         'Receive',  'Track your delivery in real time and get help from our team if you need it.'],
-            ] as $i => [$icon, $name, $desc])
-                <li class="xsp-step">
-                    <span class="xsp-step__num" aria-hidden="true">{{ $i + 1 }}</span>
-                    <div class="xsp-step__icon"><i class="{{ $icon }}" aria-hidden="true"></i></div>
-                    <h3 class="xsp-step__title">{{ $name }}</h3>
-                    <p class="xsp-step__desc">{{ $desc }}</p>
-                </li>
-            @endforeach
-        </ol>
-
-        {{-- CMS content (kept, but tucked away so it doesn't repeat the cards above) --}}
         @if (!empty(strip_tags($page->content ?? '')))
             <details class="xsp-details">
-                <summary>
-                    <span>More about our services</span>
-                    <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
-                </summary>
+                <summary>More about our services</summary>
                 <div class="xsf-static-page__content">
                     {!! $page->content ?? '' !!}
                 </div>
             </details>
         @endif
 
-        {{-- CTA strip --}}
-        <div class="xsp-cta-strip">
-            <div class="xsp-cta-strip__text">
-                <p class="xsp-cta-strip__title">Ready to start shopping?</p>
+        <section class="xsp-cta-strip" aria-labelledby="cta-title">
+            <div>
+                <h2 class="xsp-cta-strip__title" id="cta-title">Ready to start shopping?</h2>
                 <p class="xsp-cta-strip__subtitle">Thousands of products from verified vendors, delivered fast.</p>
             </div>
             <div class="xsp-cta-strip__actions">
-                <a href="{{ route('shop.index') }}" class="xsp-cta-strip__btn xsp-cta-strip__btn--primary">
-                    <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> Shop Now
-                </a>
-                <a href="{{ route('store.page', 'contact-us') }}" class="xsp-cta-strip__btn xsp-cta-strip__btn--ghost">
-                    Contact Us
-                </a>
+                <a href="{{ route('shop.index') }}" class="btn btn-primary">Shop Now</a>
+                <a href="{{ route('store.page', 'contact-us') }}" class="btn btn-outline-secondary">Contact Us</a>
             </div>
-        </div>
-
+        </section>
     </div>
-</section>
+</div>
 
-{{-- ================================================================
-     BLOG PAGE — empty / coming-soon state (posts live in CMS content)
-     ================================================================ --}}
 @elseif ($isBlog)
-<section class="xsf-static-page">
+{{-- ================================================================ BLOG --}}
+<div class="xsf-static-page">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
+        @php $hasContent = !empty(strip_tags($page->content ?? '')); @endphp
 
-                @if (!empty(strip_tags($page->content ?? '')))
-                    {{-- CMS content exists — render it in the card --}}
-                    <article class="xsf-static-page__card">
-                        @if ($page->image_url)
-                            <div class="xsf-static-page__media">
-                                <img src="{{ optimized_image_url($page->image_url) }}"
-                                     alt="{{ $title }}" class="img-fluid">
+        @if ($hasContent)
+            <article class="xsp-prose">
+                @if ($page->image_url)
+                    <img class="xsp-prose__media" src="{{ optimized_image_url($page->image_url) }}" alt="{{ $title }}">
+                @endif
+                <div class="xsf-static-page__content">
+                    {!! $page->content ?? '' !!}
+                </div>
+            </article>
+        @endif
+
+        @if ($posts->isNotEmpty())
+            <section class="xsp-section" aria-labelledby="posts-title">
+                <h2 class="xsp-section-title" id="posts-title">Latest articles</h2>
+                <div class="xsp-grid xsp-blog-grid">
+                    @foreach ($posts as $post)
+                        <a href="{{ route('recipes.show', $post->slug) }}" class="xsp-blog-card">
+                            <div class="xsp-blog-card__media">
+                                <img src="{{ optimized_image_url($post->image_url ?? 'default.jpg') }}"
+                                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80';"
+                                     alt="" loading="lazy" decoding="async" width="400" height="240">
                             </div>
-                        @endif
-                        <div class="xsf-static-page__content">
-                            {!! $page->content ?? '' !!}
-                        </div>
-                    </article>
-                @else
-                    {{-- No posts yet — friendly empty state --}}
-                    <div class="xsp-empty-state">
-                        <div class="xsp-empty-state__icon" aria-hidden="true">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </div>
-                        <h2 class="xsp-empty-state__title">Articles coming soon</h2>
-                        <p class="xsp-empty-state__body">
-                            We're working on fresh content — styling tips, product highlights, and ecommerce best practices. Check back soon!
-                        </p>
-                        <a href="{{ route('xylo.home') }}" class="btn btn-primary rounded-pill px-5">
-                            Back to Home
+                            <div class="xsp-blog-card__body">
+                                <time class="xsp-blog-card__date" datetime="{{ $post->created_at->toDateString() }}">
+                                    {{ $post->created_at->format('M d, Y') }}
+                                </time>
+                                <h3 class="xsp-blog-card__title">{{ $post->title }}</h3>
+                                @if ($post->summary)
+                                    <p class="xsp-blog-card__excerpt">{{ \Illuminate\Support\Str::limit(strip_tags($post->summary), 110) }}</p>
+                                @endif
+                                <span class="xsp-blog-card__more">Read more <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+                            </div>
                         </a>
-                    </div>
-                @endif
-
-                @if ($posts->isNotEmpty())
-                    <div class="xsp-blog-grid">
-                        @foreach ($posts as $post)
-                            <a href="{{ route('recipes.show', $post->slug) }}" class="xsp-blog-card">
-                                <div class="xsp-blog-card__media">
-                                    <img src="{{ optimized_image_url($post->image_url ?? 'default.jpg') }}"
-                                         onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80';"
-                                         alt="{{ $post->title }}" loading="lazy" decoding="async" width="400" height="240">
-                                </div>
-                                <div class="xsp-blog-card__body">
-                                    <time class="xsp-blog-card__date" datetime="{{ $post->created_at->toDateString() }}">
-                                        {{ $post->created_at->format('M d, Y') }}
-                                    </time>
-                                    <h3 class="xsp-blog-card__title">{{ $post->title }}</h3>
-                                    @if ($post->summary)
-                                        <p class="xsp-blog-card__excerpt">{{ \Illuminate\Support\Str::limit(strip_tags($post->summary), 110) }}</p>
-                                    @endif
-                                    <span class="xsp-blog-card__more">Read more <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
-                                </div>
-                            </a>
-                        @endforeach
-                    </div>
-                @endif
-
-            </div>
-        </div>
+                    @endforeach
+                </div>
+            </section>
+        @elseif (!$hasContent)
+            <section class="xsp-empty-state" aria-labelledby="empty-title">
+                <h2 class="xsp-empty-state__title" id="empty-title">Articles coming soon</h2>
+                <p class="xsp-empty-state__body">We're working on fresh content: styling tips, product highlights, and ecommerce best practices. Check back soon.</p>
+                <a href="{{ route('xylo.home') }}" class="btn btn-primary">Back to Home</a>
+            </section>
+        @endif
     </div>
-</section>
+</div>
 
-{{-- ================================================================
-     ABOUT PAGE — stats strip + content card
-     ================================================================ --}}
 @elseif ($isAbout)
-<section class="xsf-static-page xsp-about">
+{{-- ================================================================ ABOUT --}}
+<div class="xsf-static-page">
     <div class="container">
-
-        {{-- Story: CMS copy beside a visual --}}
-        <div class="row g-5 align-items-center xsp-about__story">
-            <div class="col-lg-6">
-                <span class="xsp-about__kicker">Our story</span>
-                <h2 class="xsp-about__heading">Built for people who love great products</h2>
-                <div class="xsf-static-page__content xsp-about__copy">
+        <section class="xsp-about" aria-labelledby="story-title">
+            <div class="xsp-about__copy">
+                <h2 class="xsp-section-title" id="story-title">Built for people who love great products</h2>
+                <div class="xsf-static-page__content">
                     {!! $page->content ?? '' !!}
                 </div>
                 <div class="xsp-about__actions">
-                    <a href="{{ route('shop.index') }}" class="btn btn-primary btn-pill px-4">
-                        <i class="fa-solid fa-bag-shopping me-2" aria-hidden="true"></i>Start shopping
-                    </a>
-                    <a href="{{ route('store.page', 'contact-us') }}" class="btn btn-outline-primary btn-pill px-4">Get in touch</a>
+                    <a href="{{ route('shop.index') }}" class="btn btn-primary">Start shopping</a>
+                    <a href="{{ route('store.page', 'contact-us') }}" class="btn btn-outline-secondary">Get in touch</a>
                 </div>
             </div>
-            <div class="col-lg-6">
+            @if ($page->image_url)
                 <div class="xsp-about__visual">
-                    @if ($page->image_url)
-                        <img src="{{ optimized_image_url($page->image_url) }}" alt="{{ $title }}"
-                             loading="lazy" decoding="async" width="640" height="520">
-                    @else
-                        <div class="xsp-about__visual-art" aria-hidden="true">
-                            <i class="fa-solid fa-store"></i>
-                        </div>
-                    @endif
-                    <div class="xsp-about__badge">
-                        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-                        <div>
-                            <strong>Verified vendors</strong>
-                            <span>Every seller is reviewed</span>
-                        </div>
-                    </div>
+                    <img src="{{ optimized_image_url($page->image_url) }}" alt="{{ $title }}"
+                         loading="lazy" decoding="async" width="640" height="520">
                 </div>
-            </div>
-        </div>
+            @endif
+        </section>
 
-        {{-- Stats --}}
-        <div class="xsp-stat-strip">
-            <div class="xsp-stat">
-                <p class="xsp-stat__value">10K+</p>
-                <p class="xsp-stat__label">Happy Customers</p>
-            </div>
-            <div class="xsp-stat">
-                <p class="xsp-stat__value">500+</p>
-                <p class="xsp-stat__label">Verified Vendors</p>
-            </div>
-            <div class="xsp-stat">
-                <p class="xsp-stat__value">50K+</p>
-                <p class="xsp-stat__label">Products Listed</p>
-            </div>
-            <div class="xsp-stat">
-                <p class="xsp-stat__value">99%</p>
-                <p class="xsp-stat__label">Satisfaction Rate</p>
-            </div>
-        </div>
+        <dl class="xsp-stat-strip">
+            <div class="xsp-stat"><dt class="xsp-stat__label">Happy Customers</dt><dd class="xsp-stat__value">10K+</dd></div>
+            <div class="xsp-stat"><dt class="xsp-stat__label">Verified Vendors</dt><dd class="xsp-stat__value">500+</dd></div>
+            <div class="xsp-stat"><dt class="xsp-stat__label">Products Listed</dt><dd class="xsp-stat__value">50K+</dd></div>
+            <div class="xsp-stat"><dt class="xsp-stat__label">Satisfaction Rate</dt><dd class="xsp-stat__value">99%</dd></div>
+        </dl>
 
-        {{-- Values --}}
-        <div class="xsp-about__values-head">
-            <span class="xsp-about__kicker">What we stand for</span>
-            <h2 class="xsp-about__heading">Our values</h2>
-        </div>
-        <div class="xsp-about__values">
-            @foreach ([
-                ['fa-solid fa-gem',          'Quality first',    'We curate products from verified vendors so what you receive matches what you saw.'],
-                ['fa-solid fa-handshake',    'Trust & honesty',  'Clear prices, secure payments and straightforward returns, with no surprises.'],
-                ['fa-solid fa-heart',        'Customer care',    'Real people ready to help before, during and after every order.'],
-            ] as [$icon, $name, $desc])
-                <div class="xsp-value">
-                    <div class="xsp-value__icon"><i class="{{ $icon }}" aria-hidden="true"></i></div>
-                    <h3 class="xsp-value__title">{{ $name }}</h3>
-                    <p class="xsp-value__desc">{{ $desc }}</p>
-                </div>
-            @endforeach
-        </div>
+        <section class="xsp-section" aria-labelledby="values-title">
+            <h2 class="xsp-section-title" id="values-title">Our values</h2>
+            <ul class="xsp-grid xsp-about__values">
+                @foreach ([
+                    ['fa-solid fa-gem',          'Quality first',    'We curate products from verified vendors so what you receive matches what you saw.'],
+                    ['fa-solid fa-handshake',    'Trust & honesty',  'Clear prices, secure payments and straightforward returns, with no surprises.'],
+                    ['fa-solid fa-heart',        'Customer care',    'Real people ready to help before, during and after every order.'],
+                ] as [$icon, $name, $desc])
+                    <li class="xsp-card xsp-value">
+                        <span class="xsp-icon" aria-hidden="true"><i class="{{ $icon }}"></i></span>
+                        <h3 class="xsp-card__title">{{ $name }}</h3>
+                        <p class="xsp-card__desc">{{ $desc }}</p>
+                    </li>
+                @endforeach
+            </ul>
+        </section>
 
-        {{-- CTA strip --}}
-        <div class="xsp-cta-strip">
-            <div class="xsp-cta-strip__text">
-                <p class="xsp-cta-strip__title">Join our growing community</p>
+        <section class="xsp-cta-strip" aria-labelledby="cta-title">
+            <div>
+                <h2 class="xsp-cta-strip__title" id="cta-title">Join our growing community</h2>
                 <p class="xsp-cta-strip__subtitle">Shop premium products or become a vendor on {{ config('app.name', 'TVR') }} today.</p>
             </div>
             <div class="xsp-cta-strip__actions">
-                <a href="{{ route('shop.index') }}" class="xsp-cta-strip__btn xsp-cta-strip__btn--primary">
-                    <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> Shop Now
-                </a>
-                <a href="{{ route('vendor.register') }}" class="xsp-cta-strip__btn xsp-cta-strip__btn--ghost">
-                    Become a Vendor
-                </a>
+                <a href="{{ route('shop.index') }}" class="btn btn-primary">Shop Now</a>
+                <a href="{{ route('vendor.register') }}" class="btn btn-outline-secondary">Become a Vendor</a>
             </div>
-        </div>
-
+        </section>
     </div>
-</section>
+</div>
 
-{{-- ================================================================
-     ALL OTHER PAGES — generic card layout
-     ================================================================ --}}
 @else
-<section class="xsf-static-page">
+{{-- ================================================================ GENERIC / LEGAL / FAQ --}}
+<div class="xsf-static-page">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-9">
-                <article class="xsf-static-page__card">
-                    @if ($page->image_url)
-                        <div class="xsf-static-page__media">
-                            <img src="{{ optimized_image_url($page->image_url) }}"
-                                 alt="{{ $title }}" class="img-fluid">
-                        </div>
-                    @endif
-                    <div class="xsf-static-page__content">
-                        {!! $page->content ?? '' !!}
-                    </div>
-                </article>
+        <article class="xsp-prose">
+            @if ($page->image_url)
+                <img class="xsp-prose__media" src="{{ optimized_image_url($page->image_url) }}" alt="{{ $title }}">
+            @endif
+            <div class="xsf-static-page__content">
+                {!! $page->content ?? '' !!}
             </div>
-        </div>
+        </article>
     </div>
-</section>
+</div>
 @endif
 
 @endsection

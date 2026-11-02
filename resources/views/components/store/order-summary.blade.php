@@ -6,6 +6,8 @@
     'coupon' => null,
     'currency' => null,
     'showCouponForm' => false,
+    'heading' => true,
+    'headingTag' => 'h2',
 ])
 
 @php
@@ -13,56 +15,58 @@
     $symbol = $activeCurrency->symbol ?? '$';
 @endphp
 
-<div {{ $attributes->merge(['class' => 'card border-0 shadow-sm rounded-4 p-4 xsf-summary-card']) }}>
-    <h3 class="fs-5 fw-bold text-dark mb-4 pb-2 border-bottom">{{ __('Order Summary') }}</h3>
+<div {{ $attributes->merge(['class' => 'xsf-summary']) }}>
+    @if ($heading)
+        <{{ $headingTag }} class="xsf-summary__title">{{ __('Order Summary') }}</{{ $headingTag }}>
+    @endif
 
-    <div class="d-flex justify-content-between mb-3 text-secondary">
+    <div class="xsf-summary__row">
         <span>{{ __('Subtotal') }}</span>
-        <span class="fw-semibold text-dark">{{ $symbol }}{{ number_format((float) $subtotal, 2) }}</span>
+        <span>{{ $symbol }}{{ number_format((float) $subtotal, 2) }}</span>
     </div>
 
     @if ((float) $discountAmount > 0)
-        <div class="d-flex justify-content-between mb-3 text-success">
+        <div class="xsf-summary__row xsf-summary__row--discount">
             <span>
                 {{ __('Coupon Discount') }}
                 @if (!empty($coupon['code']))
-                    <span class="badge bg-success-subtle text-success border border-success-subtle ms-1">{{ $coupon['code'] }}</span>
+                    ({{ $coupon['code'] }})
                 @endif
             </span>
-            <span class="fw-semibold">-{{ $symbol }}{{ number_format((float) $discountAmount, 2) }}</span>
+            <span>&minus;{{ $symbol }}{{ number_format((float) $discountAmount, 2) }}</span>
         </div>
     @endif
 
-    <div class="d-flex justify-content-between mb-3 text-secondary">
+    <div class="xsf-summary__row">
         <span>{{ __('Shipping') }}</span>
-        <span>
-            @if ($shipping !== null && (float) $shipping > 0)
-                <span class="fw-semibold text-dark">{{ $symbol }}{{ number_format((float) $shipping, 2) }}</span>
-            @else
-                <span class="text-success fw-medium">{{ __('Free') }}</span>
-            @endif
-        </span>
+        @if ($shipping === null)
+            <span class="text-muted">{{ __('Calculated at next step') }}</span>
+        @elseif ((float) $shipping > 0)
+            <span>{{ $symbol }}{{ number_format((float) $shipping, 2) }}</span>
+        @else
+            <span>{{ __('Free') }}</span>
+        @endif
     </div>
 
     @if ($showCouponForm)
-        <div class="my-3 pt-2 border-top">
-            <form action="{{ route('coupon.apply') }}" method="POST" class="d-flex gap-2" id="coupon-form">
+        <details class="xsf-coupon">
+            <summary>{{ __('Have a Coupon?') }}</summary>
+            <form action="{{ route('coupon.apply') }}" method="POST" class="xsf-coupon__form" id="coupon-form">
                 @csrf
-                <input type="text" name="code" class="form-control rounded-pill text-uppercase" placeholder="{{ __('Enter coupon code') }}" value="{{ $coupon['code'] ?? '' }}">
-                <button type="submit" class="btn btn-dark rounded-pill px-4 flex-shrink-0">{{ __('Apply') }}</button>
+                <label for="coupon-form-code" class="visually-hidden">{{ __('Enter coupon code') }}</label>
+                <input type="text" name="code" id="coupon-form-code" class="form-control text-uppercase" placeholder="{{ __('Enter coupon code') }}" value="{{ $coupon['code'] ?? '' }}" autocomplete="off">
+                <button type="submit" class="btn btn-dark">{{ __('Apply') }}</button>
             </form>
-        </div>
+        </details>
     @endif
 
-    <div class="d-flex justify-content-between pt-3 mt-2 border-top align-items-baseline">
-        <span class="fs-5 fw-bold text-dark">{{ __('Total') }}</span>
-        <span class="fs-4 fw-bolder text-primary">
-            {{ $symbol }}{{ number_format((float) $total, 2) }}
-        </span>
+    <div class="xsf-summary__row xsf-summary__row--total">
+        <span>{{ __('Total') }}</span>
+        <span>{{ $symbol }}{{ number_format((float) $total, 2) }}</span>
     </div>
 
     @if (isset($slot) && $slot->isNotEmpty())
-        <div class="mt-4">
+        <div class="mt-3">
             {{ $slot }}
         </div>
     @endif

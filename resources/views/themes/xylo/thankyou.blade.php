@@ -1,276 +1,44 @@
 @extends('themes.xylo.layouts.master')
 
-@section('css')
-<style>
-/* ─────────────────────────────────────────────
-   Thank You / Order Confirmation Page
-   ───────────────────────────────────────────── */
-
-.xsf-ty-section {
-    padding: 60px 0 80px;
-    background: var(--neutral-50);
-    min-height: 60vh;
-}
-
-/* ── Success icon ── */
-.xsf-ty-icon-wrap {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--success-500) 0%, var(--success-600) 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 24px;
-    box-shadow: 0 8px 24px rgba(34, 197, 94, 0.28);
-    animation: ty-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-.xsf-ty-icon-wrap i {
-    font-size: 32px;
-    color: #fff;
-}
-
-@keyframes ty-pop {
-    from { transform: scale(0.5); opacity: 0; }
-    to   { transform: scale(1);   opacity: 1; }
-}
-
-/* ── Card ── */
-.xsf-ty-card {
-    background: var(--neutral-0);
-    border-radius: 20px;
-    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.07);
-    overflow: hidden;
-    animation: ty-slide 0.4s ease both;
-    animation-delay: 0.08s;
-}
-
-@keyframes ty-slide {
-    from { transform: translateY(18px); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
-}
-
-/* Title & lead */
-.xsf-ty-title {
-    font-size: 1.65rem;
-    font-weight: 800;
-    color: var(--neutral-900);
-    margin: 0 0 8px;
-    letter-spacing: -0.02em;
-}
-
-.xsf-ty-lead {
-    font-size: 0.9rem;
-    color: var(--neutral-500);
-    margin: 0 0 32px;
-    line-height: 1.6;
-}
-
-/* ── Card inner sections ── */
-.xsf-ty-body {
-    padding: 36px 40px 28px;
-    text-align: center;
-}
-
-/* ── Order info block ── */
-.xsf-ty-info {
-    background: var(--neutral-50);
-    border-radius: 14px;
-    padding: 20px 24px;
-    margin-bottom: 28px;
-    text-align: left;
-}
-
-.xsf-ty-info__heading {
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--neutral-400);
-    margin: 0 0 14px;
-}
-
-.xsf-ty-info__row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.875rem;
-    color: var(--neutral-700);
-    margin-bottom: 6px;
-}
-
-.xsf-ty-info__row:last-child { margin-bottom: 0; }
-
-.xsf-ty-info__label {
-    color: var(--neutral-500);
-    min-width: 70px;
-}
-
-.xsf-ty-info__value {
-    font-weight: 600;
-    color: var(--neutral-900);
-}
-
-/* ── Items table ── */
-.xsf-ty-items {
-    width: 100%;
-    text-align: left;
-    margin-bottom: 0;
-}
-
-.xsf-ty-items__heading {
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--neutral-400);
-    margin: 0 0 14px;
-}
-
-.xsf-ty-item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 0;
-    border-bottom: 1px solid var(--neutral-100);
-}
-
-.xsf-ty-item:last-child { border-bottom: none; }
-
-.xsf-ty-item__thumb {
-    width: 52px;
-    height: 52px;
-    border-radius: 10px;
-    object-fit: cover;
-    background: var(--neutral-100);
-    flex-shrink: 0;
-    border: 1px solid var(--neutral-200);
-}
-
-.xsf-ty-item__thumb-placeholder {
-    width: 52px;
-    height: 52px;
-    border-radius: 10px;
-    background: var(--neutral-100);
-    flex-shrink: 0;
-    border: 1px solid var(--neutral-200);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--neutral-300);
-    font-size: 18px;
-}
-
-.xsf-ty-item__info { flex: 1; min-width: 0; }
-
-.xsf-ty-item__name {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--neutral-900);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin: 0 0 2px;
-}
-
-.xsf-ty-item__qty {
-    font-size: 0.78rem;
-    color: var(--neutral-400);
-}
-
-.xsf-ty-item__price {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: var(--neutral-900);
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-/* ── Total row ── */
-.xsf-ty-total-bar {
-    background: var(--neutral-900);
-    border-radius: 0 0 20px 20px;
-    padding: 18px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.xsf-ty-total-bar__label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.xsf-ty-total-bar__amount {
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: var(--neutral-0);
-    letter-spacing: -0.02em;
-}
-
-/* ── Action buttons ── */
-.xsf-ty-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-    padding: 28px 40px 36px;
-    border-top: 1px solid var(--neutral-100);
-}
-
-.xsf-ty-actions .btn { min-width: 160px; }
-
-/* ── Breadcrumb (reuse existing but keep it light here) ── */
-.xsf-ty-section .xsf-breadcrumb { margin-bottom: 32px; }
-</style>
-@endsection
-
 @section('content')
     @php $currency = activeCurrency(); @endphp
 
     <section class="xsf-ty-section">
         <div class="container">
 
-            {{-- Breadcrumb --}}
             <nav aria-label="breadcrumb" class="xsf-breadcrumb">
                 <a href="{{ route('xylo.home') }}">{{ 'Home' }}</a>
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
-                <span>{{ 'Order Completed' }}</span>
+                <span aria-current="page">{{ 'Order Completed' }}</span>
             </nav>
 
             <div class="row justify-content-center">
-                <div class="col-md-9 col-lg-7 col-xl-6">
-
-                    {{-- Success icon --}}
-                    <div class="xsf-ty-icon-wrap">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                    </div>
-
+                <div class="col-md-10 col-lg-8 col-xl-6">
                     <div class="xsf-ty-card">
-                        <div class="xsf-ty-body">
 
-                            {{-- Heading --}}
-                            <h1 class="xsf-ty-title">{{ 'Thank You for Your Order!' }}</h1>
-                            <p class="xsf-ty-lead">{{ 'Your order has been received and is being processed.' }}</p>
+                        {{-- Success status --}}
+                        <div class="xsf-ty-status" role="status">
+                            <div class="xsf-ty-status__icon" aria-hidden="true"><i class="fa fa-check"></i></div>
+                            <h1 class="xsf-ty-status__title">{{ 'Thank You for Your Order!' }}</h1>
+                            <p class="xsf-ty-status__lead">{{ 'Your order has been received and is being processed.' }}</p>
+                        </div>
 
-                            {{-- Order meta --}}
-                            <div class="xsf-ty-info">
-                                <p class="xsf-ty-info__heading">{{ 'Order Information' }}</p>
-                                <div class="xsf-ty-info__row">
-                                    <span class="xsf-ty-info__label">{{ 'Order ID' }}</span>
-                                    <span class="xsf-ty-info__value">#{{ $order->id }}</span>
-                                </div>
-                                <div class="xsf-ty-info__row">
-                                    <span class="xsf-ty-info__label">{{ 'Date' }}</span>
-                                    <span class="xsf-ty-info__value">{{ $order->created_at->format('M d, Y · h:i A') }}</span>
-                                </div>
+                        {{-- Order meta --}}
+                        <dl class="xsf-ty-meta">
+                            <div>
+                                <dt>{{ 'Order ID' }}</dt>
+                                <dd>#{{ $order->id }}</dd>
                             </div>
+                            <div>
+                                <dt>{{ 'Date' }}</dt>
+                                <dd>{{ $order->created_at->format('M d, Y · h:i A') }}</dd>
+                            </div>
+                        </dl>
 
-                            {{-- Items --}}
-                            <p class="xsf-ty-items__heading text-start">{{ 'Items Ordered' }}</p>
-                            <div class="xsf-ty-items">
+                        {{-- Items --}}
+                        <div class="xsf-ty-items">
+                            <h2 class="xsf-ty-items__heading">{{ 'Items Ordered' }}</h2>
+                            <ul class="xsf-ty-items__list">
                                 @foreach ($order->details as $detail)
                                     @php
                                         $product   = $detail->product;
@@ -279,106 +47,98 @@
                                                      : ($product?->image_url ? product_image_url($product->image_url) : null);
                                         $name = $product?->name ?? 'Product Name Not Available';
                                     @endphp
-                                    <div class="xsf-ty-item">
+                                    <li class="xsf-ty-item">
                                         @if($thumbUrl)
-                                            <img src="{{ $thumbUrl }}" alt="{{ $name }}" class="xsf-ty-item__thumb">
+                                            <img src="{{ $thumbUrl }}" alt="" class="xsf-ty-item__thumb" loading="lazy" width="48" height="48">
                                         @else
-                                            <div class="xsf-ty-item__thumb-placeholder">
+                                            <div class="xsf-ty-item__thumb-placeholder" aria-hidden="true">
                                                 <i class="fa fa-box"></i>
                                             </div>
                                         @endif
                                         <div class="xsf-ty-item__info">
                                             <p class="xsf-ty-item__name">{{ $name }}</p>
-                                            <span class="xsf-ty-item__qty">&times; {{ $detail->quantity }}</span>
+                                            <span class="xsf-ty-item__qty">{{ 'Qty' }}: {{ $detail->quantity }}</span>
                                         </div>
                                         <span class="xsf-ty-item__price">
                                             {{ $currency->symbol }}{{ number_format($detail->price * $detail->quantity, 2) }}
                                         </span>
-                                    </div>
+                                    </li>
                                 @endforeach
-                            </div>
-
+                            </ul>
                         </div>
 
-                        {{-- Discount row (shown only when a coupon was applied) --}}
+                        {{-- Totals --}}
                         @php
                             $itemsSubtotal = $order->details->sum(fn($d) => $d->price * $d->quantity);
                             $discountOnOrder = round($itemsSubtotal - $order->total_amount, 2);
                         @endphp
-                        @if ($discountOnOrder > 0)
-                            <div style="padding: 0 40px 4px; display:flex; justify-content:space-between; font-size:0.875rem;">
-                                <span style="color:var(--neutral-500);">{{ 'Subtotal' }}</span>
-                                <span style="color:var(--neutral-900); font-weight:600;">{{ $currency->symbol }}{{ number_format($itemsSubtotal, 2) }}</span>
+                        <div class="xsf-ty-totals">
+                            @if ($discountOnOrder > 0)
+                                <div class="xsf-ty-totals__row">
+                                    <span>{{ 'Subtotal' }}</span>
+                                    <span>{{ $currency->symbol }}{{ number_format($itemsSubtotal, 2) }}</span>
+                                </div>
+                                <div class="xsf-ty-totals__row xsf-ty-totals__row--discount">
+                                    <span>{{ 'Discount' }}</span>
+                                    <span>&minus;{{ $currency->symbol }}{{ number_format($discountOnOrder, 2) }}</span>
+                                </div>
+                            @endif
+                            <div class="xsf-ty-totals__row xsf-ty-totals__row--total">
+                                <span>{{ 'Total Paid' }}</span>
+                                <span>{{ $currency->symbol }}{{ number_format($order->total_amount, 2) }}</span>
                             </div>
-                            <div style="padding: 0 40px 16px; display:flex; justify-content:space-between; font-size:0.875rem;">
-                                <span style="color:var(--neutral-500);">{{ 'Discount' }}</span>
-                                <span style="color:var(--danger-600); font-weight:600;">&minus;{{ $currency->symbol }}{{ number_format($discountOnOrder, 2) }}</span>
-                            </div>
-                        @endif
+                        </div>
 
                         {{-- Unlocked Recipes Section --}}
                         @if(isset($unlockedRecipes) && $unlockedRecipes->isNotEmpty())
-                            <div style="background: var(--success-50); border: 1px solid var(--success-200); border-radius: 14px; margin: 24px 40px; padding: 20px; text-align: left;">
-                                <div class="d-flex align-items-center gap-2 mb-3">
-                                    <span style="font-size: 1.25rem;">🎉</span>
-                                    <div>
-                                        <h3 class="h6 fw-bold mb-0 text-dark">Bonus Chef Recipes Unlocked!</h3>
-                                        <span class="text-muted small">Your purchased items unlocked the following recipe guides:</span>
-                                    </div>
-                                </div>
+                            <section class="xsf-ty-recipes" aria-labelledby="ty-recipes-title">
+                                <h2 class="xsf-ty-recipes__title" id="ty-recipes-title">Bonus Chef Recipes Unlocked</h2>
+                                <p class="xsf-ty-recipes__lead">Your purchased items unlocked the following recipe guides:</p>
                                 @foreach($unlockedRecipes as $recipe)
                                     @php
                                         $token = app(\App\Services\Store\RecipeAccessService::class)->generateOrderToken($order);
                                     @endphp
-                                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 py-2 border-top border-success-subtle">
+                                    <div class="xsf-ty-recipes__item">
                                         <div class="d-flex align-items-center gap-3">
-                                            <img src="{{ $recipe->image_src }}" alt="{{ $recipe->title }}" style="width: 44px; height: 44px; border-radius: 8px; object-fit: cover;" onerror="this.src='https://placehold.co/44x44/eee/999?text=Recipe';">
+                                            <img src="{{ $recipe->image_src }}" alt="" class="xsf-ty-recipes__thumb" width="44" height="44" onerror="this.src='https://placehold.co/44x44/eee/999?text=Recipe';">
                                             <div>
-                                                <a href="{{ route('recipes.show', ['slug' => $recipe->slug, 'order_id' => $order->id, 'token' => $token]) }}" class="fw-bold text-dark text-decoration-none small d-block">
+                                                <a href="{{ route('recipes.show', ['slug' => $recipe->slug, 'order_id' => $order->id, 'token' => $token]) }}" class="xsf-ty-recipes__link">
                                                     {{ $recipe->title }}
                                                 </a>
-                                                <span class="text-muted small">
+                                                <span class="xsf-ty-recipes__meta">
                                                     {{ $recipe->total_time ? $recipe->total_time . ' min' : '30 min' }} &bull; {{ ucfirst($recipe->difficulty) }}
                                                 </span>
                                             </div>
                                         </div>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <a href="{{ route('recipes.show', ['slug' => $recipe->slug, 'order_id' => $order->id, 'token' => $token]) }}" class="btn btn-outline-success btn-pill btn-sm">
-                                                <i class="fa-solid fa-eye me-1"></i> View
+                                        <div class="xsf-ty-recipes__btns">
+                                            <a href="{{ route('recipes.show', ['slug' => $recipe->slug, 'order_id' => $order->id, 'token' => $token]) }}" class="btn btn-outline-dark btn-sm" style="min-height:44px;display:inline-flex;align-items:center;">
+                                                <i class="fa-solid fa-eye me-1" aria-hidden="true"></i> View
                                             </a>
-                                            <a href="{{ route('recipes.download-pdf', ['slug' => $recipe->slug, 'order_id' => $order->id, 'token' => $token]) }}" class="btn btn-success btn-pill btn-sm">
-                                                <i class="fa-solid fa-file-pdf me-1"></i>PDF
+                                            <a href="{{ route('recipes.download-pdf', ['slug' => $recipe->slug, 'order_id' => $order->id, 'token' => $token]) }}" class="btn btn-outline-dark btn-sm" style="min-height:44px;display:inline-flex;align-items:center;">
+                                                <i class="fa-solid fa-file-pdf me-1" aria-hidden="true"></i>PDF
                                             </a>
                                         </div>
                                     </div>
                                 @endforeach
-                            </div>
+                            </section>
                         @endif
-
-                        {{-- Total dark bar --}}
-                        <div class="xsf-ty-total-bar">
-                            <span class="xsf-ty-total-bar__label">{{ 'Total Paid' }}</span>
-                            <span class="xsf-ty-total-bar__amount">
-                                {{ $currency->symbol }}{{ number_format($order->total_amount, 2) }}
-                            </span>
-                        </div>
 
                         {{-- Actions --}}
                         <div class="xsf-ty-actions">
                             @php
                                 $receiptToken = app(\App\Services\Store\RecipeAccessService::class)->generateOrderToken($order);
                             @endphp
-                            <a href="{{ route('orders.download-receipt', ['id' => $order->id, 'token' => $receiptToken]) }}" class="btn btn-outline-dark btn-pill">
-                                <i class="fa-solid fa-file-invoice me-2"></i>{{ 'Download Receipt (PDF)' }}
-                            </a>
-                            <a href="{{ route('xylo.home') }}" class="btn btn-primary btn-pill">
-                                <i class="fa fa-bag-shopping me-2"></i>{{ 'Continue Shopping' }}
-                            </a>
                             @auth('customer')
-                                <a href="{{ route('customer.orders.index') }}" class="btn btn-outline-secondary btn-pill">
-                                    <i class="fa fa-list-check me-2"></i>{{ 'View Orders' }}
+                                <a href="{{ route('customer.orders.index') }}" class="btn btn-outline-secondary">
+                                    <i class="fa fa-list-check" aria-hidden="true"></i>{{ 'View Orders' }}
                                 </a>
                             @endauth
+                            <a href="{{ route('orders.download-receipt', ['id' => $order->id, 'token' => $receiptToken]) }}" class="btn btn-outline-dark">
+                                <i class="fa-solid fa-file-invoice" aria-hidden="true"></i>{{ 'Download Receipt (PDF)' }}
+                            </a>
+                            <a href="{{ route('xylo.home') }}" class="btn btn-primary">
+                                <i class="fa fa-bag-shopping" aria-hidden="true"></i>{{ 'Continue Shopping' }}
+                            </a>
                         </div>
 
                     </div>{{-- /.xsf-ty-card --}}

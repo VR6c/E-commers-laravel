@@ -1,72 +1,71 @@
-<div class="product-search-container container my-4">
+<div class="product-search-container container xsf-listing-page">
     @php
         $currencySymbol = function_exists('activeCurrency') && activeCurrency() ? activeCurrency()->symbol : '$';
     @endphp
 
-    {{-- Search Bar Header --}}
-    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-light">
-        <div class="card-body p-4">
-            <div class="row align-items-center g-3">
-                <div class="col-lg-8">
-                    <div class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden">
-                        <span class="input-group-text bg-white border-0 ps-3 text-muted">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </span>
-                        <input
-                            type="text"
-                            class="form-control border-0 ps-2"
-                            placeholder="Search products by name, SKU, tags or description..."
-                            wire:model.live.debounce.300ms="search"
-                            aria-label="Search products"
-                        >
-                        @if(!empty($search))
-                            <button
-                                class="btn btn-white border-0 text-muted pe-3"
-                                type="button"
-                                wire:click="removeFilter('search')"
-                                title="Clear search"
-                            >
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
-                        @endif
-                    </div>
-                </div>
-                <div class="col-lg-4 text-lg-end d-flex align-items-center justify-content-lg-end justify-content-between">
-                    <div wire:loading wire:target="search, category_id, brand_id, min_price, max_price, sort_by, per_page" class="text-primary me-3">
-                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                        <small class="fw-semibold">Updating results...</small>
-                    </div>
-                    <span class="badge bg-primary rounded-pill px-3 py-2 fs-6">
-                        <x-number-flow :value="$products->total()" :decimals="0" suffix=" Found" />
-                    </span>
-                </div>
-            </div>
+    {{-- Search bar --}}
+    <h1 class="visually-hidden">Search products</h1>
+    <div class="xsf-lw-search__bar">
+        <div class="xsf-lw-search__field">
+            <i class="fa-solid fa-magnifying-glass xsf-lw-search__icon" aria-hidden="true"></i>
+            <input
+                type="search"
+                class="form-control"
+                placeholder="Search products by name, SKU, tags or description..."
+                wire:model.live.debounce.300ms="search"
+                aria-label="Search products"
+            >
+            @if(!empty($search))
+                <button
+                    class="xsf-lw-search__clear"
+                    type="button"
+                    wire:click="removeFilter('search')"
+                    aria-label="Clear search"
+                >
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            @endif
+        </div>
+        <button type="button"
+                class="xsf-lw-search__toggle d-lg-none"
+                data-bs-toggle="collapse"
+                data-bs-target="#lwFilters"
+                aria-controls="lwFilters"
+                aria-expanded="false">
+            <i class="fa-solid fa-sliders" aria-hidden="true"></i> Filters
+        </button>
+        <div class="xsf-lw-search__status" role="status" aria-live="polite">
+            <span wire:loading wire:target="search, category_id, brand_id, min_price, max_price, sort_by, per_page">
+                <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>Updating results...
+            </span>
+            <span wire:loading.remove wire:target="search, category_id, brand_id, min_price, max_price, sort_by, per_page">
+                <x-number-flow :value="$products->total()" :decimals="0" suffix=" found" />
+            </span>
         </div>
     </div>
 
-    <div class="row g-4">
-        {{-- Filters Sidebar --}}
-        <aside class="col-lg-3">
-            <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top: 100px; z-index: 10;">
-                <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
-                    <h5 class="card-title m-0 fw-bold fs-6">
-                        <i class="fa-solid fa-sliders text-primary me-2"></i>Filters
-                    </h5>
+    <div class="row g-3 g-lg-4">
+        {{-- Filters: collapsible panel below lg, sticky sidebar from lg --}}
+        <aside class="col-lg-3" aria-label="Filters">
+            <div id="lwFilters" class="collapse d-lg-block" wire:ignore.self>
+                <div class="xsf-lw-search__panel">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="m-0 fs-6 fw-bold">Filters</h2>
                     @if(!empty($search) || $category_id || $brand_id || $min_price || $max_price || $sort_by !== 'newest')
                         <button
                             type="button"
                             wire:click="clearFilters"
-                            class="btn btn-sm btn-link text-decoration-none text-danger p-0 fw-semibold"
+                            class="btn btn-link text-decoration-none p-0 fw-semibold"
                         >
-                            Reset All
+                            Reset all
                         </button>
                     @endif
                 </div>
-                <div class="card-body p-3">
+                <div class="xsf-lw-search__panel-body">
                     {{-- Category Filter --}}
-                    <div class="mb-4">
-                        <label for="category-select" class="form-label fw-semibold text-secondary small text-uppercase mb-2">Category</label>
-                        <select id="category-select" class="form-select shadow-none" wire:model.live="category_id">
+                    <div>
+                        <label for="category-select" class="form-label">Category</label>
+                        <select id="category-select" class="form-select" wire:model.live="category_id">
                             <option value="">All Categories</option>
                             @foreach($categories as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -75,9 +74,9 @@
                     </div>
 
                     {{-- Brand Filter --}}
-                    <div class="mb-4">
-                        <label for="brand-select" class="form-label fw-semibold text-secondary small text-uppercase mb-2">Brand</label>
-                        <select id="brand-select" class="form-select shadow-none" wire:model.live="brand_id">
+                    <div>
+                        <label for="brand-select" class="form-label">Brand</label>
+                        <select id="brand-select" class="form-select" wire:model.live="brand_id">
                             <option value="">All Brands</option>
                             @foreach($brands as $brand)
                                 <option value="{{ $brand->id }}">{{ $brand->name }}</option>
@@ -86,11 +85,11 @@
                     </div>
 
                     {{-- Price Range Filter --}}
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold text-secondary small text-uppercase mb-2">Price Range</label>
-                        <div class="row g-2">
+                    <div>
+                        <label class="form-label" id="lw-price-label">Price range</label>
+                        <div class="row g-2" role="group" aria-labelledby="lw-price-label">
                             <div class="col-6">
-                                <div class="input-group input-group-sm">
+                                <div class="input-group">
                                     <span class="input-group-text">{{ $currencySymbol }}</span>
                                     <input
                                         type="number"
@@ -98,12 +97,13 @@
                                         min="0"
                                         class="form-control"
                                         placeholder="Min"
+                                        aria-label="Minimum price"
                                         wire:model.live.debounce.500ms="min_price"
                                     >
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="input-group input-group-sm">
+                                <div class="input-group">
                                     <span class="input-group-text">{{ $currencySymbol }}</span>
                                     <input
                                         type="number"
@@ -111,6 +111,7 @@
                                         min="0"
                                         class="form-control"
                                         placeholder="Max"
+                                        aria-label="Maximum price"
                                         wire:model.live.debounce.500ms="max_price"
                                     >
                                 </div>
@@ -120,36 +121,37 @@
 
                     {{-- Items Per Page --}}
                     <div>
-                        <label for="per-page-select" class="form-label fw-semibold text-secondary small text-uppercase mb-2">Items Per Page</label>
-                        <select id="per-page-select" class="form-select shadow-none form-select-sm" wire:model.live="per_page">
+                        <label for="per-page-select" class="form-label">Items Per Page</label>
+                        <select id="per-page-select" class="form-select" wire:model.live="per_page">
                             <option value="12">12 Items</option>
                             <option value="24">24 Items</option>
                             <option value="48">48 Items</option>
                         </select>
                     </div>
                 </div>
+                </div>
             </div>
         </aside>
 
         {{-- Main Results Area --}}
-        <main class="col-lg-9">
+        <main class="col-lg-9" style="min-width:0">
             {{-- Toolbar: Active Filters & Sorting --}}
-            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 pb-2 border-bottom g-2">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 {{-- Active Filter Pills --}}
-                <div class="d-flex flex-wrap align-items-center gap-2 mb-2 mb-md-0">
+                <div class="xsf-lw-search__chips">
                     @if(!empty($search))
-                        <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+                        <span class="xsf-lw-search__chip">
                             Search: "{{ $search }}"
-                            <button type="button" class="btn-close ms-2" style="font-size: 0.65rem;" wire:click="removeFilter('search')"></button>
+                            <button type="button" wire:click="removeFilter(\'search\')" aria-label="Remove filter"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
                         </span>
                     @endif
 
                     @if($category_id)
                         @php $cat = $categories->firstWhere('id', $category_id); @endphp
                         @if($cat)
-                            <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+                            <span class="xsf-lw-search__chip">
                                 Category: {{ $cat->name }}
-                                <button type="button" class="btn-close ms-2" style="font-size: 0.65rem;" wire:click="removeFilter('category_id')"></button>
+                                <button type="button" wire:click="removeFilter(\'category_id\')" aria-label="Remove filter"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
                             </span>
                         @endif
                     @endif
@@ -157,31 +159,31 @@
                     @if($brand_id)
                         @php $bnd = $brands->firstWhere('id', $brand_id); @endphp
                         @if($bnd)
-                            <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+                            <span class="xsf-lw-search__chip">
                                 Brand: {{ $bnd->name }}
-                                <button type="button" class="btn-close ms-2" style="font-size: 0.65rem;" wire:click="removeFilter('brand_id')"></button>
+                                <button type="button" wire:click="removeFilter(\'brand_id\')" aria-label="Remove filter"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
                             </span>
                         @endif
                     @endif
 
                     @if($min_price !== null && $min_price > 0)
-                        <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+                        <span class="xsf-lw-search__chip">
                             Min Price: {{ $currencySymbol }}{{ number_format($min_price, 2) }}
-                            <button type="button" class="btn-close ms-2" style="font-size: 0.65rem;" wire:click="removeFilter('min_price')"></button>
+                            <button type="button" wire:click="removeFilter(\'min_price\')" aria-label="Remove filter"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
                         </span>
                     @endif
 
                     @if($max_price !== null && $max_price > 0)
-                        <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+                        <span class="xsf-lw-search__chip">
                             Max Price: {{ $currencySymbol }}{{ number_format($max_price, 2) }}
-                            <button type="button" class="btn-close ms-2" style="font-size: 0.65rem;" wire:click="removeFilter('max_price')"></button>
+                            <button type="button" wire:click="removeFilter(\'max_price\')" aria-label="Remove filter"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
                         </span>
                     @endif
                 </div>
 
                 {{-- Sort Dropdown --}}
                 <div class="d-flex align-items-center gap-2 ms-auto">
-                    <label for="sort-by-select" class="text-nowrap small fw-semibold text-muted mb-0">Sort By:</label>
+                    <label for="sort-by-select" class="text-nowrap small text-muted mb-0">Sort by</label>
                     <select id="sort-by-select" class="form-select form-select-sm shadow-none w-auto" wire:model.live="sort_by">
                         <option value="newest">Newest Arrivals</option>
                         <option value="price_asc">Price: Low to High</option>
@@ -192,78 +194,43 @@
             </div>
 
             {{-- Products Grid --}}
-            <div class="row g-3">
+            <div class="xsf-product-grid">
                 @forelse($products as $product)
-                    <div class="col-6 col-md-4 col-xl-4" wire:key="product-{{ $product->id }}">
-                        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden product-card hover-shadow transition">
-                            {{-- Image Container --}}
-                            <div class="position-relative bg-light text-center p-3">
-                                @php
-                                    $imgUrl = product_image_url($product->image_url ?: optional($product->thumbnail)->image_url);
-                                @endphp
+                    @php
+                        $imgUrl = product_image_url($product->image_url ?: optional($product->thumbnail)->image_url);
+                        $productUrl = Route::has('product.show') ? route('product.show', $product->slug ?? $product->id) : '#';
+                    @endphp
+                    <div class="xsf-product-grid__item" wire:key="product-{{ $product->id }}">
+                        <article class="xsf-lw-search__card">
+                            <a href="{{ $productUrl }}" class="xsf-lw-search__media" tabindex="-1" aria-hidden="true">
                                 <img
                                     src="{{ $imgUrl }}"
-                                    alt="{{ $product->name }}"
-                                    class="img-fluid object-fit-contain"
-                                    style="height: 180px; width: 100%;"
+                                    alt=""
+                                    loading="lazy"
                                     onerror="this.src='https://via.placeholder.com/300x300?text=No+Image';"
                                 >
-                                @if($product->category)
-                                    <span class="badge bg-secondary position-absolute top-0 start-0 m-2 rounded-pill small">
-                                        {{ $product->category->name }}
-                                    </span>
-                                @endif
-                            </div>
-
-                            {{-- Card Body --}}
-                            <div class="card-body d-flex flex-column p-3">
+                            </a>
+                            <div class="xsf-lw-search__body">
                                 @if($product->brand)
-                                    <small class="text-muted text-uppercase fw-bold mb-1" style="font-size: 0.75rem;">
-                                        {{ $product->brand->name }}
-                                    </small>
+                                    <span class="xsf-lw-search__brand">{{ $product->brand->name }}</span>
                                 @endif
-
-                                <h6 class="card-title fw-bold text-truncate mb-2" title="{{ $product->name }}">
-                                    <a href="{{ Route::has('product.show') ? route('product.show', $product->slug ?? $product->id) : '#' }}" class="text-dark text-decoration-none">
-                                        {{ $product->name }}
-                                    </a>
-                                </h6>
-
-                                @if($product->short_description)
-                                    <p class="text-muted small text-truncate-2 mb-3" style="font-size: 0.85rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                        {{ $product->short_description }}
-                                    </p>
-                                @endif
-
-                                <div class="mt-auto d-flex align-items-center justify-content-between pt-2 border-top">
-                                    <div class="price-container">
-                                        <x-number-flow :value="(float)$product->price" :prefix="$currencySymbol" :decimals="2" class="fw-bold text-primary fs-5" />
-                                    </div>
-                                    <a
-                                        href="{{ Route::has('product.show') ? route('product.show', $product->slug ?? $product->id) : '#' }}"
-                                        class="btn btn-outline-primary btn-sm rounded-pill px-3"
-                                    >
-                                        View
-                                    </a>
+                                <h2 class="xsf-lw-search__name" title="{{ $product->name }}">
+                                    <a href="{{ $productUrl }}">{{ $product->name }}</a>
+                                </h2>
+                                <div class="xsf-lw-search__foot">
+                                    <x-number-flow :value="(float)$product->price" :prefix="$currencySymbol" :decimals="2" />
+                                    <a href="{{ $productUrl }}" class="xsf-lw-search__view" aria-label="View {{ $product->name }}">View</a>
                                 </div>
                             </div>
-                        </div>
+                        </article>
                     </div>
                 @empty
-                    <div class="col-12 py-5">
-                        <div class="text-center bg-light p-5 rounded-4 border border-dashed">
-                            <div class="mb-3 text-muted">
-                                <i class="fa-solid fa-magnifying-glass fa-3x"></i>
-                            </div>
-                            <h5 class="fw-bold">No Products Found</h5>
-                            <p class="text-muted mb-4">We couldn't find any products matching your search criteria.</p>
-                            <button
-                                type="button"
-                                wire:click="clearFilters"
-                                class="btn btn-primary rounded-pill px-4"
-                            >
-                                Clear All Filters
-                            </button>
+                    <div class="xsf-product-grid__empty">
+                        <div class="xsf-empty">
+                            <i class="fa-solid fa-magnifying-glass xsf-empty__icon" aria-hidden="true"></i>
+                            <h2 class="xsf-empty__title">No products found</h2>
+                            <p class="xsf-empty__text">We couldn't find any products matching your search. Try different keywords or clear your filters.</p>
+                            <button type="button" wire:click="clearFilters" class="xsf-empty__cta">Clear all filters</button>
                         </div>
                     </div>
                 @endforelse
@@ -271,7 +238,7 @@
 
             {{-- Livewire Pagination Links --}}
             @if($products->hasPages())
-                <div class="d-flex justify-content-center mt-4">
+                <div class="d-flex justify-content-center mt-4 xsf-pagination border-0">
                     {{ $products->links() }}
                 </div>
             @endif

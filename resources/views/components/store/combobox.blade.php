@@ -15,16 +15,19 @@
 
 <div class="xsf-combobox" id="{{ $id }}-combobox">
     @if ($label)
-        <label for="{{ $id }}" class="form-label fw-semibold text-dark small mb-1">
-            {{ $label }} @if ($required)<span class="text-danger">*</span>@endif
+        <label for="{{ $id }}-trigger" class="xsf-field__label">
+            {{ $label }} @if ($required)<span class="text-danger" aria-hidden="true">*</span>@endif
         </label>
     @endif
 
     <input type="hidden" name="{{ $name }}" id="{{ $id }}" value="{{ old($name, $value) }}" @if($required) required @endif />
 
-    <button type="button" class="xsf-combobox__trigger w-100 d-flex justify-content-between align-items-center" id="{{ $id }}-trigger" aria-haspopup="listbox" aria-expanded="false">
+    <button type="button" class="xsf-combobox__trigger" id="{{ $id }}-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="{{ $id }}-panel" @if ($errors->has($name)) aria-invalid="true" aria-describedby="{{ $id }}-error" @endif>
         <span class="xsf-combobox__label {{ empty($value) ? 'xsf-combobox__label--placeholder' : '' }}" id="{{ $id }}-label">
             {{ $value ?: $placeholder }}
         </span>
     </button>
+    @error($name)
+        <p class="xsf-field__error" id="{{ $id }}-error" role="alert">{{ $message }}</p>
+    @enderror
 </div>
