@@ -16,12 +16,12 @@
     thead th {
         background: $surface-muted;
         color: $text-muted;
-        font-size: 0.70rem;
-        font-weight: $font-weight-bold;
+        font-size: 0.72rem;
+        font-weight: $font-weight-semibold;
         text-transform: uppercase;
-        letter-spacing: 0.07em;
+        letter-spacing: 0.05em;
         padding: $space-3 + 0.1rem $space-4;
-        border-bottom: 2px solid $border-subtle;
+        border-bottom: 1px solid $border-color;
         white-space: nowrap;
     }
 
@@ -40,16 +40,16 @@
 // Table wrapper to give rounded card treatment
 .table-wrapper {
     background: $neutral-0;
-    border: 1px solid $border-subtle;
-    border-radius: $radius-2xl;
-    box-shadow: $shadow-sm;
+    border: 1px solid $border-color;
+    border-radius: $radius-xl;
+    box-shadow: $shadow-xs;
     overflow: hidden;
 
     .table {
         margin-bottom: 0;
 
-        thead th:first-child { border-radius: $radius-2xl 0 0 0; }
-        thead th:last-child  { border-radius: 0 $radius-2xl 0 0; }
+        thead th:first-child { border-radius: $radius-xl 0 0 0; }
+        thead th:last-child  { border-radius: 0 $radius-xl 0 0; }
     }
 }
 

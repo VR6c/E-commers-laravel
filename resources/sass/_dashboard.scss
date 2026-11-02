@@ -53,7 +53,7 @@
 //  GRADIENT STAT CARDS
 // =====================================================================
 .dash-stat {
-    border-radius: $radius-2xl;
+    border-radius: $radius-xl;
     padding: $space-6;
     color: #fff;
     position: relative;
@@ -90,7 +90,6 @@
     }
 
     &:hover {
-        transform: translateY(-6px);
     }
 
     // Horizontal shimmer strip at top of card
@@ -113,27 +112,19 @@
 
     // ---- Card colour variants ----
     &.card-sales {
-        background: $gradient-card-blue;
-        box-shadow: $shadow-indigo;
-        &:hover { box-shadow: 0 22px 52px -8px rgba(99, 102, 241, 0.65); }
+        background: $primary-600;
     }
 
     &.card-orders {
-        background: $gradient-card-cyan;
-        box-shadow: $shadow-sky;
-        &:hover { box-shadow: 0 22px 52px -8px rgba(6, 182, 212, 0.65); }
+        background: $info-600;
     }
 
     &.card-vendors {
-        background: $gradient-card-orange;
-        box-shadow: $shadow-amber;
-        &:hover { box-shadow: 0 22px 52px -8px rgba(245, 158, 11, 0.65); }
+        background: $warning-600;
     }
 
     &.card-customers {
-        background: $gradient-card-green;
-        box-shadow: $shadow-emerald;
-        &:hover { box-shadow: 0 22px 52px -8px rgba(16, 185, 129, 0.65); }
+        background: $success-600;
     }
 
     .stat-icon {
@@ -207,7 +198,7 @@
 .orders-card,
 .quick-card {
     background: $neutral-0;
-    border-radius: $radius-2xl;
+    border-radius: $radius-xl;
     padding: $space-6;
     border: 1px solid $border-subtle;
     box-shadow: $shadow-sm;
@@ -216,7 +207,6 @@
 
     &:hover {
         box-shadow: $shadow-md;
-        transform: translateY(-2px);
     }
 }
 
@@ -352,7 +342,7 @@
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: $gradient-primary;
+    background: $color-primary;
     color: #fff;
     font-size: $font-size-xs;
     font-weight: $font-weight-bold;
@@ -468,13 +458,11 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 
     &:hover {
-        transform: translateY(-3px);
         box-shadow: 0 8px 24px rgba(0,0,0,.15);
         color: #fff;
         text-decoration: none;
 
         .icon > i {
-            transform: scale(1.1);
         }
     }
 

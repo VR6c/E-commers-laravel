@@ -14,7 +14,7 @@
     padding: $space-2 + 0.1rem $space-4;
     border-radius: $radius-lg;
     line-height: 1.45;
-    letter-spacing: 0.01em;
+    
     transition: all $transition-fast;
     display: inline-flex;
     align-items: center;
@@ -50,11 +50,8 @@
     --bs-btn-active-border-color: #{$color-primary-active};
     --bs-btn-color:               #fff;
     --bs-btn-hover-color:         #fff;
-    box-shadow: $shadow-primary;
 
     &:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 8px 24px -4px rgba(99, 102, 241, 0.55);
     }
 }
 
@@ -76,7 +73,6 @@
     --bs-btn-hover-border-color: #{$success-600};
     --bs-btn-color:         #fff;
     --bs-btn-hover-color:   #fff;
-    box-shadow: 0 4px 14px -3px rgba(16, 185, 129, 0.40);
 
     &:hover { transform: translateY(-1px); }
 }
@@ -88,7 +84,6 @@
     --bs-btn-hover-border-color: #{$danger-600};
     --bs-btn-color:         #fff;
     --bs-btn-hover-color:   #fff;
-    box-shadow: 0 4px 14px -3px rgba(244, 63, 94, 0.35);
 
     &:hover { transform: translateY(-1px); }
 }
@@ -190,7 +185,6 @@
     i { font-size: 0.78rem; }
 
     &:hover {
-        transform: scale(1.08);
         box-shadow: $shadow-sm;
         color: $text-primary;
         border-color: $neutral-300;
@@ -216,7 +210,6 @@
     &:hover {
         background: $primary-100;
         border-color: $primary-200;
-        transform: scale(1.08);
         box-shadow: $shadow-sm;
     }
 }
@@ -240,8 +233,6 @@
         background: $danger-100;
         border-color: $danger-200;
         color: $danger-600 !important;
-        transform: scale(1.08);
-        box-shadow: 0 2px 8px rgba(244, 63, 94, 0.20);
     }
 }
 

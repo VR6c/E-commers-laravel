@@ -28,7 +28,7 @@ html[lang="kh"] {
 // =====================================================================
 body {
     margin: 0;
-    background: #f4f6f9;
+    background: $body-bg;
     font-family: var(--font-family-base);
     color: var(--text-primary);
     min-height: 100vh;
@@ -38,15 +38,14 @@ body {
 
 
 // =====================================================================
-//  SIDEBAR  — Ultra-Modern Glassmorphism & Elevated UX
+//  SIDEBAR — light, quiet, content-first
 //  Structure: .main-sidebar > .sidebar > nav > ul.nav-sidebar
 // =====================================================================
 
-// ---- Keyframes ----
 @keyframes statusPulse {
-    0%   { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-    70%  { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    0%   { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.55); }
+    70%  { box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
 // ---- Shell ----
@@ -57,25 +56,13 @@ body {
     bottom: 0;
     height: 100vh;
     width: $sidebar-width;
-    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    background: $sidebar-bg;
     z-index: 1038;
     transition: width $transition-base, transform $transition-base;
-    box-shadow: 4px 0 28px rgba(0, 0, 0, 0.35);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
-
-    // Vibrant gradient top accent border
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, #6366f1, #818cf8, #a855f7);
-        z-index: 3;
-        pointer-events: none;
-    }
+    border-right: 1px solid $sidebar-border;
 }
 
 // ---- Brand link ----
@@ -83,30 +70,23 @@ body {
     display: flex;
     align-items: center;
     gap: $space-3;
-    padding: 0 18px;
-    height: 64px;
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0 $space-5;
+    height: $topbar-height;
+    border-bottom: 1px solid $sidebar-border;
     text-decoration: none;
     flex-shrink: 0;
-    transition: background $transition-fast;
 
-    &:hover {
-        background: rgba(30, 41, 59, 0.95);
-        text-decoration: none;
-    }
+    &:hover { text-decoration: none; }
 }
 
 .brand-image-wrap {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+    width: 34px;
+    height: 34px;
+    border-radius: $radius-md;
     overflow: hidden;
     flex-shrink: 0;
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.45);
+    background: $primary-50;
+    border: 1px solid $primary-100;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -119,58 +99,50 @@ body {
 }
 
 .brand-text {
-    font-size: 0.98rem;
+    font-size: 0.95rem;
     font-weight: 700;
-    color: #ffffff;
+    color: $text-primary;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
 }
 
-// ---- .sidebar scrollable inner wrapper ----
+// ---- Scrollable inner wrapper ----
 .sidebar {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 10px 8px 20px 8px;
+    padding: $space-3 $space-3 $space-5;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+    scrollbar-color: $neutral-200 transparent;
 
     &::-webkit-scrollbar       { width: 4px; }
     &::-webkit-scrollbar-track { background: transparent; }
-    &::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); border-radius: 4px; }
+    &::-webkit-scrollbar-thumb { background: $neutral-200; border-radius: 4px; }
 }
 
 // ---- User panel ----
 .user-panel {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    margin: 4px 4px 12px 4px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 12px;
-    backdrop-filter: blur(8px);
-    transition: all 0.2s ease;
-
-    &:hover {
-        background: rgba(255, 255, 255, 0.06);
-        border-color: rgba(255, 255, 255, 0.12);
-    }
+    gap: $space-3;
+    padding: $space-2 $space-3;
+    margin: 0 0 $space-3;
+    background: $surface-muted;
+    border: 1px solid $border-color;
+    border-radius: $radius-lg;
 
     .user-panel-image {
-        position: relative;
         flex-shrink: 0;
 
         img {
-            width: 38px;
-            height: 38px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid rgba(99, 102, 241, 0.6);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+            border: 2px solid $surface;
+            box-shadow: 0 0 0 1px $border-color;
         }
     }
 
@@ -181,9 +153,9 @@ body {
 
     .user-panel-name {
         display: block;
-        font-size: 0.84rem;
+        font-size: 0.82rem;
         font-weight: 600;
-        color: #f8fafc;
+        color: $text-primary;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -193,25 +165,25 @@ body {
         display: inline-flex;
         align-items: center;
         gap: 5px;
-        font-size: 0.70rem;
+        font-size: 0.7rem;
         font-weight: 500;
-        color: #4ade80;
-        margin-top: 2px;
+        color: $text-muted;
+        margin-top: 1px;
+    }
 
-        .user-status-dot {
-            width: 7px;
-            height: 7px;
-            background: #22c55e;
-            border-radius: 50%;
-            display: inline-block;
-            animation: statusPulse 2s infinite ease-in-out;
-        }
+    .user-status-dot {
+        width: 6px;
+        height: 6px;
+        background: $success-500;
+        border-radius: 50%;
+        display: inline-block;
+        animation: statusPulse 2.4s infinite ease-in-out;
     }
 }
 
 // ---- Search ----
 .sidebar-search-wrapper {
-    padding: 0 4px 12px 4px;
+    padding: 0 0 $space-2;
 }
 
 .sidebar-search-inner {
@@ -222,98 +194,81 @@ body {
         left: 12px;
         top: 50%;
         transform: translateY(-50%);
-        color: #64748b;
-        font-size: 0.8rem;
+        color: $neutral-400;
+        font-size: 0.78rem;
         pointer-events: none;
         transition: color $transition-fast;
     }
 
     input {
         width: 100%;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.09);
-        border-radius: 10px;
-        color: #f1f5f9;
-        font-size: 0.81rem;
+        background: $surface;
+        border: 1px solid $border-color;
+        border-radius: $radius-md;
+        color: $text-primary;
+        font-size: 0.8rem;
         padding: 8px 12px 8px 34px;
         outline: none;
         font-family: var(--font-family-base);
-        transition: all 0.2s ease;
+        transition: border-color $transition-fast, box-shadow $transition-fast;
 
-        &::placeholder { color: #64748b; }
+        &::placeholder { color: $neutral-400; }
 
         &:focus {
-            border-color: rgba(99, 102, 241, 0.6);
-            background: rgba(99, 102, 241, 0.1);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-            color: #ffffff;
+            border-color: $primary-400;
+            box-shadow: $shadow-focus;
         }
     }
 
-    &:focus-within i { color: #818cf8; }
+    &:focus-within i { color: $color-primary; }
 }
 
-// ---- nav-pills / nav-sidebar — AdminLTE tree nav ----
+// ---- nav-sidebar ----
 .nav-sidebar {
-    padding: 4px 0;
+    padding: 0;
     margin: 0;
 
-    // Section header labels
     .nav-header {
-        font-size: 0.62rem;
-        font-weight: 700;
-        letter-spacing: 0.14em;
-        color: #64748b;
-        padding: 16px 12px 6px 12px;
+        font-size: 0.66rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        color: $neutral-400;
+        padding: $space-5 $space-3 $space-2;
         list-style: none;
         text-transform: uppercase;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-
-        &::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.06);
-            margin-left: 6px;
-        }
     }
 
-    // Top-level nav item
     > .nav-item {
         list-style: none;
         padding: 1px 0;
     }
 }
 
-// ---- nav-link (top-level items) ----
+// ---- Top-level nav-link ----
 .nav-pills.nav-sidebar .nav-link {
     display: flex;
     align-items: center;
-    padding: 9px 12px;
-    margin: 2px 4px;
-    border-radius: 10px;
-    color: #94a3b8;
+    padding: 8px $space-3;
+    margin: 0;
+    border-radius: $radius-md;
+    color: $text-secondary;
     background-color: transparent;
-    font-size: 0.84rem;
+    font-size: 0.85rem;
     font-weight: 500;
     text-decoration: none;
-    transition: all 0.18s ease;
+    transition: background-color $transition-fast, color $transition-fast;
     position: relative;
     white-space: nowrap;
 
-    // Icon
     .nav-icon {
-        width: 1.6rem;
+        width: 1.55rem;
         font-size: 0.9rem;
         text-align: center;
         flex-shrink: 0;
-        color: #64748b;
-        transition: all 0.18s ease;
+        color: $neutral-400;
+        transition: color $transition-fast;
     }
 
-    // Label + arrow wrapper
     p {
         flex: 1;
         margin: 0;
@@ -323,107 +278,83 @@ body {
         align-items: center;
     }
 
-    // Collapse arrow (AdminLTE .right)
     .right {
         margin-left: auto;
         font-size: 0.65rem;
-        color: #64748b;
-        transition: transform 0.2s ease, color 0.18s ease;
+        color: $neutral-400;
+        transition: transform $transition-base, color $transition-fast;
         flex-shrink: 0;
     }
 
     &:hover {
-        background-color: rgba(255, 255, 255, 0.07);
-        color: #f8fafc;
+        background-color: $neutral-100;
+        color: $text-primary;
         text-decoration: none;
 
-        .nav-icon { color: #a5b4fc; transform: scale(1.08); }
-        .right     { color: #cbd5e1; }
+        .nav-icon { color: $neutral-600; }
     }
 
-    // Active state
     &.active {
-        background: linear-gradient(90deg, rgba(99, 102, 241, 0.22) 0%, rgba(99, 102, 241, 0.06) 100%);
-        color: #ffffff;
+        background-color: $primary-50;
+        color: $primary-700;
         font-weight: 600;
-        border: 1px solid rgba(99, 102, 241, 0.25);
 
-        .nav-icon { color: #818cf8; }
-
-        // Left glowing accent bar
-        &::before {
-            content: '';
-            position: absolute;
-            left: -4px; top: 50%;
-            transform: translateY(-50%);
-            width: 4px;
-            height: 65%;
-            background: linear-gradient(180deg, #6366f1 0%, #818cf8 100%);
-            border-radius: 0 4px 4px 0;
-            box-shadow: 0 0 10px rgba(99, 102, 241, 0.75);
-        }
+        .nav-icon { color: $color-primary; }
     }
 }
 
-// Arrow rotation when submenu is open
 .nav-item.menu-open > .nav-link .right {
     transform: rotate(-90deg);
-    color: #818cf8;
 }
 
-// ---- nav-treeview (submenu) ----
+// ---- Submenu ----
 .nav-treeview {
     list-style: none;
-    padding: 3px 0 5px 0;
-    margin: 2px 0 4px 18px;
-    border-left: 2px solid rgba(99, 102, 241, 0.2);
-
-    // Hidden by default; shown when parent has .menu-open
+    padding: 2px 0 4px;
+    margin: 2px 0 4px 17px;
+    border-left: 1px solid $border-color;
     display: none;
 
     .nav-item { padding: 1px 0; }
 
-    // Treeview links
     .nav-link {
         display: flex;
         align-items: center;
-        padding: 6px 10px 6px 16px;
-        margin: 1px 4px;
-        border-radius: 8px;
-        color: #94a3b8;
+        padding: 6px $space-3 6px 14px;
+        margin: 0 0 0 -1px;
+        border-left: 1px solid transparent;
+        border-radius: 0 $radius-md $radius-md 0;
+        color: $text-muted;
         background-color: transparent;
-        font-size: 0.79rem;
-        font-weight: 400;
+        font-size: 0.8rem;
+        font-weight: 500;
         text-decoration: none;
-        transition: all 0.18s ease;
+        transition: background-color $transition-fast, color $transition-fast;
         position: relative;
         white-space: nowrap;
 
-        // Small circle bullet
         .nav-icon {
-            width: 1.1rem;
-            font-size: 0.5rem;
-            color: #64748b;
+            width: 1rem;
+            font-size: 0.4rem;
+            color: $neutral-300;
             flex-shrink: 0;
-            transition: all 0.18s ease;
         }
 
         &:hover {
-            background-color: rgba(255, 255, 255, 0.06);
-            color: #f1f5f9;
-            .nav-icon { color: #818cf8; transform: scale(1.35); }
+            background-color: $neutral-100;
+            color: $text-primary;
         }
 
         &.active {
-            color: #ffffff;
-            background-color: rgba(99, 102, 241, 0.18);
-            font-weight: 500;
-            .nav-icon { color: #818cf8; transform: scale(1.4); }
+            color: $primary-700;
+            border-left-color: $color-primary;
+            background-color: $primary-50;
+            font-weight: 600;
+            .nav-icon { color: $color-primary; }
         }
     }
 }
 
-// Show treeview when parent has .menu-open
 .nav-item.menu-open > .nav-treeview {
     display: block;
 }
@@ -449,7 +380,7 @@ body {
     .nav-pills.nav-sidebar .nav-link {
         justify-content: center;
         padding: 10px;
-        .nav-icon { width: auto; font-size: 1rem; color: rgba(255,255,255,0.40); }
+        .nav-icon { width: auto; font-size: 1rem; color: $neutral-500; }
 
         // Tooltip on hover
         &:hover::after {
@@ -458,15 +389,14 @@ body {
             left: calc(100% + 10px);
             top: 50%;
             transform: translateY(-50%);
-            background: $neutral-800;
-            color: $neutral-100;
+            background: $neutral-900;
+            color: $neutral-50;
             font-size: 0.74rem;
             padding: 5px 10px;
             border-radius: $radius-md;
             white-space: nowrap;
             pointer-events: none;
             box-shadow: $shadow-lg;
-            border: 1px solid rgba(255,255,255,0.07);
             z-index: $z-tooltip;
         }
 
@@ -480,7 +410,7 @@ body {
 #content {
     margin-left: $sidebar-width;
     min-height: 100vh;
-    background: #f4f6f9;
+    background: $body-bg;
     transition: margin-left $transition-base;
     display: flex;
     flex-direction: column;
@@ -494,35 +424,15 @@ body {
 
 #content > .navbar {
     height: var(--topbar-height, 60px);
-    background: rgba(255,255,255,0.95) !important;
-    backdrop-filter: blur(20px) saturate(1.8);
-    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    background: rgba(255, 255, 255, 0.86) !important;
+    backdrop-filter: blur(12px) saturate(1.4);
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
     border-bottom: 1px solid $border-color !important;
-    box-shadow:
-        0 1px 0 $border-subtle,
-        0 4px 16px rgba(15,23,42,0.06) !important;
+    box-shadow: none !important;
     padding: 0 $space-6 !important;
     position: sticky;
     top: 0;
     z-index: $z-sticky;
-    transition: box-shadow $transition-base, background $transition-base;
-
-    // Faint indigo gradient accent at bottom edge
-    &::after {
-        content: '';
-        position: absolute;
-        bottom: -1px;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: linear-gradient(90deg,
-            transparent 0%,
-            rgba($primary-400, 0.40) 30%,
-            rgba($accent-400, 0.30) 70%,
-            transparent 100%
-        );
-        pointer-events: none;
-    }
 }
 
 // Sidebar toggle button
@@ -545,11 +455,7 @@ body {
         background: $primary-50;
         border-color: $primary-200;
         color: $color-primary;
-        box-shadow: $shadow-sm;
-        transform: scale(1.04);
     }
-
-    &:active { transform: scale(0.97); }
 }
 
 // Topbar action button (language switcher etc.)
@@ -603,8 +509,7 @@ body {
 
     &:hover {
         border-color: $primary-400;
-        box-shadow: 0 0 0 3px rgba($primary-400, 0.18);
-        transform: scale(1.05);
+        box-shadow: $shadow-focus;
     }
 }
 
@@ -723,7 +628,7 @@ body {
 .card-outline {
     border-top: 3px solid transparent;
 
-    &.card-primary { border-top-color: #007bff !important; }
+    &.card-primary { border-top-color: $color-primary !important; }
     &.card-info    { border-top-color: #17a2b8 !important; }
     &.card-warning { border-top-color: #ffc107 !important; }
     &.card-danger  { border-top-color: #dc3545 !important; }
@@ -733,15 +638,15 @@ body {
 
 .card-header {
     background-color: transparent;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid $border-color;
+    padding: $space-4 $space-5;
     position: relative;
     border-top-left-radius: $radius-lg;
     border-top-right-radius: $radius-lg;
 
     .card-title {
         float: left;
-        font-size: 1.1rem;
+        font-size: 0.95rem;
         font-weight: 600;
         margin: 0;
     }
@@ -873,7 +778,7 @@ body {
     // Toggled open on mobile: slide in as full drawer
     .main-sidebar.mobile-open {
         transform: translateX(0);
-        box-shadow: 12px 0 40px rgba(0, 0, 0, 0.55);
+        box-shadow: $shadow-2xl;
 
         .brand-text,
         .user-panel-info,
@@ -905,4 +810,92 @@ body {
     #content > .navbar {
         padding: 0 $space-3 !important;
     }
+}
+
+// =====================================================================
+//  SHARED TOPBAR  (components/panel-topbar.blade.php — admin & vendor)
+// =====================================================================
+.topbar-icon-btn {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: $radius-md;
+    color: $text-secondary;
+    font-size: 1.15rem;
+    cursor: pointer;
+    transition: background-color $transition-fast, color $transition-fast;
+
+    &:hover { background: $neutral-100; color: $text-primary; }
+}
+
+.topbar-pill {
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    padding: 0 $space-3;
+    background: $surface;
+    border: 1px solid $border-color;
+    border-radius: $radius-pill;
+    color: $text-secondary;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color $transition-fast, border-color $transition-fast;
+
+    &:hover { background: $surface-muted; border-color: $neutral-300; color: $text-primary; }
+
+    kbd {
+        background: $neutral-100;
+        border: 1px solid $border-color;
+        color: $text-secondary;
+        font-size: 0.68rem;
+        padding: 1px 6px;
+        border-radius: $radius-xs;
+    }
+
+    &__ext { font-size: 0.65rem; }
+}
+
+.topbar-divider { width: 1px; height: 20px; background: $border-color; margin: 0 $space-1; }
+
+.topbar-profile {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &__avatar { border-radius: 50%; object-fit: cover; border: 2px solid $border-color; }
+    &__name   { font-size: 0.84rem; font-weight: 600; color: $text-primary; }
+}
+
+.topbar-menu {
+    min-width: 220px;
+    padding: $space-2;
+    margin-top: $space-2 !important;
+    border: 1px solid $border-color;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-lg;
+
+    &__head {
+        padding: $space-2 $space-3 $space-3;
+        margin-bottom: $space-1;
+        border-bottom: 1px solid $border-subtle;
+        list-style: none;
+
+        .badge { font-size: 0.65rem; font-weight: 600; margin-top: $space-1; }
+    }
+
+    &__name  { margin: 0; font-size: 0.85rem; font-weight: 700; color: $text-primary; }
+    &__email { margin: 0; font-size: 0.74rem; color: $text-muted; }
+
+    .dropdown-item i { width: 16px; margin-right: $space-2; text-align: center; }
 }

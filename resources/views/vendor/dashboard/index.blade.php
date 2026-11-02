@@ -391,7 +391,7 @@
     .dash-hero {
         background: #ffffff;
         border: 1px solid #e2e8f0;
-        border-radius: 16px;
+        border-radius: 12px;
         padding: 1.25rem 1.5rem;
         box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
     }
@@ -399,14 +399,13 @@
         width: 48px;
         height: 48px;
         border-radius: 14px;
-        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        background: #4f46e5;
         color: #ffffff;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.35rem;
         flex-shrink: 0;
-        box-shadow: 0 6px 16px -2px rgba(99, 102, 241, 0.35);
     }
     .dash-hero-title {
         font-size: 1.45rem;
@@ -422,7 +421,7 @@
         background: #ecfdf5;
         color: #047857;
         border: 1px solid #a7f3d0;
-        border-radius: 20px;
+        border-radius: 12px;
         padding: .25rem .65rem;
         font-size: .72rem;
         font-weight: 700;
@@ -457,7 +456,7 @@
     .kpi-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
-        border-radius: 16px;
+        border-radius: 12px;
         padding: 1.25rem;
         display: flex;
         flex-direction: column;
@@ -473,12 +472,11 @@
         top: 0; left: 0; right: 0;
         height: 4px;
     }
-    .kpi-card-sales::before     { background: linear-gradient(90deg, #6366f1, #4f46e5); }
-    .kpi-card-orders::before    { background: linear-gradient(90deg, #10b981, #059669); }
-    .kpi-card-vendors::before   { background: linear-gradient(90deg, #f59e0b, #d97706); }
+    .kpi-card-sales::before     { background: #4f46e5; }
+    .kpi-card-orders::before    { background: #10b981; }
+    .kpi-card-vendors::before   { background: #f59e0b; }
 
     .kpi-card:hover {
-        transform: translateY(-4px);
         box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.08);
         border-color: #cbd5e1;
     }
@@ -499,15 +497,15 @@
         font-size: 1.25rem;
         color: #ffffff;
     }
-    .kpi-icon-sales     { background: linear-gradient(135deg, #6366f1, #4f46e5); box-shadow: 0 6px 14px rgba(99, 102, 241, 0.3); }
-    .kpi-icon-orders    { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 6px 14px rgba(16, 185, 129, 0.3); }
-    .kpi-icon-vendors   { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 6px 14px rgba(245, 158, 11, 0.3); }
+    .kpi-icon-sales     { background: #4f46e5; }
+    .kpi-icon-orders    { background: #10b981; }
+    .kpi-icon-vendors   { background: #f59e0b; }
 
     .kpi-pill {
         font-size: .72rem;
         font-weight: 700;
         padding: .2rem .55rem;
-        border-radius: 20px;
+        border-radius: 12px;
     }
     .kpi-pill-emerald { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
     .kpi-pill-purple  { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
@@ -544,7 +542,7 @@
         border-top: 1px solid #f1f5f9;
         font-size: .8rem;
         font-weight: 700;
-        color: #6366f1;
+        color: #4f46e5;
         text-decoration: none;
         transition: color .15s ease;
     }
@@ -555,7 +553,7 @@
     .dash-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
-        border-radius: 16px;
+        border-radius: 12px;
         overflow: hidden;
     }
     .dash-card-header {
@@ -676,7 +674,7 @@
         width: 32px;
         height: 32px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #6366f1, #818cf8);
+        background: #4f46e5;
         color: #ffffff;
         font-size: .75rem;
         font-weight: 700;
@@ -694,7 +692,7 @@
         align-items: center;
         gap: .4rem;
         padding: .3rem .65rem;
-        border-radius: 20px;
+        border-radius: 12px;
         font-size: .75rem;
         font-weight: 700;
     }
@@ -748,9 +746,7 @@
     }
     .action-card:hover {
         background: #ffffff;
-        border-color: #6366f1;
-        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.12);
-        transform: translateY(-2px);
+        border-color: #4f46e5;
         color: #0f172a;
     }
     .action-icon {
@@ -764,17 +760,17 @@
         font-size: .95rem;
         flex-shrink: 0;
     }
-    .bg-indigo  { background: linear-gradient(135deg, #6366f1, #4f46e5); }
-    .bg-cyan    { background: linear-gradient(135deg, #06b6d4, #0284c7); }
-    .bg-emerald { background: linear-gradient(135deg, #10b981, #059669); }
-    .bg-amber   { background: linear-gradient(135deg, #f59e0b, #d97706); }
-    .bg-purple  { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    .bg-indigo  { background: #4f46e5; }
+    .bg-cyan    { background: #06b6d4; }
+    .bg-emerald { background: #10b981; }
+    .bg-amber   { background: #f59e0b; }
+    .bg-purple  { background: #8b5cf6; }
 
     .action-details { flex: 1; }
     .action-title { font-size: .85rem; font-weight: 700; display: block; line-height: 1.2; }
     .action-desc { font-size: .74rem; color: #64748b; }
     .action-arrow { font-size: .75rem; color: #94a3b8; transition: transform .15s ease; }
-    .action-card:hover .action-arrow { transform: translateX(3px); color: #6366f1; }
+    .action-card:hover .action-arrow { transform: translateX(3px); color: #4f46e5; }
 
     /* ---------- Responsive Breakpoints ---------- */
     @media (max-width: 991.98px) {
@@ -875,10 +871,10 @@ document.addEventListener('DOMContentLoaded', function () {
             datasets: [{
                 label: 'Revenue',
                 data: @json($chartSales),
-                borderColor: '#6366f1',
+                borderColor: '#4f46e5',
                 borderWidth: 2.5,
                 pointBackgroundColor: '#ffffff',
-                pointBorderColor: '#6366f1',
+                pointBorderColor: '#4f46e5',
                 pointBorderWidth: 2,
                 pointRadius: 4,
                 pointHoverRadius: 6,

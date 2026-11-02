@@ -543,7 +543,6 @@
     transition: transform $transition-fast, box-shadow $transition-fast;
 
     &:hover {
-        transform: scale(1.08);
         box-shadow: $shadow-md;
     }
 }
@@ -710,35 +709,20 @@ input:checked + .slider {
 // =====================================================================
 .admin-card {
     background: $neutral-0;
-    border: 1px solid $border-subtle;
-    border-radius: $radius-2xl;
-    box-shadow: $shadow-sm;
+    border: 1px solid $border-color;
+    border-radius: $radius-xl;
+    box-shadow: $shadow-xs;
     overflow: hidden;
-    transition: box-shadow $transition-base;
-
-    &:hover { box-shadow: $shadow-md; }
 
     &__header {
         padding: $space-4 $space-6;
-        border-bottom: 1px solid $border-subtle;
-        background: $surface-muted;
+        border-bottom: 1px solid $border-color;
+        background: $surface;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: $space-3;
-        position: relative;
-
-        // Left accent bar
-        &::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: $space-3;
-            bottom: $space-3;
-            width: 3px;
-            background: $gradient-primary;
-            border-radius: 0 3px 3px 0;
-        }
+        flex-wrap: wrap;
 
         h5,
         .admin-card__title {
@@ -764,7 +748,7 @@ input:checked + .slider {
         }
     }
 
-    &__body { padding: $space-6; }
+    &__body { padding: $space-5; }
 
     &__footer {
         padding: $space-4 $space-6;
@@ -919,7 +903,7 @@ input:checked + .slider {
 // Square variant (product thumbnails, avatars)
 .img-preview-box--square {
     aspect-ratio: 1 / 1;
-    border-radius: $radius-2xl;
+    border-radius: $radius-xl;
 }
 
 // =====================================================================
@@ -966,7 +950,7 @@ input:checked + .slider {
     padding: $space-4 $space-5;
     background: $surface-muted;
     border-bottom: 1px solid $border-subtle;
-    border-radius: $radius-2xl $radius-2xl 0 0;
+    border-radius: $radius-xl $radius-xl 0 0;
 
     &__search {
         position: relative;

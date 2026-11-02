@@ -9,7 +9,7 @@
 
 <div class="modal fade" id="{{ $id }}" tabindex="-1" aria-labelledby="{{ $id }}Label" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
-        <div class="modal-content border-0 shadow-xl rounded-4 overflow-hidden">
+        <div class="modal-content border-0 shadow-xl rounded-3 overflow-hidden">
             <div class="modal-body text-center p-4 pt-5">
                 <div class="admin-delete-modal__icon mb-3">
                     <i class="bi bi-exclamation-triangle-fill"></i>

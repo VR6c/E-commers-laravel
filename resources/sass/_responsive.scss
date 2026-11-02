@@ -1,0 +1,141 @@
+// =====================================================================
+//  RESPONSIVE LAYER — shared by admin and vendor panels
+//  One set of breakpoints (see $breakpoints): lg 992 / md 768 / sm 576.
+//  Loaded last so it wins over component defaults.
+// =====================================================================
+@use 'variables' as *;
+
+// ---- Fluid content ---------------------------------------------------
+#main-content,
+.content-wrapper main {
+    min-width: 0;
+}
+
+img, video { max-width: 100%; height: auto; }
+
+.table-responsive,
+.admin-data-card .dt-container,
+.admin-data-card .dataTables_wrapper { max-width: 100%; }
+
+// Tables never break the page: wide tables scroll inside their card.
+.admin-data-card,
+.admin-card__body { min-width: 0; }
+
+.admin-data-card .table-responsive,
+.admin-data-card .dt-layout-table,
+.admin-data-card .dt-container > .dt-layout-row:has(table),
+.admin-data-card .dataTables_scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+table.dataTable,
+.admin-data-card table { min-width: 640px; }
+
+// ---- ≤ lg (tablet & below) -------------------------------------------
+@include bp-down('lg') {
+    #main-content { padding-left: $space-4 !important; padding-right: $space-4 !important; }
+
+    .admin-page-header__title { font-size: 1.15rem; }
+}
+
+// ---- ≤ md (large phone) ----------------------------------------------
+@include bp-down('md') {
+    #main-content { padding-top: $space-4 !important; }
+
+    // Page header: stack, actions go full width
+    .admin-page-header,
+    .vp-page-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: $space-3;
+        margin-bottom: $space-4;
+    }
+
+    .admin-page-header__actions,
+    .vp-page-header__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $space-2;
+        width: 100%;
+
+        .btn { flex: 1 1 auto; justify-content: center; }
+    }
+
+    // Cards & forms
+    .admin-card__body,
+    .card-body { padding: $space-4; }
+
+    .admin-card__header,
+    .card-header { padding: $space-3 $space-4; }
+
+    .admin-card__footer {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        .btn { width: 100%; justify-content: center; }
+    }
+
+    // Two-column form rows collapse (Bootstrap .row > .col-md-* already
+    // stack; this covers custom grids).
+    .form-grid-2,
+    .form-grid-3 { grid-template-columns: 1fr !important; }
+
+    // Topbar: icon-only controls
+    #content > .navbar {
+        padding: 0 $space-3 !important;
+
+        .btn-light span,
+        .btn kbd { display: none !important; }
+    }
+
+    // Modals fill the viewport width with small gutters
+    .modal-dialog:not(.modal-fullscreen) { margin: $space-3; max-width: none; }
+
+    // Toasts span the screen
+    #toast-container {
+        left: $space-3 !important;
+        right: $space-3 !important;
+        top: $space-3 !important;
+    }
+
+    .adm-toast { min-width: 0 !important; max-width: none !important; width: 100%; }
+
+    // Footer
+    #main-content > footer { text-align: center; }
+
+    // Tabs scroll instead of wrapping
+    .nav-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        &::-webkit-scrollbar { display: none; }
+    }
+
+    // Row action buttons stay tappable
+    .btn-action,
+    .btn-action-edit,
+    .btn-action-delete { width: 36px; height: 36px; }
+}
+
+// ---- ≤ sm (phone) -----------------------------------------------------
+@include bp-down('sm') {
+    #main-content { padding-left: $space-3 !important; padding-right: $space-3 !important; }
+
+    // Bigger touch targets for form controls (also stops iOS zoom-on-focus)
+    .form-control,
+    .form-select,
+    .ts-control { font-size: 16px; min-height: 42px; }
+
+    .btn { min-height: 40px; }
+
+    .stat-card { padding: $space-4; }
+    .stat-card .stat-value { font-size: $font-size-xl; }
+
+    .dropdown-menu { max-width: calc(100vw - #{$space-6}); }
+}
+
+// ---- Respect reduced motion ------------------------------------------
+@media (prefers-reduced-motion: reduce) {
+    .fade-in-up { animation: none; opacity: 1; }
+}

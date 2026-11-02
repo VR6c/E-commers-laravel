@@ -28,7 +28,7 @@
     <link href="{{ asset('css/admin-select.css') }}?v=4" rel="stylesheet">
     {{-- DataTables Core CSS --}}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    <link href="{{ asset('css/vendor-panel.css') }}?v=12" rel="stylesheet">
+    <link href="{{ asset('css/vendor-panel.css') }}?v=15" rel="stylesheet">
 
     {{-- Core Shell Styles --}}
     <style>
@@ -189,102 +189,16 @@
 {{-- Content Area --}}
 <div id="content" class="content-wrapper d-flex flex-column min-vh-100">
 
-    {{-- Topbar Navbar --}}
-    <nav class="navbar navbar-expand navbar-light p-0 main-header sticky-top" aria-label="Top navigation">
-        <div class="d-flex align-items-center gap-2 ps-3">
-            {{-- Sidebar Toggle --}}
-            <button class="btn btn-light border-0 p-2 d-flex align-items-center justify-content-center rounded-3 shadow-xs" id="sidebarToggle" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="sidebar" style="width: 36px; height: 36px; color: #475569;">
-                <i class="fas fa-bars" style="font-size: 1rem;"></i>
-            </button>
-
-            {{-- Command Menu Search Button --}}
-            <button type="button" class="btn btn-sm btn-light border d-flex align-items-center gap-2 px-3 py-1-5 text-muted rounded-pill shadow-xs" onclick="window.openCmdk()" style="font-size: 0.835rem; font-weight: 500;">
-                <i class="bi bi-search text-primary"></i>
-                <span class="d-none d-sm-inline">Quick search or command...</span>
-                <kbd class="bg-white border text-dark ms-1 shadow-xs" style="font-size: 0.68rem; padding: 2px 6px; border-radius: 4px;">⌘K</kbd>
-            </button>
-        </div>
-
-        {{-- Right Side Actions --}}
-        <div class="d-flex align-items-center gap-2 ms-auto pe-3 pe-md-4">
-            {{-- Visit Storefront Link --}}
-            <a href="/" target="_blank" class="btn btn-sm btn-light border d-flex align-items-center gap-1 px-2-5 py-1 text-secondary rounded-pill shadow-xs" title="View Storefront">
-                <i class="bi bi-shop text-primary" style="font-size: 0.85rem;"></i>
-                <span class="d-none d-md-inline" style="font-size: 0.8rem; font-weight: 600;">Storefront</span>
-                <i class="bi bi-arrow-up-right text-muted" style="font-size: 0.65rem;"></i>
-            </a>
-
-            {{-- Notifications --}}
-            <button class="btn btn-light border-0 position-relative p-2 rounded-3 shadow-xs" aria-label="Notifications" style="width: 36px; height: 36px; color: #475569;">
-                <i class="bi bi-bell" style="font-size: 1.05rem;"></i>
-                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" style="margin-top: 6px; margin-left: -6px;">
-                    <span class="visually-hidden">New alerts</span>
-                </span>
-            </button>
-
-            {{-- Divider --}}
-            <div style="width: 1px; height: 20px; background: #e2e8f0; margin: 0 4px;"></div>
-
-            {{-- Profile Dropdown --}}
-            <div class="dropdown">
-                <button class="btn p-0 d-flex align-items-center gap-2"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                        aria-label="Account menu"
-                        style="background: none; border: none;">
-                    <img src="{{ auth()->user()->profile_image
-                            ? (\Illuminate\Support\Str::startsWith(auth()->user()->profile_image, ['http://', 'https://'])
-                                ? auth()->user()->profile_image
-                                : asset('storage/' . auth()->user()->profile_image))
-                            : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=4f46e5&color=fff&size=40' }}"
-                         class="rounded-circle shadow-xs"
-                         alt="{{ auth()->user()->name }}"
-                         width="34" height="34"
-                         style="object-fit: cover; border: 2px solid #e2e8f0;">
-                    <span class="d-none d-md-inline" style="font-size: 0.84rem; font-weight: 600; color: #1e293b;">
-                        {{ auth()->user()->name }}
-                    </span>
-                    <i class="bi bi-chevron-down d-none d-md-inline text-muted" style="font-size: 0.65rem;"></i>
-                </button>
-
-                <ul class="dropdown-menu dropdown-menu-end shadow-xl border-0 rounded-3 p-2 mt-2" style="min-width: 210px; border: 1px solid #e2e8f0 !important;">
-                    <li class="px-3 py-2 border-bottom mb-1" style="border-color: #f1f5f9 !important;">
-                        <p class="mb-0 fw-bold text-dark" style="font-size: 0.85rem;">{{ auth()->user()->name }}</p>
-                        <p class="mb-0 text-muted" style="font-size: 0.74rem;">{{ auth()->user()->email }}</p>
-                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill mt-1" style="font-size: 0.65rem; font-weight: 600;">Administrator</span>
-                    </li>
-                    <li>
-                        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center gap-2" href="{{ route('admin.profile.edit') }}" style="font-size: 0.825rem; font-weight: 500;">
-                            <i class="bi bi-person-circle text-muted"></i> My Profile
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center gap-2" href="{{ route('admin.dashboard') }}" style="font-size: 0.825rem; font-weight: 500;">
-                            <i class="bi bi-grid text-muted"></i> Dashboard
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item rounded-2 py-2 d-flex align-items-center gap-2" href="{{ route('admin.site-settings.index') }}" style="font-size: 0.825rem; font-weight: 500;">
-                            <i class="bi bi-gear text-muted"></i> Site Settings
-                        </a>
-                    </li>
-                    <li><hr class="dropdown-divider my-1" style="border-color: #f1f5f9;"></li>
-                    <li>
-                        <form id="admin-logout-form" action="{{ route('admin.session.logout') }}" method="POST" class="d-none">
-                            @csrf
-                        </form>
-                        <a class="dropdown-item text-danger rounded-2 py-2 d-flex align-items-center gap-2"
-                           href="#"
-                           onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();"
-                           style="font-size: 0.825rem; font-weight: 600;">
-                            <i class="bi bi-box-arrow-right"></i> {{ __('Logout') }}
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    {{-- Topbar --}}
+    <x-panel-topbar
+        :user="auth()->user()"
+        role="Administrator"
+        :profile-route="route('admin.profile.edit')"
+        :dashboard-route="route('admin.dashboard')"
+        :settings-route="route('admin.site-settings.index')"
+        :logout-route="route('admin.session.logout')"
+        logout-form-id="admin-logout-form"
+        :search="true" />
 
     {{-- Main Content Container --}}
     <main class="container-fluid px-3 px-md-4 py-4 flex-grow-1 d-flex flex-column" id="main-content">

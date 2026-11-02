@@ -6,12 +6,12 @@
     "isEntry": true
   },
   "resources/sass/admin.scss": {
-    "file": "assets/admin-7481LYeX.css",
+    "file": "assets/admin--ixscZBe.css",
     "src": "resources/sass/admin.scss",
     "isEntry": true
   },
   "resources/sass/app.scss": {
-    "file": "assets/app-bbjr4MxK.css",
+    "file": "assets/app-Bvt5b-NG.css",
     "src": "resources/sass/app.scss",
     "isEntry": true
   },
@@ -22,7 +22,7 @@
     "isEntry": true
   },
   "resources/views/themes/xylo/sass/app.scss": {
-    "file": "assets/app-4344M1n2.css",
+    "file": "assets/app-5oMGxMjt.css",
     "src": "resources/views/themes/xylo/sass/app.scss",
     "isEntry": true
   }

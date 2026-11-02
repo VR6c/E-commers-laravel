@@ -57,7 +57,7 @@
             </div>
         </x-admin.form-card>
 
-        <div class="card border-danger-subtle bg-danger-subtle p-3 rounded-4">
+        <div class="card border-danger-subtle bg-danger-subtle p-3 rounded-3">
             <h6 class="text-danger fw-bold d-flex align-items-center gap-2 mb-2">
                 <i class="bi bi-exclamation-triangle-fill"></i> Danger Zone
             </h6>

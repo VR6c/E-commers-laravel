@@ -463,7 +463,7 @@
     .dash-hero {
         background: #ffffff;
         border: 1px solid #e2e8f0;
-        border-radius: 16px;
+        border-radius: 12px;
         padding: 1.25rem 1.5rem;
         box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
     }
@@ -471,14 +471,13 @@
         width: 48px;
         height: 48px;
         border-radius: 14px;
-        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        background: #4f46e5;
         color: #ffffff;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.25rem;
         flex-shrink: 0;
-        box-shadow: 0 6px 16px -2px rgba(99, 102, 241, 0.35);
     }
     .dash-hero-title {
         font-size: 1.45rem;
@@ -494,7 +493,7 @@
         background: #ecfdf5;
         color: #047857;
         border: 1px solid #a7f3d0;
-        border-radius: 20px;
+        border-radius: 12px;
         padding: .25rem .65rem;
         font-size: .72rem;
         font-weight: 700;
@@ -542,7 +541,7 @@
 
     /* ---------- Low Stock Banner ---------- */
     .dash-alert-banner {
-        background: linear-gradient(135deg, #fffbebe6, #fff7ed);
+        background: #fffbebe6;
         border: 1px solid #fde68a;
         border-radius: 14px;
         padding: 1rem 1.25rem;
@@ -558,7 +557,6 @@
         justify-content: center;
         font-size: 1.05rem;
         flex-shrink: 0;
-        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
     }
     .dash-alert-title { font-weight: 700; color: #92400e; font-size: .95rem; }
     .dash-alert-desc { font-size: .84rem; color: #b45309; }
@@ -578,7 +576,7 @@
     .kpi-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
-        border-radius: 16px;
+        border-radius: 12px;
         padding: 1.25rem;
         display: flex;
         flex-direction: column;
@@ -594,13 +592,12 @@
         top: 0; left: 0; right: 0;
         height: 4px;
     }
-    .kpi-card-sales::before     { background: linear-gradient(90deg, #06b6d4, #3b82f6); }
-    .kpi-card-orders::before    { background: linear-gradient(90deg, #10b981, #059669); }
-    .kpi-card-vendors::before   { background: linear-gradient(90deg, #f59e0b, #d97706); }
-    .kpi-card-customers::before { background: linear-gradient(90deg, #8b5cf6, #ec4899); }
+    .kpi-card-sales::before     { background: #06b6d4; }
+    .kpi-card-orders::before    { background: #10b981; }
+    .kpi-card-vendors::before   { background: #f59e0b; }
+    .kpi-card-customers::before { background: #8b5cf6; }
 
     .kpi-card:hover {
-        transform: translateY(-4px);
         box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.08);
         border-color: #cbd5e1;
     }
@@ -621,16 +618,16 @@
         font-size: 1.15rem;
         color: #ffffff;
     }
-    .kpi-icon-sales     { background: linear-gradient(135deg, #06b6d4, #2563eb); box-shadow: 0 6px 14px rgba(6, 182, 212, 0.3); }
-    .kpi-icon-orders    { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 6px 14px rgba(16, 185, 129, 0.3); }
-    .kpi-icon-vendors   { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 6px 14px rgba(245, 158, 11, 0.3); }
-    .kpi-icon-customers { background: linear-gradient(135deg, #8b5cf6, #d946ef); box-shadow: 0 6px 14px rgba(139, 92, 246, 0.3); }
+    .kpi-icon-sales     { background: #06b6d4; }
+    .kpi-icon-orders    { background: #10b981; }
+    .kpi-icon-vendors   { background: #f59e0b; }
+    .kpi-icon-customers { background: #8b5cf6; }
 
     .kpi-trend {
         font-size: .75rem;
         font-weight: 700;
         padding: .2rem .55rem;
-        border-radius: 20px;
+        border-radius: 12px;
         display: inline-flex;
         align-items: center;
     }
@@ -641,7 +638,7 @@
         font-size: .72rem;
         font-weight: 700;
         padding: .2rem .55rem;
-        border-radius: 20px;
+        border-radius: 12px;
     }
     .kpi-pill-warning { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
     .kpi-pill-purple  { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
@@ -677,7 +674,7 @@
         border-top: 1px solid #f1f5f9;
         font-size: .8rem;
         font-weight: 700;
-        color: #6366f1;
+        color: #4f46e5;
         text-decoration: none;
         transition: color .15s ease;
     }
@@ -688,7 +685,7 @@
     .dash-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
-        border-radius: 16px;
+        border-radius: 12px;
         overflow: hidden;
     }
     .dash-card-header {
@@ -759,7 +756,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 16px;
+        border-radius: 12px;
     }
 
     /* ---------- Doughnut & Progress Legends ---------- */
@@ -846,7 +843,7 @@
         width: 34px;
         height: 34px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        background: #4f46e5;
         color: #ffffff;
         font-size: .85rem;
         font-weight: 700;
@@ -865,7 +862,7 @@
         align-items: center;
         gap: .4rem;
         padding: .25rem .65rem;
-        border-radius: 20px;
+        border-radius: 12px;
         font-size: .75rem;
         font-weight: 700;
     }
@@ -894,7 +891,7 @@
         transition: all .15s ease;
     }
     .btn-action-icon:hover {
-        background: #6366f1;
+        background: #4f46e5;
         color: #ffffff;
     }
 
@@ -934,7 +931,7 @@
         font-size: .95rem;
         flex-shrink: 0;
     }
-    .bg-indigo  { background: #6366f1; }
+    .bg-indigo  { background: #4f46e5; }
     .bg-cyan    { background: #06b6d4; }
     .bg-amber   { background: #f59e0b; }
     .bg-purple  { background: #a855f7; }
@@ -944,7 +941,7 @@
     .action-title { font-size: .88rem; font-weight: 700; display: block; }
     .action-desc  { font-size: .76rem; color: #64748b; display: block; }
     .action-arrow { font-size: .75rem; color: #94a3b8; transition: transform .15s ease, color .15s ease; }
-    .action-card:hover .action-arrow { transform: translateX(3px); color: #6366f1; }
+    .action-card:hover .action-arrow { transform: translateX(3px); color: #4f46e5; }
 
     /* Fade entrance */
     .fade-in-up {

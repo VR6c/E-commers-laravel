@@ -71,7 +71,7 @@
         {{-- Customer --}}
         <x-admin.form-card :title="'Customer'" icon="bi bi-person-fill" class="mb-4">
             <div class="d-flex align-items-center gap-3">
-                <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#818cf8);color:#fff;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div style="width:44px;height:44px;border-radius:50%;background:#4f46e5;color:#fff;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     {{ strtoupper(substr(optional($review->customer)->name ?? 'G', 0, 1)) }}
                 </div>
                 <div>

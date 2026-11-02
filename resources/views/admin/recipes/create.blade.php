@@ -16,8 +16,7 @@
     <div class="row g-4">
         {{-- Left Column: Primary Details & Repeaters --}}
         <div class="col-lg-8">
-            <x-admin.data-card>
-                <h5 class="fw-bold mb-3 text-dark">Recipe Information</h5>
+            <x-admin.form-card title="Recipe Information">
 
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Recipe Title <span class="text-danger">*</span></label>
@@ -36,18 +35,15 @@
                     <textarea name="content" class="form-control @error('content') is-invalid @enderror" rows="4" placeholder="Pro-tips, equipment recommendations, origin story...">{{ old('content') }}</textarea>
                     @error('content') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
-            </x-admin.data-card>
+            </x-admin.form-card>
 
             {{-- Ingredients Repeater --}}
-            <x-admin.data-card class="mt-4">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h5 class="fw-bold mb-0 text-dark">
-                        <i class="bi bi-basket text-primary me-1"></i> Ingredients List
-                    </h5>
+            <x-admin.form-card title="Ingredients List" icon="bi bi-basket" class="mt-4">
+                <x-slot:headerActions>
                     <button type="button" class="btn btn-sm btn-outline-primary btn-pill" id="addIngredientBtn">
                         <i class="bi bi-plus-circle me-1"></i> Add Ingredient
                     </button>
-                </div>
+                </x-slot:headerActions>
                 <p class="text-muted small">Specify quantities, units, and ingredients for the recipe card.</p>
 
                 <div id="ingredientsContainer">
@@ -68,18 +64,15 @@
                         </div>
                     </div>
                 </div>
-            </x-admin.data-card>
+            </x-admin.form-card>
 
             {{-- Instructions Repeater --}}
-            <x-admin.data-card class="mt-4">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h5 class="fw-bold mb-0 text-dark">
-                        <i class="bi bi-list-ol text-warning me-1"></i> Step-by-Step Directions
-                    </h5>
+            <x-admin.form-card title="Step-by-Step Directions" class="mt-4">
+                <x-slot:headerActions>
                     <button type="button" class="btn btn-sm btn-outline-warning btn-pill" id="addStepBtn">
                         <i class="bi bi-plus-circle me-1"></i> Add Step
                     </button>
-                </div>
+                </x-slot:headerActions>
                 <p class="text-muted small">Numbered steps shown to the user once unlocked.</p>
 
                 <div id="stepsContainer">
@@ -98,13 +91,12 @@
                         </div>
                     </div>
                 </div>
-            </x-admin.data-card>
+            </x-admin.form-card>
         </div>
 
         {{-- Right Column: Metadata, Image & Product Association --}}
         <div class="col-lg-4">
-            <x-admin.data-card>
-                <h5 class="fw-bold mb-3 text-dark">Cooking Metadata</h5>
+            <x-admin.form-card title="Cooking Metadata">
 
                 <div class="row g-2 mb-3">
                     <div class="col-6">
@@ -150,11 +142,10 @@
                     <input class="form-check-input" type="checkbox" name="is_featured" value="1" id="isFeatured">
                     <label class="form-check-label fw-semibold small" for="isFeatured">Featured Recipe</label>
                 </div>
-            </x-admin.data-card>
+            </x-admin.form-card>
 
             {{-- Cover Image --}}
-            <x-admin.data-card class="mt-4">
-                <h5 class="fw-bold mb-3 text-dark">Cover Image</h5>
+            <x-admin.form-card title="Cover Image" class="mt-4">
 
                 <div class="mb-3">
                     <label class="form-label small fw-semibold">Upload Image File</label>
@@ -165,11 +156,10 @@
                     <label class="form-label small fw-semibold">Or Image URL</label>
                     <input type="url" name="image_url" class="form-control form-control-sm" value="{{ old('image_url') }}" placeholder="https://images.unsplash.com/...">
                 </div>
-            </x-admin.data-card>
+            </x-admin.form-card>
 
             {{-- Link Products --}}
-            <x-admin.data-card class="mt-4">
-                <h5 class="fw-bold mb-3 text-dark">Eligible Products</h5>
+            <x-admin.form-card title="Eligible Products" class="mt-4">
                 <p class="text-muted small mb-2">
                     When customers purchase any selected product and complete payment, this recipe and its PDF will unlock for them:
                 </p>
@@ -184,7 +174,7 @@
                     </select>
                     <small class="text-muted d-block mt-1">Hold ⌘ (Mac) or Ctrl (Windows) to select multiple products.</small>
                 </div>
-            </x-admin.data-card>
+            </x-admin.form-card>
 
             {{-- Actions --}}
             <div class="mt-4">

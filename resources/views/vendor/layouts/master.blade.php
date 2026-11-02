@@ -10,15 +10,7 @@
     {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,700;1,700&family=Noto+Sans+Khmer:wght@100..900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        .exo-2-bold {
-            font-family: "Exo 2", sans-serif;
-            font-optical-sizing: auto;
-            font-weight: 700;
-            font-style: normal;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@100..900&family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     {{-- Bootstrap 5 --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -37,7 +29,7 @@
     <link href="{{ asset('css/admin-select.css') }}?v=4" rel="stylesheet">
     {{-- DataTables Core CSS --}}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    <link href="{{ asset('css/vendor-panel.css') }}?v=12" rel="stylesheet">
+    <link href="{{ asset('css/vendor-panel.css') }}?v=15" rel="stylesheet">
 
     {{-- Toastr --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
@@ -140,93 +132,13 @@
 {{-- Content wrapper --}}
 <div id="content" class="content-wrapper d-flex flex-column min-vh-100">
 
-    {{-- ── TOPBAR ───────────────────────────────────────────────── --}}
-    <nav class="navbar navbar-expand navbar-light p-0 main-header sticky-top" aria-label="Vendor top navigation">
-
-        <div class="d-flex align-items-center gap-2 ps-3">
-            <button class="btn btn-light border-0 p-2 d-flex align-items-center justify-content-center rounded-3 shadow-xs"
-                    id="sidebarToggle"
-                    aria-label="Toggle sidebar"
-                    aria-expanded="true"
-                    aria-controls="sidebar"
-                    style="width: 36px; height: 36px; color: #475569;">
-                <i class="bi bi-list" style="font-size: 1.25rem;"></i>
-            </button>
-
-            {{-- Storefront Link --}}
-            <a href="/" target="_blank" class="btn btn-sm btn-light border d-flex align-items-center gap-1 px-3 py-1-5 text-secondary rounded-pill shadow-xs" title="View Storefront">
-                <i class="bi bi-shop text-primary" style="font-size: 0.85rem;"></i>
-                <span class="d-none d-sm-inline" style="font-size: 0.8rem; font-weight: 600;">Storefront</span>
-                <i class="bi bi-arrow-up-right text-muted" style="font-size: 0.65rem;"></i>
-            </a>
-        </div>
-
-        <div class="d-flex align-items-center gap-2 ms-auto pe-3 pe-md-4">
-            @php $vendor = Auth::guard('vendor')->user(); @endphp
-
-            {{-- Divider --}}
-            <div style="width: 1px; height: 20px; background: #e2e8f0; margin: 0 4px;"></div>
-
-            {{-- Profile Dropdown --}}
-            <div class="dropdown">
-                <button class="btn p-0 d-flex align-items-center gap-2"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                        aria-label="Vendor account menu"
-                        style="background: none; border: none;">
-                    <img src="{{ $vendor && $vendor->profile_image
-                            ? (\Illuminate\Support\Str::startsWith($vendor->profile_image, ['http://', 'https://'])
-                                ? $vendor->profile_image
-                                : asset('storage/' . $vendor->profile_image))
-                            : 'https://ui-avatars.com/api/?name=' . urlencode($vendor ? $vendor->name : 'V') . '&background=6366f1&color=fff&size=40' }}"
-                         class="rounded-circle shadow-xs"
-                         alt="{{ $vendor ? $vendor->name : 'Vendor' }}"
-                         width="34" height="34"
-                         style="object-fit: cover; border: 2px solid #e2e8f0;">
-                    <span class="d-none d-md-inline"
-                          style="font-size: 0.84rem; font-weight: 600; color: #1e293b;">
-                        {{ $vendor ? $vendor->name : 'Vendor' }}
-                    </span>
-                    <i class="bi bi-chevron-down d-none d-md-inline text-muted" style="font-size: 0.65rem;"></i>
-                </button>
-
-                <ul class="dropdown-menu dropdown-menu-end shadow-xl border-0 rounded-3 p-2 mt-2" style="min-width: 210px; border: 1px solid #e2e8f0 !important;">
-                    <li>
-                        <div class="px-3 py-2 border-bottom mb-1" style="border-color: #f1f5f9 !important;">
-                            <p class="mb-0" style="font-size: 0.82rem; font-weight: 700; color: #0f172a;">
-                                {{ $vendor ? $vendor->name : 'Vendor' }}
-                            </p>
-                            <p class="mb-0 text-muted" style="font-size: 0.72rem;">
-                                {{ $vendor ? $vendor->email : '' }}
-                            </p>
-                        </div>
-                    </li>
-                    <li>
-                        <a class="dropdown-item py-2 rounded-2" href="{{ route('vendor.profile.edit') }}">
-                            <i class="bi bi-person-circle me-2 text-primary"></i> My Profile
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item py-2 rounded-2" href="{{ route('vendor.dashboard') }}">
-                            <i class="bi bi-speedometer2 me-2 text-primary"></i> Dashboard
-                        </a>
-                    </li>
-                    <li><hr class="dropdown-divider my-1"></li>
-                    <li>
-                        <form id="vendor-logout-form" action="{{ route('vendor.logout') }}" method="POST" class="d-none">
-                            @csrf
-                        </form>
-                        <a class="dropdown-item py-2 rounded-2 text-danger" href="#"
-                           onclick="event.preventDefault(); document.getElementById('vendor-logout-form').submit();">
-                            <i class="bi bi-box-arrow-right me-2"></i> Sign Out
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    {{-- ── END TOPBAR ──────────────────────────────────────────── --}}
+    <x-panel-topbar
+        :user="Auth::guard('vendor')->user()"
+        role="Vendor"
+        :profile-route="route('vendor.profile.edit')"
+        :dashboard-route="route('vendor.dashboard')"
+        :logout-route="route('vendor.logout')"
+        logout-form-id="vendor-logout-form" />
 
     {{-- ── MAIN CONTENT ─────────────────────────────────────────── --}}
     <main class="flex-grow-1 p-3 p-md-4 d-flex flex-column" id="main-content">
@@ -410,10 +322,10 @@ document.addEventListener('DOMContentLoaded', function () {
         toast.className = 'adm-toast ' + type;
         toast.setAttribute('role', 'alert');
         toast.style.cssText = 'pointer-events:all;display:flex;align-items:flex-start;gap:12px;min-width:300px;max-width:380px;padding:14px 16px;border-radius:12px;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.10),0 2px 6px rgba(0,0,0,.06);border-left:4px solid transparent;opacity:0;transform:translateX(32px);transition:opacity .28s ease,transform .28s ease;position:relative;overflow:hidden;';
-        const accentColors = { success:'#22c55e', error:'#ef4444', warning:'#f59e0b', info:'#6366f1' };
+        const accentColors = { success:'#22c55e', error:'#ef4444', warning:'#f59e0b', info:'#4f46e5' };
         const iconBg = { success:'#f0fdf4', error:'#fef2f2', warning:'#fffbeb', info:'#eef2ff' };
         const iconColor = { success:'#16a34a', error:'#dc2626', warning:'#d97706', info:'#4f46e5' };
-        toast.style.borderLeftColor = accentColors[type] || '#6366f1';
+        toast.style.borderLeftColor = accentColors[type] || '#4f46e5';
         toast.innerHTML = `
             <div style="flex-shrink:0;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;background:${iconBg[type]||'#eef2ff'};color:${iconColor[type]||'#4f46e5'};">
                 <i class="${ICONS[type]||'bi bi-info-circle-fill'}"></i>

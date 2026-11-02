@@ -136,7 +136,7 @@
         {{-- Customer Info --}}
         <x-admin.form-card :title="'Customer Details'" icon="bi bi-person-fill" class="mb-4">
             <div class="d-flex align-items-center gap-3 mb-3">
-                <div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#818cf8);color:#fff;font-size:1.1rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div style="width:46px;height:46px;border-radius:50%;background:#4f46e5;color:#fff;font-size:1.1rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     {{ strtoupper(substr($order->customer?->name ?? ($order->guest_email ?? 'G'), 0, 1)) }}
                 </div>
                 <div>

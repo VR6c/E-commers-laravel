@@ -9,7 +9,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
@@ -27,9 +27,9 @@
         body {
             min-height: 100vh;
             margin: 0; padding: 0;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
             -webkit-font-smoothing: antialiased;
-            background: #f0f2f8;
+            background: #f6f7f9;
             display: flex;
             flex-direction: column;
         }
@@ -42,21 +42,21 @@
             align-items: center;
             justify-content: center;
             padding: 32px 16px;
-            background: #f0f2f8;
+            background: #f6f7f9;
         }
 
         .vl-card {
             width: 100%;
             max-width: 440px;
             background: #fff;
-            border-radius: 16px;
+            border-radius: 12px;
             box-shadow: 0 8px 40px rgba(15,23,42,.10), 0 2px 8px rgba(15,23,42,.06);
             overflow: hidden;
         }
 
         /* ── Card header band ── */
         .vl-card-header {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: #4f46e5;
             padding: 32px 36px 28px;
             text-align: center;
             position: relative;
@@ -74,7 +74,7 @@
         .vl-logo-wrap {
             width: 60px; height: 60px;
             background: rgba(255,255,255,.18);
-            border-radius: 16px;
+            border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
             margin: 0 auto 14px;
             border: 2px solid rgba(255,255,255,.25);
@@ -145,7 +145,7 @@
         }
 
         .vl-input:focus {
-            border-color: #6366f1;
+            border-color: #4f46e5;
             box-shadow: 0 0 0 3px rgba(99,102,241,.14);
             background: #fff;
         }
@@ -164,7 +164,7 @@
             color: #94a3b8; cursor: pointer; font-size: .82rem;
             transition: color .15s;
         }
-        .vl-toggle-pw:hover { color: #6366f1; }
+        .vl-toggle-pw:hover { color: #4f46e5; }
 
         /* ── Alert ── */
         .vl-alert {
@@ -203,7 +203,7 @@
 
         .vl-check input[type="checkbox"] {
             width: 15px; height: 15px;
-            accent-color: #6366f1;
+            accent-color: #4f46e5;
             cursor: pointer;
         }
 
@@ -211,7 +211,7 @@
         .vl-submit {
             width: 100%;
             padding: 11px;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: #4f46e5;
             color: #fff;
             border: none;
             border-radius: 10px;
@@ -237,7 +237,7 @@
         }
 
         .vl-card-footer-note a {
-            color: #6366f1;
+            color: #4f46e5;
             font-weight: 600;
             text-decoration: none;
         }

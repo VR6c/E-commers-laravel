@@ -29,7 +29,7 @@
     opacity: 0.85;
     background: #f8fafc !important;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-    border-color: #6366f1 !important;
+    border-color: #4f46e5 !important;
     z-index: 100;
     will-change: transform, opacity;
 }
