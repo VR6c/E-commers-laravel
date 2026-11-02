@@ -62,7 +62,7 @@ Route::match(['get', 'post'], '/logout', function () {
     request()->session()->regenerateToken();
 
     return redirect('/admin/login');
-})->name('logout');
+})->name('admin.session.logout');
 
 Route::get('/login', function () {
     if (auth()->check()) {

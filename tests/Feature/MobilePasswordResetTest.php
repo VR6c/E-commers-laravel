@@ -65,7 +65,7 @@ class MobilePasswordResetTest extends TestCase
         $this->assertNotNull($record);
 
         // Verify Mail sent
-        Mail::assertSent(PasswordResetOtpMail::class, function ($mail) {
+        Mail::assertQueued(PasswordResetOtpMail::class, function ($mail) {
             return $mail->hasTo('alice@example.com');
         });
     }
@@ -229,6 +229,6 @@ class MobilePasswordResetTest extends TestCase
         $this->postJson('/api/customer/forgot-password', ['email' => 'alias@example.com'])
             ->assertStatus(200);
 
-        Mail::assertSent(PasswordResetOtpMail::class);
+        Mail::assertQueued(PasswordResetOtpMail::class);
     }
 }

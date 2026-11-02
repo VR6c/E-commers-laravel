@@ -6,47 +6,47 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    // Not transactional, so each step skips indexes that already exist and the migration can be re-run safely.
     public $withinTransaction = false;
+
+    /**
+     * Indexes added by this migration: table => [index name => columns].
+     * (coupons.code is already unique, and coupons has no status column, so it needs no extra index.)
+     */
+    private function indexes(): array
+    {
+        return [
+            // Order lookup by product (e.g. recipe unlock checks)
+            'order_details' => ['idx_od_product_id' => ['product_id']],
+            // Quick product-attribute lookups
+            'product_attribute_values' => ['idx_pav_product_attribute' => ['product_id', 'attribute_value_id']],
+            // Reverse lookup in shop filter
+            'product_variant_attribute_values' => ['idx_pvav_attr_val_variant' => ['attribute_value_id', 'product_variant_id']],
+            // Catalog filtering
+            'recipes' => [
+                'idx_recipes_active_cuisine' => ['is_active', 'cuisine'],
+                'idx_recipes_active_difficulty' => ['is_active', 'difficulty'],
+            ],
+        ];
+    }
 
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        // 1. Index on order_details.product_id for order lookup by product (e.g. recipe unlock checks)
-        if (Schema::hasTable('order_details')) {
-            Schema::table('order_details', function (Blueprint $table) {
-                $table->index('product_id', 'idx_od_product_id');
-            });
-        }
+        foreach ($this->indexes() as $table => $indexes) {
+            if (! Schema::hasTable($table)) {
+                continue;
+            }
 
-        // 2. Composite index on product_attribute_values for quick product-attribute lookups
-        if (Schema::hasTable('product_attribute_values')) {
-            Schema::table('product_attribute_values', function (Blueprint $table) {
-                $table->index(['product_id', 'attribute_value_id'], 'idx_pav_product_attribute');
-            });
-        }
+            foreach ($indexes as $name => $columns) {
+                if (Schema::hasIndex($table, $name) || ! Schema::hasColumns($table, $columns)) {
+                    continue;
+                }
 
-        // 3. Composite index on product_variant_attribute_values for reverse lookup in shop filter
-        if (Schema::hasTable('product_variant_attribute_values')) {
-            Schema::table('product_variant_attribute_values', function (Blueprint $table) {
-                $table->index(['attribute_value_id', 'product_variant_id'], 'idx_pvav_attr_val_variant');
-            });
-        }
-
-        // 4. Composite indexes on recipes for catalog filtering
-        if (Schema::hasTable('recipes')) {
-            Schema::table('recipes', function (Blueprint $table) {
-                $table->index(['is_active', 'cuisine'], 'idx_recipes_active_cuisine');
-                $table->index(['is_active', 'difficulty'], 'idx_recipes_active_difficulty');
-            });
-        }
-
-        // 5. Composite index on coupons for fast code lookup with status
-        if (Schema::hasTable('coupons')) {
-            Schema::table('coupons', function (Blueprint $table) {
-                $table->index(['code', 'status'], 'idx_coupons_code_status');
-            });
+                Schema::table($table, fn (Blueprint $t) => $t->index($columns, $name));
+            }
         }
     }
 
@@ -55,35 +55,16 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if (Schema::hasTable('order_details')) {
-            Schema::table('order_details', function (Blueprint $table) {
-                $table->dropIndex('idx_od_product_id');
-            });
-        }
+        foreach ($this->indexes() as $table => $indexes) {
+            if (! Schema::hasTable($table)) {
+                continue;
+            }
 
-        if (Schema::hasTable('product_attribute_values')) {
-            Schema::table('product_attribute_values', function (Blueprint $table) {
-                $table->dropIndex('idx_pav_product_attribute');
-            });
-        }
-
-        if (Schema::hasTable('product_variant_attribute_values')) {
-            Schema::table('product_variant_attribute_values', function (Blueprint $table) {
-                $table->dropIndex('idx_pvav_attr_val_variant');
-            });
-        }
-
-        if (Schema::hasTable('recipes')) {
-            Schema::table('recipes', function (Blueprint $table) {
-                $table->dropIndex('idx_recipes_active_cuisine');
-                $table->dropIndex('idx_recipes_active_difficulty');
-            });
-        }
-
-        if (Schema::hasTable('coupons')) {
-            Schema::table('coupons', function (Blueprint $table) {
-                $table->dropIndex('idx_coupons_code_status');
-            });
+            foreach (array_keys($indexes) as $name) {
+                if (Schema::hasIndex($table, $name)) {
+                    Schema::table($table, fn (Blueprint $t) => $t->dropIndex($name));
+                }
+            }
         }
     }
 };

@@ -271,7 +271,7 @@
                     </li>
                     <li><hr class="dropdown-divider my-1" style="border-color: #f1f5f9;"></li>
                     <li>
-                        <form id="admin-logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                        <form id="admin-logout-form" action="{{ route('admin.session.logout') }}" method="POST" class="d-none">
                             @csrf
                         </form>
                         <a class="dropdown-item text-danger rounded-2 py-2 d-flex align-items-center gap-2"

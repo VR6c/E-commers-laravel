@@ -25,15 +25,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Authentication
 // ──────────────────────────────────────────────────────────────
 Route::prefix('customer')->group(function () {
-    Route::post('register', [CustomerAuthController::class, 'register']);
-    Route::post('login', [CustomerAuthController::class, 'login']);
+    Route::post('register', [CustomerAuthController::class, 'register'])->middleware('throttle.strict:5,1,register');
+    Route::post('login', [CustomerAuthController::class, 'login'])->middleware('throttle.strict:10,1,login');
     Route::post('refresh', [CustomerAuthController::class, 'refresh']);
     Route::post('refresh-token', [CustomerAuthController::class, 'refresh']);
 
     // Password reset aliases for mobile app
-    Route::post('forgot-password', [PasswordResetController::class, 'forgot']);
+    Route::post('forgot-password', [PasswordResetController::class, 'forgot'])->middleware('throttle.strict:5,1,forgot');
     Route::post('verify-otp', [PasswordResetController::class, 'verifyOtp']);
-    Route::post('resend-otp', [PasswordResetController::class, 'resendOtp']);
+    Route::post('resend-otp', [PasswordResetController::class, 'resendOtp'])->middleware('throttle.strict:5,1,forgot');
     Route::post('reset-password', [PasswordResetController::class, 'reset']);
 
     Route::middleware('auth:sanctum')->group(function () {
@@ -49,9 +49,9 @@ Route::prefix('customer')->group(function () {
 // Password Reset (public — no auth required)
 // ──────────────────────────────────────────────────────────────
 Route::prefix('password')->group(function () {
-    Route::post('forgot', [PasswordResetController::class, 'forgot']);
+    Route::post('forgot', [PasswordResetController::class, 'forgot'])->middleware('throttle.strict:5,1,forgot');
     Route::post('verify-otp', [PasswordResetController::class, 'verifyOtp']);
-    Route::post('resend-otp', [PasswordResetController::class, 'resendOtp']);
+    Route::post('resend-otp', [PasswordResetController::class, 'resendOtp'])->middleware('throttle.strict:5,1,forgot');
     Route::post('reset', [PasswordResetController::class, 'reset']);
 });
 

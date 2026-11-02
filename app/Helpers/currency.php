@@ -4,6 +4,31 @@ use App\Models\Currency;
 use App\Models\StoreSetting;
 use Illuminate\Support\Facades\Cache;
 
+if (! function_exists('store_currencies')) {
+    /**
+     * All currencies, loaded once per request (and cached across requests when the
+     * cache store is shared). convert_price(), activeCurrency() and the header
+     * currency switcher all read from this single list instead of querying separately.
+     */
+    function store_currencies()
+    {
+        static $memo = null;
+
+        // Re-load when the application instance changes (tests, queue workers, Octane)
+        if ($memo === null || $memo[0] !== app()) {
+            $memo = [app(), Cache::remember('storefront_currencies', 86400, function () {
+                try {
+                    return Currency::orderBy('code')->get();
+                } catch (\Throwable $e) {
+                    return collect();
+                }
+            })];
+        }
+
+        return $memo[1];
+    }
+}
+
 if (! function_exists('convert_price')) {
     function convert_price($amount, $currencyCode = null)
     {
@@ -24,25 +49,10 @@ if (! function_exists('convert_price')) {
             $currencyCode = $currencyCode ?: $defaultCurrency;
         }
 
-        if (! isset($rates['USD'])) {
-            $rates['USD'] = Cache::rememberForever('currency_USD', function () {
-                try {
-                    return Currency::where('code', 'USD')->value('exchange_rate') ?: 1.0;
-                } catch (\Throwable $e) {
-                    return 1.0;
-                }
-            });
-        }
+        $rateFor = fn (string $code) => store_currencies()->firstWhere('code', $code)?->exchange_rate ?: 1.0;
 
-        if (! isset($rates[$currencyCode])) {
-            $rates[$currencyCode] = Cache::rememberForever("currency_{$currencyCode}", function () use ($currencyCode) {
-                try {
-                    return Currency::where('code', $currencyCode)->value('exchange_rate') ?: 1.0;
-                } catch (\Throwable $e) {
-                    return 1.0;
-                }
-            });
-        }
+        $rates['USD'] ??= $rateFor('USD');
+        $rates[$currencyCode] ??= $rateFor($currencyCode);
 
         $usdExchangeRate = $rates['USD'] ?: 1.0;
         $targetExchangeRate = $rates[$currencyCode] ?: 1.0;
@@ -89,10 +99,8 @@ if (! function_exists('activeCurrency')) {
     {
         $code = session('currency', 'USD');
 
-        $currency = Cache::rememberForever('active_currency_'.$code, function () use ($code) {
-            return Currency::where('code', $code)->first()
-                ?? Currency::first();
-        });
+        $currencies = store_currencies();
+        $currency = $currencies->firstWhere('code', $code) ?? $currencies->sortBy('id')->first();
 
         return $currency ?? (object) [
             'symbol' => '$',

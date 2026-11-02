@@ -63,16 +63,23 @@ class OptimizeResponseMiddleware
             }
         }
 
-        // Gzip compression for HTML and JSON if supported by client and not already compressed
-        $acceptEncoding = $request->header('Accept-Encoding', '');
-        if (str_contains($acceptEncoding, 'gzip') && function_exists('gzencode') && ! $response->headers->has('Content-Encoding')) {
-            $content = $response->getContent();
-            if ($content && strlen($content) > 1024) {
-                $compressed = gzencode($content, 6);
-                if ($compressed !== false) {
-                    $response->setContent($compressed);
-                    $response->headers->set('Content-Encoding', 'gzip');
-                    $response->headers->set('Content-Length', (string) strlen($compressed));
+        // Gzip compression for HTML and JSON if supported by client and not already compressed.
+        // Disabled where the host compresses responses itself (e.g. Vercel's edge serves Brotli),
+        // since compressing here costs CPU and stops the edge from picking a better encoding.
+        if (config('performance.gzip', true)) {
+            // The body now depends on Accept-Encoding, so shared caches must key on it.
+            $response->setVary('Accept-Encoding', false);
+
+            $acceptEncoding = $request->header('Accept-Encoding', '');
+            if (str_contains($acceptEncoding, 'gzip') && function_exists('gzencode') && ! $response->headers->has('Content-Encoding')) {
+                $content = $response->getContent();
+                if ($content && strlen($content) > 1024) {
+                    $compressed = gzencode($content, 6);
+                    if ($compressed !== false) {
+                        $response->setContent($compressed);
+                        $response->headers->set('Content-Encoding', 'gzip');
+                        $response->headers->set('Content-Length', (string) strlen($compressed));
+                    }
                 }
             }
         }

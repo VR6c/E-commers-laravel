@@ -106,7 +106,7 @@ final class ProductSearch extends Component
     public function render(): View
     {
         $query = Product::query()
-            ->with(['category', 'brand', 'images', 'primaryVariant', 'variants', 'thumbnail']);
+            ->with(['category:id,name', 'brand:id,name', 'primaryVariant', 'variants', 'thumbnail']);
 
         // Search filter (matches product name, description, short_description, tags, or variant SKU)
         if (! empty(trim($this->search))) {

@@ -42,6 +42,7 @@ class Kernel extends HttpKernel
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\OptimizeResponseMiddleware::class,
+            \App\Http\Middleware\ProfileApiRequests::class,
         ],
     ];
 
@@ -63,6 +64,7 @@ class Kernel extends HttpKernel
         'precognitive' => \Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'throttle.strict' => \App\Http\Middleware\ThrottleSensitiveRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'auth.vendor' => \App\Http\Middleware\AuthenticateVendor::class,
         'auth.customer' => \App\Http\Middleware\AuthenticateCustomer::class,

@@ -26,7 +26,6 @@ class ProductController extends Controller
         $product = Product::with([
             'attributeValues.attribute',
             'reviews',
-            'primaryVariant',
             'variants.attributeValues',
             'images',
             'category',
@@ -36,7 +35,9 @@ class ProductController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
-        $primaryVariant = $product->primaryVariant ?? $product->variants->firstWhere('is_primary', true) ?? $product->variants->first();
+        // Reuse the already-loaded variants instead of a separate primaryVariant query
+        $product->setRelation('primaryVariant', $product->variants->firstWhere('is_primary', true));
+        $primaryVariant = $product->primaryVariant ?? $product->variants->first();
         $inStock = $primaryVariant && $primaryVariant->stock > 0;
 
         $variantMap = $product->variants->map(function ($variant) {

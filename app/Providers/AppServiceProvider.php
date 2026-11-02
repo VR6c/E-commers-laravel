@@ -26,6 +26,8 @@ use App\Services\Admin\MenuService;
 use App\Services\Shared\ImageService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -80,6 +82,17 @@ class AppServiceProvider extends ServiceProvider
         // Guard against N+1 queries and silent failures in development/testing
         Model::preventLazyLoading(! $this->app->isProduction());
         Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
+
+        // Log any single query slower than the configured threshold
+        DB::listen(function ($query) {
+            if ($query->time >= (int) config('performance.slow_query_ms', 100)) {
+                Log::channel(config('performance.log_channel', 'daily'))->warning('Slow query', [
+                    'ms' => round($query->time, 1),
+                    'sql' => $query->sql,
+                    'bindings' => $query->bindings,
+                ]);
+            }
+        });
 
         Paginator::useBootstrapFive();
 

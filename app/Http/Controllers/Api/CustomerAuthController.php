@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\ThrottleSensitiveRequests;
 use App\Models\Customer;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -13,6 +14,18 @@ use Laravel\Sanctum\PersonalAccessToken;
 class CustomerAuthController extends Controller
 {
     use ApiResponse;
+
+    /**
+     * Failed logins allowed per account within LOGIN_LOCK_SECONDS before it is locked.
+     */
+    public const MAX_LOGIN_FAILURES = 5;
+
+    public const LOGIN_LOCK_SECONDS = 900;
+
+    public static function loginLockKey(string $email): string
+    {
+        return 'login-lock:'.sha1(strtolower(trim($email)));
+    }
 
     public function register(Request $request)
     {
@@ -51,9 +64,28 @@ class CustomerAuthController extends Controller
 
     public function login(Request $request)
     {
+        // Per-account lockout (counted whether or not the account exists, so it reveals nothing)
+        $limiter = ThrottleSensitiveRequests::limiter();
+        $lockKey = self::loginLockKey((string) $request->input('email'));
+        $failures = $limiter->attempts($lockKey);
+
+        if ($failures >= self::MAX_LOGIN_FAILURES) {
+            $wait = $limiter->availableIn($lockKey);
+
+            return $this->problemResponse(
+                'https://api.example.com/errors/too-many-attempts',
+                'Too Many Attempts',
+                429,
+                "Too many failed login attempts. Try again in {$wait} seconds or reset your password.",
+                $request->path()
+            )->header('Retry-After', (string) $wait);
+        }
+
         $customer = Customer::where('email', $request->email)->first();
 
         if (! $customer) {
+            $limiter->hit($lockKey, self::LOGIN_LOCK_SECONDS);
+
             return $this->problemResponse(
                 'https://api.example.com/errors/unauthorized',
                 'Unauthorized',
@@ -80,6 +112,8 @@ class CustomerAuthController extends Controller
         }
 
         if (! $passwordValid) {
+            $limiter->hit($lockKey, self::LOGIN_LOCK_SECONDS);
+
             return $this->problemResponse(
                 'https://api.example.com/errors/unauthorized',
                 'Unauthorized',
@@ -87,6 +121,10 @@ class CustomerAuthController extends Controller
                 'Invalid login credentials provided.',
                 $request->path()
             );
+        }
+
+        if ($failures > 0) {
+            $limiter->clear($lockKey);
         }
 
         $token = $customer->createToken('CustomerToken')->plainTextToken;

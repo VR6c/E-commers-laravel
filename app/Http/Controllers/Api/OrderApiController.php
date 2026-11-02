@@ -26,6 +26,7 @@ class OrderApiController extends Controller
         $orders = Order::with(['details.product.thumbnail', 'shippingAddress'])
             ->where('customer_id', $customer->id)
             ->orderByDesc('created_at')
+            ->limit(min(max((int) $request->input('limit', 100), 1), 200))
             ->get();
 
         return response()->json([

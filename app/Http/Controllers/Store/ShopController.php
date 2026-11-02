@@ -25,7 +25,7 @@ class ShopController extends Controller
 
         $sort = $request->input('sort', 'newest');
 
-        $query = Product::with(['thumbnail', 'primaryVariant', 'variants.attributeValues'])
+        $query = Product::with(['thumbnail', 'primaryVariant'])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
             ->where('products.status', 1)

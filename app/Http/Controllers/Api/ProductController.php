@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ProductController extends Controller
 {
@@ -20,10 +21,27 @@ class ProductController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        $params = $request->query();
+        ksort($params);
+        $payload = Cache::remember(
+            'api:products:index:'.md5(json_encode($params)),
+            60,
+            fn () => $this->buildIndexPayload($request)
+        );
+
+        return response()->json($payload)
+            ->header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildIndexPayload(Request $request): array
+    {
         $query = Product::with([
-            'category',
-            'brand',
-            'thumbnail',
+            'category:id,name',
+            'brand:id,name',
+            'thumbnail:id,product_id,image_url,type',
             'primaryVariant',
             'variants.attributeValues.attribute',
         ])
@@ -52,17 +70,11 @@ class ProductController extends Controller
 
         // Filter by min/max price (based on primary variant price)
         if ($minPrice = $request->input('min_price')) {
-            $query->where(function ($q) use ($minPrice) {
-                $q->whereHas('primaryVariant', fn ($sub) => $sub->where('price', '>=', $minPrice))
-                    ->orWhereHas('variants', fn ($sub) => $sub->where('price', '>=', $minPrice));
-            });
+            $query->whereHas('variants', fn ($sub) => $sub->where('price', '>=', $minPrice));
         }
 
         if ($maxPrice = $request->input('max_price')) {
-            $query->where(function ($q) use ($maxPrice) {
-                $q->whereHas('primaryVariant', fn ($sub) => $sub->where('price', '<=', $maxPrice))
-                    ->orWhereHas('variants', fn ($sub) => $sub->where('price', '<=', $maxPrice));
-            });
+            $query->whereHas('variants', fn ($sub) => $sub->where('price', '<=', $maxPrice));
         }
 
         // Sorting (database-agnostic boolean check)
@@ -85,16 +97,16 @@ class ProductController extends Controller
         $perPage = min((int) $request->input('per_page', 20), 100);
         $paginated = $query->paginate($perPage);
 
-        return response()->json([
+        return [
             'status' => true,
-            'data' => ProductResource::collection($paginated->getCollection()),
+            'data' => ProductResource::collection($paginated->getCollection())->resolve(),
             'meta' => [
                 'current_page' => $paginated->currentPage(),
                 'last_page' => $paginated->lastPage(),
                 'per_page' => $paginated->perPage(),
                 'total' => $paginated->total(),
             ],
-        ])->header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
+        ];
     }
 
     /**

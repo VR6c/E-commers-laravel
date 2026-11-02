@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Vendor;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Vendor\ProductRequest;
 use App\Models\Attribute;
-use App\Models\AttributeValue;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
@@ -58,15 +57,10 @@ class ProductController extends Controller
         $categories = Category::all();
         $brands = Brand::all();
         $attributes = Attribute::with('values')->get();
-        $sizes = Attribute::where('name', 'Size')->first()?->values ?? collect();
-        $colors = Attribute::where('name', 'Color')->first()?->values ?? collect();
-        $attributeSizeMap = [
-            'small' => AttributeValue::where('attribute_id', $sizes->firstWhere('name', 'Small')->id ?? 0)->pluck('id')->first(),
-            'medium' => AttributeValue::where('attribute_id', $sizes->firstWhere('name', 'Medium')->id ?? 0)->pluck('id')->first(),
-            'large' => AttributeValue::where('attribute_id', $sizes->firstWhere('name', 'Large')->id ?? 0)->pluck('id')->first(),
-        ];
+        $sizes = $attributes->firstWhere('name', 'Size')?->values ?? collect();
+        $colors = $attributes->firstWhere('name', 'Color')?->values ?? collect();
 
-        return view('vendor.products.create', compact('categories', 'brands', 'attributes', 'sizes', 'colors', 'attributeSizeMap'));
+        return view('vendor.products.create', compact('categories', 'brands', 'attributes', 'sizes', 'colors'));
     }
 
     public function store(ProductRequest $request)
@@ -112,8 +106,8 @@ class ProductController extends Controller
         $categories = Category::all();
         $brands = Brand::all();
         $attributes = Attribute::with('values')->get();
-        $sizes = Attribute::where('name', 'Size')->first()?->values ?? collect();
-        $colors = Attribute::where('name', 'Color')->first()?->values ?? collect();
+        $sizes = $attributes->firstWhere('name', 'Size')?->values ?? collect();
+        $colors = $attributes->firstWhere('name', 'Color')?->values ?? collect();
 
         return view('vendor.products.edit', compact('product', 'categories', 'brands', 'attributes', 'sizes', 'colors'));
     }

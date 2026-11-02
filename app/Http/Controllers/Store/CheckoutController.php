@@ -10,7 +10,6 @@ use App\Models\User;
 use App\Services\PaymentGateway\PaymentManager;
 use App\Services\Store\CartService;
 use App\Services\Store\OrderService;
-use App\Services\TelegramService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -147,7 +146,7 @@ class CheckoutController extends Controller
                 Session::forget('cart');
 
                 // Send Telegram notification alert
-                app(TelegramService::class)->sendOrderNotification($order, 'checkout_success');
+                \App\Jobs\SendOrderTelegramNotification::dispatch($order->id, 'checkout_success')->afterCommit();
 
                 if ($request->ajax() || $request->wantsJson()) {
                     return response()->json([
@@ -315,7 +314,7 @@ class CheckoutController extends Controller
                         $order->save();
 
                         // Send Telegram notification alert
-                        app(TelegramService::class)->sendOrderNotification($order, 'checkout_success');
+                        \App\Jobs\SendOrderTelegramNotification::dispatch($order->id, 'checkout_success')->afterCommit();
 
                         try {
                             $gateway = PaymentGateway::where('code', 'abapayway')->first();
@@ -379,7 +378,7 @@ class CheckoutController extends Controller
                     $order->save();
 
                     // Send Telegram notification alert
-                    app(TelegramService::class)->sendOrderNotification($order, 'checkout_success');
+                    \App\Jobs\SendOrderTelegramNotification::dispatch($order->id, 'checkout_success')->afterCommit();
 
                     $gateway = PaymentGateway::where('code', 'abapayway')->first();
 
@@ -484,7 +483,7 @@ class CheckoutController extends Controller
                         $order->save();
 
                         // Send Telegram notification alert
-                        app(TelegramService::class)->sendOrderNotification($order, 'checkout_success');
+                        \App\Jobs\SendOrderTelegramNotification::dispatch($order->id, 'checkout_success')->afterCommit();
 
                         $gateway = PaymentGateway::where('code', 'abapayway')->first();
                         Payment::firstOrCreate(
@@ -530,7 +529,7 @@ class CheckoutController extends Controller
                 $order = $orderService->createOrderFromPaypal($result);
 
                 // Send Telegram notification alert
-                app(TelegramService::class)->sendOrderNotification($order, 'checkout_success');
+                \App\Jobs\SendOrderTelegramNotification::dispatch($order->id, 'checkout_success')->afterCommit();
 
                 return response()->json([
                     'success' => true,

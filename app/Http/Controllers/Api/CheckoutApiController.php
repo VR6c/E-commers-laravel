@@ -50,8 +50,14 @@ class CheckoutApiController extends Controller
             // 1. Calculate total and verify prices from DB (Read-only, outside transaction)
             $subtotal = 0.0;
             $itemsWithDetails = [];
+            $products = Product::with(['variants'])
+                ->whereIn('id', collect($cartItems)->pluck('product_id')->unique())
+                ->get()
+                ->keyBy('id');
+
             foreach ($cartItems as $item) {
-                $product = Product::with(['variants'])->findOrFail($item['product_id']);
+                $product = $products->get((int) $item['product_id'])
+                    ?? throw (new \Illuminate\Database\Eloquent\ModelNotFoundException)->setModel(Product::class, [$item['product_id']]);
 
                 // Find variant if variant_id passed, else primary variant, else first variant
                 $variant = null;
@@ -199,7 +205,7 @@ class CheckoutApiController extends Controller
                 $order->save();
 
                 // Send Telegram notification alert
-                app(\App\Services\TelegramService::class)->sendOrderNotification($order, 'checkout_success');
+                \App\Jobs\SendOrderTelegramNotification::dispatch($order->id, 'checkout_success')->afterCommit();
 
                 return response()->json([
                     'status' => true,
@@ -266,7 +272,7 @@ class CheckoutApiController extends Controller
                     $order->save();
 
                     // Send Telegram notification alert
-                    app(\App\Services\TelegramService::class)->sendOrderNotification($order, 'checkout_success');
+                    \App\Jobs\SendOrderTelegramNotification::dispatch($order->id, 'checkout_success')->afterCommit();
 
                     // Best-effort: save Payment record — do not let this block the 200 response
                     try {

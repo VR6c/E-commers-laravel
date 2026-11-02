@@ -10,6 +10,7 @@ use App\Models\ProductVariant;
 use App\Models\Vendor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller
@@ -21,32 +22,59 @@ class DashboardController extends Controller
         $startLastWeek = Carbon::today()->subDays(13)->startOfDay();
         $endLastWeek = Carbon::today()->subDays(7)->endOfDay();
 
-        // --- Core Metrics ---
-        $totalSales = (float) Order::where('status', 'completed')->sum('total_amount');
-        $thisWeekSales = (float) Order::where('status', 'completed')->where('created_at', '>=', $startThisWeek)->sum('total_amount');
-        $lastWeekSales = (float) Order::where('status', 'completed')->whereBetween('created_at', [$startLastWeek, $endLastWeek])->sum('total_amount');
+        // --- Core Metrics (single conditional-aggregate query instead of ~12 separate ones) ---
+        $todayStart = Carbon::today()->startOfDay();
+        $todayEnd = Carbon::today()->endOfDay();
+
+        $stats = Order::toBase()->selectRaw(
+            "COUNT(*) as total_orders,
+            COALESCE(SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END), 0) as completed_orders,
+            COALESCE(SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END), 0) as pending_orders,
+            COALESCE(SUM(CASE WHEN status IN ('canceled', 'cancelled') THEN 1 ELSE 0 END), 0) as cancelled_orders,
+            COALESCE(SUM(CASE WHEN status = 'completed' THEN total_amount END), 0) as total_sales,
+            COALESCE(SUM(CASE WHEN status = 'completed' AND created_at >= ? THEN total_amount END), 0) as this_week_sales,
+            COALESCE(SUM(CASE WHEN status = 'completed' AND created_at BETWEEN ? AND ? THEN total_amount END), 0) as last_week_sales,
+            COALESCE(SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END), 0) as this_week_orders,
+            COALESCE(SUM(CASE WHEN created_at BETWEEN ? AND ? THEN 1 ELSE 0 END), 0) as last_week_orders,
+            COALESCE(SUM(CASE WHEN status = 'completed' AND created_at BETWEEN ? AND ? THEN total_amount END), 0) as today_sales",
+            [
+                $startThisWeek,
+                $startLastWeek, $endLastWeek,
+                $startThisWeek,
+                $startLastWeek, $endLastWeek,
+                $todayStart, $todayEnd,
+            ]
+        )->first();
+
+        $totalSales = (float) $stats->total_sales;
+        $thisWeekSales = (float) $stats->this_week_sales;
+        $lastWeekSales = (float) $stats->last_week_sales;
         $salesGrowth = $lastWeekSales > 0 ? round((($thisWeekSales - $lastWeekSales) / $lastWeekSales) * 100, 1) : ($thisWeekSales > 0 ? 100 : 0);
 
-        $totalOrders = Order::count();
-        $thisWeekOrders = Order::where('created_at', '>=', $startThisWeek)->count();
-        $lastWeekOrders = Order::whereBetween('created_at', [$startLastWeek, $endLastWeek])->count();
+        $totalOrders = (int) $stats->total_orders;
+        $thisWeekOrders = (int) $stats->this_week_orders;
+        $lastWeekOrders = (int) $stats->last_week_orders;
         $ordersGrowth = $lastWeekOrders > 0 ? round((($thisWeekOrders - $lastWeekOrders) / $lastWeekOrders) * 100, 1) : ($thisWeekOrders > 0 ? 100 : 0);
 
-        $completedOrders = Order::where('status', 'completed')->count();
-        $pendingOrders = Order::where('status', 'pending')->count();
-        $cancelledOrders = Order::where('status', 'cancelled')->count();
+        $completedOrders = (int) $stats->completed_orders;
+        $pendingOrders = (int) $stats->pending_orders;
+        $cancelledOrders = (int) $stats->cancelled_orders;
 
         $totalVendors = Vendor::where('status', 'active')->count();
         $totalCustomers = Customer::where('status', 'active')->count();
 
-        // --- Low Stock Inventory Alert ---
-        $lowStockCount = Schema::hasColumn('products', 'stock')
+        // --- Low Stock Inventory Alert (schema lookup cached: it hits information_schema) ---
+        $productsHaveStock = Cache::rememberForever(
+            'schema:products:has_stock',
+            fn () => Schema::hasColumn('products', 'stock')
+        );
+        $lowStockCount = $productsHaveStock
             ? Product::where('stock', '<=', 5)->count()
             : ProductVariant::where('stock', '<=', 5)->count();
 
         $data = [
             'totalSales' => $totalSales,
-            'todaySales' => (float) Order::whereDate('created_at', today())->where('status', 'completed')->sum('total_amount'),
+            'todaySales' => (float) $stats->today_sales,
             'salesGrowth' => $salesGrowth,
             'totalOrders' => $totalOrders,
             'ordersGrowth' => $ordersGrowth,
@@ -121,12 +149,16 @@ class DashboardController extends Controller
 
         } elseif ($range === '1y') {
             $months = collect(range(11, 0))->map(fn ($i) => Carbon::today()->startOfMonth()->subMonths($i));
-            $salesByMonth = Order::where('status', 'completed')
+            // Group by day in SQL (portable across MySQL/Postgres/SQLite) and bucket into months in PHP
+            $monthly = Order::where('status', 'completed')
                 ->where('created_at', '>=', Carbon::today()->startOfMonth()->subMonths(11))
-                ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as ym, SUM(total_amount) as total, COUNT(id) as count")
-                ->groupBy('ym')
+                ->toBase()
+                ->selectRaw('DATE(created_at) as day, SUM(total_amount) as total, COUNT(id) as count')
+                ->groupBy('day')
                 ->get()
-                ->keyBy('ym');
+                ->groupBy(fn ($row) => substr((string) $row->day, 0, 7))
+                ->map(fn ($rows) => (object) ['total' => $rows->sum('total'), 'count' => $rows->sum('count')]);
+            $salesByMonth = $monthly;
 
             $labels = $months->map(fn ($m) => $m->format('M Y'))->values()->toArray();
             $sales = $months->map(fn ($m) => (float) ($salesByMonth[$m->format('Y-m')]->total ?? 0))->values()->toArray();

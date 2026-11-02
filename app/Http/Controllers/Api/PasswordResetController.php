@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\ThrottleSensitiveRequests;
 use App\Mail\PasswordResetOtpMail;
 use App\Models\Customer;
 use Carbon\Carbon;
@@ -19,6 +20,11 @@ class PasswordResetController extends Controller
      * OTP validity duration in minutes.
      */
     protected const OTP_EXPIRY_MINUTES = 15;
+
+    /**
+     * Wrong guesses allowed per OTP before it is invalidated.
+     */
+    protected const MAX_OTP_ATTEMPTS = 5;
 
     /**
      * Minimum cooldown between OTP requests in seconds.
@@ -83,6 +89,7 @@ class PasswordResetController extends Controller
             [
                 'token' => $token,
                 'created_at' => now(),
+                'attempts' => 0,
             ]
         );
 
@@ -91,7 +98,7 @@ class PasswordResetController extends Controller
         $smtpError = null;
 
         try {
-            Mail::to($email)->send(new PasswordResetOtpMail($otp, self::OTP_EXPIRY_MINUTES));
+            Mail::to($email)->queue(new PasswordResetOtpMail($otp, self::OTP_EXPIRY_MINUTES));
             $mailSent = true;
         } catch (\Throwable $e) {
             $smtpError = $e->getMessage();
@@ -169,12 +176,9 @@ class PasswordResetController extends Controller
             ], 422);
         }
 
-        // Check OTP match
-        if (! Hash::check($request->otp, $record->token)) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Incorrect verification code. Please check and try again.',
-            ], 422);
+        // Check OTP match (wrong guesses are counted; too many invalidates the code)
+        if ($failure = $this->otpFailure($email, $record, $request->otp, 'Incorrect verification code. Please check and try again.')) {
+            return $failure;
         }
 
         return response()->json([
@@ -241,12 +245,9 @@ class PasswordResetController extends Controller
             ], 422);
         }
 
-        // Verify OTP
-        if (! Hash::check($request->otp, $record->token)) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Incorrect verification code.',
-            ], 422);
+        // Verify OTP (wrong guesses are counted; too many invalidates the code)
+        if ($failure = $this->otpFailure($email, $record, $request->otp, 'Incorrect verification code.')) {
+            return $failure;
         }
 
         $customer = Customer::where('email', $email)->first()
@@ -265,6 +266,9 @@ class PasswordResetController extends Controller
         // Delete reset record to prevent reuse
         DB::table('password_resets')->where('email', $email)->delete();
 
+        // A completed reset lifts any failed-login lockout on the account
+        ThrottleSensitiveRequests::limiter()->clear(CustomerAuthController::loginLockKey($email));
+
         // Invalidate old tokens
         $customer->tokens()->delete();
 
@@ -279,5 +283,32 @@ class PasswordResetController extends Controller
                 'customer' => $customer,
             ],
         ]);
+    }
+
+    /**
+     * Returns an error response if the OTP must be rejected, or null when it is correct.
+     * A code is locked after MAX_OTP_ATTEMPTS wrong guesses; the user has to request a new one.
+     */
+    private function otpFailure(string $email, object $record, string $otp, string $wrongMessage): ?\Illuminate\Http\JsonResponse
+    {
+        if ((int) ($record->attempts ?? 0) >= self::MAX_OTP_ATTEMPTS) {
+            DB::table('password_resets')->where('email', $email)->delete();
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Too many incorrect attempts. Please request a new code.',
+            ], 429);
+        }
+
+        if (Hash::check($otp, $record->token)) {
+            return null;
+        }
+
+        DB::table('password_resets')->where('email', $email)->increment('attempts');
+
+        return response()->json([
+            'status' => false,
+            'message' => $wrongMessage,
+        ], 422);
     }
 }

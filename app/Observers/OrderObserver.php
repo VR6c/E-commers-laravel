@@ -33,7 +33,7 @@ class OrderObserver
 
             // Immediate checkout success for Cash on Delivery or orders created directly as completed (e.g. PayPal)
             if ($isCompleted || $isCod) {
-                $this->telegramService->sendOrderNotification($order, 'checkout_success');
+                \App\Jobs\SendOrderTelegramNotification::dispatch($order->id, 'checkout_success')->afterCommit();
             }
         } catch (\Throwable $e) {
             Log::error('OrderObserver created error: '.$e->getMessage());
@@ -48,7 +48,7 @@ class OrderObserver
         try {
             // When payment is approved / confirmed (e.g. ABA PayWay webhook, status poll, or gateway capture)
             if ($order->wasChanged('status') && strtolower((string) $order->status) === 'completed') {
-                $this->telegramService->sendOrderNotification($order, 'checkout_success');
+                \App\Jobs\SendOrderTelegramNotification::dispatch($order->id, 'checkout_success')->afterCommit();
             }
         } catch (\Throwable $e) {
             Log::error('OrderObserver updated error: '.$e->getMessage());
