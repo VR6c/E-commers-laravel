@@ -37,9 +37,12 @@
             <div class="col-6 col-lg-2">
                 <h2 class="xsf-footer__heading">{{ 'Pages' }}</h2>
                 <ul class="xsf-footer__links">
-                    <li><a href="#">{{ 'Privacy Policy' }}</a></li>
-                    <li><a href="#">{{ 'Terms of Service' }}</a></li>
-                    <li><a href="#">{{ 'About Us' }}</a></li>
+                    <li><a href="{{ route('store.page', 'about-us') }}">{{ 'About Us' }}</a></li>
+                    <li><a href="{{ route('store.page', 'our-services') }}">{{ 'Our Services' }}</a></li>
+                    <li><a href="{{ route('store.page', 'blog') }}">{{ 'Blog' }}</a></li>
+                    <li><a href="{{ route('store.page', 'contact-us') }}">{{ 'Contact Us' }}</a></li>
+                    <li><a href="{{ route('store.page', 'privacy-policy') }}">{{ 'Privacy Policy' }}</a></li>
+                    <li><a href="{{ route('store.page', 'terms-of-service') }}">{{ 'Terms of Service' }}</a></li>
                 </ul>
             </div>
 

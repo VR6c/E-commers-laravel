@@ -134,7 +134,7 @@
                         <div class="cart-actions xsf-pd__actions">
                             <div class="quantity xsf-pd__qty">
                                 <button type="button" onclick="changeQty(-1)" aria-label="Decrease quantity">&minus;</button>
-                                <input type="text" id="qty" value="1" aria-label="Quantity">
+                                <input type="text" id="qty" value="1" inputmode="numeric" pattern="[0-9]*" aria-label="Quantity">
                                 <button type="button" onclick="changeQty(1)" aria-label="Increase quantity">+</button>
                             </div>
                             <button class="add-to-cart btn btn-primary btn-pill btn-lg"
@@ -173,7 +173,7 @@
                             @if ($alreadyReviewed)
                                 {{-- Customer already left a review --}}
                                 <div class="xsf-review-notice xsf-review-notice--done mt-3">
-                                    <i class="fa-solid fa-circle-check me-2" style="color:#22c55e;"></i>
+                                    <i class="fa-solid fa-circle-check me-2" style="color:var(--success-500);"></i>
                                     {{ 'You have already submitted a review for this product.' }}
                                 </div>
                             @elseif ($hasPurchased)
@@ -186,11 +186,11 @@
                                         <input type="hidden" name="rating" id="rating-value" required>
 
                                         <div id="starWrapper" class="xsf-review-form__stars">
-                                            <span class="star" data-value="1" style="color:#ccc;cursor:pointer;font-size:1.6rem;">&#9733;</span>
-                                            <span class="star" data-value="2" style="color:#ccc;cursor:pointer;font-size:1.6rem;">&#9733;</span>
-                                            <span class="star" data-value="3" style="color:#ccc;cursor:pointer;font-size:1.6rem;">&#9733;</span>
-                                            <span class="star" data-value="4" style="color:#ccc;cursor:pointer;font-size:1.6rem;">&#9733;</span>
-                                            <span class="star" data-value="5" style="color:#ccc;cursor:pointer;font-size:1.6rem;">&#9733;</span>
+                                            <span class="star" data-value="1" style="color:var(--neutral-300);cursor:pointer;font-size:1.6rem;">&#9733;</span>
+                                            <span class="star" data-value="2" style="color:var(--neutral-300);cursor:pointer;font-size:1.6rem;">&#9733;</span>
+                                            <span class="star" data-value="3" style="color:var(--neutral-300);cursor:pointer;font-size:1.6rem;">&#9733;</span>
+                                            <span class="star" data-value="4" style="color:var(--neutral-300);cursor:pointer;font-size:1.6rem;">&#9733;</span>
+                                            <span class="star" data-value="5" style="color:var(--neutral-300);cursor:pointer;font-size:1.6rem;">&#9733;</span>
                                         </div>
                                         <div id="star-error" class="text-danger small mt-1 d-none">Please select a rating before submitting.</div>
 
@@ -205,7 +205,7 @@
                             @else
                                 {{-- Logged in but has not purchased this product --}}
                                 <div class="xsf-review-notice xsf-review-notice--locked mt-3">
-                                    <i class="fa-solid fa-lock me-2" style="color:#f59e0b;"></i>
+                                    <i class="fa-solid fa-lock me-2" style="color:var(--warning-500);"></i>
                                     {{ 'You must purchase this product before reviewing it.' }}
                                 </div>
                             @endif
@@ -228,7 +228,7 @@
                                             </div>
                                             <div class="review-rating">
                                                 @for ($i = 1; $i <= 5; $i++)
-                                                    <span style="color: {{ $i <= $review->rating ? 'gold' : '#ccc' }}">&#9733;</span>
+                                                    <span style="color: {{ $i <= $review->rating ? 'var(--warning-500)' : 'var(--neutral-300)' }}">&#9733;</span>
                                                 @endfor
                                                 <span class="review-time">
                                                     @php
@@ -252,11 +252,11 @@
                                 <div class="review-rating">
                                     @for ($i = 1; $i <= 5; $i++)
                                         @if ($i <= floor($product->reviews_avg_rating))
-                                            <span style="color: gold">&#9733;</span>
+                                            <span style="color: var(--warning-500)">&#9733;</span>
                                         @elseif ($i == ceil($product->reviews_avg_rating) && $product->reviews_avg_rating - floor($product->reviews_avg_rating) >= 0.5)
-                                            <span style="color: gold">&#9733;</span>
+                                            <span style="color: var(--warning-500)">&#9733;</span>
                                         @else
-                                            <span style="color: #ccc">&#9733;</span>
+                                            <span style="color: var(--neutral-300)">&#9733;</span>
                                         @endif
                                     @endfor
                                     {{ number_format($product->reviews_avg_rating, 1) }} <span>{{ 'average rating' }}</span>
@@ -267,6 +267,17 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    {{-- Sticky add-to-cart bar (small screens, shown once the main button scrolls out of view) --}}
+    <div class="xsf-sticky-cta" id="stickyCta" aria-hidden="true">
+        <div class="xsf-sticky-cta__info">
+            <span class="xsf-sticky-cta__name">{{ $product->name }}</span>
+            <span class="xsf-sticky-cta__price">{{ $currency->symbol ?? '' }}<span id="stickyCtaPrice">{{ $product->primaryVariant->converted_price ?? 'N/A' }}</span></span>
+        </div>
+        <button type="button" class="btn btn-primary btn-pill xsf-sticky-cta__btn" id="stickyCtaBtn" tabindex="-1" @unless ($inStock) disabled @endunless>
+            <i class="fa fa-shopping-bag me-2" aria-hidden="true"></i>{{ 'Add to Cart' }}
+        </button>
     </div>
 @endsection
 
@@ -318,7 +329,7 @@
 
             function paintStars(upTo) {
                 stars.forEach(s => {
-                    s.style.color = parseInt(s.dataset.value) <= upTo ? 'gold' : '#ccc';
+                    s.style.color = parseInt(s.dataset.value) <= upTo ? 'var(--warning-500)' : 'var(--neutral-300)';
                 });
             }
 
@@ -467,5 +478,30 @@
             const el = document.getElementById("cart-count");
             if (el) { el.textContent = totalCount; el.classList.toggle('d-none', totalCount === 0); }
         }
+
+        // Sticky add-to-cart bar: mirrors price, proxies clicks to the main button.
+        (function () {
+            const mainBtn = document.querySelector('.xsf-pd__actions .add-to-cart');
+            const bar = document.getElementById('stickyCta');
+            const barBtn = document.getElementById('stickyCtaBtn');
+            if (!mainBtn || !bar || !barBtn || !('IntersectionObserver' in window)) return;
+
+            new IntersectionObserver(([entry]) => {
+                // Show only once the main button has scrolled above the viewport.
+                const show = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+                bar.classList.toggle('is-visible', show);
+                bar.setAttribute('aria-hidden', show ? 'false' : 'true');
+                barBtn.tabIndex = show ? 0 : -1;
+            }).observe(mainBtn);
+
+            barBtn.addEventListener('click', () => mainBtn.click());
+
+            const price = document.getElementById('variant-price');
+            const barPrice = document.getElementById('stickyCtaPrice');
+            if (price && barPrice) {
+                new MutationObserver(() => { barPrice.textContent = price.textContent; })
+                    .observe(price, { childList: true, characterData: true, subtree: true });
+            }
+        })();
     </script>
 @endsection

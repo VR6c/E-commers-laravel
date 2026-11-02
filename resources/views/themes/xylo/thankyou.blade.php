@@ -8,7 +8,7 @@
 
 .xsf-ty-section {
     padding: 60px 0 80px;
-    background: #f8f9fb;
+    background: var(--neutral-50);
     min-height: 60vh;
 }
 
@@ -17,7 +17,7 @@
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    background: linear-gradient(135deg, var(--success-500) 0%, var(--success-600) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -38,7 +38,7 @@
 
 /* ── Card ── */
 .xsf-ty-card {
-    background: #ffffff;
+    background: var(--neutral-0);
     border-radius: 20px;
     box-shadow: 0 4px 32px rgba(0, 0, 0, 0.07);
     overflow: hidden;
@@ -55,14 +55,14 @@
 .xsf-ty-title {
     font-size: 1.65rem;
     font-weight: 800;
-    color: #111827;
+    color: var(--neutral-900);
     margin: 0 0 8px;
     letter-spacing: -0.02em;
 }
 
 .xsf-ty-lead {
     font-size: 0.9rem;
-    color: #6b7280;
+    color: var(--neutral-500);
     margin: 0 0 32px;
     line-height: 1.6;
 }
@@ -75,7 +75,7 @@
 
 /* ── Order info block ── */
 .xsf-ty-info {
-    background: #f8f9fb;
+    background: var(--neutral-50);
     border-radius: 14px;
     padding: 20px 24px;
     margin-bottom: 28px;
@@ -87,7 +87,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #9ca3af;
+    color: var(--neutral-400);
     margin: 0 0 14px;
 }
 
@@ -96,20 +96,20 @@
     align-items: center;
     gap: 10px;
     font-size: 0.875rem;
-    color: #374151;
+    color: var(--neutral-700);
     margin-bottom: 6px;
 }
 
 .xsf-ty-info__row:last-child { margin-bottom: 0; }
 
 .xsf-ty-info__label {
-    color: #6b7280;
+    color: var(--neutral-500);
     min-width: 70px;
 }
 
 .xsf-ty-info__value {
     font-weight: 600;
-    color: #111827;
+    color: var(--neutral-900);
 }
 
 /* ── Items table ── */
@@ -124,7 +124,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #9ca3af;
+    color: var(--neutral-400);
     margin: 0 0 14px;
 }
 
@@ -133,7 +133,7 @@
     align-items: center;
     gap: 14px;
     padding: 14px 0;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid var(--neutral-100);
 }
 
 .xsf-ty-item:last-child { border-bottom: none; }
@@ -143,22 +143,22 @@
     height: 52px;
     border-radius: 10px;
     object-fit: cover;
-    background: #f3f4f6;
+    background: var(--neutral-100);
     flex-shrink: 0;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--neutral-200);
 }
 
 .xsf-ty-item__thumb-placeholder {
     width: 52px;
     height: 52px;
     border-radius: 10px;
-    background: #f3f4f6;
+    background: var(--neutral-100);
     flex-shrink: 0;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--neutral-200);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #d1d5db;
+    color: var(--neutral-300);
     font-size: 18px;
 }
 
@@ -167,7 +167,7 @@
 .xsf-ty-item__name {
     font-size: 0.875rem;
     font-weight: 600;
-    color: #111827;
+    color: var(--neutral-900);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -176,20 +176,20 @@
 
 .xsf-ty-item__qty {
     font-size: 0.78rem;
-    color: #9ca3af;
+    color: var(--neutral-400);
 }
 
 .xsf-ty-item__price {
     font-size: 0.9rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--neutral-900);
     white-space: nowrap;
     flex-shrink: 0;
 }
 
 /* ── Total row ── */
 .xsf-ty-total-bar {
-    background: #111827;
+    background: var(--neutral-900);
     border-radius: 0 0 20px 20px;
     padding: 18px 40px;
     display: flex;
@@ -206,7 +206,7 @@
 .xsf-ty-total-bar__amount {
     font-size: 1.3rem;
     font-weight: 800;
-    color: #ffffff;
+    color: var(--neutral-0);
     letter-spacing: -0.02em;
 }
 
@@ -217,7 +217,7 @@
     justify-content: center;
     flex-wrap: wrap;
     padding: 28px 40px 36px;
-    border-top: 1px solid #f3f4f6;
+    border-top: 1px solid var(--neutral-100);
 }
 
 .xsf-ty-actions .btn { min-width: 160px; }
@@ -307,18 +307,18 @@
                         @endphp
                         @if ($discountOnOrder > 0)
                             <div style="padding: 0 40px 4px; display:flex; justify-content:space-between; font-size:0.875rem;">
-                                <span style="color:#6b7280;">{{ 'Subtotal' }}</span>
-                                <span style="color:#111827; font-weight:600;">{{ $currency->symbol }}{{ number_format($itemsSubtotal, 2) }}</span>
+                                <span style="color:var(--neutral-500);">{{ 'Subtotal' }}</span>
+                                <span style="color:var(--neutral-900); font-weight:600;">{{ $currency->symbol }}{{ number_format($itemsSubtotal, 2) }}</span>
                             </div>
                             <div style="padding: 0 40px 16px; display:flex; justify-content:space-between; font-size:0.875rem;">
-                                <span style="color:#6b7280;">{{ 'Discount' }}</span>
-                                <span style="color:#dc2626; font-weight:600;">&minus;{{ $currency->symbol }}{{ number_format($discountOnOrder, 2) }}</span>
+                                <span style="color:var(--neutral-500);">{{ 'Discount' }}</span>
+                                <span style="color:var(--danger-600); font-weight:600;">&minus;{{ $currency->symbol }}{{ number_format($discountOnOrder, 2) }}</span>
                             </div>
                         @endif
 
                         {{-- Unlocked Recipes Section --}}
                         @if(isset($unlockedRecipes) && $unlockedRecipes->isNotEmpty())
-                            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px; margin: 24px 40px; padding: 20px; text-align: left;">
+                            <div style="background: var(--success-50); border: 1px solid var(--success-200); border-radius: 14px; margin: 24px 40px; padding: 20px; text-align: left;">
                                 <div class="d-flex align-items-center gap-2 mb-3">
                                     <span style="font-size: 1.25rem;">🎉</span>
                                     <div>

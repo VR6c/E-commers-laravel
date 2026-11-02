@@ -41,7 +41,7 @@
                                         @php $cartItems = $hydratedCart ?? []; @endphp
                                         @foreach ($cartItems as $key => $item)
                                             <tr>
-                                                <td>
+                                                <td class="xsf-cart-table__remove">
                                                     <button class="btn btn-link p-0 bnlink remove-from-cart" data-id="{{ $key }}"
                                                         aria-label="{{ 'Remove' }}">
                                                         <i class="fa-regular fa-circle-xmark"></i>
@@ -50,7 +50,7 @@
                                                 <td>
                                                     <div class="cart-product-detail">
                                                         <img src="{{ $item['image_url'] }}"
-                                                            alt="{{ $item['display_name'] }}" class="cart-product-img">
+                                                            alt="{{ $item['display_name'] }}" class="cart-product-img" loading="lazy" width="68" height="68">
                                                         <div class="cart-product-info">
                                                             <p class="cart-product-name">{{ $item['display_name'] }}</p>
                                                             <div class="cart-product-attributes">
@@ -68,11 +68,11 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td><strong>{{ $currency->symbol }}{{ number_format($item['price'], 2) }}</strong></td>
-                                                <td>
-                                                    <input type="number" class="form-control form-control-sm xsf-cart-qty" value="{{ $item['quantity'] }}" min="1" data-id="{{ $key }}">
+                                                <td data-label="{{ 'Price' }}"><strong>{{ $currency->symbol }}{{ number_format($item['price'], 2) }}</strong></td>
+                                                <td data-label="{{ 'Quantity' }}">
+                                                    <input type="number" inputmode="numeric" aria-label="{{ 'Quantity' }}" class="form-control form-control-sm xsf-cart-qty" value="{{ $item['quantity'] }}" min="1" data-id="{{ $key }}">
                                                 </td>
-                                                <td class="text-end"><strong>{{ $currency->symbol }}{{ number_format($item['subtotal'], 2) }}</strong></td>
+                                                <td class="text-end" data-label="{{ 'Subtotal' }}"><strong>{{ $currency->symbol }}{{ number_format($item['subtotal'], 2) }}</strong></td>
                                             </tr>
                                             @php $total += $item['subtotal']; @endphp
                                         @endforeach

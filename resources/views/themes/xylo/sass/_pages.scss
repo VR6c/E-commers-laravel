@@ -10,34 +10,51 @@
 .xsp-hero {
     position: relative;
     overflow: hidden;
-    background: $gradient-hero;
-    padding: $space-16 0 $space-14;
-    border-bottom: 1px solid $border-subtle;
+    isolation: isolate;
+    text-align: center;
+    color: #fff;
+    background:
+        radial-gradient(ellipse 60% 90% at 15% 0%, rgba($primary-500, 0.55) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 80% at 90% 100%, rgba(168, 85, 247, 0.40) 0%, transparent 60%),
+        linear-gradient(160deg, $neutral-950 0%, $primary-900 100%);
+    padding: $space-16 0 calc(#{$space-16} + 28px);
 
-    // Decorative mesh blobs
+    @include bp-down('md') { padding: $space-12 0 calc(#{$space-12} + 24px); }
+
+    // Faint dot grid fading out toward the bottom
     &::before {
         content: '';
         position: absolute;
         inset: 0;
-        background:
-            radial-gradient(ellipse 70% 80% at 5% 50%, rgba(99, 102, 241, 0.10) 0%, transparent 65%),
-            radial-gradient(ellipse 55% 60% at 95% 20%, rgba(168, 85, 247, 0.09) 0%, transparent 60%);
+        z-index: -1;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+        background-size: 26px 26px;
+        -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
+        mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
         pointer-events: none;
     }
 
-    // Subtle pattern overlay
+    // Curved bottom edge blends into the page body
     &::after {
         content: '';
         position: absolute;
-        inset: 0;
-        background-image: url("data:image/svg+xml,%3Csvg width='52' height='26' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.04'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        left: 50%;
+        bottom: -1px;
+        width: 140%;
+        height: 40px;
+        transform: translateX(-50%);
+        background: $neutral-0;
+        border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+        z-index: 0;
         pointer-events: none;
-        opacity: 0.6;
     }
 
     &__inner {
         position: relative;
         z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     &__eyebrow {
@@ -48,48 +65,52 @@
         font-weight: $font-weight-bold;
         letter-spacing: 0.12em;
         text-transform: uppercase;
-        color: $color-primary;
-        background: rgba($primary-500, 0.08);
-        border: 1px solid rgba($primary-500, 0.18);
+        color: $primary-100;
+        background: rgba(255, 255, 255, 0.10);
+        border: 1px solid rgba(255, 255, 255, 0.20);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         border-radius: $radius-pill;
-        padding: $space-1 $space-4;
+        padding: $space-2 $space-4;
         margin-bottom: $space-5;
 
-        i { font-size: 0.7rem; }
+        i { font-size: 0.8rem; color: $primary-300; }
     }
 
     &__title {
         font-family: 'Plus Jakarta Sans', var(--font-family-brand);
         font-size: $font-size-3xl;
         font-weight: $font-weight-extrabold;
-        color: $neutral-900;
+        color: #fff;
         letter-spacing: -0.04em;
         line-height: $line-height-tight;
-        margin: 0 0 $space-5;
+        margin: 0 0 $space-4;
 
-        @include bp-up('lg') {
-            font-size: $font-size-4xl;
-        }
+        @include bp-up('lg') { font-size: $font-size-4xl; }
     }
 
     &__subtitle {
         font-size: $font-size-md;
-        color: $text-secondary;
+        color: rgba(255, 255, 255, 0.75);
         line-height: $line-height-loose;
-        max-width: 54ch;
-        margin: 0 0 $space-6;
+        max-width: 56ch;
+        margin: 0 auto $space-6;
     }
 
     &__breadcrumb {
-        display: flex;
+        display: inline-flex;
         align-items: center;
         flex-wrap: wrap;
+        justify-content: center;
         gap: $space-2;
         font-size: $font-size-sm;
-        color: $text-muted;
+        color: rgba(255, 255, 255, 0.65);
         list-style: none;
-        padding: 0;
+        padding: $space-2 $space-4;
         margin: 0;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: $radius-pill;
 
         &-item {
             display: flex;
@@ -98,49 +119,50 @@
 
             &::before {
                 content: '/';
-                color: $neutral-300;
-                font-weight: $font-weight-normal;
+                color: rgba(255, 255, 255, 0.35);
             }
 
             &:first-child::before { display: none; }
 
             &.active {
-                color: $color-primary;
+                color: #fff;
                 font-weight: $font-weight-semibold;
             }
 
             a {
-                color: $text-muted;
+                color: rgba(255, 255, 255, 0.75);
                 text-decoration: none;
                 transition: color $transition-fast;
 
-                &:hover { color: $color-primary; }
+                &:hover,
+                &:focus-visible { color: #fff; }
             }
         }
     }
 
-    // Floating decorative card shape (right side, desktop)
+    // Soft floating glow orbs (replaces the old morphing blob)
     &__deco {
         position: absolute;
-        right: -60px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 420px;
-        height: 420px;
-        border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
-        background: $gradient-indigo;
-        opacity: 0.06;
+        right: 8%;
+        top: 18%;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, rgba($primary-300, 0.55), rgba($primary-500, 0) 70%);
+        filter: blur(6px);
         pointer-events: none;
-        animation: xsp-hero-morph 12s ease-in-out infinite;
+        z-index: 0;
+        animation: xsp-hero-float 9s ease-in-out infinite;
 
         @include bp-down('lg') { display: none; }
+
+        @media (prefers-reduced-motion: reduce) { animation: none; }
     }
 }
 
-@keyframes xsp-hero-morph {
-    0%, 100% { border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%; }
-    33%       { border-radius: 62% 38% 40% 60% / 55% 36% 64% 45%; }
-    66%       { border-radius: 50% 50% 35% 65% / 60% 48% 52% 40%; }
+@keyframes xsp-hero-float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-18px); }
 }
 
 // =====================================================================
@@ -502,19 +524,6 @@
         &::before { opacity: 1; }
     }
 
-    &__number {
-        position: absolute;
-        top: $space-5;
-        right: $space-6;
-        font-size: 3.5rem;
-        font-weight: $font-weight-black;
-        color: rgba($color-primary, 0.06);
-        line-height: 1;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        letter-spacing: -0.04em;
-        user-select: none;
-    }
-
     &__icon {
         width: 52px;
         height: 52px;
@@ -871,4 +880,347 @@
         &__actions { width: 100%; }
         &__btn { flex: 1; justify-content: center; }
     }
+}
+
+// =====================================================================
+//  CONTACT FORM
+// =====================================================================
+.xsp-contact-form {
+    background: $surface;
+    border: 1px solid $border-subtle;
+    border-radius: $radius-xl;
+    padding: $space-8;
+    margin-bottom: $space-8;
+    box-shadow: $shadow-sm;
+
+    &__title {
+        font-size: $font-size-xl;
+        font-weight: $font-weight-bold;
+        margin-bottom: $space-5;
+    }
+
+    &__hp {
+        position: absolute;
+        left: -9999px;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+    }
+
+    @media (max-width: 575.98px) { padding: $space-5; }
+}
+
+// =====================================================================
+//  BLOG GRID
+// =====================================================================
+.xsp-blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: $space-6;
+    margin-top: $space-8;
+}
+
+.xsp-blog-card {
+    display: flex;
+    flex-direction: column;
+    background: $surface;
+    border: 1px solid $border-subtle;
+    border-radius: $radius-xl;
+    overflow: hidden;
+    color: inherit;
+    text-decoration: none;
+    transition: transform $transition-base, box-shadow $transition-base, border-color $transition-base;
+
+    &:hover,
+    &:focus-visible {
+        transform: translateY(-4px);
+        box-shadow: $shadow-lg;
+        border-color: rgba($color-primary, 0.3);
+    }
+
+    &__media {
+        aspect-ratio: 5 / 3;
+        overflow: hidden;
+        background: $surface-muted;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform $transition-slow;
+        }
+    }
+
+    &:hover &__media img { transform: scale(1.05); }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        gap: $space-2;
+        padding: $space-5;
+        flex: 1;
+    }
+
+    &__date {
+        font-size: $font-size-xs;
+        color: $text-muted;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    &__title {
+        font-size: $font-size-md;
+        font-weight: $font-weight-bold;
+        margin: 0;
+        line-height: $line-height-snug;
+    }
+
+    &__excerpt {
+        font-size: $font-size-sm;
+        color: $text-muted;
+        margin: 0;
+    }
+
+    &__more {
+        margin-top: auto;
+        padding-top: $space-2;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-semibold;
+        color: $color-primary;
+    }
+}
+
+// =====================================================================
+//  ABOUT PAGE
+// =====================================================================
+.xsp-about {
+    &__kicker {
+        display: inline-block;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-bold;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: $color-primary;
+        margin-bottom: $space-3;
+    }
+
+    &__heading {
+        font-size: $font-size-2xl;
+        font-weight: $font-weight-extrabold;
+        letter-spacing: -0.02em;
+        line-height: $line-height-snug;
+        margin-bottom: $space-4;
+    }
+
+    &__copy { color: $text-secondary; font-size: $font-size-md; line-height: $line-height-loose; }
+
+    &__actions { display: flex; flex-wrap: wrap; gap: $space-3; margin-top: $space-6; }
+
+    &__story { margin-bottom: $space-12; }
+
+    &__visual {
+        position: relative;
+        aspect-ratio: 5 / 4;
+        border-radius: $radius-2xl;
+        overflow: hidden;
+        background: $gradient-primary;
+        box-shadow: $shadow-xl;
+
+        img { width: 100%; height: 100%; object-fit: cover; }
+    }
+
+    &__visual-art {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        color: rgba(#fff, 0.9);
+        font-size: 5rem;
+        background:
+            radial-gradient(circle at 20% 20%, rgba(#fff, 0.22), transparent 45%),
+            radial-gradient(circle at 80% 80%, rgba(#fff, 0.14), transparent 40%);
+    }
+
+    &__badge {
+        position: absolute;
+        left: $space-4;
+        bottom: $space-4;
+        display: flex;
+        align-items: center;
+        gap: $space-3;
+        padding: $space-3 $space-4;
+        background: rgba($neutral-0, 0.95);
+        border-radius: $radius-xl;
+        box-shadow: $shadow-lg;
+        line-height: 1.25;
+
+        i { color: $success-500; font-size: 1.5rem; }
+        strong { display: block; font-size: $font-size-sm; color: $neutral-900; }
+        span { font-size: $font-size-xs; color: $text-muted; }
+    }
+
+    &__values-head { text-align: center; margin: $space-12 0 $space-6; }
+
+    &__values {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: $space-5;
+        margin-bottom: $space-10;
+
+        @include bp-down('md') { grid-template-columns: 1fr; }
+    }
+}
+
+.xsp-value {
+    padding: $space-6;
+    background: $neutral-0;
+    border: 1px solid $border-subtle;
+    border-radius: $radius-2xl;
+    transition: transform $transition-base, box-shadow $transition-base, border-color $transition-base;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: $shadow-lg;
+        border-color: rgba($color-primary, 0.3);
+    }
+
+    &__icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: $radius-xl;
+        background: $gradient-primary;
+        color: #fff;
+        font-size: 1.1rem;
+        margin-bottom: $space-4;
+    }
+
+    &__title { font-size: $font-size-md; font-weight: $font-weight-bold; margin-bottom: $space-2; }
+    &__desc { margin: 0; color: $text-muted; font-size: $font-size-sm; line-height: $line-height-loose; }
+}
+
+// =====================================================================
+//  SERVICES PAGE (redesign) — intro, horizontal cards, steps, details
+// =====================================================================
+.xsp-services {
+    &__head {
+        max-width: 640px;
+        margin: 0 auto $space-8;
+        text-align: center;
+
+        &--steps { margin-top: $space-14; margin-bottom: $space-6; }
+    }
+
+    &__lead { color: $text-muted; font-size: $font-size-md; line-height: $line-height-loose; margin: 0; }
+
+    .xsp-services-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin-top: 0;
+
+        @include bp-down('md') { grid-template-columns: 1fr; }
+    }
+
+    .xsp-service-card {
+        display: flex;
+        align-items: flex-start;
+        gap: $space-5;
+        padding: $space-6;
+
+        &__icon { flex-shrink: 0; margin-bottom: 0; width: 56px; height: 56px; font-size: 1.4rem; }
+        &__body { position: relative; z-index: 1; min-width: 0; }
+        &__title { margin-bottom: $space-2; }
+    }
+}
+
+// Steps
+.xsp-steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: $space-5;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 $space-10;
+    counter-reset: none;
+
+    @include bp-down('md') { grid-template-columns: 1fr; }
+}
+
+.xsp-step {
+    position: relative;
+    text-align: center;
+    padding: $space-8 $space-6 $space-6;
+    background: $surface-muted;
+    border: 1px dashed $border-color;
+    border-radius: $radius-2xl;
+
+    &__num {
+        position: absolute;
+        top: -14px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: $color-primary;
+        color: #fff;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-bold;
+        box-shadow: $shadow-primary;
+    }
+
+    &__icon {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto $space-4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: $neutral-0;
+        color: $color-primary;
+        font-size: 1.3rem;
+        box-shadow: $shadow-md;
+    }
+
+    &__title { font-size: $font-size-md; font-weight: $font-weight-bold; margin-bottom: $space-2; }
+    &__desc { margin: 0; color: $text-muted; font-size: $font-size-sm; line-height: $line-height-loose; }
+}
+
+// Collapsible CMS content
+.xsp-details {
+    margin-bottom: $space-8;
+    background: $neutral-0;
+    border: 1px solid $border-subtle;
+    border-radius: $radius-xl;
+    padding: 0 $space-6;
+
+    summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: $space-3;
+        padding: $space-4 0;
+        font-weight: $font-weight-semibold;
+        cursor: pointer;
+        list-style: none;
+
+        &::-webkit-details-marker { display: none; }
+        i { color: $text-muted; transition: transform $transition-fast; }
+    }
+
+    &[open] summary i { transform: rotate(180deg); }
+
+    .xsf-static-page__content { padding-bottom: $space-5; }
+}
+
+// Contact tile icon colour variants (replaces inline gradients)
+.xsp-contact-tile__icon {
+    &--success { background: $gradient-emerald; box-shadow: 0 6px 20px -4px rgba($success-500, 0.45); }
+    &--warning { background: $gradient-amber;   box-shadow: 0 6px 20px -4px rgba($warning-500, 0.45); }
 }

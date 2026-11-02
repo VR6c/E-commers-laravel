@@ -3,8 +3,8 @@
 @section('css')
 <style>
 .xsf-account-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--neutral-0);
+    border: 1px solid var(--neutral-200);
     border-radius: 18px;
     padding: 24px;
     margin-bottom: 24px;
@@ -16,7 +16,7 @@
     align-items: center;
     gap: 16px;
     padding: 16px 0;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--neutral-100);
 }
 
 .xsf-unlocked-recipe-row:last-child {
@@ -33,8 +33,8 @@
     height: 68px;
     border-radius: 12px;
     object-fit: cover;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background: var(--neutral-50);
+    border: 1px solid var(--neutral-200);
     flex-shrink: 0;
 }
 

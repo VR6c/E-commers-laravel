@@ -38,7 +38,7 @@
     border: 1px solid $neutral-200 !important;
 
     // Surface — fully opaque, no bleed-through
-    background-color: #ffffff !important;
+    background-color: $neutral-0 !important;
     background-image: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
@@ -86,7 +86,7 @@
 //  Success
 // ---------------------------------------------------------------------
 #toast-container > .toast-success {
-    background-color: #ecfdf5 !important;
+    background-color: $success-50 !important;
     border-color: $success-200 !important;
 
     &::before {
@@ -113,7 +113,7 @@
 //  Error
 // ---------------------------------------------------------------------
 #toast-container > .toast-error {
-    background-color: #fff1f2 !important;
+    background-color: $danger-50 !important;
     border-color: $danger-200 !important;
 
     &::before {
@@ -140,7 +140,7 @@
 //  Warning
 // ---------------------------------------------------------------------
 #toast-container > .toast-warning {
-    background-color: #fffbeb !important;
+    background-color: $warning-50 !important;
     border-color: $warning-200 !important;
 
     &::before {
@@ -167,7 +167,7 @@
 //  Info
 // ---------------------------------------------------------------------
 #toast-container > .toast-info {
-    background-color: #eff6ff !important;
+    background-color: $info-50 !important;
     border-color: $info-200 !important;
 
     &::before {

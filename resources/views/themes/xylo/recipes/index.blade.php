@@ -6,8 +6,8 @@
    Storefront Recipes Catalog Page
    ───────────────────────────────────────────── */
 .xsf-recipe-hero {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    color: #ffffff;
+    background: linear-gradient(135deg, var(--neutral-900) 0%, var(--neutral-800) 100%);
+    color: var(--neutral-0);
     padding: 56px 0 48px;
     margin-bottom: 40px;
     border-radius: 0 0 24px 24px;
@@ -40,7 +40,7 @@
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: #cbd5e1;
+    color: var(--neutral-300);
     margin-bottom: 16px;
 }
 
@@ -53,7 +53,7 @@
 
 .xsf-recipe-hero__lead {
     font-size: 1rem;
-    color: #94a3b8;
+    color: var(--neutral-400);
     max-width: 620px;
     margin: 0;
     line-height: 1.6;
@@ -61,8 +61,8 @@
 
 /* ── Filter Bar ── */
 .xsf-recipe-filter-bar {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--neutral-0);
+    border: 1px solid var(--neutral-200);
     border-radius: 16px;
     padding: 16px 20px;
     margin-bottom: 36px;
@@ -74,9 +74,9 @@
     border-radius: 50px;
     font-size: 0.82rem;
     font-weight: 600;
-    border: 1px solid #e2e8f0;
-    background: #f8fafc;
-    color: #475569;
+    border: 1px solid var(--neutral-200);
+    background: var(--neutral-50);
+    color: var(--neutral-600);
     text-decoration: none;
     transition: all 0.2s ease;
     display: inline-block;
@@ -84,15 +84,15 @@
 
 .xsf-recipe-filter-pill:hover,
 .xsf-recipe-filter-pill.active {
-    background: #0f172a;
-    color: #ffffff;
-    border-color: #0f172a;
+    background: var(--neutral-900);
+    color: var(--neutral-0);
+    border-color: var(--neutral-900);
 }
 
 /* ── Recipe Card ── */
 .xsf-recipe-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--neutral-0);
+    border: 1px solid var(--neutral-200);
     border-radius: 18px;
     overflow: hidden;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
@@ -110,7 +110,7 @@
     position: relative;
     padding-top: 62%;
     overflow: hidden;
-    background: #f1f5f9;
+    background: var(--neutral-100);
 }
 
 .xsf-recipe-card__img {
@@ -131,8 +131,8 @@
     position: absolute;
     top: 12px;
     left: 12px;
-    background: #16a34a;
-    color: #ffffff;
+    background: var(--success-600);
+    color: var(--neutral-0);
     padding: 4px 10px;
     border-radius: 50px;
     font-size: 0.72rem;
@@ -157,9 +157,9 @@
     z-index: 2;
 }
 
-.badge-easy { background: rgba(220, 252, 231, 0.95); color: #15803d; }
-.badge-medium { background: rgba(254, 243, 199, 0.95); color: #92400e; }
-.badge-hard { background: rgba(254, 226, 226, 0.95); color: #b91c1c; }
+.badge-easy { background: rgba(220, 252, 231, 0.95); color: var(--success-700); }
+.badge-medium { background: rgba(254, 243, 199, 0.95); color: var(--warning-700); }
+.badge-hard { background: rgba(254, 226, 226, 0.95); color: var(--danger-700); }
 
 .xsf-recipe-card__body {
     padding: 20px;
@@ -173,14 +173,14 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #6366f1;
+    color: var(--primary-500);
     margin-bottom: 6px;
 }
 
 .xsf-recipe-card__title {
     font-size: 1.15rem;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--neutral-900);
     margin: 0 0 8px;
     line-height: 1.35;
 }
@@ -191,12 +191,12 @@
 }
 
 .xsf-recipe-card__title a:hover {
-    color: #6366f1;
+    color: var(--primary-500);
 }
 
 .xsf-recipe-card__summary {
     font-size: 0.85rem;
-    color: #64748b;
+    color: var(--neutral-500);
     line-height: 1.5;
     margin-bottom: 16px;
     display: -webkit-box;
@@ -208,12 +208,12 @@
 .xsf-recipe-card__meta {
     margin-top: auto;
     padding-top: 14px;
-    border-top: 1px solid #f1f5f9;
+    border-top: 1px solid var(--neutral-100);
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-size: 0.78rem;
-    color: #64748b;
+    color: var(--neutral-500);
 }
 
 .xsf-recipe-card__meta-item {

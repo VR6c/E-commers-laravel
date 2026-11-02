@@ -13,12 +13,12 @@
     gap: 16px;
     margin-bottom: 24px;
     padding-bottom: 16px;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--neutral-200);
 }
 
 .xsf-detail-card {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
+    background: var(--neutral-0);
+    border: 1px solid var(--neutral-200);
     border-radius: 16px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     overflow: hidden;
@@ -27,8 +27,8 @@
 
 .xsf-detail-card__header {
     padding: 16px 24px;
-    background: #f8fafc;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--neutral-50);
+    border-bottom: 1px solid var(--neutral-200);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -37,7 +37,7 @@
 .xsf-detail-card__title {
     font-size: 1rem;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--neutral-900);
     margin: 0;
     display: flex;
     align-items: center;
@@ -54,7 +54,7 @@
     align-items: center;
     gap: 16px;
     padding: 16px 0;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--neutral-100);
 }
 
 .xsf-detail-item:last-child {
@@ -71,8 +71,8 @@
     height: 64px;
     border-radius: 12px;
     object-fit: cover;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background: var(--neutral-50);
+    border: 1px solid var(--neutral-200);
     flex-shrink: 0;
 }
 
@@ -80,12 +80,12 @@
     width: 64px;
     height: 64px;
     border-radius: 12px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background: var(--neutral-50);
+    border: 1px solid var(--neutral-200);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #94a3b8;
+    color: var(--neutral-400);
     font-size: 1.4rem;
     flex-shrink: 0;
 }
@@ -98,26 +98,26 @@
 .xsf-detail-item__title {
     font-size: 0.95rem;
     font-weight: 600;
-    color: #0f172a;
+    color: var(--neutral-900);
     margin-bottom: 4px;
     text-decoration: none;
     display: inline-block;
 }
 
 .xsf-detail-item__title:hover {
-    color: #4f46e5;
+    color: var(--primary-600);
 }
 
 .xsf-detail-item__meta {
     font-size: 0.8rem;
-    color: #64748b;
+    color: var(--neutral-500);
 }
 
 .xsf-detail-item__total {
     text-align: right;
     font-size: 1rem;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--neutral-900);
     flex-shrink: 0;
 }
 
@@ -134,27 +134,27 @@
 }
 
 .xsf-badge-pending {
-    background: #fef3c7;
-    color: #92400e;
-    border: 1px solid #fde68a;
+    background: var(--warning-100);
+    color: var(--warning-700);
+    border: 1px solid var(--warning-200);
 }
 
 .xsf-badge-processing {
-    background: #e0f2fe;
-    color: #0369a1;
-    border: 1px solid #bae6fd;
+    background: var(--info-100);
+    color: var(--info-700);
+    border: 1px solid var(--info-200);
 }
 
 .xsf-badge-completed {
-    background: #dcfce7;
-    color: #15803d;
-    border: 1px solid #bbf7d0;
+    background: var(--success-100);
+    color: var(--success-700);
+    border: 1px solid var(--success-200);
 }
 
 .xsf-badge-canceled {
-    background: #fee2e2;
-    color: #b91c1c;
-    border: 1px solid #fecaca;
+    background: var(--danger-100);
+    color: var(--danger-700);
+    border: 1px solid var(--danger-200);
 }
 
 /* Summary List */
@@ -163,7 +163,7 @@
     justify-content: space-between;
     align-items: center;
     font-size: 0.875rem;
-    color: #475569;
+    color: var(--neutral-600);
     margin-bottom: 12px;
 }
 
@@ -173,10 +173,10 @@
     align-items: center;
     padding-top: 14px;
     margin-top: 14px;
-    border-top: 1px dashed #cbd5e1;
+    border-top: 1px dashed var(--neutral-300);
     font-size: 1.15rem;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--neutral-900);
 }
 
 /* Info Details */
@@ -185,14 +185,14 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: #64748b;
+    color: var(--neutral-500);
     margin-bottom: 4px;
 }
 
 .xsf-info-value {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #0f172a;
+    color: var(--neutral-900);
     line-height: 1.4;
 }
 
@@ -306,9 +306,9 @@
                 @endphp
 
                 @if($orderRecipes->isNotEmpty())
-                    <div class="xsf-detail-card" style="border: 1px solid #bbf7d0;">
-                        <div class="xsf-detail-card__header" style="background: #f0fdf4;">
-                            <h2 class="xsf-detail-card__title" style="color: #15803d;">
+                    <div class="xsf-detail-card" style="border: 1px solid var(--success-200);">
+                        <div class="xsf-detail-card__header" style="background: var(--success-50);">
+                            <h2 class="xsf-detail-card__title" style="color: var(--success-700);">
                                 <i class="fa-solid fa-utensils text-success"></i>
                                 {{ 'Bonus Recipes Unlocked with this Order' }} ({{ $orderRecipes->count() }})
                             </h2>

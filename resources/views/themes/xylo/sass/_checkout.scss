@@ -619,12 +619,12 @@
 }
 
 .khqr-header {
-    background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+    background: linear-gradient(135deg, $danger-600 0%, #be123c 100%);
 }
 
 .khqr-badge {
-    background: #ffffff;
-    color: #e11d48;
+    background: $neutral-0;
+    color: $danger-600;
     font-weight: 800;
     font-size: 0.75rem;
     padding: 2px 8px;
@@ -638,3 +638,99 @@
     min-height: 200px;
 }
 
+
+// =====================================================================
+//  CART — stacked cards on small screens (no horizontal scrolling)
+// =====================================================================
+@include bp-down('md') {
+    .xsf-cart-table {
+        thead { display: none; }
+
+        &, tbody, tr, td { display: block; width: 100%; }
+
+        tbody tr {
+            position: relative;
+            padding: $space-4;
+            border-bottom: 1px solid $border-subtle;
+        }
+
+        tbody tr:last-child { border-bottom: none; }
+
+        tbody td {
+            padding: $space-1 0;
+            border: 0;
+            background: transparent !important;
+            text-align: left !important;
+        }
+
+        td[data-label] {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            &::before {
+                content: attr(data-label);
+                font-size: $font-size-xs;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: $text-muted;
+                font-weight: $font-weight-semibold;
+            }
+        }
+
+        .xsf-cart-qty { width: 84px; }
+
+        &__remove {
+            position: absolute;
+            top: $space-3;
+            right: $space-3;
+            width: auto !important;
+            z-index: 1;
+        }
+
+        .cart-product-detail { padding-right: $space-8; }
+    }
+}
+
+// =====================================================================
+//  CHECKOUT — small-screen form ergonomics
+// =====================================================================
+@include bp-down('md') {
+    // 16px inputs stop iOS Safari zooming the page on focus.
+    #checkout-form {
+        .form-control,
+        .form-select,
+        .xsf-combobox__search { font-size: 1rem; min-height: 46px; }
+
+        .form-check-input { width: 1.25rem; height: 1.25rem; }
+    }
+
+    #place-order { min-height: 54px; }
+}
+
+// =====================================================================
+//  CHECKOUT — brand-consistent Place Order button + Stripe element
+// =====================================================================
+#place-order.btn-primary {
+    background: $gradient-indigo;
+    border-color: $color-primary;
+    color: #fff;
+    letter-spacing: 0.02em;
+
+    &:hover,
+    &:focus-visible {
+        background: linear-gradient(135deg, $primary-700 0%, $color-primary 100%);
+        border-color: $primary-700;
+    }
+
+    &:disabled {
+        background: $neutral-300;
+        border-color: $neutral-300;
+        box-shadow: none;
+    }
+}
+
+#card-element {
+    border-color: $border-color !important;
+    background: $surface-muted !important;
+}

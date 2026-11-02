@@ -104,6 +104,10 @@ Route::get('/orders/{id}/download-receipt', [\App\Http\Controllers\Store\RecipeC
 
 Route::get('/stripe/checkout', [StripeController::class, 'checkout'])->name('stripe.checkout.process');
 
+Route::post('/contact-us', [StoreController::class, 'submitContact'])
+    ->middleware('throttle:5,1')
+    ->name('contact.submit');
+
 Route::get('/{slug}', [StoreController::class, 'showPage'])
     ->where('slug', '^(?!api|admin|checkout|vendor|customer|recipes|orders).*$')
     ->middleware('optimize.response')

@@ -362,9 +362,9 @@
     line-height: 1.2;
 
     &--sale {
-        background: #fee2e2;
-        color: #ef4444;
-        border: 1px solid #fecaca;
+        background: $danger-100;
+        color: $danger-500;
+        border: 1px solid $danger-200;
     }
 
     &--new {
@@ -374,9 +374,9 @@
     }
 
     &--hot {
-        background: #fef3c7;
-        color: #d97706;
-        border: 1px solid #fde68a;
+        background: $warning-100;
+        color: $warning-600;
+        border: 1px solid $warning-200;
     }
 
     &--default {
@@ -395,11 +395,11 @@
         display: inline-flex;
         align-items: center;
         gap: 2px;
-        color: #f59e0b;
+        color: $warning-500;
         font-size: 0.72rem;
 
         .is-empty {
-            color: #cbd5e1;
+            color: $neutral-300;
         }
     }
 
@@ -512,4 +512,150 @@
             font-size: 0.75rem;
         }
     }
+}
+
+// =====================================================================
+//  PRODUCT CARD — touch & small-screen refinements
+// =====================================================================
+.xsf-product-card {
+    // Keyboard users get the quick-view action too, not just mouse hover.
+    &:focus-within &__quickview-wrap {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    // Touch devices have no hover: hide the hover-only action and drop lift effects.
+    @media (hover: none) {
+        &__quickview-wrap { display: none; }
+        &:hover { transform: none; box-shadow: $shadow-xs; }
+    }
+
+    // Comfortable tap targets (min 40px) on phones; tighter body spacing.
+    @include bp-down('sm') {
+        &__wish { width: 40px; height: 40px; }
+
+        &__footer { flex-wrap: wrap; row-gap: $space-2; }
+
+        &__cart-btn {
+            padding: $space-2 $space-3;
+            min-height: 40px;
+        }
+
+        &__title { font-size: $font-size-sm; }
+    }
+}
+
+// =====================================================================
+//  PRODUCT CARD v2 — borderless, soft shadow, discount pill,
+//  slide-up quick view, round add-to-bag. Overrides the rules above.
+// =====================================================================
+.xsf-product-card {
+    border: 1px solid transparent;
+    border-radius: $radius-2xl;
+    background: $neutral-0;
+    box-shadow: 0 1px 2px rgba($neutral-900, 0.04), 0 4px 16px -6px rgba($neutral-900, 0.10);
+
+    &:hover {
+        transform: translateY(-4px);
+        border-color: $border-color;
+        box-shadow: 0 2px 4px rgba($neutral-900, 0.04), 0 18px 36px -12px rgba($neutral-900, 0.18);
+    }
+
+    // ---- Media ----
+    &__media {
+        margin: $space-2;
+        border-radius: $radius-xl;
+        background: $surface-muted;
+    }
+
+    // ---- Badges: compact pills; sale = solid rose discount tag ----
+    &__badges {
+        top: $space-2;
+        left: $space-2;
+        flex-direction: row;
+        flex-wrap: wrap;
+
+        .xsf-badge {
+            border: 0;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            box-shadow: $shadow-sm;
+        }
+
+        .xsf-badge--sale { background: $danger-500; color: #fff; }
+        .xsf-badge--new  { background: $neutral-900; color: #fff; }
+        .xsf-badge--hot  { background: $warning-500; color: #fff; }
+    }
+
+    &__wish {
+        top: $space-2;
+        right: $space-2;
+        border: 0;
+        box-shadow: $shadow-md;
+    }
+
+    // ---- Quick view: slides up as a full-width frosted bar ----
+    &__quickview-wrap {
+        left: $space-2;
+        right: $space-2;
+        bottom: $space-2;
+        transform: translateY(12px);
+        transition: opacity $transition-base, transform $transition-base;
+    }
+
+    &__quickview {
+        width: 100%;
+        justify-content: center;
+        padding: $space-3 $space-4;
+        border-radius: $radius-lg;
+        background: rgba($neutral-0, 0.92);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        box-shadow: $shadow-md;
+
+        &:hover { transform: none; }
+    }
+
+    // ---- Body ----
+    &__body {
+        padding: $space-2 $space-4 $space-4;
+        gap: $space-1;
+    }
+
+    &__title { min-height: 2.6em; font-size: $font-size-sm; }
+
+    // ---- Footer: price left, round cart button right (no divider) ----
+    &__footer {
+        border-top: 0;
+        padding-top: $space-2;
+    }
+
+    &__price {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: $space-2;
+
+        &--sale    { color: $danger-600; font-size: $font-size-md; }
+        &--regular { color: $neutral-900; font-size: $font-size-md; }
+        &--original { margin-left: 0; }
+    }
+
+    &__cart-btn {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        border-radius: 50%;
+        flex-shrink: 0;
+
+        i { font-size: 0.9rem; }
+
+        &:hover { transform: scale(1.1); }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .xsf-product-card,
+    .xsf-product-card__quickview-wrap { transition: none; }
 }

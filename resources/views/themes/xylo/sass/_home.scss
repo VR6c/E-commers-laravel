@@ -12,51 +12,69 @@
 
     @include bp-down('md') { padding: $space-10 0; }
 
+    // Shared section header: [eyebrow + title] ........ [actions]
     &__head {
         display: flex;
         align-items: flex-end;
         justify-content: space-between;
         gap: $space-4;
-        margin-bottom: $space-10;
+        margin-bottom: $space-8;
+        padding-bottom: $space-5;
+        border-bottom: 1px solid $border-color;
+        position: relative;
+
+        // Brand accent that sits on the divider, under the title side
+        &::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -1px;
+            width: 72px;
+            height: 3px;
+            border-radius: $radius-pill;
+            background: $gradient-primary;
+        }
+
+        @include bp-down('sm') { margin-bottom: $space-6; padding-bottom: $space-4; }
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: $space-3;
+        flex-shrink: 0;
     }
 
     &__eyebrow {
-        display: inline-block;
+        display: flex;
+        align-items: center;
+        gap: $space-2;
         font-size: $font-size-xs;
         font-weight: $font-weight-bold;
-        letter-spacing: 0.12em;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
         color: $color-primary;
-        background: $primary-50;
-        border: 1px solid $primary-100;
-        border-radius: $radius-pill;
-        padding: $space-1 $space-3;
-        margin-bottom: $space-3;
+        margin-bottom: $space-2;
+
+        &::before {
+            content: '';
+            width: 18px;
+            height: 2px;
+            border-radius: $radius-pill;
+            background: currentColor;
+        }
     }
 
     &__title {
         font-family: 'Plus Jakarta Sans', var(--font-family-brand);
-        font-size: $font-size-2xl;
+        font-size: $font-size-xl;
         font-weight: $font-weight-extrabold;
         color: $neutral-900;
         margin: 0;
         letter-spacing: -0.03em;
         line-height: $line-height-snug;
-        position: relative;
-        display: inline-block;
 
-        // Gradient underline accent
-        &::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: -8px;
-            width: 52px;
-            height: 3px;
-            background: $gradient-primary;
-            border-radius: $radius-pill;
-        }
-
+        @include bp-up('md') { font-size: $font-size-2xl; }
         @include bp-up('lg') { font-size: $font-size-3xl; }
     }
 
@@ -65,24 +83,64 @@
     &--bg-dark {
         background: $neutral-950;
         .xsf-section__title { color: $neutral-0; }
+        .xsf-section__head { border-bottom-color: rgba($neutral-0, 0.14); }
     }
 }
 
+// Centred variant (e.g. "Why Choose Us"): no divider, accent bar centred under the title
+.xsf-section__head.text-center {
+    border-bottom: 0;
+    padding-bottom: $space-6;
+
+    &::after { left: 50%; bottom: 0; transform: translateX(-50%); }
+
+    .xsf-section__eyebrow { justify-content: center; }
+}
+
 .xsf-section-link {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
-    color: $color-primary;
     display: inline-flex;
     align-items: center;
     gap: $space-2;
+    height: 40px;
+    padding: 0 $space-4;
+    border: 1.5px solid $border-color;
+    border-radius: $radius-pill;
+    background: $neutral-0;
+    color: $neutral-700;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
     white-space: nowrap;
-    transition: gap $transition-fast, color $transition-fast;
     text-decoration: none;
     flex-shrink: 0;
+    transition: all $transition-fast;
 
-    &:hover { color: $color-primary-hover; gap: $space-3; }
+    i { font-size: 0.72rem; transition: transform $transition-fast; }
 
-    i { font-size: 0.72rem; }
+    &:hover,
+    &:focus-visible {
+        background: $color-primary;
+        border-color: $color-primary;
+        color: #fff;
+        box-shadow: $shadow-primary;
+
+        i { transform: translateX(3px); }
+    }
+
+    // Phones: collapse to a round arrow button (label stays for screen readers)
+    @include bp-down('sm') {
+        width: 40px;
+        padding: 0;
+        justify-content: center;
+
+        span {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
+        }
+    }
 }
 
 // =====================================================================
@@ -98,7 +156,7 @@
 
     &__card {
         position: relative;
-        background: radial-gradient(120% 120% at 75% 20%, rgba(99, 102, 241, 0.28) 0%, rgba(30, 27, 75, 0.5) 45%, rgba(11, 15, 25, 0.98) 100%), #090d16;
+        background: radial-gradient(120% 120% at 75% 20%, rgba(99, 102, 241, 0.28) 0%, rgba(30, 27, 75, 0.5) 45%, rgba(11, 15, 25, 0.98) 100%), $neutral-950;
         border-radius: 28px;
         border: 1px solid rgba(255, 255, 255, 0.08);
         box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05);
@@ -185,7 +243,7 @@
     font-weight: $font-weight-bold;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #c7d2fe;
+    color: $primary-200;
     background: rgba(99, 102, 241, 0.18);
     border: 1px solid rgba(165, 180, 252, 0.28);
     border-radius: $radius-pill;
@@ -196,7 +254,7 @@
 
     i {
         font-size: 0.8rem;
-        color: #818cf8;
+        color: $primary-400;
     }
 }
 
@@ -204,14 +262,14 @@
     font-family: 'Plus Jakarta Sans', var(--font-family-brand);
     font-size: clamp(2.1rem, 4vw, 3.4rem);
     font-weight: 800;
-    color: #ffffff;
+    color: $neutral-0;
     letter-spacing: -0.035em;
     line-height: 1.15;
     margin-bottom: $space-4;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 
     .highlight {
-        background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 50%, #c084fc 100%);
+        background: linear-gradient(135deg, $primary-300 0%, $primary-400 50%, $accent-400 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -273,7 +331,7 @@
     color: rgba(203, 213, 225, 0.85);
 
     i {
-        color: #818cf8;
+        color: $primary-400;
         font-size: 0.85rem;
     }
 
@@ -358,7 +416,7 @@
     gap: $space-1;
     background: rgba(15, 23, 42, 0.75);
     border: 1px solid rgba(255, 255, 255, 0.16);
-    color: #ffffff;
+    color: $neutral-0;
     font-size: 0.72rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -369,7 +427,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 
     i {
-        color: #f59e0b;
+        color: $warning-500;
         font-size: 0.75rem;
     }
 
@@ -411,7 +469,7 @@
     border-radius: 9px;
     background: rgba(245, 158, 11, 0.15);
     border: 1px solid rgba(245, 158, 11, 0.3);
-    color: #f59e0b;
+    color: $warning-500;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -433,7 +491,7 @@
 .xsf-hero__floating-title {
     font-size: 0.75rem;
     font-weight: 700;
-    color: #ffffff;
+    color: $neutral-0;
     line-height: 1.2;
 
     @include bp-down('sm') {
@@ -443,7 +501,7 @@
 
 .xsf-hero__floating-sub {
     font-size: 0.68rem;
-    color: #94a3b8;
+    color: $neutral-400;
 
     @include bp-down('sm') {
         font-size: 0.6rem;
@@ -514,7 +572,7 @@
 
         &.slick-active button {
             width: 32px;
-            background: linear-gradient(90deg, #6366f1 0%, #818cf8 100%);
+            background: linear-gradient(90deg, $primary-500 0%, $primary-400 100%);
             box-shadow: 0 0 12px rgba(99, 102, 241, 0.7);
         }
     }
@@ -546,7 +604,7 @@
 .btn-glass {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #ffffff;
+    color: $neutral-0;
     font-weight: $font-weight-semibold;
     backdrop-filter: blur(8px);
     transition: all $transition-base;
@@ -554,7 +612,7 @@
     &:hover {
         background: rgba(255, 255, 255, 0.18);
         border-color: rgba(255, 255, 255, 0.35);
-        color: #ffffff;
+        color: $neutral-0;
         transform: translateY(-2px);
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
     }
@@ -578,84 +636,144 @@
 }
 
 // =====================================================================
-//  CATEGORY CARDS
+//  CATEGORY TILES — snap-scroll rail on phones, grid from md up
 // =====================================================================
-.xsf-category-slider { padding: $space-2 0; }
-
-.xsf-category-card {
+.xsf-category-grid {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: $space-3;
-    text-decoration: none;
-    padding: $space-2;
-    border-radius: $radius-2xl;
-    transition: transform $transition-bounce;
+    gap: $space-4;
+    overflow-x: auto;
+    padding: $space-2 $space-1 $space-4;
+    margin-inline: -$space-1;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
 
-    &:hover {
-        transform: translateY(-6px);
+    &::-webkit-scrollbar { display: none; }
 
-        .xsf-category-card__img { box-shadow: $shadow-xl; }
-        .xsf-category-card__name { color: $color-primary; }
+    &__item {
+        flex: 0 0 44%;
+        scroll-snap-align: start;
+        min-width: 0;
+    }
+
+    @include bp-up('sm') {
+        &__item { flex-basis: 30%; }
+    }
+
+    // Bento layout: the first category is a 2x2 feature tile, the rest fill around it.
+    @include bp-up('md') {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-auto-rows: 210px;
+        grid-auto-flow: dense;
+        gap: $space-4;
+        overflow: visible;
+        margin-inline: 0;
+        padding-inline: 0;
+
+        &__item { flex: none; }
+
+        &__item:first-child { grid-column: span 2; grid-row: span 2; }
+
+        // 1 feature + 8 tiles = a clean 4x3 block; a 10th would orphan, so hide it.
+        &__item:nth-child(n + 10) { display: none; }
+
+        .xsf-category-card { aspect-ratio: auto; height: 100%; }
+    }
+
+    @include bp-up('xl') {
+        grid-auto-rows: 230px;
+        gap: $space-5;
     }
 }
 
-.xsf-category-card__img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
+.xsf-category-card {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 5;
+    border-radius: $radius-2xl;
     overflow: hidden;
-    border: 3px solid $neutral-0;
-    box-shadow: $shadow-md;
     background: $gradient-surface-soft;
-    transition: box-shadow $transition-base;
+    color: #fff;
+    text-decoration: none;
+    box-shadow: $shadow-sm;
+    isolation: isolate;
+    transition: transform $transition-base, box-shadow $transition-base;
 
-    img {
+    &__img {
+        position: absolute;
+        inset: 0;
         width: 100%;
         height: 100%;
         object-fit: cover;
+        z-index: -2;
         transition: transform $transition-slow;
     }
 
-    &:hover img { transform: scale(1.08); }
-}
-
-.xsf-category-card__name {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
-    color: $text-primary;
-    text-align: center;
-    letter-spacing: -0.01em;
-    transition: color $transition-fast;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100px;
-}
-
-// Slick arrows for category slider
-.xsf-category-slider .slick-prev,
-.xsf-category-slider .slick-next {
-    width: 38px;
-    height: 38px;
-    background: $neutral-0;
-    border-radius: 50%;
-    border: 1px solid $border-color;
-    box-shadow: $shadow-md;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 5;
-    transition: all $transition-fast;
-
-    &:hover {
-        background: $color-primary;
-        border-color: $color-primary;
-        color: #fff;
-        box-shadow: $shadow-primary;
+    // Bottom scrim keeps the label readable on any photo.
+    &__shade {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: linear-gradient(
+            180deg,
+            rgba($neutral-900, 0) 40%,
+            rgba($neutral-900, 0.78) 100%
+        );
+        transition: opacity $transition-base;
     }
 
-    i { font-size: $font-size-base; line-height: 1; }
+    &__label {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding: $space-4;
+    }
+
+    &__name {
+        font-size: $font-size-base;
+        font-weight: $font-weight-bold;
+        line-height: $line-height-snug;
+        letter-spacing: -0.01em;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    &__cta {
+        display: inline-flex;
+        align-items: center;
+        gap: $space-2;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-semibold;
+        opacity: 0.85;
+        transition: gap $transition-fast, opacity $transition-fast;
+    }
+
+    &:hover,
+    &:focus-visible {
+        color: #fff;
+        transform: translateY(-4px);
+        box-shadow: $shadow-xl;
+
+        .xsf-category-card__img { transform: scale(1.07); }
+        .xsf-category-card__cta { gap: $space-3; opacity: 1; }
+    }
+
+    &:focus-visible { outline: 3px solid $primary-400; outline-offset: 3px; }
+
+    @media (hover: none) {
+        &:hover { transform: none; box-shadow: $shadow-sm; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        &, &__img, &__cta { transition: none; }
+    }
 }
 
 // Product card styles live in _products.scss — no overrides here.
@@ -825,3 +943,41 @@
 }
 
 .xsf-product-slider .slick-slide { padding: 0 $space-3; }
+
+// Feature tile (first category in the bento grid) gets larger type + a badge.
+@include bp-up('md') {
+    .xsf-category-grid__item:first-child .xsf-category-card {
+        &__label { padding: $space-6; }
+
+        &__name {
+            font-size: $font-size-2xl;
+            -webkit-line-clamp: 3;
+        }
+
+        &__cta {
+            margin-top: $space-2;
+            padding: $space-2 $space-4;
+            width: fit-content;
+            border-radius: $radius-pill;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            opacity: 1;
+        }
+
+        &::before {
+            content: 'Top category';
+            position: absolute;
+            top: $space-4;
+            left: $space-4;
+            padding: $space-1 $space-3;
+            border-radius: $radius-pill;
+            background: $color-primary;
+            color: #fff;
+            font-size: $font-size-xs;
+            font-weight: $font-weight-bold;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+    }
+}

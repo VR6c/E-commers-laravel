@@ -1,33 +1,5 @@
 @extends('themes.xylo.layouts.master')
 
-@section('css')
-<style>
-/* Place Order button */
-#place-order.btn-primary {
-    background: linear-gradient(135deg, #5289AD 0%, #243C4C 100%);
-    border-color: #5289AD;
-    color: #ffffff;
-    letter-spacing: 0.02em;
-}
-#place-order.btn-primary:hover,
-#place-order.btn-primary:focus {
-    background: linear-gradient(135deg, #3f6f90 0%, #1a2f3d 100%);
-    border-color: #3f6f90;
-    box-shadow: 0 6px 20px rgba(82, 137, 173, 0.40);
-}
-#place-order.btn-primary:disabled {
-    background: #ACBCBF;
-    border-color: #ACBCBF;
-}
-
-/* Stripe card element */
-#card-element {
-    border-color: #ACBCBF !important;
-    background: #F4FCFB !important;
-}
-</style>
-@endsection
-
 @section('content')
     @php $currency = activeCurrency(); @endphp
 
@@ -42,9 +14,9 @@
             </nav>
 
             {{-- Step indicator --}}
-            <ol class="xsf-steps">
+            <ol class="xsf-steps" aria-label="{{ 'Checkout progress' }}">
                 <li class="xsf-steps__item is-done"><span class="xsf-steps__num"><i class="fa fa-check"></i></span>{{ 'Cart' }}</li>
-                <li class="xsf-steps__item is-active"><span class="xsf-steps__num">2</span>{{ 'Checkout' }}</li>
+                <li class="xsf-steps__item is-active" aria-current="step"><span class="xsf-steps__num">2</span>{{ 'Checkout' }}</li>
                 <li class="xsf-steps__item"><span class="xsf-steps__num">3</span>{{ 'Complete' }}</li>
             </ol>
 
@@ -59,19 +31,19 @@
                                 <h3 class="cart-heading xsf-summary__title">{{ 'Shipping Information' }}</h3>
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <input type="text" name="first_name" class="form-control" placeholder="{{ 'First Name' }}" required>
+                                        <input type="text" name="first_name" class="form-control" placeholder="{{ 'First Name' }}" aria-label="{{ 'First Name' }}" autocomplete="given-name" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <input type="text" name="last_name" class="form-control" placeholder="{{ 'Last Name' }}" required>
+                                        <input type="text" name="last_name" class="form-control" placeholder="{{ 'Last Name' }}" aria-label="{{ 'Last Name' }}" autocomplete="family-name" required>
                                     </div>
                                     <div class="col-12">
-                                        <input type="text" name="address" class="form-control" placeholder="{{ 'Address' }}" required>
+                                        <input type="text" name="address" class="form-control" placeholder="{{ 'Address' }}" aria-label="{{ 'Address' }}" autocomplete="address-line1" required>
                                     </div>
 
                                     {{-- Suite / Floor (removable) --}}
                                     <div class="col-12" id="suite-row">
                                         <div class="input-group">
-                                            <input type="text" name="suite" id="suite-input" class="form-control" placeholder="{{ 'Apartment, suite, etc.' }}">
+                                            <input type="text" name="suite" id="suite-input" class="form-control" placeholder="{{ 'Apartment, suite, etc.' }}" aria-label="{{ 'Apartment, suite, etc.' }}" autocomplete="address-line2">
                                             <button type="button" id="remove-suite-btn" class="btn btn-outline-secondary" title="Remove Suite/Floor">
                                                 <i class="fa fa-times"></i>
                                             </button>
@@ -105,7 +77,7 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <input type="text" name="city" class="form-control" placeholder="{{ 'City' }}" required>
+                                        <input type="text" name="city" class="form-control" placeholder="{{ 'City' }}" aria-label="{{ 'City' }}" autocomplete="address-level2" required>
                                     </div>
 
                                     {{-- State (populated dynamically via AJAX) --}}
@@ -150,10 +122,10 @@
                                 <h3 class="cart-heading xsf-summary__title">{{ 'Contact Information' }}</h3>
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <input type="email" name="email" class="form-control" placeholder="{{ 'Email Address' }}" required>
+                                        <input type="email" name="email" class="form-control" placeholder="{{ 'Email Address' }}" aria-label="{{ 'Email Address' }}" autocomplete="email" inputmode="email" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <input type="text" name="phone" class="form-control" placeholder="{{ 'Phone Number' }}" required>
+                                        <input type="tel" name="phone" class="form-control" placeholder="{{ 'Phone Number' }}" aria-label="{{ 'Phone Number' }}" autocomplete="tel" inputmode="tel" required>
                                     </div>
                                 </div>
                             </div>
@@ -189,7 +161,7 @@
                     </form>
                 </div>
 
-                <div class="col-lg-5">
+                <div class="col-lg-5 order-first order-lg-last">
                     <div class="card xsf-summary xsf-summary--sticky">
                         <div class="card-body">
                             <h3 class="cart-heading xsf-summary__title">{{ 'Order Summary' }}</h3>

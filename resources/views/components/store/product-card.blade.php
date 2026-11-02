@@ -9,6 +9,15 @@
     $variant = $product->primaryVariant;
     $hasDiscount = !empty($variant?->converted_discount_price);
 
+    $discountPercent = null;
+    if ($hasDiscount) {
+        $orig = (float) str_replace(',', '', (string) ($variant->converted_price ?? 0));
+        $sale = (float) str_replace(',', '', (string) $variant->converted_discount_price);
+        if ($orig > 0 && $sale < $orig) {
+            $discountPercent = (int) round((1 - $sale / $orig) * 100);
+        }
+    }
+
     $isNew = $product->created_at && $product->created_at->diffInDays(now()) <= 30;
     $isSale = $hasDiscount;
 
@@ -24,7 +33,7 @@
         {{-- Badges --}}
         <div class="xsf-product-card__badges">
             @if ($isSale)
-                <x-store.badge type="sale" />
+                <x-store.badge type="sale" :text="$discountPercent ? '-' . $discountPercent . '%' : 'Sale'" />
             @elseif ($isNew)
                 <x-store.badge type="new" />
             @endif
@@ -54,15 +63,17 @@
         {{-- Quick View Hover Action --}}
         <div class="xsf-product-card__quickview-wrap">
             <a href="{{ $productUrl }}" class="xsf-product-card__quickview">
-                <i class="fa-regular fa-eye me-1" aria-hidden="true"></i>
+                <i class="fa-regular fa-eye" aria-hidden="true"></i>
                 <span>Quick View</span>
             </a>
         </div>
     </div>
 
     <div class="xsf-product-card__body">
-        {{-- Star Rating --}}
-        <x-store.rating :rating="$avgRating" :count="$reviewCount" class="mb-1" />
+        {{-- Star Rating (only once the product has reviews) --}}
+        @if ($reviewCount > 0)
+            <x-store.rating :rating="$avgRating" :count="$reviewCount" />
+        @endif
 
         {{-- Title --}}
         <h3 class="xsf-product-card__title">
@@ -92,7 +103,6 @@
                     aria-label="Add {{ $product->name }} to cart"
                     title="Add to Bag">
                 <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
-                <span class="btn-text">Add</span>
             </button>
         </div>
     </div>

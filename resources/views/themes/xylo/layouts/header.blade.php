@@ -4,6 +4,17 @@
         $wishlistCount = auth('customer')->user()->wishlistProducts()->count();
     }
     $cartCount = session('cart') ? collect(session('cart'))->sum('quantity') : 0;
+
+    // Fallback navigation (used when no header menu is configured in the admin)
+    $fallbackNav = [
+        ['label' => 'Home',         'href' => url('/'),                           'active' => request()->routeIs('xylo.home')],
+        ['label' => 'Shop All',     'href' => route('shop.index'),                'active' => request()->routeIs('shop.*', 'category.*', 'product.*')],
+        ['label' => 'Our Services', 'href' => route('store.page', 'our-services'), 'active' => request()->is('our-services')],
+        ['label' => 'Blog',         'href' => route('store.page', 'blog'),         'active' => request()->is('blog')],
+        ['label' => 'About Us',     'href' => route('store.page', 'about-us'),     'active' => request()->is('about-us')],
+        ['label' => 'Contact Us',   'href' => route('store.page', 'contact-us'),   'active' => request()->is('contact-us')],
+        ['label' => 'Recipes',      'href' => route('recipes.index'),             'active' => request()->routeIs('recipes.*')],
+    ];
 @endphp
 
 <header class="xsf-header" id="site-header">
@@ -212,15 +223,21 @@
                 @if (!empty($headerMenu) && $headerMenu->menuItems->count())
                     @foreach ($headerMenu->menuItems as $menuItem)
                         <li class="xsf-nav__item">
-                            <a class="xsf-nav__link menu-text-color" href="{{ url($menuItem->slug) }}">
+                            <a class="xsf-nav__link menu-text-color {{ url()->current() === url($menuItem->slug) ? 'active' : '' }}"
+                               href="{{ url($menuItem->slug) }}"
+                               @if (url()->current() === url($menuItem->slug)) aria-current="page" @endif>
                                 {{ $menuItem->title ?? 'Menu Item' }}
                             </a>
                         </li>
                     @endforeach
                 @else
-                    <li class="xsf-nav__item"><a class="xsf-nav__link" href="{{ url('/') }}">Home</a></li>
-                    <li class="xsf-nav__item"><a class="xsf-nav__link" href="{{ route('shop.index') }}">Shop All</a></li>
-                    <li class="xsf-nav__item"><a class="xsf-nav__link" href="{{ route('recipes.index') }}">Recipes</a></li>
+                    @foreach ($fallbackNav as $navItem)
+                        <li class="xsf-nav__item">
+                            <a class="xsf-nav__link {{ $navItem['active'] ? 'active' : '' }}"
+                               href="{{ $navItem['href'] }}"
+                               @if ($navItem['active']) aria-current="page" @endif>{{ $navItem['label'] }}</a>
+                        </li>
+                    @endforeach
                 @endif
             </ul>
         </div>
@@ -241,16 +258,21 @@
             @if (!empty($headerMenu) && $headerMenu->menuItems->count())
                 @foreach ($headerMenu->menuItems as $menuItem)
                     <li>
-                        <a class="xsf-mobile-nav__link" href="{{ url($menuItem->slug) }}">
+                        <a class="xsf-mobile-nav__link {{ url()->current() === url($menuItem->slug) ? 'active' : '' }}" href="{{ url($menuItem->slug) }}">
                             {{ $menuItem->title ?? 'Menu Item' }}
                             <i class="fas fa-chevron-right xsf-mobile-nav__arrow"></i>
                         </a>
                     </li>
                 @endforeach
             @else
-                <li><a class="xsf-mobile-nav__link" href="{{ url('/') }}">Home</a></li>
-                <li><a class="xsf-mobile-nav__link" href="{{ route('shop.index') }}">Shop All</a></li>
-                <li><a class="xsf-mobile-nav__link" href="{{ route('recipes.index') }}">Recipes</a></li>
+                @foreach ($fallbackNav as $navItem)
+                    <li>
+                        <a class="xsf-mobile-nav__link {{ $navItem['active'] ? 'active' : '' }}" href="{{ $navItem['href'] }}">
+                            {{ $navItem['label'] }}
+                            <i class="fas fa-chevron-right xsf-mobile-nav__arrow" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                @endforeach
             @endif
         </ul>
 

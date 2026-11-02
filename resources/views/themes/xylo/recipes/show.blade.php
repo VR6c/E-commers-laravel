@@ -6,8 +6,8 @@
    Recipe Detail & Interactive Cooking Page
    ───────────────────────────────────────────── */
 .xsf-recipe-header {
-    background: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
+    background: var(--neutral-0);
+    border-bottom: 1px solid var(--neutral-200);
     padding: 32px 0 24px;
     margin-bottom: 32px;
 }
@@ -23,7 +23,7 @@
 .xsf-recipe-title {
     font-size: 2.2rem;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--neutral-900);
     letter-spacing: -0.02em;
     margin-bottom: 12px;
     line-height: 1.25;
@@ -34,22 +34,22 @@
     align-items: center;
     gap: 8px;
     padding: 8px 16px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background: var(--neutral-50);
+    border: 1px solid var(--neutral-200);
     border-radius: 50px;
     font-size: 0.85rem;
     font-weight: 600;
-    color: #334155;
+    color: var(--neutral-700);
 }
 
 .xsf-recipe-meta-pill i {
-    color: #6366f1;
+    color: var(--primary-500);
 }
 
 /* ── Card Blocks ── */
 .xsf-recipe-block {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--neutral-0);
+    border: 1px solid var(--neutral-200);
     border-radius: 18px;
     padding: 28px;
     margin-bottom: 28px;
@@ -59,7 +59,7 @@
 .xsf-recipe-block__title {
     font-size: 1.25rem;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--neutral-900);
     margin-bottom: 20px;
     display: flex;
     align-items: center;
@@ -72,7 +72,7 @@
     align-items: center;
     gap: 12px;
     padding: 12px 0;
-    border-bottom: 1px dashed #e2e8f0;
+    border-bottom: 1px dashed var(--neutral-200);
     cursor: pointer;
     user-select: none;
     transition: background 0.15s ease;
@@ -91,7 +91,7 @@
 
 .xsf-ingredient-item.is-checked {
     text-decoration: line-through;
-    color: #94a3b8;
+    color: var(--neutral-400);
 }
 
 /* ── Step-by-Step Directions ── */
@@ -100,7 +100,7 @@
     gap: 18px;
     padding-bottom: 24px;
     margin-bottom: 24px;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--neutral-100);
 }
 
 .xsf-step-row:last-child {
@@ -112,8 +112,8 @@
 .xsf-step-num {
     width: 36px;
     height: 36px;
-    background: #0f172a;
-    color: #ffffff;
+    background: var(--neutral-900);
+    color: var(--neutral-0);
     font-weight: 800;
     font-size: 0.95rem;
     display: flex;
@@ -128,13 +128,13 @@
     flex: 1;
     font-size: 0.95rem;
     line-height: 1.65;
-    color: #334155;
+    color: var(--neutral-700);
 }
 
 /* ── Gated Lock Overlay ── */
 .xsf-locked-card {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border: 2px dashed #cbd5e1;
+    background: linear-gradient(135deg, var(--neutral-50) 0%, var(--neutral-100) 100%);
+    border: 2px dashed var(--neutral-300);
     border-radius: 20px;
     padding: 40px 32px;
     text-align: center;
@@ -147,8 +147,8 @@
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    background: #fee2e2;
-    color: #dc2626;
+    background: var(--danger-100);
+    color: var(--danger-600);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -162,15 +162,15 @@
     align-items: center;
     gap: 14px;
     padding: 12px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--neutral-200);
     border-radius: 12px;
     margin-bottom: 12px;
-    background: #ffffff;
+    background: var(--neutral-0);
     transition: all 0.2s ease;
 }
 
 .xsf-linked-product:hover {
-    border-color: #6366f1;
+    border-color: var(--primary-500);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
@@ -180,13 +180,13 @@
     height: 52px;
     object-fit: cover;
     border-radius: 8px;
-    background: #f1f5f9;
+    background: var(--neutral-100);
 }
 
 /* ── Unlocked Success Banner ── */
 .xsf-unlocked-banner {
-    background: #f0fdf4;
-    border: 1px solid #bbf7d0;
+    background: var(--success-50);
+    border: 1px solid var(--success-200);
     border-radius: 14px;
     padding: 16px 20px;
     display: flex;

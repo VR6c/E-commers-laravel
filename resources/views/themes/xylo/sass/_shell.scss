@@ -464,7 +464,7 @@ $sf-accent:  $color-primary;
         padding: 0 4px;
         border-radius: $radius-pill;
         background: linear-gradient(135deg, $primary-500, $primary-600);
-        color: #ffffff;
+        color: $neutral-0;
         font-size: 0.62rem;
         font-weight: 700;
         line-height: 15px;
@@ -734,7 +734,9 @@ $sf-accent:  $color-primary;
         text-decoration: none;
         border-bottom: 1px solid $border-subtle;
 
-        &:hover { color: $sf-accent; background: $surface-muted; }
+        &:hover,
+        &.active { color: $sf-accent; background: $surface-muted; }
+        &.active { box-shadow: inset 3px 0 0 $sf-accent; }
     }
 
     &__arrow {
@@ -1076,9 +1078,9 @@ $sf-accent:  $color-primary;
 
     // Vendor — warm amber glow
     &--vendor {
-        color: #0f0e17;
-        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-        border: 1px solid #f59e0b;
+        color: $neutral-950;
+        background: linear-gradient(135deg, #fbbf24 0%, $warning-500 100%);
+        border: 1px solid $warning-500;
         box-shadow: 0 2px 10px rgba(245, 158, 11, 0.40);
 
         .xsf-reg-ripple { background: rgba(255,255,255,0.45); }
@@ -1086,7 +1088,7 @@ $sf-accent:  $color-primary;
         &:hover {
             background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 100%);
             box-shadow: 0 5px 18px rgba(245, 158, 11, 0.55);
-            color: #0f0e17;
+            color: $neutral-950;
         }
     }
 
@@ -1176,8 +1178,8 @@ $sf-accent:  $color-primary;
     gap: $space-2;
     padding: $space-3 $space-4;
     border-radius: $radius-md;
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-    color: #0f0e17;
+    background: linear-gradient(135deg, #fbbf24 0%, $warning-500 100%);
+    color: $neutral-950;
     font-size: $font-size-sm;
     font-weight: $font-weight-semibold;
     text-decoration: none;
@@ -1190,7 +1192,7 @@ $sf-accent:  $color-primary;
     &:hover {
         background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 100%);
         box-shadow: 0 6px 18px rgba(245, 158, 11, 0.45);
-        color: #0f0e17;
+        color: $neutral-950;
         transform: translateY(-1px);
     }
 }

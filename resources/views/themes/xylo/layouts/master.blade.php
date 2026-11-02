@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="{{ getSiteLogo() }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'TVR') }}</title>
+    <title>@hasSection('title')@yield('title') | @endif{{ config('app.name', 'TVR') }}</title>
+    <meta name="description" content="@yield('meta_description', 'Shop quality products from verified vendors with fast delivery and secure checkout.')">
+    <meta name="theme-color" content="#6366f1">
     @yield('preload')
 
     {{-- Preconnect external assets --}}

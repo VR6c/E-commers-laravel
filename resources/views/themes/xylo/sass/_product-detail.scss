@@ -86,7 +86,7 @@
         gap: $space-2;
         margin-bottom: $space-3;
 
-        i { font-size: $font-size-sm; color: #f59e0b; }
+        i { font-size: $font-size-sm; color: $warning-500; }
 
         .spanstar {
             color: $text-muted;
@@ -474,4 +474,109 @@
         color: $neutral-900;
         letter-spacing: -0.03em;
     }
+}
+
+// =====================================================================
+//  PRODUCT DETAIL — small-screen refinements
+// =====================================================================
+@include bp-down('md') {
+    .xsf-pd {
+        // Tighter gallery frame so the image gets the full width.
+        &__gallery { padding: $space-2; border-radius: $radius-xl; }
+
+        &__title { font-size: $font-size-xl; }
+
+        // Larger swatch tap targets (min 40px).
+        &__attribute-options {
+            gap: $space-2;
+
+            .color-circle { width: 40px; height: 40px; }
+            .size-box { min-width: 48px; height: 46px; }
+        }
+
+        // Qty stepper + CTA fill the row.
+        &__actions {
+            .add-to-cart { flex: 1 1 200px; min-height: 52px; }
+        }
+
+        &__qty input { font-size: 1rem; }
+    }
+
+    // Tabs scroll sideways instead of wrapping awkwardly.
+    .reviewbox .nav-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar { display: none; }
+    }
+}
+
+// =====================================================================
+//  STICKY ADD-TO-CART BAR (below lg)
+// =====================================================================
+.xsf-sticky-cta {
+    display: none;
+
+    @include bp-down('lg') {
+        display: flex;
+        align-items: center;
+        gap: $space-3;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: $z-fixed;
+        padding: $space-3 $space-4;
+        padding-bottom: calc(#{$space-3} + env(safe-area-inset-bottom, 0px));
+        background: rgba($neutral-0, 0.95);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-top: 1px solid $border-color;
+        box-shadow: 0 -6px 20px rgba($neutral-900, 0.08);
+        transform: translateY(110%);
+        visibility: hidden;
+        transition: transform $transition-base, visibility 0s linear 0.25s;
+
+        &.is-visible {
+            transform: translateY(0);
+            visibility: visible;
+            transition: transform $transition-base;
+        }
+    }
+
+    &__info {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        flex: 1;
+        line-height: 1.25;
+    }
+
+    &__name {
+        font-size: $font-size-xs;
+        color: $text-muted;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__price {
+        font-weight: $font-weight-extrabold;
+        font-size: $font-size-md;
+        color: $neutral-900;
+    }
+
+    &__btn { flex-shrink: 0; min-height: 46px; padding-inline: $space-5; }
+}
+
+// Keep page content clear of the bar on small screens.
+@include bp-down('lg') {
+    .xsf-pd + .reviewbox,
+    .reviewbox { padding-bottom: 5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .xsf-sticky-cta { transition: none !important; }
 }

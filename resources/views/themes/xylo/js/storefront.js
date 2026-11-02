@@ -158,6 +158,12 @@ function initWishlistEvents() {
     });
 }
 
+const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+}[ch]));
+
+const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 /**
  * Initialize live search autocomplete
  */
@@ -187,15 +193,15 @@ function initLiveSearch() {
                 if (Array.isArray(products) && products.length > 0) {
                     products.forEach(product => {
                         const item = document.createElement('a');
-                        item.href = `/product/${product.slug}`;
+                        item.href = `/product/${encodeURIComponent(product.slug)}`;
                         item.className = 'xsf-search-suggestion';
                         item.innerHTML = `
                             <img src="${product.thumbnail || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=80'}"
-                                 alt="${product.name}"
+                                 alt="${escapeHtml(product.name)}"
                                  class="xsf-search-suggestion__img"
                                  width="40" height="40">
                             <div class="xsf-search-suggestion__info">
-                                <span class="xsf-search-suggestion__title">${product.name}</span>
+                                <span class="xsf-search-suggestion__title">${escapeHtml(product.name)}</span>
                             </div>
                         `;
                         suggestionsBox.appendChild(item);
@@ -257,6 +263,7 @@ function initSliders() {
     }
 
     const $ = window.$;
+    const autoplay = !prefersReducedMotion();
 
     // Hero banner slider
     const $heroSlider = $('.banner-slider');
@@ -264,7 +271,9 @@ function initSliders() {
         $heroSlider.slick({
             slidesToShow: 1,
             slidesToScroll: 1,
-            autoplay: true,
+            autoplay,
+            pauseOnHover: true,
+            pauseOnFocus: true,
             autoplaySpeed: 5000,
             fade: true,
             speed: 600,
@@ -275,28 +284,6 @@ function initSliders() {
         $heroSlider.addClass('is-initialized');
     }
 
-    // Categories slider
-    const $categorySlider = $('.category-slider');
-    if ($categorySlider.length > 0 && !$categorySlider.hasClass('slick-initialized')) {
-        $categorySlider.slick({
-            slidesToShow: 6,
-            slidesToScroll: 2,
-            autoplay: true,
-            autoplaySpeed: 4000,
-            dots: false,
-            arrows: true,
-            prevArrow: '<button class="slick-prev" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>',
-            nextArrow: '<button class="slick-next" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>',
-            responsive: [
-                { breakpoint: 1200, settings: { slidesToShow: 5 } },
-                { breakpoint: 992, settings: { slidesToShow: 4 } },
-                { breakpoint: 768, settings: { slidesToShow: 3 } },
-                { breakpoint: 480, settings: { slidesToShow: 2 } },
-            ]
-        });
-        $categorySlider.addClass('is-initialized');
-    }
-
     // Trending products slider
     const $productSlider = $('.product-slider');
     if ($productSlider.length > 0 && !$productSlider.hasClass('slick-initialized')) {
@@ -304,7 +291,8 @@ function initSliders() {
             slidesToShow: 4,
             slidesToScroll: 1,
             infinite: true,
-            autoplay: true,
+            autoplay,
+            pauseOnHover: true,
             autoplaySpeed: 3500,
             arrows: true,
             prevArrow: '.custom-arrows .prev',
@@ -312,7 +300,7 @@ function initSliders() {
             responsive: [
                 { breakpoint: 1200, settings: { slidesToShow: 3 } },
                 { breakpoint: 992, settings: { slidesToShow: 2 } },
-                { breakpoint: 576, settings: { slidesToShow: 1 } },
+                { breakpoint: 576, settings: { slidesToShow: 2, slidesToScroll: 1 } },
             ]
         });
         $productSlider.addClass('is-initialized');

@@ -101,9 +101,9 @@
                     <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
                 </a>
             </div>
-            <div class="category-slider xsf-category-slider">
+            <div class="xsf-category-grid" role="list">
                 @foreach ($categories as $category)
-                    <div>
+                    <div class="xsf-category-grid__item" role="listitem">
                         <x-store.category-card :category="$category" />
                     </div>
                 @endforeach
@@ -119,9 +119,15 @@
                     <span class="xsf-section__eyebrow">{{ 'Top Picks' }}</span>
                     <h2 class="xsf-section__title sec-heading">{{ 'Trending Products' }}</h2>
                 </div>
-                <div class="custom-arrows xsf-slider-arrows">
-                    <button class="prev" aria-label="{{ 'Previous' }}"><i class="fa-solid fa-chevron-left"></i></button>
-                    <button class="next" aria-label="{{ 'Next' }}"><i class="fa-solid fa-chevron-right"></i></button>
+                <div class="xsf-section__actions">
+                    <div class="custom-arrows xsf-slider-arrows">
+                        <button class="prev" aria-label="{{ 'Previous' }}"><i class="fa-solid fa-chevron-left"></i></button>
+                        <button class="next" aria-label="{{ 'Next' }}"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                    <a href="{{ route('shop.index') }}" class="xsf-section-link d-none d-sm-inline-flex">
+                        <span>{{ 'View All' }}</span>
+                        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                    </a>
                 </div>
             </div>
             <div class="product-slider xsf-product-slider">

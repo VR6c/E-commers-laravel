@@ -15,8 +15,8 @@
 }
 
 .xsf-order-card {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
+    background: var(--neutral-0);
+    border: 1px solid var(--neutral-200);
     border-radius: 16px;
     margin-bottom: 20px;
     overflow: hidden;
@@ -25,15 +25,15 @@
 }
 
 .xsf-order-card:hover {
-    border-color: #cbd5e1;
+    border-color: var(--neutral-300);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
     transform: translateY(-2px);
 }
 
 .xsf-order-card__header {
     padding: 16px 22px;
-    background: #f8fafc;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--neutral-50);
+    border-bottom: 1px solid var(--neutral-200);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -58,14 +58,14 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #64748b;
+    color: var(--neutral-500);
     margin-bottom: 2px;
 }
 
 .xsf-order-card__meta-val {
     font-size: 0.9rem;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--neutral-900);
 }
 
 .xsf-order-card__body {
@@ -91,8 +91,8 @@
     height: 58px;
     border-radius: 10px;
     object-fit: cover;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
+    background: var(--neutral-100);
+    border: 1px solid var(--neutral-200);
     flex-shrink: 0;
 }
 
@@ -100,19 +100,19 @@
     width: 58px;
     height: 58px;
     border-radius: 10px;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
+    background: var(--neutral-100);
+    border: 1px solid var(--neutral-200);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #94a3b8;
+    color: var(--neutral-400);
     font-size: 1.2rem;
     flex-shrink: 0;
 }
 
 .xsf-order-items-info {
     font-size: 0.875rem;
-    color: #475569;
+    color: var(--neutral-600);
 }
 
 .xsf-order-card__actions {
@@ -129,7 +129,7 @@
 
 .xsf-order-total-label {
     font-size: 0.75rem;
-    color: #64748b;
+    color: var(--neutral-500);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     display: block;
@@ -138,7 +138,7 @@
 .xsf-order-total-val {
     font-size: 1.2rem;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--neutral-900);
 }
 
 /* Status Badges */
@@ -154,43 +154,43 @@
 }
 
 .xsf-badge-pending {
-    background: #fef3c7;
-    color: #92400e;
-    border: 1px solid #fde68a;
+    background: var(--warning-100);
+    color: var(--warning-700);
+    border: 1px solid var(--warning-200);
 }
 
 .xsf-badge-processing {
-    background: #e0f2fe;
-    color: #0369a1;
-    border: 1px solid #bae6fd;
+    background: var(--info-100);
+    color: var(--info-700);
+    border: 1px solid var(--info-200);
 }
 
 .xsf-badge-completed {
-    background: #dcfce7;
-    color: #15803d;
-    border: 1px solid #bbf7d0;
+    background: var(--success-100);
+    color: var(--success-700);
+    border: 1px solid var(--success-200);
 }
 
 .xsf-badge-canceled {
-    background: #fee2e2;
-    color: #b91c1c;
-    border: 1px solid #fecaca;
+    background: var(--danger-100);
+    color: var(--danger-700);
+    border: 1px solid var(--danger-200);
 }
 
 /* Empty State */
 .xsf-orders-empty {
     text-align: center;
     padding: 60px 20px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--neutral-0);
+    border: 1px solid var(--neutral-200);
     border-radius: 20px;
 }
 
 .xsf-orders-empty__icon {
     width: 80px;
     height: 80px;
-    background: #f1f5f9;
-    color: #64748b;
+    background: var(--neutral-100);
+    color: var(--neutral-500);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -202,13 +202,13 @@
 .xsf-orders-empty__title {
     font-size: 1.35rem;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--neutral-900);
     margin-bottom: 8px;
 }
 
 .xsf-orders-empty__sub {
     font-size: 0.95rem;
-    color: #64748b;
+    color: var(--neutral-500);
     max-width: 420px;
     margin: 0 auto 24px;
     line-height: 1.5;
