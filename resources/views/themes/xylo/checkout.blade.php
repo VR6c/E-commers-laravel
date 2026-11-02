@@ -353,19 +353,26 @@ document.addEventListener("DOMContentLoaded", function () {
                         const symbol   = currency === 'KHR' ? '៛' : '$';
                         const currencyLabel = currency === 'KHR' ? 'KHQR: Khmer Riel' : 'KHQR: US Dollar';
 
-                        document.getElementById('khqr-amount-display').textContent  = Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        document.getElementById('khqr-amount-display').textContent  = Number(amount).toLocaleString('en-US', currency === 'KHR' ? { maximumFractionDigits: 0 } : { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                         document.getElementById('khqr-currency-symbol').textContent = symbol;
                         document.getElementById('khqr-currency-label').textContent  = currencyLabel;
 
                         // ── Set QR image (prefer qrImage base64, else build from qrString) ──
                         const qrImg = document.getElementById('payway-qr-image');
+                        const qrSkeleton = document.getElementById('khqr-loading-skeleton');
+                        const showQr = () => {
+                            qrImg.classList.remove('d-none');
+                            qrSkeleton.classList.add('d-none');
+                        };
+                        qrImg.onload = showQr;
                         if (paywayData.qrImage) {
-                            qrImg.src = paywayData.qrImage;
+                            // PayWay returns raw base64 without the data-URI prefix
+                            qrImg.src = paywayData.qrImage.startsWith('data:')
+                                ? paywayData.qrImage
+                                : 'data:image/png;base64,' + paywayData.qrImage;
                         } else if (paywayData.qrString) {
                             // Render locally via QR API if base64 not provided
                             qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(paywayData.qrString);
-                            qrImg.classList.remove('d-none');
-                            document.getElementById('khqr-loading-skeleton').classList.add('d-none');
                         }
 
                         // ── Mobile: show deep-link & store badges ──

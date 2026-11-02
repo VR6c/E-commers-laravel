@@ -502,6 +502,7 @@
                 showSelectedLabels();
                 const selectedAttrIds = getSelectedAttributeValueIds();
                 const variantId = findMatchingVariantId(selectedAttrIds);
+                $('.xsf-pd__actions .add-to-cart, #stickyCtaBtn').prop('disabled', !variantId);
                 if (!variantId) { toastr.warning('Selected variant not available.'); return; }
 
                 $.ajax({
@@ -522,6 +523,13 @@
                     error: function () { toastr.error('Something went wrong. Please try again.'); }
                 });
             });
+
+            // Pre-select a combination that has a variant, so the default choice can be added to cart.
+            if (variantMap.length && !findMatchingVariantId(getSelectedAttributeValueIds())) {
+                variantMap[0].attributes.forEach(function (id) {
+                    $('#product-attributes input[type="radio"][value="' + id + '"]').prop('checked', true);
+                });
+            }
 
             $('#product-attributes input[type="radio"]:checked').trigger('change');
         });

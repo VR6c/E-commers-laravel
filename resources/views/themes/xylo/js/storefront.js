@@ -342,10 +342,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Also make helpers globally accessible if needed by legacy templates
-window.addToCart = (productId) => {
-    const fakeBtn = document.querySelector(`.js-add-to-cart[data-product-id="${productId}"]`);
-    if (fakeBtn) {
-        fakeBtn.click();
-    }
-};
-window.updateCartCount = updateCartCount;
+// (pages like product-detail define their own addToCart with variant support)
+if (typeof window.addToCart !== 'function') {
+    window.addToCart = (productId) => {
+        const fakeBtn = document.querySelector(`.js-add-to-cart[data-product-id="${productId}"]`);
+        if (fakeBtn) {
+            fakeBtn.click();
+        }
+    };
+}
+if (typeof window.updateCartCount !== 'function') {
+    window.updateCartCount = updateCartCount;
+}

@@ -777,32 +777,44 @@ $xsf-sticky-top: 96px;
 // ---------------------------------------------------------------------
 //  KHQR MODAL
 // ---------------------------------------------------------------------
+$khqr-red: #e1232e;
+
 .khqr-modal-content {
     background: $neutral-0;
-    border: 1px solid $border-color;
+    border: 0;
     border-radius: $radius-xl;
     overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
 }
 
 .khqr-header {
-    background: $neutral-0;
-    border-bottom: 1px solid $border-color;
-    padding: $space-3 $space-4;
     position: relative;
-    text-align: center;
-    // keep clear of the close button
-    padding-left: 52px;
-    padding-right: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $space-2;
+    padding: $space-4 52px;
+    background: $khqr-red;
+    color: #fff;
+    // notched bottom edge, like the KHQR card
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), 100% 100%, 0 100%, 0 calc(100% - 14px));
 }
 
 .khqr-badge {
-    background: $danger-600;
-    color: #fff;
+    background: #fff;
+    color: $khqr-red;
     font-weight: $font-weight-bold;
-    font-size: 0.75rem;
-    padding: 2px 8px;
+    font-size: 0.8125rem;
+    padding: 3px 10px;
     border-radius: $radius-md;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.08em;
+}
+
+.khqr-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: $font-weight-bold;
+    color: #fff;
 }
 
 .khqr-close {
@@ -815,14 +827,128 @@ $xsf-sticky-top: 96px;
     margin: 0;
 }
 
+.khqr-body {
+    padding: $space-5 $space-4 $space-3;
+    text-align: center;
+}
+
+.khqr-amount {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+
+    &__label { font-size: $font-size-sm; font-weight: 600; color: $text-muted; }
+    &__value {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: 4px;
+        font-size: 2.25rem;
+        font-weight: $font-weight-bold;
+        line-height: 1.1;
+        color: $neutral-900;
+    }
+    &__symbol { font-size: 1.25rem; color: $text-muted; }
+    &__currency { font-size: 0.75rem; color: $text-muted; }
+}
+
+.khqr-divider {
+    margin: $space-4 (-$space-4);
+    border-top: 2px dashed $border-color;
+}
+
 .khqr-qr-box {
-    background: $surface-muted;
-    border: 1px solid $border-color;
-    border-radius: $radius-md;
-    min-height: 200px;
-    max-width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 256px;
+    min-height: 240px;
+    margin: 0 auto $space-3;
+    padding: $space-3;
+    background: #fff;
 
     img { max-width: min(220px, 100%); height: auto; }
+
+    &__corner {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        border: 3px solid $khqr-red;
+
+        &--tl { top: 0; left: 0; border-right: 0; border-bottom: 0; border-top-left-radius: $radius-md; }
+        &--tr { top: 0; right: 0; border-left: 0; border-bottom: 0; border-top-right-radius: $radius-md; }
+        &--bl { bottom: 0; left: 0; border-right: 0; border-top: 0; border-bottom-left-radius: $radius-md; }
+        &--br { bottom: 0; right: 0; border-left: 0; border-top: 0; border-bottom-right-radius: $radius-md; }
+    }
+}
+
+.khqr-spinner { color: $khqr-red; }
+
+.khqr-hint {
+    margin: 0 0 $space-3;
+    font-size: $font-size-sm;
+    color: $text-muted;
+
+    i { margin-right: 6px; }
+}
+
+.khqr-deeplink {
+    margin-bottom: $space-3;
+
+    .btn { min-height: 44px; }
+
+    &__stores {
+        display: flex;
+        justify-content: center;
+        gap: $space-4;
+        margin-top: $space-2;
+
+        a { padding: $space-2 0; font-size: $font-size-sm; color: $text-muted; }
+    }
+}
+
+.khqr-status {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    padding: $space-2 $space-3;
+    border-radius: 999px;
+    background: $surface-muted;
+    font-size: $font-size-sm;
+    color: $text-muted;
+
+    &__dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #16a34a;
+        animation: khqr-pulse 1.4s ease-in-out infinite;
+    }
+}
+
+@keyframes khqr-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.35; transform: scale(0.7); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .khqr-status__dot { animation: none; }
+}
+
+.khqr-footer {
+    padding: 0 $space-4 $space-4;
+    text-align: center;
+}
+
+.khqr-cancel {
+    min-height: 44px;
+    color: $text-muted;
+    text-decoration: none;
+
+    &:hover { color: $khqr-red; }
 }
 
 #paywayQRModal .modal-dialog { max-width: min(340px, calc(100vw - 16px)); margin-left: auto; margin-right: auto; }
