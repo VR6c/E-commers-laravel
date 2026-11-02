@@ -17,14 +17,14 @@ class ProductReviewResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'           => $this->id,
-            'rating'       => (int) $this->rating,
-            'review'       => $this->review,
-            'customer'     => [
-                'name'          => $this->customer?->name ?? 'Anonymous',
+            'id' => $this->id,
+            'rating' => (int) $this->rating,
+            'review' => $this->review,
+            'customer' => [
+                'name' => $this->customer?->name ?? 'Anonymous',
                 'profile_image' => $this->customer?->profile_image ?? null,
             ],
-            'created_at'   => $this->created_at?->toISOString(),
+            'created_at' => $this->created_at?->toISOString(),
         ];
     }
 }

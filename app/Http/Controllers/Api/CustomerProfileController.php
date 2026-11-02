@@ -23,7 +23,7 @@ class CustomerProfileController extends Controller
 
         return response()->json([
             'status' => true,
-            'data'   => new \App\Http\Resources\CustomerResource($customer),
+            'data' => new \App\Http\Resources\CustomerResource($customer),
         ], 200);
     }
 

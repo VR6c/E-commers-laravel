@@ -34,8 +34,6 @@ final class ProductSearchTest extends TestCase
 
         $this->vendor = Vendor::create([
             'name' => 'Test Vendor',
-            'user_id' => $user->id,
-            'store_name' => 'Test Vendor Store',
             'email' => 'vendor@example.com',
             'password' => bcrypt('password'),
             'phone' => '1234567890',
@@ -45,22 +43,22 @@ final class ProductSearchTest extends TestCase
 
     private function createProduct(string $name, float $price, array $attributes = []): Product
     {
-        $category = $attributes['category_id'] ?? Category::create(['name' => 'Default Cat', 'slug' => 'default-cat-' . Str::random(5)])->id;
+        $category = $attributes['category_id'] ?? Category::create(['name' => 'Default Cat', 'slug' => 'default-cat-'.Str::random(5)])->id;
 
         $product = Product::create(array_merge([
             'vendor_id' => $this->vendor->id,
             'category_id' => $category,
             'name' => $name,
-            'slug' => Str::slug($name) . '-' . Str::random(5),
+            'slug' => Str::slug($name).'-'.Str::random(5),
             'product_type' => 'simple',
             'status' => 1,
         ], $attributes));
 
         ProductVariant::create([
             'product_id' => $product->id,
-            'variant_slug' => Str::slug($name) . '-variant-' . Str::random(5),
+            'variant_slug' => Str::slug($name).'-variant-'.Str::random(5),
             'price' => $price,
-            'SKU' => 'SKU-' . Str::upper(Str::random(6)),
+            'SKU' => 'SKU-'.Str::upper(Str::random(6)),
             'is_primary' => true,
         ]);
 

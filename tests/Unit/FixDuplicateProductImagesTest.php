@@ -17,49 +17,49 @@ class FixDuplicateProductImagesTest extends TestCase
     {
         $category = Category::create(['name' => 'Beauty & Skincare', 'slug' => 'beauty-skincare', 'status' => true]);
         $vendor = Vendor::create([
-            'name'     => 'Test Vendor',
-            'email'    => 'testvendor@example.com',
+            'name' => 'Test Vendor',
+            'email' => 'testvendor@example.com',
             'password' => bcrypt('password'),
-            'status'   => 'active',
+            'status' => 'active',
         ]);
 
         // Create 2 products with identical image URLs (mimicking the seeder bug)
         $p1 = Product::create([
-            'vendor_id'         => $vendor->id,
-            'category_id'       => $category->id,
-            'name'              => 'Silky Powder Cheek Blush',
-            'slug'              => 'silky-powder-cheek-blush',
-            'description'       => 'Blush description',
+            'vendor_id' => $vendor->id,
+            'category_id' => $category->id,
+            'name' => 'Silky Powder Cheek Blush',
+            'slug' => 'silky-powder-cheek-blush',
+            'description' => 'Blush description',
             'short_description' => 'Blush short',
-            'product_type'      => 'simple',
-            'status'            => 1,
+            'product_type' => 'simple',
+            'status' => 1,
         ]);
 
         $p2 = Product::create([
-            'vendor_id'         => $vendor->id,
-            'category_id'       => $category->id,
-            'name'              => 'Velvet Powder Puff Set',
-            'slug'              => 'velvet-powder-puff-set',
-            'description'       => 'Puff description',
+            'vendor_id' => $vendor->id,
+            'category_id' => $category->id,
+            'name' => 'Velvet Powder Puff Set',
+            'slug' => 'velvet-powder-puff-set',
+            'description' => 'Puff description',
             'short_description' => 'Puff short',
-            'product_type'      => 'simple',
-            'status'            => 1,
+            'product_type' => 'simple',
+            'status' => 1,
         ]);
 
         $sharedDuplicateUrl = 'https://i.ibb.co/chjQFZ0k/silky-powder-cheek-blush.jpg';
 
         $img1 = ProductImage::create([
             'product_id' => $p1->id,
-            'name'       => 'silky-powder-cheek-blush.jpg',
-            'image_url'  => $sharedDuplicateUrl,
-            'type'       => 'thumb',
+            'name' => 'silky-powder-cheek-blush.jpg',
+            'image_url' => $sharedDuplicateUrl,
+            'type' => 'thumb',
         ]);
 
         $img2 = ProductImage::create([
             'product_id' => $p2->id,
-            'name'       => 'velvet-powder-puff-set.jpg',
-            'image_url'  => $sharedDuplicateUrl,
-            'type'       => 'thumb',
+            'name' => 'velvet-powder-puff-set.jpg',
+            'image_url' => $sharedDuplicateUrl,
+            'type' => 'thumb',
         ]);
 
         // 1. Dry run should report duplicates without modifying DB
@@ -87,55 +87,55 @@ class FixDuplicateProductImagesTest extends TestCase
     {
         $category = Category::create(['name' => 'Beauty & Skincare', 'slug' => 'beauty-skincare', 'status' => true]);
         $vendor = Vendor::create([
-            'name'     => 'Test Vendor 2',
-            'email'    => 'testvendor2@example.com',
+            'name' => 'Test Vendor 2',
+            'email' => 'testvendor2@example.com',
             'password' => bcrypt('password'),
-            'status'   => 'active',
+            'status' => 'active',
         ]);
 
         $p1 = Product::create([
-            'vendor_id'         => $vendor->id,
-            'category_id'       => $category->id,
-            'name'              => 'Berry Lip Sleeping Mask',
-            'slug'              => 'berry-lip-sleeping-mask',
-            'description'       => 'Lip mask',
+            'vendor_id' => $vendor->id,
+            'category_id' => $category->id,
+            'name' => 'Berry Lip Sleeping Mask',
+            'slug' => 'berry-lip-sleeping-mask',
+            'description' => 'Lip mask',
             'short_description' => 'Lip mask',
-            'product_type'      => 'simple',
-            'status'            => 1,
+            'product_type' => 'simple',
+            'status' => 1,
         ]);
 
         $p2 = Product::create([
-            'vendor_id'         => $vendor->id,
-            'category_id'       => $category->id,
-            'name'              => 'Peptide Plumping Lip Balm',
-            'slug'              => 'peptide-plumping-lip-balm',
-            'description'       => 'Lip balm',
+            'vendor_id' => $vendor->id,
+            'category_id' => $category->id,
+            'name' => 'Peptide Plumping Lip Balm',
+            'slug' => 'peptide-plumping-lip-balm',
+            'description' => 'Lip balm',
             'short_description' => 'Lip balm',
-            'product_type'      => 'simple',
-            'status'            => 1,
+            'product_type' => 'simple',
+            'status' => 1,
         ]);
 
         $sharedUrl = 'https://i.ibb.co/ZR5PLkhv/berry-lip-sleeping-mask.jpg';
 
         $img1 = ProductImage::create([
             'product_id' => $p1->id,
-            'name'       => 'berry-lip-sleeping-mask.jpg',
-            'image_url'  => $sharedUrl,
-            'type'       => 'thumb',
+            'name' => 'berry-lip-sleeping-mask.jpg',
+            'image_url' => $sharedUrl,
+            'type' => 'thumb',
         ]);
 
         $img2 = ProductImage::create([
             'product_id' => $p2->id,
-            'name'       => 'peptide-plumping-lip-balm.jpg',
-            'image_url'  => $sharedUrl,
-            'type'       => 'thumb',
+            'name' => 'peptide-plumping-lip-balm.jpg',
+            'image_url' => $sharedUrl,
+            'type' => 'thumb',
         ]);
 
         // Dry run via API
         $dryRunResponse = $this->getJson('/api/fix-duplicate-images?dry_run=1');
         $dryRunResponse->assertStatus(200)
             ->assertJson([
-                'status'  => 'preview',
+                'status' => 'preview',
                 'dry_run' => true,
             ]);
 

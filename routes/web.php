@@ -44,6 +44,7 @@ Route::get('/admin', function () {
     if (auth()->check()) {
         return redirect()->route('admin.dashboard');
     }
+
     return redirect()->route('admin.login');
 })->name('admin.index');
 
@@ -51,6 +52,7 @@ Route::get('/admin/login', function () {
     if (auth()->check()) {
         return redirect()->route('admin.dashboard');
     }
+
     return view('admin.auth.login');
 })->name('admin.login');
 
@@ -58,6 +60,7 @@ Route::match(['get', 'post'], '/logout', function () {
     auth()->logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
+
     return redirect('/admin/login');
 })->name('logout');
 
@@ -65,6 +68,7 @@ Route::get('/login', function () {
     if (auth()->check()) {
         return redirect()->route('admin.dashboard');
     }
+
     return view('admin.auth.login');
 });
 
@@ -73,6 +77,7 @@ Route::get('/vendor', function () {
     if (auth('vendor')->check()) {
         return redirect()->route('vendor.dashboard');
     }
+
     return redirect()->route('vendor.login');
 })->name('vendor.index');
 
@@ -81,6 +86,7 @@ Route::get('/customer', function () {
     if (auth('customer')->check()) {
         return redirect()->route('customer.profile.edit');
     }
+
     return redirect()->route('customer.login');
 })->name('customer.index');
 
@@ -106,7 +112,8 @@ Route::get('/migrate', function () {
         // Explicitly create migrations repository table in public schema
         try {
             \Illuminate\Support\Facades\Artisan::call('migrate:install', ['--force' => true]);
-        } catch (\Throwable $t) {}
+        } catch (\Throwable $t) {
+        }
 
         \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
@@ -127,17 +134,13 @@ Route::get('/migrate', function () {
     }
 });
 
-
-
-
-
-
 Route::get('/test-db', function () {
     try {
         \Illuminate\Support\Facades\DB::connection()->getPdo();
+
         return response()->json([
             'status' => 'success',
-            'message' => 'Connected successfully to ' . \Illuminate\Support\Facades\DB::connection()->getDatabaseName(),
+            'message' => 'Connected successfully to '.\Illuminate\Support\Facades\DB::connection()->getDatabaseName(),
         ]);
     } catch (\Throwable $e) {
         return response()->json([
@@ -157,6 +160,7 @@ Route::get('/db-seed', function () {
         }
 
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+
         return response()->json([
             'status' => 'success',
             'message' => 'Database seeded successfully!',
@@ -181,7 +185,7 @@ Route::get('/seed-products', function () {
         } catch (\Throwable $t) {
         }
 
-        $seeder = new \Database\Seeders\BulkProductSeeder();
+        $seeder = new \Database\Seeders\BulkProductSeeder;
         $seeded = $seeder->seedProducts($count);
 
         return response()->json([
@@ -197,10 +201,6 @@ Route::get('/seed-products', function () {
         ], 500);
     }
 });
-
-
-
-
 
 Auth::routes();
 

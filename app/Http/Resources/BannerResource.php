@@ -26,11 +26,11 @@ class BannerResource extends JsonResource
         }
 
         return [
-            'id'          => $this->id,
-            'type'        => $this->type,
-            'title'       => $this->title,
+            'id' => $this->id,
+            'type' => $this->type,
+            'title' => $this->title,
             'description' => $this->description,
-            'image_url'   => $imageUrl,
+            'image_url' => $imageUrl,
         ];
     }
 }

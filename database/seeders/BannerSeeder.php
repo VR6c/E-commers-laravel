@@ -12,40 +12,40 @@ class BannerSeeder extends Seeder
     {
         $banners = [
             [
-                'title'       => 'Ready to Shop',
+                'title' => 'Ready to Shop',
                 'description' => 'Your one-stop shop for everything you need.',
-                'type'        => 'promotion',
-                'status'      => 1,
-                'image'       => 'https://i.postimg.cc/sxpYkSgk/shoes-ready.png',
+                'type' => 'promotion',
+                'status' => 1,
+                'image' => 'https://i.postimg.cc/sxpYkSgk/shoes-ready.png',
             ],
             [
-                'title'       => 'New Arrivals',
+                'title' => 'New Arrivals',
                 'description' => 'Check out the latest products just added to our store.',
-                'type'        => 'promotion',
-                'status'      => 1,
-                'image'       => 'https://i.postimg.cc/ZKwJFD39/cat1-removebg-preview.png',
+                'type' => 'promotion',
+                'status' => 1,
+                'image' => 'https://i.postimg.cc/ZKwJFD39/cat1-removebg-preview.png',
             ],
             [
-                'title'       => 'Summer Sale',
+                'title' => 'Summer Sale',
                 'description' => 'Up to 50% off on selected fashion items this season.',
-                'type'        => 'sale',
-                'status'      => 1,
-                'image'       => 'https://i.postimg.cc/QM9NMkFF/cat7-removebg-preview.png',
+                'type' => 'sale',
+                'status' => 1,
+                'image' => 'https://i.postimg.cc/QM9NMkFF/cat7-removebg-preview.png',
             ],
             [
-                'title'       => 'Top Electronics',
+                'title' => 'Top Electronics',
                 'description' => 'Discover our best-rated gadgets and electronics.',
-                'type'        => 'featured',
-                'status'      => 1,
-                'image'       => 'https://i.postimg.cc/mgTTQWtW/07-300x300-1-1-removebg-preview.png',
+                'type' => 'featured',
+                'status' => 1,
+                'image' => 'https://i.postimg.cc/mgTTQWtW/07-300x300-1-1-removebg-preview.png',
             ],
         ];
 
         foreach ($banners as $data) {
             $imageName = basename($data['image']);
-            $localPath = 'banners/' . $imageName;
+            $localPath = 'banners/'.$imageName;
 
-            if (!Storage::disk('public')->exists($localPath)) {
+            if (! Storage::disk('public')->exists($localPath)) {
                 try {
                     $contents = file_get_contents($data['image']);
                     if ($contents !== false) {
@@ -60,13 +60,13 @@ class BannerSeeder extends Seeder
                 ['title' => $data['title']],
                 [
                     'description' => $data['description'],
-                    'type'        => $data['type'],
-                    'status'      => $data['status'],
-                    'image_url'   => $localPath,
+                    'type' => $data['type'],
+                    'status' => $data['status'],
+                    'image_url' => $localPath,
                 ]
             );
         }
 
-        $this->command->info('BannerSeeder: ' . count($banners) . ' banners seeded.');
+        $this->command->info('BannerSeeder: '.count($banners).' banners seeded.');
     }
 }

@@ -14,11 +14,10 @@ trait UpdatesModelStatus
      *   - id     (integer, must exist in the model's table)
      *   - status (boolean / 0|1)
      *
-     * @param  class-string  $modelClass   Fully-qualified Eloquent model class.
-     * @param  Request       $request
-     * @param  string        $statusField  Column name to update (default: 'status').
-     * @param  string        $table        Table name used for the exists rule.
-     *                                     Defaults to the model's own table via ::getModel()->getTable().
+     * @param  class-string  $modelClass  Fully-qualified Eloquent model class.
+     * @param  string  $statusField  Column name to update (default: 'status').
+     * @param  string  $table  Table name used for the exists rule.
+     *                         Defaults to the model's own table via ::getModel()->getTable().
      */
     public function performStatusUpdate(
         string $modelClass,
@@ -29,8 +28,8 @@ trait UpdatesModelStatus
         $table = $table ?? (new $modelClass)->getTable();
 
         $request->validate([
-            'id'         => "required|exists:{$table},id",
-            'status'     => 'required|boolean',
+            'id' => "required|exists:{$table},id",
+            'status' => 'required|boolean',
         ]);
 
         $modelClass::whereKey($request->id)->update([$statusField => $request->status]);

@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Concerns\WithWishlistIds;
 use App\Models\Banner;
 use App\Models\Category;
-use App\Models\Product;
 use App\Models\Page;
+use App\Models\Product;
 
 class StoreController extends Controller
 {

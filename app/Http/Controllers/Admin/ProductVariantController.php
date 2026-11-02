@@ -27,20 +27,21 @@ class ProductVariantController extends Controller
 
         return DataTables::of($productVariants)
             ->addColumn('id', fn ($pv) => $pv->id)
-            ->addColumn('product', fn ($pv) => '<span class="fw-semibold" style="color: var(--vp-text);">' . e($pv->product->name ?? 'Unknown Product') . '</span>')
+            ->addColumn('product', fn ($pv) => '<span class="fw-semibold" style="color: var(--vp-text);">'.e($pv->product->name ?? 'Unknown Product').'</span>')
             ->addColumn('variant_name', function ($pv) {
-                return '<span class="vp-status-badge inactive" style="background: var(--vp-primary-bg); color: var(--vp-primary); font-weight: 600;">' . e($pv->name ?? '—') . '</span>';
+                return '<span class="vp-status-badge inactive" style="background: var(--vp-primary-bg); color: var(--vp-primary); font-weight: 600;">'.e($pv->name ?? '—').'</span>';
             })
-            ->addColumn('price', fn ($pv) => '<span style="font-weight: 700; color: var(--vp-primary); font-size: .875rem;">$' . number_format((float) $pv->price, 2) . '</span>')
+            ->addColumn('price', fn ($pv) => '<span style="font-weight: 700; color: var(--vp-primary); font-size: .875rem;">$'.number_format((float) $pv->price, 2).'</span>')
             ->addColumn('stock', function ($pv) {
                 if ($pv->stock <= 0) {
-                    return '<span class="vp-status-badge cancelled">' . (int)$pv->stock . ' — Out</span>';
+                    return '<span class="vp-status-badge cancelled">'.(int) $pv->stock.' — Out</span>';
                 } elseif ($pv->stock <= 5) {
-                    return '<span class="vp-status-badge pending">' . (int)$pv->stock . ' — Low</span>';
+                    return '<span class="vp-status-badge pending">'.(int) $pv->stock.' — Low</span>';
                 }
-                return '<span class="vp-status-badge active">' . (int)$pv->stock . '</span>';
+
+                return '<span class="vp-status-badge active">'.(int) $pv->stock.'</span>';
             })
-            ->addColumn('sku', fn ($pv) => '<code style="font-size: .78rem; background: var(--vp-surface-muted); padding: 3px 8px; border-radius: var(--vp-r-xs); border: 1px solid var(--vp-border-sub); color: var(--vp-text-2);">' . e($pv->SKU ?? '—') . '</code>')
+            ->addColumn('sku', fn ($pv) => '<code style="font-size: .78rem; background: var(--vp-surface-muted); padding: 3px 8px; border-radius: var(--vp-r-xs); border: 1px solid var(--vp-border-sub); color: var(--vp-text-2);">'.e($pv->SKU ?? '—').'</code>')
             ->addColumn('action', function ($pv) {
                 return '<div class="dt-actions">
                     <a href="'.route('admin.product_variants.edit', $pv->id).'" class="btn-action btn-action-edit" title="Edit variant" aria-label="Edit variant">
@@ -66,9 +67,9 @@ class ProductVariantController extends Controller
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'name'       => 'required|string|max:255',
-            'price'      => 'required|numeric',
-            'stock'      => 'required|integer',
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'stock' => 'required|integer',
         ]);
 
         $data = $request->only(['product_id', 'name', 'price', 'stock', 'SKU', 'barcode', 'discount_price', 'weight', 'dimensions', 'is_primary']);
@@ -90,7 +91,7 @@ class ProductVariantController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name'  => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'stock' => 'required|integer',
         ]);

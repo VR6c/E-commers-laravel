@@ -3,11 +3,14 @@
 namespace Tests\Feature;
 
 use App\Models\Page;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class StorefrontMiscTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_wishlist_requires_customer_login(): void
     {
         // Guarded by auth.customer — guests are redirected to login.

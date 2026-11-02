@@ -14,6 +14,7 @@ use Yajra\DataTables\Facades\DataTables;
 class BannerController extends Controller
 {
     use UpdatesModelStatus;
+
     protected $bannerService;
 
     public function __construct(BannerService $bannerService)
@@ -34,12 +35,13 @@ class BannerController extends Controller
 
         return DataTables::of($banners)
             ->addColumn('image', function ($banner) {
-                if (!$banner->image_url) {
+                if (! $banner->image_url) {
                     return null;
                 }
                 if (\Illuminate\Support\Str::startsWith($banner->image_url, ['http://', 'https://'])) {
                     return $banner->image_url;
                 }
+
                 return Storage::disk('public')->url($banner->image_url);
             })
             ->addColumn('title', function ($banner) {
@@ -87,7 +89,7 @@ class BannerController extends Controller
                 'message' => 'Banner deleted successfully.',
             ]);
         } catch (\Exception $e) {
-            Log::error("Error deleting banner with ID {$id}: " . $e->getMessage());
+            Log::error("Error deleting banner with ID {$id}: ".$e->getMessage());
 
             return response()->json([
                 'success' => false,

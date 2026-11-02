@@ -37,25 +37,25 @@ class CouponApiController extends Controller
 
         if (! $coupon) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Invalid coupon code.',
             ], 422);
         }
 
         if ($coupon->isExpired()) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'This coupon has expired.',
             ], 422);
         }
 
         return response()->json([
-            'status'  => true,
+            'status' => true,
             'message' => 'Coupon applied successfully!',
-            'data'    => [
+            'data' => [
                 'discount_amount' => (float) $coupon->discount,
-                'type'            => $coupon->type, // 'fixed' or 'percentage'
-                'code'            => $coupon->code,
+                'type' => $coupon->type, // 'fixed' or 'percentage'
+                'code' => $coupon->code,
             ],
         ]);
     }

@@ -4,21 +4,28 @@ namespace App\Services\PaymentGateway;
 
 use App\Models\PaymentGateway;
 use App\Models\PaymentGatewayConfig;
+use Exception;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class ABAPayWayService implements PaymentGatewayInterface
 {
     protected $merchantId;
+
     protected $merchantName;
+
     protected $apiKey;
+
     protected $environment;
+
     protected $checkoutUrl;
+
     protected $mockEnabled;
+
     protected $rsaPublicKey;
+
     protected $rsaPrivateKey;
 
     public function __construct(string $environment = 'sandbox')
@@ -40,9 +47,9 @@ class ABAPayWayService implements PaymentGatewayInterface
         }
 
         // Active merchant credentials from DB configs, env, or defaults (ec476922 - THARY VIREAK)
-        $this->merchantId   = $configs['merchant_id'] ?? env('ABA_PAYWAY_MERCHANT_ID', env('PAYWAY_MERCHANT_ID', 'ec476922'));
+        $this->merchantId = $configs['merchant_id'] ?? env('ABA_PAYWAY_MERCHANT_ID', env('PAYWAY_MERCHANT_ID', 'ec476922'));
         $this->merchantName = $configs['merchant_name'] ?? env('ABA_PAYWAY_MERCHANT_NAME', 'THARY VIREAK');
-        $this->apiKey       = $configs['api_key'] ?? env('ABA_PAYWAY_API_KEY', env('PAYWAY_API_KEY', 'fde4f7ade6a1eab1c6fdb05c7823db3804ab702d'));
+        $this->apiKey = $configs['api_key'] ?? env('ABA_PAYWAY_API_KEY', env('PAYWAY_API_KEY', 'fde4f7ade6a1eab1c6fdb05c7823db3804ab702d'));
 
         // Load RSA Keys with defaults
         $pubKeyPath = base_path(env('PAYWAY_RSA_PUBLIC_KEY_PATH', 'storage/keys/payway_public.pem'));
@@ -52,7 +59,7 @@ class ABAPayWayService implements PaymentGatewayInterface
 
         $defaultPrivKey = "-----BEGIN RSA PRIVATE KEY-----\nMIICXAIBAAKBgQCGHHsnEsHfng47X/EplK1GsGcpJYB7OU2wUsSZd4LHE4982rvi\nlAxINjGMgWFNkGojlGTSM/1u0jAux8Y4zegvfE9l94Up8k0mlhxyAr63O2zw2lAD\nEuTpeitsaG6V2G+7XbQdC+iQPsmn6DuSp3wik+/yfWjaAGOhS6wk8AqE6QIDAQAB\nAoGABwBFIJLO2qrKqWBWkV5g11Qeqov541ToPJhxiXZu9hAMGU886DTk2D82Anj9\nmfpg4jR0CU2kgQzJdZ5LlYrQQFf/QiQDpcN5CFyNAfdzg2SN6TPV0NSjfTwfczk0\nEMsStOxNVlbgIcnclju9wMnGMdYS9ox/5V/k5DAohilSr/UCQQCGM2ojjE9xE0B6\nlZuOgbMhQWhwDV7KtwkdYvOFFWGlu3y7HQOXswMDqLsVHFOGxR0Qr+ljKTWuLAX6\nM3VG0qHdAkEA/9RAkrh2mjvDob4O7rF+vNUbZn+5oZYXdrcfvVvS5/ieHO4v1F0C\npyGXZ4qVIXd3hzGMJsifmqXlDlYS36WsfQJAEdqfQVF2dDW6e1SSGhH66263RUkS\nFlpDfSxf95Grpw/1fTNT+gev2/nDWgA9xALVZhXxN+cQpDZpKStVa/Gz5QJBANCj\nXp5EI/E2OyFknFgcyfD2Q064MJpzhw3dmAJ3uVsml4jKwUw8X4O/WvzG7Py04768\naxfAnt/FjOfOeJa9U10CQFbNABPz/naGXUrbQcK6WM6zwc/7KUOtPAtb81UccZoz\nzasylaTl4nJVo5N4/PDaF4ZVaZ1+rYJVvYbtsML0E1U=\n-----END RSA PRIVATE KEY-----";
 
-        $this->rsaPublicKey  = file_exists($pubKeyPath) ? file_get_contents($pubKeyPath) : env('PAYWAY_RSA_PUBLIC_KEY', $defaultPubKey);
+        $this->rsaPublicKey = file_exists($pubKeyPath) ? file_get_contents($pubKeyPath) : env('PAYWAY_RSA_PUBLIC_KEY', $defaultPubKey);
         $this->rsaPrivateKey = file_exists($privKeyPath) ? file_get_contents($privKeyPath) : env('PAYWAY_RSA_PRIVATE_KEY', $defaultPrivKey);
 
         $defaultUrl = $environment === 'live'
@@ -114,7 +121,7 @@ class ABAPayWayService implements PaymentGatewayInterface
 
         $b4hash = '';
         foreach ($fields as $field) {
-            $b4hash .= isset($params[$field]) ? (string)$params[$field] : '';
+            $b4hash .= isset($params[$field]) ? (string) $params[$field] : '';
         }
 
         return base64_encode(hash_hmac('sha512', $b4hash, $this->apiKey, true));
@@ -131,10 +138,11 @@ class ABAPayWayService implements PaymentGatewayInterface
             if (is_array($value)) {
                 $b4hash .= json_encode($value);
             } else {
-                $b4hash .= (string)$value;
+                $b4hash .= (string) $value;
             }
         }
         $generated = base64_encode(hash_hmac('sha512', $b4hash, $this->apiKey, true));
+
         return hash_equals($generated, $receivedSignature);
     }
 
@@ -155,12 +163,13 @@ class ABAPayWayService implements PaymentGatewayInterface
             if ($response->successful()) {
                 $data = $response->json();
                 if (is_array($data) && (isset($data['qrString']) || isset($data['abapay_deeplink']))) {
-                    if (empty($data['qrImage']) && !empty($data['qrString'])) {
+                    if (empty($data['qrImage']) && ! empty($data['qrString'])) {
                         $data['qrImage'] = self::generateQrPngBase64($data['qrString']);
-                    } elseif (!empty($data['qrImage'])) {
+                    } elseif (! empty($data['qrImage'])) {
                         // Strip data:image/...;base64, prefix if present so Flutter Image.memory(base64Decode(...)) works cleanly
                         $data['qrImage'] = preg_replace('/^data:image\/[^;]+;base64,/', '', $data['qrImage']);
                     }
+
                     return $data;
                 }
             }
@@ -170,20 +179,20 @@ class ABAPayWayService implements PaymentGatewayInterface
 
             Log::error('ABA PayWay API response error', [
                 'status' => $response->status(),
-                'body'   => $body,
+                'body' => $body,
             ]);
 
-            $description = is_array($data) && !empty($data['description'])
+            $description = is_array($data) && ! empty($data['description'])
                 ? $data['description']
-                : (isset($data['status']['message']) ? $data['status']['message'] : (is_string($body) && !empty(trim($body)) ? trim($body) : 'Payment gateway rejected transaction'));
+                : (isset($data['status']['message']) ? $data['status']['message'] : (is_string($body) && ! empty(trim($body)) ? trim($body) : 'Payment gateway rejected transaction'));
 
-            throw new Exception('Payment gateway rejected transaction: ' . $description, $response->status());
+            throw new Exception('Payment gateway rejected transaction: '.$description, $response->status());
         } catch (ConnectionException $e) {
-            Log::error('ABA PayWay connection timeout: ' . $e->getMessage());
+            Log::error('ABA PayWay connection timeout: '.$e->getMessage());
             throw new Exception('Payment gateway connection timed out. Please try again or choose Cash on Delivery.', 504);
         } catch (RequestException $e) {
-            Log::error('ABA PayWay request exception: ' . $e->getMessage());
-            throw new Exception('Payment gateway temporarily unavailable: ' . $e->getMessage(), 502);
+            Log::error('ABA PayWay request exception: '.$e->getMessage());
+            throw new Exception('Payment gateway temporarily unavailable: '.$e->getMessage(), 502);
         }
     }
 
@@ -193,8 +202,8 @@ class ABAPayWayService implements PaymentGatewayInterface
     public function checkTransaction(string $tranId): array
     {
         $reqTime = now()->utc()->format('YmdHis');
-        $b4hash  = $reqTime . $this->merchantId . $tranId;
-        $hash    = base64_encode(hash_hmac('sha512', $b4hash, $this->apiKey, true));
+        $b4hash = $reqTime.$this->merchantId.$tranId;
+        $hash = base64_encode(hash_hmac('sha512', $b4hash, $this->apiKey, true));
 
         $url = $this->environment === 'live'
             ? 'https://checkout.payway.com.kh/api/payment-gateway/v1/payments/check-transaction-2'
@@ -206,35 +215,35 @@ class ABAPayWayService implements PaymentGatewayInterface
                 ->withHeaders([
                     'Content-Type' => 'application/json',
                 ])->post($url, [
-                    'req_time'    => $reqTime,
+                    'req_time' => $reqTime,
                     'merchant_id' => $this->merchantId,
-                    'tran_id'     => $tranId,
-                    'hash'        => $hash,
+                    'tran_id' => $tranId,
+                    'hash' => $hash,
                 ]);
 
             if ($response->successful()) {
                 $data = $response->json();
                 if (is_array($data)) {
-                    $rawStatus   = $data['payment_status'] ?? ($data['data']['payment_status'] ?? null);
-                    $rawCode     = $data['payment_status_code'] ?? ($data['data']['payment_status_code'] ?? null);
+                    $rawStatus = $data['payment_status'] ?? ($data['data']['payment_status'] ?? null);
+                    $rawCode = $data['payment_status_code'] ?? ($data['data']['payment_status_code'] ?? null);
 
                     $isApproved = ($rawStatus === 'APPROVED');
 
-                    $paymentStatus     = $isApproved ? 'APPROVED' : ($rawStatus ?? 'PENDING');
+                    $paymentStatus = $isApproved ? 'APPROVED' : ($rawStatus ?? 'PENDING');
                     $paymentStatusCode = $isApproved ? 0 : ($rawCode ?? 1);
 
-                    if (!isset($data['data']) || !is_array($data['data'])) {
+                    if (! isset($data['data']) || ! is_array($data['data'])) {
                         $data['data'] = [];
                     }
 
-                    $data['data']['payment_status']      = $paymentStatus;
+                    $data['data']['payment_status'] = $paymentStatus;
                     $data['data']['payment_status_code'] = $paymentStatusCode;
-                    $data['data']['tran_id']             = $tranId;
-                    $data['data']['apv']                 = $data['apv'] ?? ($data['data']['apv'] ?? '');
-                    $data['data']['payment_amount']      = $data['payment_amount'] ?? ($data['data']['payment_amount'] ?? null);
-                    $data['data']['total_amount']        = $data['total_amount'] ?? ($data['data']['total_amount'] ?? null);
+                    $data['data']['tran_id'] = $tranId;
+                    $data['data']['apv'] = $data['apv'] ?? ($data['data']['apv'] ?? '');
+                    $data['data']['payment_amount'] = $data['payment_amount'] ?? ($data['data']['payment_amount'] ?? null);
+                    $data['data']['total_amount'] = $data['total_amount'] ?? ($data['data']['total_amount'] ?? null);
 
-                    $data['payment_status']      = $paymentStatus;
+                    $data['payment_status'] = $paymentStatus;
                     $data['payment_status_code'] = $paymentStatusCode;
 
                     return $data;
@@ -243,24 +252,24 @@ class ABAPayWayService implements PaymentGatewayInterface
 
             // Real ABA PayWay did not confirm approval, or connection blocked: keep PENDING
             return [
-                'status'      => 0,
+                'status' => 0,
                 'description' => 'Payment pending',
-                'data'        => [
-                    'payment_status'      => 'PENDING',
+                'data' => [
+                    'payment_status' => 'PENDING',
                     'payment_status_code' => 1,
-                    'tran_id'             => $tranId,
+                    'tran_id' => $tranId,
                 ],
             ];
         } catch (\Throwable $e) {
-            Log::warning('ABA PayWay checkTransaction error/timeout: ' . $e->getMessage());
+            Log::warning('ABA PayWay checkTransaction error/timeout: '.$e->getMessage());
 
             return [
-                'status'      => 0,
+                'status' => 0,
                 'description' => 'Payment pending',
-                'data'        => [
-                    'payment_status'      => 'PENDING',
+                'data' => [
+                    'payment_status' => 'PENDING',
                     'payment_status_code' => 1,
-                    'tran_id'             => $tranId,
+                    'tran_id' => $tranId,
                 ],
             ];
         }
@@ -275,28 +284,28 @@ class ABAPayWayService implements PaymentGatewayInterface
             ? (float) $params['amount']
             : ($order ? (float) ($order->total_amount ?? 0) : 0.0);
 
-        $orderId  = $order ? $order->id : null;
-        $tranId   = $params['tran_id'] ?? ('ORD-' . ($orderId ?? time()) . '-' . time());
+        $orderId = $order ? $order->id : null;
+        $tranId = $params['tran_id'] ?? ('ORD-'.($orderId ?? time()).'-'.time());
         $currency = $params['currency'] ?? 'USD';
 
         // Dynamically compute EMVCo KHQR string with exact order amount and merchant name
         $khqr = self::generateKHQRString($amount, $this->merchantName, $currency, null, $tranId);
-        $deeplink = 'abamobilebank://ababank.com?type=payway&qrcode=' . urlencode($khqr);
+        $deeplink = 'abamobilebank://ababank.com?type=payway&qrcode='.urlencode($khqr);
 
         // Generate a 100% genuine, pixel-perfect, scannable QR Code PNG in Base64
         $qrImageBase64 = self::generateQrPngBase64($khqr);
 
         return [
-            'status'          => 0,
-            'description'     => 'Success (Mock Sandbox)',
-            'order_id'        => $orderId,
-            'tran_id'         => $tranId,
-            'total_amount'    => number_format($amount, 2, '.', ''),
-            'amount'          => number_format($amount, 2, '.', ''),
-            'currency'        => $currency,
+            'status' => 0,
+            'description' => 'Success (Mock Sandbox)',
+            'order_id' => $orderId,
+            'tran_id' => $tranId,
+            'total_amount' => number_format($amount, 2, '.', ''),
+            'amount' => number_format($amount, 2, '.', ''),
+            'currency' => $currency,
             'abapay_deeplink' => $deeplink,
-            'qrString'        => $khqr,
-            'qrImage'         => $qrImageBase64,
+            'qrString' => $khqr,
+            'qrImage' => $qrImageBase64,
         ];
     }
 
@@ -312,29 +321,29 @@ class ABAPayWayService implements PaymentGatewayInterface
         ?string $tranId = null
     ): string {
         $amountStr = number_format($amount, 2, '.', '');
-        $tag54Len  = str_pad((string) strlen($amountStr), 2, '0', STR_PAD_LEFT);
-        $tag54     = '54' . $tag54Len . $amountStr;
+        $tag54Len = str_pad((string) strlen($amountStr), 2, '0', STR_PAD_LEFT);
+        $tag54 = '54'.$tag54Len.$amountStr;
 
         $currencyCode = strtoupper($currency) === 'KHR' ? '116' : '840';
-        $tag53        = '5303' . $currencyCode;
+        $tag53 = '5303'.$currencyCode;
 
         $cleanMerchantName = substr(trim($merchantName), 0, 25);
-        $merchantLen       = str_pad((string) strlen($cleanMerchantName), 2, '0', STR_PAD_LEFT);
-        $tag59             = '59' . $merchantLen . $cleanMerchantName;
+        $merchantLen = str_pad((string) strlen($cleanMerchantName), 2, '0', STR_PAD_LEFT);
+        $tag59 = '59'.$merchantLen.$cleanMerchantName;
 
         // Tag 60: Merchant City (Mandatory in EMVCo / KHQR standard, min 1 char)
         $cityName = 'Phnom Penh';
-        $cityLen  = str_pad((string) strlen($cityName), 2, '0', STR_PAD_LEFT);
-        $tag60    = '60' . $cityLen . $cityName;
+        $cityLen = str_pad((string) strlen($cityName), 2, '0', STR_PAD_LEFT);
+        $tag60 = '60'.$cityLen.$cityName;
 
         $bakongId = $bakongId ?: env('ABA_BAKONG_ACCOUNT_ID');
 
         if ($bakongId) {
             // Tag 29: Individual / Merchant Bakong KHQR
-            $sub00 = '00' . str_pad((string) strlen($bakongId), 2, '0', STR_PAD_LEFT) . $bakongId;
+            $sub00 = '00'.str_pad((string) strlen($bakongId), 2, '0', STR_PAD_LEFT).$bakongId;
             $sub02 = '0211abaakhppxxx';
-            $tag29Val = $sub00 . $sub02;
-            $tagMerchant = '29' . str_pad((string) strlen($tag29Val), 2, '0', STR_PAD_LEFT) . $tag29Val;
+            $tag29Val = $sub00.$sub02;
+            $tagMerchant = '29'.str_pad((string) strlen($tag29Val), 2, '0', STR_PAD_LEFT).$tag29Val;
         } else {
             // Tag 30: ABA Bank Merchant Info
             $tagMerchant = '30510016abaakhppxxx@abaa01151111111111111110208ABA Bank';
@@ -343,27 +352,27 @@ class ABAPayWayService implements PaymentGatewayInterface
         // Tag 62: Additional Data (Bill Number / Transaction ID)
         $tag62 = '';
         if ($tranId) {
-            $sub01 = '01' . str_pad((string) strlen($tranId), 2, '0', STR_PAD_LEFT) . $tranId;
-            $tag62 = '62' . str_pad((string) strlen($sub01), 2, '0', STR_PAD_LEFT) . $sub01;
+            $sub01 = '01'.str_pad((string) strlen($tranId), 2, '0', STR_PAD_LEFT).$tranId;
+            $tag62 = '62'.str_pad((string) strlen($sub01), 2, '0', STR_PAD_LEFT).$sub01;
         }
 
         // Base EMVCo / KHQR payload up to CRC tag 6304
         // Note: Proprietary Tag 99 is omitted to prevent ABA Mobile from attempting a fictitious PayWay session lookup
         $payload = '000201'                                    // Tag 00: Format indicator
-                 . '010212'                                    // Tag 01: Dynamic QR
-                 . $tagMerchant                                // Tag 29 or Tag 30
-                 . '52045999'                                  // Tag 52: MCC
-                 . $tag53                                      // Tag 53: Currency (840 = USD)
-                 . $tag54                                      // Tag 54: Amount (dynamic order total)
-                 . '5802KH'                                    // Tag 58: Country code
-                 . $tag59                                      // Tag 59: Merchant name
-                 . $tag60                                      // Tag 60: Merchant city (Phnom Penh)
-                 . $tag62                                      // Tag 62: Additional data
-                 . '6304';                                     // Tag 63: CRC placeholder
+                 .'010212'                                    // Tag 01: Dynamic QR
+                 .$tagMerchant                                // Tag 29 or Tag 30
+                 .'52045999'                                  // Tag 52: MCC
+                 .$tag53                                      // Tag 53: Currency (840 = USD)
+                 .$tag54                                      // Tag 54: Amount (dynamic order total)
+                 .'5802KH'                                    // Tag 58: Country code
+                 .$tag59                                      // Tag 59: Merchant name
+                 .$tag60                                      // Tag 60: Merchant city (Phnom Penh)
+                 .$tag62                                      // Tag 62: Additional data
+                 .'6304';                                     // Tag 63: CRC placeholder
 
         $crc = self::calculateCRC16($payload);
 
-        return $payload . $crc;
+        return $payload.$crc;
     }
 
     /**
@@ -374,7 +383,8 @@ class ABAPayWayService implements PaymentGatewayInterface
         try {
             return QRCode::pngBase64($data, ['s' => 'qrm'], $scale);
         } catch (\Throwable $e) {
-            Log::error('Local QR code generation failed: ' . $e->getMessage());
+            Log::error('Local QR code generation failed: '.$e->getMessage());
+
             return self::getFallbackQrPng();
         }
     }
@@ -396,6 +406,7 @@ class ABAPayWayService implements PaymentGatewayInterface
                 }
             }
         }
+
         return strtoupper(str_pad(dechex($crc), 4, '0', STR_PAD_LEFT));
     }
 
@@ -414,6 +425,6 @@ class ABAPayWayService implements PaymentGatewayInterface
 
     public function isConfigured(): bool
     {
-        return !empty($this->merchantId) && !empty($this->apiKey);
+        return ! empty($this->merchantId) && ! empty($this->apiKey);
     }
 }

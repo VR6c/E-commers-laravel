@@ -19,21 +19,21 @@ class ProductVariantResource extends JsonResource
         $attributes = [];
         if ($this->relationLoaded('attributeValues')) {
             $attributes = $this->attributeValues->map(fn ($av) => [
-                'id'    => $av->id,
-                'name'  => $av->attribute?->name ?? '',
+                'id' => $av->id,
+                'name' => $av->attribute?->name ?? '',
                 'value' => $av->value,
             ])->values()->all();
         }
 
         return [
-            'id'             => $this->id,
-            'name'           => $this->name,
-            'price'          => $this->converted_price,
+            'id' => $this->id,
+            'name' => $this->name,
+            'price' => $this->converted_price,
             'discount_price' => $this->converted_discount_price,
-            'stock'          => $this->stock,
-            'sku'            => $this->SKU,
-            'is_primary'     => (bool) $this->is_primary,
-            'attributes'     => $attributes,
+            'stock' => $this->stock,
+            'sku' => $this->SKU,
+            'is_primary' => (bool) $this->is_primary,
+            'attributes' => $attributes,
         ];
     }
 }

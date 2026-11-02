@@ -19,8 +19,8 @@ class AdminUserTest extends TestCase
     private function createAdmin(array $overrides = []): User
     {
         return User::factory()->create(array_merge([
-            'name'     => 'Test Admin',
-            'email'    => 'admin@example.com',
+            'name' => 'Test Admin',
+            'email' => 'admin@example.com',
             'password' => Hash::make('password'),
         ], $overrides));
     }
@@ -47,7 +47,7 @@ class AdminUserTest extends TestCase
         $admin = $this->createAdmin();
 
         $response = $this->post('/login', [
-            'email'    => $admin->email,
+            'email' => $admin->email,
             'password' => 'password',
         ]);
 
@@ -63,7 +63,7 @@ class AdminUserTest extends TestCase
         // We test the redirect target here; loading the full page is covered
         // by test_authenticated_admin_can_access_dashboard.
         $response = $this->post('/login', [
-            'email'    => $admin->email,
+            'email' => $admin->email,
             'password' => 'password',
         ]);
 
@@ -79,7 +79,7 @@ class AdminUserTest extends TestCase
         $admin = $this->createAdmin();
 
         $response = $this->post('/login', [
-            'email'    => $admin->email,
+            'email' => $admin->email,
             'password' => 'wrong-password',
         ]);
 
@@ -90,7 +90,7 @@ class AdminUserTest extends TestCase
     public function test_admin_cannot_login_with_unknown_email(): void
     {
         $response = $this->post('/login', [
-            'email'    => 'nobody@example.com',
+            'email' => 'nobody@example.com',
             'password' => 'password',
         ]);
 
@@ -126,7 +126,7 @@ class AdminUserTest extends TestCase
     {
         $response = $this->get(route('admin.dashboard'));
 
-        $response->assertRedirect(route('login'));
+        $response->assertRedirect(route('admin.login'));
     }
 
     public function test_authenticated_admin_can_access_dashboard(): void
@@ -180,6 +180,6 @@ class AdminUserTest extends TestCase
 
         // A fresh request without authentication should be redirected
         $response = $this->get(route('admin.dashboard'));
-        $response->assertRedirect(route('login'));
+        $response->assertRedirect(route('admin.login'));
     }
 }

@@ -28,24 +28,24 @@ class CategoryResource extends JsonResource
                 ->filter(fn ($c) => ($c->products_count ?? 0) > 0)
                 ->values()
                 ->map(fn ($child) => [
-                    'id'             => $child->id,
-                    'slug'           => $child->slug,
-                    'name'           => $child->name,
-                    'description'    => $child->description,
-                    'image_url'      => $child->image_url,
+                    'id' => $child->id,
+                    'slug' => $child->slug,
+                    'name' => $child->name,
+                    'description' => $child->description,
+                    'image_url' => $child->image_url,
                     'products_count' => (int) ($child->products_count ?? 0),
                 ])
                 ->all();
         }
 
         return [
-            'id'             => $this->id,
-            'slug'           => $this->slug,
-            'name'           => $this->name,
-            'description'    => $this->description,
-            'image_url'      => $this->image_url,
+            'id' => $this->id,
+            'slug' => $this->slug,
+            'name' => $this->name,
+            'description' => $this->description,
+            'image_url' => $this->image_url,
             'products_count' => $totalProducts,
-            'children'       => $children,
+            'children' => $children,
         ];
     }
 }

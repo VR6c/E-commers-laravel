@@ -2,10 +2,13 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class StorefrontCheckoutTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_cart_page_renders(): void
     {
         $response = $this->get(route('cart.view'));
@@ -16,7 +19,9 @@ class StorefrontCheckoutTest extends TestCase
 
     public function test_checkout_page_renders_with_form_and_summary(): void
     {
-        $response = $this->get(route('checkout.index'));
+        $cart = [1 => ['name' => 'Test Product', 'price' => 10, 'quantity' => 2, 'image' => null]];
+
+        $response = $this->withSession(['cart' => $cart])->get(route('checkout.index'));
 
         $response->assertStatus(200);
         $response->assertSee('id="checkout-form"', false);

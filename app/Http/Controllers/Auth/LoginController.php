@@ -51,7 +51,6 @@ class LoginController extends Controller
     /**
      * Attempt to log the user into the application with defensive check against unhashed passwords.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return bool
      */
     protected function attemptLogin(\Illuminate\Http\Request $request)

@@ -29,7 +29,7 @@ class ProductReviewController extends Controller
                     : '<span class="badge bg-warning text-dark">Pending</span>';
             })
             ->addColumn('action', function ($review) {
-                return '<a href="' . route('admin.reviews.show', $review->id) . '" class="btn-action btn-action-edit" title="View"><i class="bi bi-eye-fill"></i></a>';
+                return '<a href="'.route('admin.reviews.show', $review->id).'" class="btn-action btn-action-edit" title="View"><i class="bi bi-eye-fill"></i></a>';
             })
             ->rawColumns(['status', 'action'])
             ->make(true);
@@ -50,14 +50,14 @@ class ProductReviewController extends Controller
     public function update(Request $request, ProductReview $review)
     {
         $request->validate([
-            'rating'      => 'required|integer|min:1|max:5',
-            'review'      => 'nullable|string|max:1000',
+            'rating' => 'required|integer|min:1|max:5',
+            'review' => 'nullable|string|max:1000',
             'is_approved' => 'required|boolean',
         ]);
 
         $review->update([
-            'rating'      => $request->rating,
-            'review'      => $request->review,
+            'rating' => $request->rating,
+            'review' => $request->review,
             'is_approved' => $request->is_approved,
         ]);
 
@@ -75,9 +75,9 @@ class ProductReviewController extends Controller
         $label = $review->is_approved ? 'approved' : 'pending';
 
         return response()->json([
-            'success'     => true,
+            'success' => true,
             'is_approved' => $review->is_approved,
-            'message'     => "Review marked as {$label}.",
+            'message' => "Review marked as {$label}.",
         ]);
     }
 

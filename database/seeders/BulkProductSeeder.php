@@ -7,7 +7,6 @@ use App\Models\AttributeValue;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\ProductAttributeValue;
 use App\Models\Vendor;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +18,7 @@ class BulkProductSeeder extends Seeder
     /**
      * Run the database seeds.
      *
-     * @param int $count Number of products to seed (default 100)
+     * @param  int  $count  Number of products to seed (default 100)
      */
     public function run(int $count = 100): void
     {
@@ -34,7 +33,7 @@ class BulkProductSeeder extends Seeder
         }
 
         // 1. Ensure Attributes (Size & Color) exist
-        $sizeAttr  = Attribute::firstOrCreate(['name' => 'Size']);
+        $sizeAttr = Attribute::firstOrCreate(['name' => 'Size']);
         $colorAttr = Attribute::firstOrCreate(['name' => 'Color']);
 
         $sizes = ['Small', 'Medium', 'Large', 'XL', 'XXL'];
@@ -47,18 +46,17 @@ class BulkProductSeeder extends Seeder
             AttributeValue::firstOrCreate(['attribute_id' => $colorAttr->id, 'value' => $c]);
         }
 
-        $sizeValues  = AttributeValue::where('attribute_id', $sizeAttr->id)->get();
+        $sizeValues = AttributeValue::where('attribute_id', $sizeAttr->id)->get();
         $colorValues = AttributeValue::where('attribute_id', $colorAttr->id)->get();
 
         // 2. Ensure Vendor and Shop exist
         $vendor = Vendor::first() ?? Vendor::create([
-            'name'     => 'Main Store Vendor',
-            'email'    => 'vendor@store.com',
+            'name' => 'Main Store Vendor',
+            'email' => 'vendor@store.com',
             'password' => Hash::make('password'),
-            'phone'    => '+1234567890',
-            'status'   => 'active',
+            'phone' => '+1234567890',
+            'status' => 'active',
         ]);
-
 
         // 3. Ensure Categories exist
         $existingCategories = Category::where('status', true)->get();
@@ -162,83 +160,83 @@ class BulkProductSeeder extends Seeder
         for ($i = 1; $i <= $count; $i++) {
             // Select a template cyclically and append index to ensure uniqueness
             $templateIndex = ($i - 1) % count($productTemplates);
-            $template      = $productTemplates[$templateIndex];
+            $template = $productTemplates[$templateIndex];
 
             // Variations in name for uniqueness when creating 100 items
-            $suffixNumber  = ceil($i / count($productTemplates));
-            $productName   = $template['name'] . ($suffixNumber > 1 ? " - Edition {$suffixNumber}" : "");
-            $productSlug   = Str::slug($productName) . '-' . Str::lower(Str::random(6));
+            $suffixNumber = ceil($i / count($productTemplates));
+            $productName = $template['name'].($suffixNumber > 1 ? " - Edition {$suffixNumber}" : '');
+            $productSlug = Str::slug($productName).'-'.Str::lower(Str::random(6));
 
-            $categorySlug  = $template['cat'];
-            $categoryObj   = $categoriesBySlug->get($categorySlug) ?? $categories[array_rand($categories)];
-            $brandObj      = $brands[array_rand($brands)];
+            $categorySlug = $template['cat'];
+            $categoryObj = $categoriesBySlug->get($categorySlug) ?? $categories[array_rand($categories)];
+            $brandObj = $brands[array_rand($brands)];
 
-            $photoId   = $template['photo'];
-            $imageUrl  = "https://images.unsplash.com/photo-{$photoId}?w=600&h=600&fit=crop&auto=format&q=75";
+            $photoId = $template['photo'];
+            $imageUrl = "https://images.unsplash.com/photo-{$photoId}?w=600&h=600&fit=crop&auto=format&q=75";
 
             DB::beginTransaction();
             try {
                 // Create Product
                 $product = Product::create([
-                    'vendor_id'         => $vendor->id,
-                    'category_id'       => $categoryObj->id,
-                    'brand_id'          => $brandObj->id,
-                    'name'              => $productName,
-                    'slug'              => $productSlug,
-                    'description'       => "High quality {$productName}. Designed for performance, reliability, and modern aesthetic.",
+                    'vendor_id' => $vendor->id,
+                    'category_id' => $categoryObj->id,
+                    'brand_id' => $brandObj->id,
+                    'name' => $productName,
+                    'slug' => $productSlug,
+                    'description' => "High quality {$productName}. Designed for performance, reliability, and modern aesthetic.",
                     'short_description' => "Premium quality {$productName} with fast shipping and warranty.",
-                    'tags'              => Str::slug($categoryObj->name) . ',' . Str::slug($brandObj->name) . ',seeded',
-                    'product_type'      => $template['type'],
-                    'status'            => 1,
+                    'tags' => Str::slug($categoryObj->name).','.Str::slug($brandObj->name).',seeded',
+                    'product_type' => $template['type'],
+                    'status' => 1,
                 ]);
 
                 // Create Product Image
                 $product->images()->create([
-                    'name'      => $productSlug . '.jpg',
+                    'name' => $productSlug.'.jpg',
                     'image_url' => $imageUrl,
-                    'type'      => 'thumb',
+                    'type' => 'thumb',
                 ]);
 
                 // Create Variants
                 if ($template['type'] === 'variable') {
                     // Seed 2 sizes x 2 colors = 4 variants
-                    $sampleSizes  = $sizeValues->random(min(2, $sizeValues->count()));
+                    $sampleSizes = $sizeValues->random(min(2, $sizeValues->count()));
                     $sampleColors = $colorValues->random(min(2, $colorValues->count()));
-                    $isPrimary    = true;
+                    $isPrimary = true;
                     $variantAttrBatch = [];
 
                     foreach ($sampleSizes as $size) {
                         foreach ($sampleColors as $color) {
-                            $price         = rand($template['min'], $template['max']);
+                            $price = rand($template['min'], $template['max']);
                             $discountPrice = rand(0, 100) > 30 ? round($price * rand(70, 90) / 100) : null;
 
                             $variant = $product->variants()->create([
-                                'variant_slug'   => Str::slug("{$productName} {$size->value}-{$color->value}") . '-' . Str::random(5),
-                                'name'           => "{$size->value} / {$color->value}",
-                                'price'          => $price,
+                                'variant_slug' => Str::slug("{$productName} {$size->value}-{$color->value}").'-'.Str::random(5),
+                                'name' => "{$size->value} / {$color->value}",
+                                'price' => $price,
                                 'discount_price' => $discountPrice,
-                                'stock'          => rand(10, 150),
-                                'SKU'            => strtoupper(Str::random(4)) . rand(10000, 99999),
-                                'weight'         => round(rand(2, 30) / 10, 1),
-                                'dimensions'     => rand(10, 30) . 'x' . rand(10, 30) . 'x' . rand(2, 10) . ' cm',
-                                'is_primary'     => (bool) $isPrimary,
+                                'stock' => rand(10, 150),
+                                'SKU' => strtoupper(Str::random(4)).rand(10000, 99999),
+                                'weight' => round(rand(2, 30) / 10, 1),
+                                'dimensions' => rand(10, 30).'x'.rand(10, 30).'x'.rand(2, 10).' cm',
+                                'is_primary' => (bool) $isPrimary,
                             ]);
 
                             $isPrimary = false;
 
                             foreach ([$size->id, $color->id] as $attrValId) {
                                 $variantAttrBatch[] = [
-                                    'product_id'         => $product->id,
+                                    'product_id' => $product->id,
                                     'product_variant_id' => $variant->id,
                                     'attribute_value_id' => $attrValId,
-                                    'created_at'         => now(),
-                                    'updated_at'         => now(),
+                                    'created_at' => now(),
+                                    'updated_at' => now(),
                                 ];
                             }
                         }
                     }
 
-                    if (!empty($variantAttrBatch)) {
+                    if (! empty($variantAttrBatch)) {
                         DB::table('product_variant_attribute_values')->insert($variantAttrBatch);
                     }
 
@@ -246,28 +244,28 @@ class BulkProductSeeder extends Seeder
                     $prodAttrBatch = [];
                     foreach ($sampleSizes->pluck('id')->merge($sampleColors->pluck('id'))->unique() as $attrValId) {
                         $prodAttrBatch[] = [
-                            'product_id'         => $product->id,
+                            'product_id' => $product->id,
                             'attribute_value_id' => $attrValId,
                         ];
                     }
-                    if (!empty($prodAttrBatch)) {
+                    if (! empty($prodAttrBatch)) {
                         DB::table('product_attribute_values')->insertOrIgnore($prodAttrBatch);
                     }
                 } else {
                     // Simple product single primary variant
-                    $price         = rand($template['min'], $template['max']);
+                    $price = rand($template['min'], $template['max']);
                     $discountPrice = rand(0, 100) > 30 ? round($price * rand(75, 90) / 100) : null;
 
                     $product->variants()->create([
-                        'variant_slug'   => $productSlug . '-default',
-                        'name'           => 'Default',
-                        'price'          => $price,
+                        'variant_slug' => $productSlug.'-default',
+                        'name' => 'Default',
+                        'price' => $price,
                         'discount_price' => $discountPrice,
-                        'stock'          => rand(20, 200),
-                        'SKU'            => strtoupper(Str::random(4)) . rand(10000, 99999),
-                        'weight'         => round(rand(2, 30) / 10, 1),
-                        'dimensions'     => rand(10, 30) . 'x' . rand(10, 30) . 'x' . rand(2, 10) . ' cm',
-                        'is_primary'     => true,
+                        'stock' => rand(20, 200),
+                        'SKU' => strtoupper(Str::random(4)).rand(10000, 99999),
+                        'weight' => round(rand(2, 30) / 10, 1),
+                        'dimensions' => rand(10, 30).'x'.rand(10, 30).'x'.rand(2, 10).' cm',
+                        'is_primary' => true,
                     ]);
                 }
 

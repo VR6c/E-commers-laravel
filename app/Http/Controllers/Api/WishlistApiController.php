@@ -32,8 +32,8 @@ class WishlistApiController extends Controller
 
         return response()->json([
             'status' => true,
-            'count'  => $products->count(),
-            'data'   => $products,
+            'count' => $products->count(),
+            'data' => $products,
         ]);
     }
 
@@ -48,7 +48,7 @@ class WishlistApiController extends Controller
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'action'     => 'nullable|string|in:add,remove,toggle',
+            'action' => 'nullable|string|in:add,remove,toggle',
         ]);
 
         $customer = $request->user();
@@ -62,7 +62,7 @@ class WishlistApiController extends Controller
             if (! $existing) {
                 Wishlist::create([
                     'customer_id' => $customer->id,
-                    'product_id'  => $request->product_id,
+                    'product_id' => $request->product_id,
                 ]);
             }
             $status = 'added';
@@ -78,7 +78,7 @@ class WishlistApiController extends Controller
             } else {
                 Wishlist::create([
                     'customer_id' => $customer->id,
-                    'product_id'  => $request->product_id,
+                    'product_id' => $request->product_id,
                 ]);
                 $status = 'added';
             }
@@ -87,9 +87,9 @@ class WishlistApiController extends Controller
         $count = $customer->wishlistProducts()->count();
 
         return response()->json([
-            'status'  => true,
-            'action'  => $status,
-            'count'   => $count,
+            'status' => true,
+            'action' => $status,
+            'count' => $count,
             'message' => $status === 'added'
                 ? 'Product added to wishlist.'
                 : 'Product removed from wishlist.',
@@ -110,14 +110,14 @@ class WishlistApiController extends Controller
 
         if (! $deleted) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Product not found in wishlist.',
             ], 404);
         }
 
         return response()->json([
-            'status'  => true,
-            'count'   => $customer->wishlistProducts()->count(),
+            'status' => true,
+            'count' => $customer->wishlistProducts()->count(),
             'message' => 'Product removed from wishlist.',
         ]);
     }
@@ -136,7 +136,7 @@ class WishlistApiController extends Controller
 
         return response()->json([
             'status' => true,
-            'data'   => $ids,
+            'data' => $ids,
         ]);
     }
 
@@ -145,36 +145,36 @@ class WishlistApiController extends Controller
     private function formatProduct($product): array
     {
         return [
-            'id'                => $product->id,
-            'slug'              => $product->slug,
-            'name'              => $product->name,
+            'id' => $product->id,
+            'slug' => $product->slug,
+            'name' => $product->name,
             'short_description' => $product->short_description ?? '',
-            'thumbnail'         => $product->thumbnail
+            'thumbnail' => $product->thumbnail
                 ? product_image_url($product->thumbnail->image_url)
                 : '',
-            'category'          => $product->category?->name ?? '',
-            'brand'             => $product->brand?->name ?? null,
-            'price'             => $product->primaryVariant
+            'category' => $product->category?->name ?? '',
+            'brand' => $product->brand?->name ?? null,
+            'price' => $product->primaryVariant
                 ? (float) $product->primaryVariant->converted_price
                 : (float) ($product->converted_price ?? 0),
-            'discount_price'    => $product->primaryVariant
+            'discount_price' => $product->primaryVariant
                 ? ($product->primaryVariant->converted_discount_price
                     ? (float) $product->primaryVariant->converted_discount_price
                     : null)
                 : null,
-            'rating'            => round((float) ($product->reviews_avg_rating ?? 0), 1),
-            'reviews_count'     => (int) ($product->reviews_count ?? 0),
-            'variants'          => $product->variants ? $product->variants->map(fn ($v) => [
-                'id'             => $v->id,
-                'name'           => $v->name,
-                'price'          => (float) $v->converted_price,
+            'rating' => round((float) ($product->reviews_avg_rating ?? 0), 1),
+            'reviews_count' => (int) ($product->reviews_count ?? 0),
+            'variants' => $product->variants ? $product->variants->map(fn ($v) => [
+                'id' => $v->id,
+                'name' => $v->name,
+                'price' => (float) $v->converted_price,
                 'discount_price' => $v->converted_discount_price ? (float) $v->converted_discount_price : null,
-                'stock'          => $v->stock,
-                'sku'            => $v->SKU,
-                'is_primary'     => (bool) $v->is_primary,
-                'attributes'     => $v->attributeValues ? $v->attributeValues->map(fn ($av) => [
-                    'id'    => $av->id,
-                    'name'  => $av->attribute?->name ?? '',
+                'stock' => $v->stock,
+                'sku' => $v->SKU,
+                'is_primary' => (bool) $v->is_primary,
+                'attributes' => $v->attributeValues ? $v->attributeValues->map(fn ($av) => [
+                    'id' => $av->id,
+                    'name' => $av->attribute?->name ?? '',
                     'value' => $av->value,
                 ])->values()->all() : [],
             ])->values()->all() : [],

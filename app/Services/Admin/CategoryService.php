@@ -44,9 +44,9 @@ class CategoryService
     {
         // $translations is keyed by lang code; 'en' holds name/description/image
         $validator = Validator::make($translations['en'] ?? [], [
-            'name'        => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10000',
         ], []);
 
         if ($validator->fails()) {
@@ -61,9 +61,9 @@ class CategoryService
         $category = Category::findOrFail($id);
 
         $request->validate([
-            'name'        => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10000',
         ]);
 
         // Wrap into translations array for the repository

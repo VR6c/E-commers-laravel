@@ -5,7 +5,6 @@ namespace Tests\Unit;
 use App\Services\ImageUploadService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -22,12 +21,12 @@ class ImageUploadServiceTest extends TestCase
     {
         Http::fake([
             'https://api.imgbb.com/*' => Http::response([
-                'data'    => [
-                    'url'         => 'https://i.ibb.co/xyz123/product.jpg',
+                'data' => [
+                    'url' => 'https://i.ibb.co/xyz123/product.jpg',
                     'display_url' => 'https://i.ibb.co/xyz123/product.jpg',
                 ],
                 'success' => true,
-                'status'  => 200,
+                'status' => 200,
             ], 200),
         ]);
 
@@ -41,7 +40,7 @@ class ImageUploadServiceTest extends TestCase
         Http::assertSent(function ($request) {
             return str_contains($request->url(), 'api.imgbb.com/1/upload')
                 && $request['name'] === 'product'
-                && !empty($request['image']);
+                && ! empty($request['image']);
         });
     }
 
@@ -50,7 +49,7 @@ class ImageUploadServiceTest extends TestCase
         Http::fake([
             'https://api.imgbb.com/*' => Http::response([
                 'status_code' => 400,
-                'error'       => ['message' => 'Invalid API key'],
+                'error' => ['message' => 'Invalid API key'],
             ], 400),
         ]);
 
@@ -81,15 +80,15 @@ class ImageUploadServiceTest extends TestCase
     {
         Http::fake([
             'https://api.imgbb.com/*' => Http::response([
-                'data'    => [
+                'data' => [
                     'url' => 'https://i.ibb.co/abc789/migrated_file.png',
                 ],
                 'success' => true,
-                'status'  => 200,
+                'status' => 200,
             ], 200),
         ]);
 
-        $tmpFile = tempnam(sys_get_temp_dir(), 'imgbb_test_') . '.png';
+        $tmpFile = tempnam(sys_get_temp_dir(), 'imgbb_test_').'.png';
         file_put_contents($tmpFile, 'fake_png_data_content');
 
         try {

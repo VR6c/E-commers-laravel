@@ -49,12 +49,13 @@ class OrderController extends Controller
             })
             ->editColumn('status', function (Order $order) {
                 $status = strtolower($order->status);
-                $class = match($status) {
+                $class = match ($status) {
                     'completed', 'paid' => 'bg-success-soft',
                     'pending', 'processing' => 'bg-warning-soft',
                     'cancelled', 'failed' => 'bg-danger-soft',
                     default => 'bg-secondary-soft',
                 };
+
                 return '<span class="badge '.$class.'">'.ucfirst($order->status).'</span>';
             })
             ->addColumn('action', function (Order $order) {

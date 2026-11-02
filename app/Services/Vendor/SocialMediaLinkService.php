@@ -21,20 +21,20 @@ class SocialMediaLinkService
     public function createSocialMediaLink($data)
     {
         return $this->socialMediaLinkRepository->create([
-            'type'     => $data['type'],
+            'type' => $data['type'],
             'platform' => $data['platform'],
-            'link'     => $data['link'],
-            'name'     => $data['name'] ?? ($data['languages']['en']['name'] ?? null),
+            'link' => $data['link'],
+            'name' => $data['name'] ?? ($data['languages']['en']['name'] ?? null),
         ]);
     }
 
     public function updateSocialMediaLink($id, $data)
     {
         return $this->socialMediaLinkRepository->update($id, [
-            'type'     => $data['type'],
+            'type' => $data['type'],
             'platform' => $data['platform'],
-            'link'     => $data['link'],
-            'name'     => $data['name'] ?? ($data['languages']['en']['name'] ?? null),
+            'link' => $data['link'],
+            'name' => $data['name'] ?? ($data['languages']['en']['name'] ?? null),
         ]);
     }
 

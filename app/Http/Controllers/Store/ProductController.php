@@ -57,7 +57,7 @@ class ProductController extends Controller
         $breadcrumbs = array_reverse($breadcrumbs);
 
         // Determine review eligibility for the logged-in customer
-        $hasPurchased    = false;
+        $hasPurchased = false;
         $alreadyReviewed = false;
 
         if (Auth::guard('customer')->check()) {

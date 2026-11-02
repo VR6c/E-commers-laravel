@@ -13,20 +13,21 @@ class RefundSeeder extends Seeder
     {
         $payment = Payment::where('status', 'completed')->first();
 
-        if (!$payment) {
+        if (! $payment) {
             $this->command->warn('RefundSeeder skipped: no completed payment found. Run PaymentSeeder first.');
+
             return;
         }
         Refund::firstOrCreate(
             ['payment_id' => $payment->id],
             [
-                'amount'     => $payment->amount,
-                'currency'   => $payment->currency,
-                'status'     => 'requested',
-                'refund_id'  => 'REF-' . strtoupper(Str::random(10)),
-                'reason'     => 'Customer requested a return — item received in damaged condition.',
-                'response'   => [
-                    'message'      => 'Refund request submitted.',
+                'amount' => $payment->amount,
+                'currency' => $payment->currency,
+                'status' => 'requested',
+                'refund_id' => 'REF-'.strtoupper(Str::random(10)),
+                'reason' => 'Customer requested a return — item received in damaged condition.',
+                'response' => [
+                    'message' => 'Refund request submitted.',
                     'submitted_at' => now()->toIso8601String(),
                 ],
             ]

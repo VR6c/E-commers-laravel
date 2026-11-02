@@ -81,7 +81,7 @@ class PasswordResetOtpMail extends Mailable
                                 <tr>
                                     <td style='background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 20px 32px; text-align: center;'>
                                         <p style='margin: 0; color: #94a3b8; font-size: 12px;'>
-                                            &copy; " . date('Y') . " {$appName}. All rights reserved.
+                                            &copy; ".date('Y')." {$appName}. All rights reserved.
                                         </p>
                                     </td>
                                 </tr>

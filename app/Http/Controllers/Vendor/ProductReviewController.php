@@ -32,13 +32,13 @@ class ProductReviewController extends Controller
             ->addColumn('action', function ($review) {
                 return '
                     <div class="dt-actions">
-                        <a href="' . route('vendor.reviews.show', $review->id) . '"
+                        <a href="'.route('vendor.reviews.show', $review->id).'"
                            class="btn-action btn-action-view" title="View Review">
                             <i class="bi bi-eye-fill"></i>
                         </a>
                         <button type="button"
                                 class="btn-action btn-action-delete"
-                                onclick="deleteReview(' . $review->id . ')" title="Delete">
+                                onclick="deleteReview('.$review->id.')" title="Delete">
                             <i class="bi bi-trash-fill"></i>
                         </button>
                     </div>';

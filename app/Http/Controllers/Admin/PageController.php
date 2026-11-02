@@ -56,9 +56,9 @@ class PageController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title'   => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'content' => 'required|string|min:5',
-            'image'   => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         $title = $request->input('title');
@@ -66,7 +66,7 @@ class PageController extends Controller
         $slug = $baseSlug;
         $counter = 1;
         while (Page::where('slug', $slug)->exists()) {
-            $slug = $baseSlug . '-' . $counter++;
+            $slug = $baseSlug.'-'.$counter++;
         }
 
         $imagePath = null;
@@ -75,11 +75,11 @@ class PageController extends Controller
         }
 
         Page::create([
-            'slug'      => $slug,
-            'title'     => $title,
-            'content'   => $request->input('content'),
+            'slug' => $slug,
+            'title' => $title,
+            'content' => $request->input('content'),
             'image_url' => $imagePath,
-            'status'    => $request->status ?? 1,
+            'status' => $request->status ?? 1,
         ]);
 
         return redirect()->route('admin.pages.index')->with('success', 'Page created successfully.');
@@ -97,24 +97,24 @@ class PageController extends Controller
         $page = Page::findOrFail($id);
 
         $request->validate([
-            'title'   => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'content' => 'nullable|string',
-            'image'   => 'nullable|image|max:2048',
+            'image' => 'nullable|image|max:2048',
         ]);
 
         $imagePath = $page->image_url;
         if ($request->hasFile('image')) {
-            if ($imagePath && !ImageUploadService::isRemoteUrl($imagePath) && Storage::disk('public')->exists($imagePath)) {
+            if ($imagePath && ! ImageUploadService::isRemoteUrl($imagePath) && Storage::disk('public')->exists($imagePath)) {
                 Storage::disk('public')->delete($imagePath);
             }
             $imagePath = ImageUploadService::upload($request->file('image'), 'pages');
         }
 
         $page->update([
-            'title'     => $request->input('title'),
-            'content'   => $request->input('content'),
+            'title' => $request->input('title'),
+            'content' => $request->input('content'),
             'image_url' => $imagePath,
-            'status'    => $request->status ?? 1,
+            'status' => $request->status ?? 1,
         ]);
 
         return redirect()->route('admin.pages.index')->with('success', 'Page updated successfully.');
@@ -123,7 +123,7 @@ class PageController extends Controller
     public function destroy($id)
     {
         $page = Page::findOrFail($id);
-        if ($page->image_url && !ImageUploadService::isRemoteUrl($page->image_url) && Storage::disk('public')->exists($page->image_url)) {
+        if ($page->image_url && ! ImageUploadService::isRemoteUrl($page->image_url) && Storage::disk('public')->exists($page->image_url)) {
             Storage::disk('public')->delete($page->image_url);
         }
         $page->delete();

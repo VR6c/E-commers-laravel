@@ -86,6 +86,6 @@ class PayPalService implements PaymentGatewayInterface
 
     public function isConfigured(): bool
     {
-        return !empty($this->clientId) && !empty($this->secret);
+        return ! empty($this->clientId) && ! empty($this->secret);
     }
 }

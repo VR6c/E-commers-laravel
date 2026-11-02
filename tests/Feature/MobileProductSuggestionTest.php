@@ -17,103 +17,103 @@ class MobileProductSuggestionTest extends TestCase
     public function test_suggestions_and_related_products_full_suite(): void
     {
         $category = Category::create([
-            'name'   => 'Smartphones',
-            'slug'   => 'smartphones',
+            'name' => 'Smartphones',
+            'slug' => 'smartphones',
             'status' => true,
         ]);
 
         $categoryLaptops = Category::create([
-            'name'   => 'Laptops',
-            'slug'   => 'laptops',
+            'name' => 'Laptops',
+            'slug' => 'laptops',
             'status' => true,
         ]);
 
         $brand = Brand::create([
-            'name'   => 'Apple',
-            'slug'   => 'apple',
+            'name' => 'Apple',
+            'slug' => 'apple',
             'status' => 'active',
         ]);
 
         $vendor = Vendor::create([
-            'name'     => 'Mobile Vendor',
-            'email'    => 'vendor@example.com',
+            'name' => 'Mobile Vendor',
+            'email' => 'vendor@example.com',
             'password' => bcrypt('password'),
-            'phone'    => '012345678',
-            'status'   => 'active',
+            'phone' => '012345678',
+            'status' => 'active',
         ]);
 
         $iphone15 = Product::create([
-            'vendor_id'    => $vendor->id,
-            'slug'         => 'apple-iphone-15-pro',
-            'name'         => 'Apple iPhone 15 Pro',
-            'category_id'  => $category->id,
-            'brand_id'     => $brand->id,
-            'tags'         => 'apple, iphone, flagship',
+            'vendor_id' => $vendor->id,
+            'slug' => 'apple-iphone-15-pro',
+            'name' => 'Apple iPhone 15 Pro',
+            'category_id' => $category->id,
+            'brand_id' => $brand->id,
+            'tags' => 'apple, iphone, flagship',
             'product_type' => 'single',
-            'status'       => 1,
+            'status' => 1,
         ]);
 
         ProductVariant::create([
-            'product_id'   => $iphone15->id,
+            'product_id' => $iphone15->id,
             'variant_slug' => 'apple-iphone-15-pro-default',
-            'SKU'          => 'SKU-IP15P',
-            'name'         => 'Default',
-            'price'        => 999.00,
-            'stock'        => 10,
-            'is_primary'   => true,
+            'SKU' => 'SKU-IP15P',
+            'name' => 'Default',
+            'price' => 999.00,
+            'stock' => 10,
+            'is_primary' => true,
         ]);
 
         $iphone14 = Product::create([
-            'vendor_id'    => $vendor->id,
-            'slug'         => 'apple-iphone-14',
-            'name'         => 'Apple iPhone 14',
-            'category_id'  => $category->id,
-            'brand_id'     => $brand->id,
-            'tags'         => 'apple, iphone',
+            'vendor_id' => $vendor->id,
+            'slug' => 'apple-iphone-14',
+            'name' => 'Apple iPhone 14',
+            'category_id' => $category->id,
+            'brand_id' => $brand->id,
+            'tags' => 'apple, iphone',
             'product_type' => 'single',
-            'status'       => 1,
+            'status' => 1,
         ]);
 
         ProductVariant::create([
-            'product_id'   => $iphone14->id,
+            'product_id' => $iphone14->id,
             'variant_slug' => 'apple-iphone-14-default',
-            'SKU'          => 'SKU-IP14',
-            'name'         => 'Default',
-            'price'        => 799.00,
-            'stock'        => 5,
-            'is_primary'   => true,
+            'SKU' => 'SKU-IP14',
+            'name' => 'Default',
+            'price' => 799.00,
+            'stock' => 5,
+            'is_primary' => true,
         ]);
 
         $macbook = Product::create([
-            'vendor_id'    => $vendor->id,
-            'slug'         => 'macbook-pro-16',
-            'name'         => 'Apple MacBook Pro 16',
-            'category_id'  => $categoryLaptops->id,
-            'brand_id'     => $brand->id,
-            'tags'         => 'apple, macbook, laptop',
+            'vendor_id' => $vendor->id,
+            'slug' => 'macbook-pro-16',
+            'name' => 'Apple MacBook Pro 16',
+            'category_id' => $categoryLaptops->id,
+            'brand_id' => $brand->id,
+            'tags' => 'apple, macbook, laptop',
             'product_type' => 'single',
-            'status'       => 1,
+            'status' => 1,
         ]);
 
         ProductVariant::create([
-            'product_id'   => $macbook->id,
+            'product_id' => $macbook->id,
             'variant_slug' => 'macbook-pro-16-default',
-            'SKU'          => 'SKU-MBP16',
-            'name'         => 'Default',
-            'price'        => 2499.00,
-            'stock'        => 3,
-            'is_primary'   => true,
+            'SKU' => 'SKU-MBP16',
+            'name' => 'Default',
+            'price' => 2499.00,
+            'stock' => 3,
+            'is_primary' => true,
         ]);
 
         // Inactive product to verify exclusion
         Product::create([
-            'vendor_id'    => $vendor->id,
-            'slug'         => 'disabled-iphone',
-            'name'         => 'Disabled iPhone',
-            'category_id'  => $category->id,
-            'brand_id'     => $brand->id,
+            'vendor_id' => $vendor->id,
+            'slug' => 'disabled-iphone',
+            'name' => 'Disabled iPhone',
+            'category_id' => $category->id,
+            'brand_id' => $brand->id,
             'product_type' => 'single',
-            'status'       => 0,
+            'status' => 0,
         ]);
 
         // 1. Test live search autocomplete (q=iphone)
@@ -144,7 +144,7 @@ class MobileProductSuggestionTest extends TestCase
         $this->assertCount(3, $resp2->json('data'));
 
         // 3. Test category-scoped suggestions
-        $resp3 = $this->getJson('/api/products/suggestions?category_id=' . $categoryLaptops->id);
+        $resp3 = $this->getJson('/api/products/suggestions?category_id='.$categoryLaptops->id);
         $resp3->assertStatus(200);
         $this->assertCount(1, $resp3->json('data'));
         $this->assertEquals('Apple MacBook Pro 16', $resp3->json('data.0.name'));

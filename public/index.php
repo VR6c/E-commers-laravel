@@ -5,7 +5,7 @@ error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 
-if (!defined('LARAVEL_START')) {
+if (! defined('LARAVEL_START')) {
     define('LARAVEL_START', microtime(true));
 }
 

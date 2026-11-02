@@ -12,28 +12,28 @@ class CustomerSeeder extends Seeder
     {
         $customers = [
             [
-                'email'   => 'tharyvireak@gmail.com',
-                'name'    => 'Thary Vireak',
-                'password'=> Hash::make('reak123'),
-                'phone'   => '+855 71 675 5350',
+                'email' => 'tharyvireak@gmail.com',
+                'name' => 'Thary Vireak',
+                'password' => Hash::make('reak123'),
+                'phone' => '+855 71 675 5350',
                 'address' => 'Phnom Penh, Cambodia',
-                'status'  => 'active',
+                'status' => 'active',
             ],
             [
-                'email'   => 'john.doe@example.com',
-                'name'    => 'John Doe',
-                'password'=> Hash::make('password'),
-                'phone'   => '+1 555 000 1234',
+                'email' => 'john.doe@example.com',
+                'name' => 'John Doe',
+                'password' => Hash::make('password'),
+                'phone' => '+1 555 000 1234',
                 'address' => 'New York, USA',
-                'status'  => 'active',
+                'status' => 'active',
             ],
             [
-                'email'   => 'jane.smith@example.com',
-                'name'    => 'Jane Smith',
-                'password'=> Hash::make('password'),
-                'phone'   => '+44 20 7946 0958',
+                'email' => 'jane.smith@example.com',
+                'name' => 'Jane Smith',
+                'password' => Hash::make('password'),
+                'phone' => '+44 20 7946 0958',
                 'address' => 'London, UK',
-                'status'  => 'active',
+                'status' => 'active',
             ],
         ];
 
@@ -41,15 +41,15 @@ class CustomerSeeder extends Seeder
             Customer::firstOrCreate(
                 ['email' => $data['email']],
                 [
-                    'name'    => $data['name'],
-                    'password'=> $data['password'],
-                    'phone'   => $data['phone'],
+                    'name' => $data['name'],
+                    'password' => $data['password'],
+                    'phone' => $data['phone'],
                     'address' => $data['address'],
-                    'status'  => $data['status'],
+                    'status' => $data['status'],
                 ]
             );
         }
 
-        $this->command->info('CustomerSeeder: ' . count($customers) . ' customers seeded.');
+        $this->command->info('CustomerSeeder: '.count($customers).' customers seeded.');
     }
 }

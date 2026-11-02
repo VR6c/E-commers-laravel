@@ -30,9 +30,9 @@ class DashboardController extends Controller
                 ->whereHas('order', fn ($q) => $q->where('status', 'completed')->whereDate('created_at', today()))
                 ->sum(DB::raw('quantity * price')),
 
-            'totalOrders'     => $ordersBase()->count(),
+            'totalOrders' => $ordersBase()->count(),
             'completedOrders' => $ordersBase()->where('status', 'completed')->count(),
-            'totalProducts'   => Product::where('vendor_id', $vendorId)->count(),
+            'totalProducts' => Product::where('vendor_id', $vendorId)->count(),
         ];
 
         // Recent 5 orders — eager-load only this vendor's items
@@ -54,17 +54,17 @@ class DashboardController extends Controller
         // Order status breakdown
         $orderStatusCounts = [
             'completed' => $ordersBase()->where('status', 'completed')->count(),
-            'pending'   => $ordersBase()->where('status', 'pending')->count(),
+            'pending' => $ordersBase()->where('status', 'pending')->count(),
             'cancelled' => $ordersBase()->where('status', 'cancelled')->count(),
         ];
 
         // Last 7 days chart — vendor item revenue per day
         $chartLabels = [];
-        $chartSales  = [];
+        $chartSales = [];
         for ($i = 6; $i >= 0; $i--) {
-            $date          = now()->subDays($i);
+            $date = now()->subDays($i);
             $chartLabels[] = $date->format('M j');
-            $chartSales[]  = OrderDetail::whereHas('product', fn ($q) => $q->where('vendor_id', $vendorId))
+            $chartSales[] = OrderDetail::whereHas('product', fn ($q) => $q->where('vendor_id', $vendorId))
                 ->whereHas('order', fn ($q) => $q->where('status', 'completed')->whereDate('created_at', $date->toDateString()))
                 ->sum(DB::raw('quantity * price'));
         }

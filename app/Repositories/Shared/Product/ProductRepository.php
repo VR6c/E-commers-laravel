@@ -3,9 +3,7 @@
 namespace App\Repositories\Shared\Product;
 
 use App\Models\Product;
-use App\Models\ProductImage;
 use App\Services\Shared\ImageService;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Shared product repository used by both Admin and Vendor layers.
@@ -36,6 +34,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     /**
      * Dead code — not called by any controller at runtime.
+     *
      * @see ProductRepositoryInterface for rationale.
      */
     public function store(array $data)
@@ -46,6 +45,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     /**
      * Dead code — not called by any controller at runtime.
+     *
      * @see ProductRepositoryInterface for rationale.
      */
     public function update($id, array $data)

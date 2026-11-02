@@ -39,9 +39,9 @@ class TestTelegramNotificationCommand extends Command
         $chatId = $telegram->getChatId();
         $enabled = $telegram->isEnabled();
 
-        $this->line('• Enabled in config:   ' . ($enabled ? '<fg=green>YES</>' : '<fg=red>NO (Set TELEGRAM_NOTIFICATIONS_ENABLED=true)</>'));
-        $this->line('• Bot Token:           ' . (! empty($botToken) ? '<fg=green>' . substr($botToken, 0, 9) . '...' . substr($botToken, -5) . '</>' : '<fg=red>NOT SET (TELEGRAM_BOT_TOKEN in .env)</>'));
-        $this->line('• Target Chat ID:      ' . (! empty($chatId) ? "<fg=green>{$chatId}</>" : '<fg=red>NOT SET (TELEGRAM_CHAT_ID in .env)</>'));
+        $this->line('• Enabled in config:   '.($enabled ? '<fg=green>YES</>' : '<fg=red>NO (Set TELEGRAM_NOTIFICATIONS_ENABLED=true)</>'));
+        $this->line('• Bot Token:           '.(! empty($botToken) ? '<fg=green>'.substr($botToken, 0, 9).'...'.substr($botToken, -5).'</>' : '<fg=red>NOT SET (TELEGRAM_BOT_TOKEN in .env)</>'));
+        $this->line('• Target Chat ID:      '.(! empty($chatId) ? "<fg=green>{$chatId}</>" : '<fg=red>NOT SET (TELEGRAM_CHAT_ID in .env)</>'));
         $this->newLine();
 
         if (! $telegram->isConfigured()) {
@@ -59,6 +59,7 @@ class TestTelegramNotificationCommand extends Command
             $this->line('   <fg=yellow>TELEGRAM_CHAT_ID=123456789</>');
             $this->line('   <fg=yellow>TELEGRAM_NOTIFICATIONS_ENABLED=true</>');
             $this->newLine();
+
             return self::FAILURE;
         }
 
@@ -67,8 +68,9 @@ class TestTelegramNotificationCommand extends Command
         $botInfo = $telegram->getMe();
 
         if (! $botInfo['success']) {
-            $this->error('Failed to connect to Telegram API: ' . ($botInfo['message'] ?? 'Unknown error'));
+            $this->error('Failed to connect to Telegram API: '.($botInfo['message'] ?? 'Unknown error'));
             $this->warn('Please double-check that your TELEGRAM_BOT_TOKEN is correct.');
+
             return self::FAILURE;
         }
 
@@ -94,10 +96,10 @@ class TestTelegramNotificationCommand extends Command
             if (! $order) {
                 // Mock an order object for test display
                 $order = new Order([
-                    'total_amount'    => 129.99,
-                    'status'          => 'completed',
-                    'payment_method'  => 'abapayway',
-                    'coupon_code'     => 'WELCOME10',
+                    'total_amount' => 129.99,
+                    'status' => 'completed',
+                    'payment_method' => 'abapayway',
+                    'coupon_code' => 'WELCOME10',
                     'discount_amount' => 10.00,
                 ]);
                 $order->id = 9999;
@@ -110,10 +112,11 @@ class TestTelegramNotificationCommand extends Command
 
         if ($result['success']) {
             $this->info('Notification sent successfully! Check your Telegram chat.');
+
             return self::SUCCESS;
         }
 
-        $this->error('Failed to send message: ' . ($result['message'] ?? 'Unknown error'));
+        $this->error('Failed to send message: '.($result['message'] ?? 'Unknown error'));
         $this->newLine();
         $this->warn('Troubleshooting tips:');
         $this->line('• If error is "Chat not found" or "bot was blocked by the user":');

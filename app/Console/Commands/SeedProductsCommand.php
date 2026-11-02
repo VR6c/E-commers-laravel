@@ -30,6 +30,7 @@ class SeedProductsCommand extends Command
 
         if ($count <= 0) {
             $this->error('Please provide a valid count greater than 0.');
+
             return Command::FAILURE;
         }
 
@@ -45,9 +46,9 @@ class SeedProductsCommand extends Command
             ]);
             \Illuminate\Support\Facades\DB::purge('pgsql');
             \Illuminate\Support\Facades\DB::reconnect('pgsql');
-            $this->info("Connected to PRODUCTION database (Neon PostgreSQL).");
+            $this->info('Connected to PRODUCTION database (Neon PostgreSQL).');
         } else {
-            $this->info("Connected to default database (" . config('database.default') . ").");
+            $this->info('Connected to default database ('.config('database.default').').');
         }
 
         \Illuminate\Support\Facades\DB::disableQueryLog();
@@ -61,7 +62,7 @@ class SeedProductsCommand extends Command
         $bar->setMessage('Starting...');
         $bar->start();
 
-        $seeder = new BulkProductSeeder();
+        $seeder = new BulkProductSeeder;
         $seeded = $seeder->seedProducts($count, function ($current, $total, $productName) use ($bar) {
             $bar->setMessage(substr($productName, 0, 30));
             $bar->advance();

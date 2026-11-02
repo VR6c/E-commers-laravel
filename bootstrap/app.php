@@ -19,7 +19,6 @@ if (isset($_ENV['APP_STORAGE']) || getenv('APP_STORAGE')) {
     $app->useStoragePath($_ENV['APP_STORAGE'] ?? getenv('APP_STORAGE'));
 }
 
-
 /*
 |--------------------------------------------------------------------------
 | Bind Important Interfaces

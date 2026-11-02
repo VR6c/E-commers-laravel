@@ -12,11 +12,11 @@ class MenuSeeder extends Seeder
     {
         $menu = DB::table('menus')->where('title', 'Main Menu')->first();
 
-        if (!$menu) {
+        if (! $menu) {
             $menuId = DB::table('menus')->insertGetId([
-                'title'      => 'Main Menu',
-                'status'     => true,
-                'date'       => Carbon::now(),
+                'title' => 'Main Menu',
+                'status' => true,
+                'date' => Carbon::now(),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
@@ -38,19 +38,19 @@ class MenuSeeder extends Seeder
                 ->where('slug', $item['slug'])
                 ->exists();
 
-            if (!$exists) {
+            if (! $exists) {
                 DB::table('menu_items')->insert([
-                    'menu_id'      => $menuId,
-                    'title'        => $item['title'],
-                    'slug'         => $item['slug'],
+                    'menu_id' => $menuId,
+                    'title' => $item['title'],
+                    'slug' => $item['slug'],
                     'order_number' => $item['order_number'],
-                    'parent_id'    => $item['parent_id'],
-                    'created_at'   => Carbon::now(),
-                    'updated_at'   => Carbon::now(),
+                    'parent_id' => $item['parent_id'],
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
                 ]);
             }
         }
 
-        $this->command->info('MenuSeeder: main menu with ' . count($items) . ' items seeded.');
+        $this->command->info('MenuSeeder: main menu with '.count($items).' items seeded.');
     }
 }

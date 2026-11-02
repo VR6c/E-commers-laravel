@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\Cache;
 if (! function_exists('convert_price')) {
     function convert_price($amount, $currencyCode = null)
     {
-        if (!$amount) return 0;
+        if (! $amount) {
+            return 0;
+        }
 
         static $rates = [];
         static $defaultCurrency = null;
@@ -22,7 +24,7 @@ if (! function_exists('convert_price')) {
             $currencyCode = $currencyCode ?: $defaultCurrency;
         }
 
-        if (!isset($rates['USD'])) {
+        if (! isset($rates['USD'])) {
             $rates['USD'] = Cache::rememberForever('currency_USD', function () {
                 try {
                     return Currency::where('code', 'USD')->value('exchange_rate') ?: 1.0;
@@ -32,7 +34,7 @@ if (! function_exists('convert_price')) {
             });
         }
 
-        if (!isset($rates[$currencyCode])) {
+        if (! isset($rates[$currencyCode])) {
             $rates[$currencyCode] = Cache::rememberForever("currency_{$currencyCode}", function () use ($currencyCode) {
                 try {
                     return Currency::where('code', $currencyCode)->value('exchange_rate') ?: 1.0;
@@ -87,14 +89,15 @@ if (! function_exists('activeCurrency')) {
     {
         $code = session('currency', 'USD');
 
-        $currency = Cache::rememberForever('active_currency_' . $code, function () use ($code) {
+        $currency = Cache::rememberForever('active_currency_'.$code, function () use ($code) {
             return Currency::where('code', $code)->first()
                 ?? Currency::first();
         });
+
         return $currency ?? (object) [
-            'symbol'        => '$',
-            'code'          => 'USD',
-            'name'          => 'US Dollar',
+            'symbol' => '$',
+            'code' => 'USD',
+            'name' => 'US Dollar',
             'exchange_rate' => 1.0,
         ];
     }
@@ -126,10 +129,11 @@ if (! function_exists('getSiteLogo')) {
         if (\Illuminate\Support\Str::startsWith($logo, ['http://', 'https://'])) {
             return $logo;
         }
-        if ($logo === 'logo_icon/shopping.png' && ! file_exists(public_path('storage/' . $logo))) {
+        if ($logo === 'logo_icon/shopping.png' && ! file_exists(public_path('storage/'.$logo))) {
             return 'https://i.ibb.co/jkrX65dY/shop.png';
         }
-        return asset('storage/' . $logo);
+
+        return asset('storage/'.$logo);
     }
 }
 
@@ -148,8 +152,8 @@ if (! function_exists('product_image_url')) {
         $webpPath = preg_replace('/\.(png|jpe?g)$/i', '.webp', $imageUrl);
         if ($webpPath !== $imageUrl) {
             static $checkedWebp = [];
-            if (!isset($checkedWebp[$webpPath])) {
-                $diskPath = public_path('storage/' . $webpPath);
+            if (! isset($checkedWebp[$webpPath])) {
+                $diskPath = public_path('storage/'.$webpPath);
                 $checkedWebp[$webpPath] = file_exists($diskPath);
             }
             if ($checkedWebp[$webpPath]) {
@@ -175,8 +179,8 @@ if (! function_exists('optimized_image_url')) {
         $webpPath = preg_replace('/\.(png|jpe?g)$/i', '.webp', $path);
         if ($webpPath !== $path) {
             static $checked = [];
-            if (!isset($checked[$webpPath])) {
-                $checked[$webpPath] = file_exists(public_path('storage/' . $webpPath));
+            if (! isset($checked[$webpPath])) {
+                $checked[$webpPath] = file_exists(public_path('storage/'.$webpPath));
             }
             if ($checked[$webpPath]) {
                 return \Illuminate\Support\Facades\Storage::url($webpPath);
@@ -186,4 +190,3 @@ if (! function_exists('optimized_image_url')) {
         return \Illuminate\Support\Facades\Storage::url($path);
     }
 }
-

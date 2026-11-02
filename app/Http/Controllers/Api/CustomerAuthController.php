@@ -44,7 +44,7 @@ class CustomerAuthController extends Controller
         $token = $customer->createToken('CustomerToken')->plainTextToken;
 
         return $this->successResponse([
-            'token'    => $token,
+            'token' => $token,
             'customer' => $customer,
         ], 'Registration successful', 201);
     }
@@ -92,7 +92,7 @@ class CustomerAuthController extends Controller
         $token = $customer->createToken('CustomerToken')->plainTextToken;
 
         return $this->successResponse([
-            'token'    => $token,
+            'token' => $token,
             'customer' => $customer,
         ], 'Login successful');
     }
@@ -185,7 +185,7 @@ class CustomerAuthController extends Controller
         $newToken = $customer->createToken('CustomerToken')->plainTextToken;
 
         return $this->successResponse([
-            'token'    => $newToken,
+            'token' => $newToken,
             'customer' => $customer,
         ], 'Token refreshed successfully');
     }

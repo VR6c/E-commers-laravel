@@ -26,18 +26,18 @@ class ProductSuggestionResource extends JsonResource
         }
 
         return [
-            'id'             => $this->id,
-            'slug'           => $this->slug,
-            'name'           => $this->name,
-            'price'          => $this->getConvertedPriceAttribute(),
+            'id' => $this->id,
+            'slug' => $this->slug,
+            'name' => $this->name,
+            'price' => $this->getConvertedPriceAttribute(),
             'discount_price' => $this->getConvertedDiscountPriceAttribute(),
-            'thumbnail'      => $thumbnailUrl,
-            'category'       => $this->category?->name ?? '',
-            'category_id'    => $this->category_id,
-            'brand'          => $this->brand?->name ?? null,
-            'brand_id'       => $this->brand_id,
-            'rating'         => round((float) ($this->reviews_avg_rating ?? 0), 1),
-            'reviews_count'  => (int) ($this->reviews_count ?? 0),
+            'thumbnail' => $thumbnailUrl,
+            'category' => $this->category?->name ?? '',
+            'category_id' => $this->category_id,
+            'brand' => $this->brand?->name ?? null,
+            'brand_id' => $this->brand_id,
+            'rating' => round((float) ($this->reviews_avg_rating ?? 0), 1),
+            'reviews_count' => (int) ($this->reviews_count ?? 0),
         ];
     }
 }

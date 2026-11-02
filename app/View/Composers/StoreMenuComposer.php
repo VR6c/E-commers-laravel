@@ -11,8 +11,11 @@ use Illuminate\View\View;
 class StoreMenuComposer
 {
     private static ?bool $hasMenusTable = null;
+
     private static ?bool $hasCurrenciesTable = null;
+
     private static mixed $cachedHeaderMenu = null;
+
     private static mixed $cachedCurrencies = null;
 
     public function compose(View $view)

@@ -8,10 +8,7 @@ use App\Models\OrderDetail;
 use App\Models\Product;
 use App\Models\Vendor;
 use App\Traits\SyncsProductVariants;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class VendorPanelTest extends TestCase
@@ -44,17 +41,17 @@ class VendorPanelTest extends TestCase
 
     public function test_pending_vendor_login_is_blocked_with_warning(): void
     {
-        $email = 'pending_' . uniqid() . '@example.com';
+        $email = 'pending_'.uniqid().'@example.com';
         $vendor = Vendor::create([
-            'name'     => 'Pending Vendor',
-            'email'    => $email,
+            'name' => 'Pending Vendor',
+            'email' => $email,
             'password' => Hash::make('password123'),
-            'status'   => 'pending',
+            'status' => 'pending',
         ]);
 
         try {
             $response = $this->post(route('vendor.login.submit'), [
-                'email'    => $email,
+                'email' => $email,
                 'password' => 'password123',
             ]);
 
@@ -68,17 +65,17 @@ class VendorPanelTest extends TestCase
 
     public function test_active_vendor_can_login_and_access_dashboard(): void
     {
-        $email = 'active_' . uniqid() . '@example.com';
+        $email = 'active_'.uniqid().'@example.com';
         $vendor = Vendor::create([
-            'name'     => 'Active Vendor',
-            'email'    => $email,
+            'name' => 'Active Vendor',
+            'email' => $email,
             'password' => Hash::make('password123'),
-            'status'   => 'active',
+            'status' => 'active',
         ]);
 
         try {
             $response = $this->post(route('vendor.login.submit'), [
-                'email'    => $email,
+                'email' => $email,
                 'password' => 'password123',
             ]);
 
@@ -96,26 +93,26 @@ class VendorPanelTest extends TestCase
 
     public function test_sync_product_variants_marks_only_first_variant_as_primary(): void
     {
-        $category = Category::firstOrCreate(['name' => 'Test Cat', 'slug' => 'test-cat-' . uniqid()]);
+        $category = Category::firstOrCreate(['name' => 'Test Cat', 'slug' => 'test-cat-'.uniqid()]);
         $vendor = Vendor::create([
-            'name'     => 'Variant Vendor',
-            'email'    => 'variant_' . uniqid() . '@example.com',
+            'name' => 'Variant Vendor',
+            'email' => 'variant_'.uniqid().'@example.com',
             'password' => Hash::make('password123'),
-            'status'   => 'active',
+            'status' => 'active',
         ]);
         $product = Product::create([
-            'vendor_id'    => $vendor->id,
-            'name'         => 'Test Variable Product',
-            'slug'         => 'test-var-prod-' . uniqid(),
-            'category_id'  => $category->id,
+            'vendor_id' => $vendor->id,
+            'name' => 'Test Variable Product',
+            'slug' => 'test-var-prod-'.uniqid(),
+            'category_id' => $category->id,
             'product_type' => 'variable',
         ]);
 
         try {
             $variants = [
-                ['name' => 'Variant A', 'price' => 10.00, 'stock' => 5, 'SKU' => 'SKU-A-' . uniqid()],
-                ['name' => 'Variant B', 'price' => 20.00, 'stock' => 8, 'SKU' => 'SKU-B-' . uniqid()],
-                ['name' => 'Variant C', 'price' => 30.00, 'stock' => 12, 'SKU' => 'SKU-C-' . uniqid()],
+                ['name' => 'Variant A', 'price' => 10.00, 'stock' => 5, 'SKU' => 'SKU-A-'.uniqid()],
+                ['name' => 'Variant B', 'price' => 20.00, 'stock' => 8, 'SKU' => 'SKU-B-'.uniqid()],
+                ['name' => 'Variant C', 'price' => 30.00, 'stock' => 12, 'SKU' => 'SKU-C-'.uniqid()],
             ];
 
             $this->syncVariants($variants, $product);
@@ -135,51 +132,51 @@ class VendorPanelTest extends TestCase
     public function test_vendor_order_show_and_safe_multi_tenant_item_deletion(): void
     {
         $vendorA = Vendor::create([
-            'name'     => 'Vendor A',
-            'email'    => 'va_' . uniqid() . '@example.com',
+            'name' => 'Vendor A',
+            'email' => 'va_'.uniqid().'@example.com',
             'password' => Hash::make('password123'),
-            'status'   => 'active',
+            'status' => 'active',
         ]);
         $vendorB = Vendor::create([
-            'name'     => 'Vendor B',
-            'email'    => 'vb_' . uniqid() . '@example.com',
+            'name' => 'Vendor B',
+            'email' => 'vb_'.uniqid().'@example.com',
             'password' => Hash::make('password123'),
-            'status'   => 'active',
+            'status' => 'active',
         ]);
-        $cat = Category::firstOrCreate(['name' => 'Order Cat', 'slug' => 'order-cat-' . uniqid()]);
+        $cat = Category::firstOrCreate(['name' => 'Order Cat', 'slug' => 'order-cat-'.uniqid()]);
 
         $prodA = Product::create([
-            'vendor_id'    => $vendorA->id,
-            'name'         => 'Item Vendor A',
-            'slug'         => 'prod-a-' . uniqid(),
-            'category_id'  => $cat->id,
+            'vendor_id' => $vendorA->id,
+            'name' => 'Item Vendor A',
+            'slug' => 'prod-a-'.uniqid(),
+            'category_id' => $cat->id,
             'product_type' => 'simple',
         ]);
         $prodB = Product::create([
-            'vendor_id'    => $vendorB->id,
-            'name'         => 'Item Vendor B',
-            'slug'         => 'prod-b-' . uniqid(),
-            'category_id'  => $cat->id,
+            'vendor_id' => $vendorB->id,
+            'name' => 'Item Vendor B',
+            'slug' => 'prod-b-'.uniqid(),
+            'category_id' => $cat->id,
             'product_type' => 'simple',
         ]);
 
         $order = Order::create([
-            'guest_email'  => 'customer@example.com',
+            'guest_email' => 'customer@example.com',
             'total_amount' => 150.00,
-            'status'       => 'pending',
+            'status' => 'pending',
         ]);
 
         $detailA = OrderDetail::create([
-            'order_id'   => $order->id,
+            'order_id' => $order->id,
             'product_id' => $prodA->id,
-            'quantity'   => 1,
-            'price'      => 50.00,
+            'quantity' => 1,
+            'price' => 50.00,
         ]);
         $detailB = OrderDetail::create([
-            'order_id'   => $order->id,
+            'order_id' => $order->id,
             'product_id' => $prodB->id,
-            'quantity'   => 1,
-            'price'      => 100.00,
+            'quantity' => 1,
+            'price' => 100.00,
         ]);
 
         try {

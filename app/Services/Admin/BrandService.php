@@ -25,11 +25,11 @@ class BrandService
         }
 
         return $this->brandRepository->store([
-            'slug'        => $slug,
-            'name'        => $data['name'],
+            'slug' => $slug,
+            'name' => $data['name'],
             'description' => $data['description'] ?? null,
-            'logo_url'    => $logoPath,
-            'status'      => $data['status'] ?? 'active',
+            'logo_url' => $logoPath,
+            'status' => $data['status'] ?? 'active',
         ]);
     }
 
@@ -38,16 +38,16 @@ class BrandService
         $brand = $this->brandRepository->find($id);
 
         if (isset($data['logo_url']) && $data['logo_url'] instanceof \Illuminate\Http\UploadedFile) {
-            if ($brand->logo_url && !\Illuminate\Support\Str::startsWith($brand->logo_url, ['http://', 'https://']) && Storage::exists('public/' . $brand->logo_url)) {
-                Storage::delete('public/' . $brand->logo_url);
+            if ($brand->logo_url && ! \Illuminate\Support\Str::startsWith($brand->logo_url, ['http://', 'https://']) && Storage::exists('public/'.$brand->logo_url)) {
+                Storage::delete('public/'.$brand->logo_url);
             }
             $brand->logo_url = \App\Services\ImageUploadService::upload($data['logo_url'], 'brands/logos');
         }
 
-        $brand->slug        = Str::slug($data['name'] ?? $brand->slug);
-        $brand->name        = $data['name'] ?? $brand->name;
+        $brand->slug = Str::slug($data['name'] ?? $brand->slug);
+        $brand->name = $data['name'] ?? $brand->name;
         $brand->description = $data['description'] ?? $brand->description;
-        $brand->status      = $data['status'] ?? 'active';
+        $brand->status = $data['status'] ?? 'active';
         $brand->save();
 
         return $brand;
@@ -57,8 +57,8 @@ class BrandService
     {
         $brand = $this->brandRepository->find($id);
 
-        if ($brand->logo_url && !Str::startsWith($brand->logo_url, ['http://', 'https://']) && Storage::exists('public/' . $brand->logo_url)) {
-            Storage::delete('public/' . $brand->logo_url);
+        if ($brand->logo_url && ! Str::startsWith($brand->logo_url, ['http://', 'https://']) && Storage::exists('public/'.$brand->logo_url)) {
+            Storage::delete('public/'.$brand->logo_url);
         }
 
         return $brand->delete();
@@ -68,5 +68,4 @@ class BrandService
     {
         return $this->brandRepository->find($id);
     }
-
 }

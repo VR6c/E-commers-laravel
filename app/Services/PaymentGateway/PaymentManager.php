@@ -3,9 +3,6 @@
 namespace App\Services\PaymentGateway;
 
 use App\Models\PaymentGateway;
-use App\Services\PaymentGateway\ABAPayWayService;
-use App\Services\PaymentGateway\PayPalService;
-use App\Services\PaymentGateway\StripeService;
 use InvalidArgumentException;
 
 class PaymentManager

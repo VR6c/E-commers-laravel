@@ -34,6 +34,7 @@ class OptimizeImagesCommand extends Command
         $basePath = storage_path('app/public');
         if (! File::isDirectory($basePath)) {
             $this->error("Directory not found: {$basePath}");
+
             return Command::FAILURE;
         }
 
@@ -43,7 +44,7 @@ class OptimizeImagesCommand extends Command
         $files = [];
 
         foreach ($directories as $dir) {
-            $dirPath = $basePath . DIRECTORY_SEPARATOR . $dir;
+            $dirPath = $basePath.DIRECTORY_SEPARATOR.$dir;
             if (File::isDirectory($dirPath)) {
                 $found = File::allFiles($dirPath);
                 foreach ($found as $file) {
@@ -57,10 +58,11 @@ class OptimizeImagesCommand extends Command
 
         if (empty($files)) {
             $this->warn('No PNG or JPEG images found to optimize.');
+
             return Command::SUCCESS;
         }
 
-        $this->info("Found " . count($files) . " candidate images. Starting optimization (Quality: {$quality}%)...");
+        $this->info('Found '.count($files)." candidate images. Starting optimization (Quality: {$quality}%)...");
 
         $convertedCount = 0;
         $totalOriginalBytes = 0;
@@ -77,6 +79,7 @@ class OptimizeImagesCommand extends Command
 
             if (! $force && file_exists($webpPath) && filemtime($webpPath) >= filemtime($sourcePath)) {
                 $bar->advance();
+
                 continue;
             }
 
@@ -99,14 +102,14 @@ class OptimizeImagesCommand extends Command
         $savedKb = round($savedBytes / 1024, 1);
         $percent = $totalOriginalBytes > 0 ? round(($savedBytes / $totalOriginalBytes) * 100, 1) : 0;
 
-        $this->info("Optimization complete!");
+        $this->info('Optimization complete!');
         $this->table(
             ['Metric', 'Value'],
             [
                 ['Images Processed', count($files)],
                 ['Images Converted to WebP', $convertedCount],
-                ['Original Size', round($totalOriginalBytes / 1024, 1) . ' KB'],
-                ['Optimized WebP Size', round($totalWebpBytes / 1024, 1) . ' KB'],
+                ['Original Size', round($totalOriginalBytes / 1024, 1).' KB'],
+                ['Optimized WebP Size', round($totalWebpBytes / 1024, 1).' KB'],
                 ['Total Data Saved', "{$savedKb} KB ({$percent}% reduction)"],
             ]
         );

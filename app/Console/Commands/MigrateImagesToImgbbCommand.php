@@ -45,26 +45,28 @@ class MigrateImagesToImgbbCommand extends Command
         $apiKey = config('services.imgbb.key') ?? env('IMGBB_API_KEY');
         if (empty($apiKey) && ! $dryRun) {
             $this->error('IMGBB_API_KEY is not set in your .env or services configuration.');
+
             return Command::FAILURE;
         }
 
-        $this->info('Starting ImgBB Image Migration' . ($dryRun ? ' (DRY RUN - No changes)' : '') . '...');
+        $this->info('Starting ImgBB Image Migration'.($dryRun ? ' (DRY RUN - No changes)' : '').'...');
 
         $targets = [
-            'products'      => [ProductImage::class, 'image_url', 'products'],
-            'banners'       => [Banner::class, 'image_url', 'banner_images'],
-            'categories'    => [Category::class, 'image_url', 'categories'],
-            'brands'        => [Brand::class, 'logo_url', 'brands'],
-            'pages'         => [Page::class, 'image_url', 'pages'],
+            'products' => [ProductImage::class, 'image_url', 'products'],
+            'banners' => [Banner::class, 'image_url', 'banner_images'],
+            'categories' => [Category::class, 'image_url', 'categories'],
+            'brands' => [Brand::class, 'logo_url', 'brands'],
+            'pages' => [Page::class, 'image_url', 'pages'],
             'site_settings' => [SiteSetting::class, 'logo', 'site_settings'],
-            'users'         => [User::class, 'profile_image', 'admin_profiles'],
-            'vendors'       => [Vendor::class, 'profile_image', 'vendor_profiles'],
-            'customers'     => [Customer::class, 'profile_image', 'customer_profiles'],
+            'users' => [User::class, 'profile_image', 'admin_profiles'],
+            'vendors' => [Vendor::class, 'profile_image', 'vendor_profiles'],
+            'customers' => [Customer::class, 'profile_image', 'customer_profiles'],
         ];
 
         if ($table !== 'all') {
             if (! isset($targets[$table])) {
-                $this->error("Invalid table specified. Allowed: all, " . implode(', ', array_keys($targets)));
+                $this->error('Invalid table specified. Allowed: all, '.implode(', ', array_keys($targets)));
+
                 return Command::FAILURE;
             }
             $targets = [$table => $targets[$table]];
@@ -92,6 +94,7 @@ class MigrateImagesToImgbbCommand extends Command
             if ($count === 0) {
                 $this->line("  No local images found in {$label}.");
                 $results[] = [$label, 0, 0, 0];
+
                 continue;
             }
 
@@ -102,6 +105,7 @@ class MigrateImagesToImgbbCommand extends Command
 
             if ($dryRun) {
                 $results[] = [$label, $count, 0, 0];
+
                 continue;
             }
 
@@ -115,6 +119,7 @@ class MigrateImagesToImgbbCommand extends Command
                 if (! $localPath || ! file_exists($localPath)) {
                     $failed++;
                     $bar->advance();
+
                     continue;
                 }
 

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 class BrandController extends Controller
 {
     use UpdatesModelStatus;
+
     protected BrandService $brandService;
 
     public function __construct(BrandService $brandService)
@@ -48,8 +49,8 @@ class BrandController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'logo_url'    => 'nullable|file|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10000',
-            'name'        => 'required|string|max:255',
+            'logo_url' => 'nullable|file|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10000',
+            'name' => 'required|string|max:255',
             'description' => 'required|string|min:5',
         ]);
 
@@ -72,8 +73,8 @@ class BrandController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'logo_url'    => 'nullable|file|image|mimes:jpeg,png,jpg,gif,svg|max:10000',
-            'name'        => 'required|string|max:255',
+            'logo_url' => 'nullable|file|image|mimes:jpeg,png,jpg,gif,svg|max:10000',
+            'name' => 'required|string|max:255',
             'description' => 'required|string|min:5',
         ]);
 

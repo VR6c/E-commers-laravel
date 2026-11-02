@@ -24,7 +24,7 @@ class ProfileController extends Controller
 
         // Handle profile image upload
         if ($request->hasFile('profile_image')) {
-            if ($vendor->profile_image && !\Illuminate\Support\Str::startsWith($vendor->profile_image, ['http://', 'https://']) && Storage::exists('public/'.$vendor->profile_image)) {
+            if ($vendor->profile_image && ! \Illuminate\Support\Str::startsWith($vendor->profile_image, ['http://', 'https://']) && Storage::exists('public/'.$vendor->profile_image)) {
                 Storage::delete('public/'.$vendor->profile_image);
             }
             $path = \App\Services\ImageUploadService::upload($request->file('profile_image'), 'vendor_profiles');
@@ -46,8 +46,8 @@ class ProfileController extends Controller
         $vendor = auth()->guard('vendor')->user();
 
         // Handle profile image deletion
-        if ($vendor->profile_image && !Str::startsWith($vendor->profile_image, ['http://', 'https://']) && Storage::exists('public/' . $vendor->profile_image)) {
-            Storage::delete('public/' . $vendor->profile_image);
+        if ($vendor->profile_image && ! Str::startsWith($vendor->profile_image, ['http://', 'https://']) && Storage::exists('public/'.$vendor->profile_image)) {
+            Storage::delete('public/'.$vendor->profile_image);
         }
 
         $vendor->delete();

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 class CategoryController extends Controller
 {
     use UpdatesModelStatus;
+
     protected CategoryService $categoryService;
 
     public function __construct(CategoryService $categoryService)
@@ -38,15 +39,15 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'        => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'description' => 'required|string|min:5',
-            'image'       => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         $translations = ['en' => [
-            'name'        => $request->input('name'),
+            'name' => $request->input('name'),
             'description' => $request->input('description'),
-            'image'       => $request->file('image'),
+            'image' => $request->file('image'),
         ]];
 
         $result = $this->categoryService->store($translations);

@@ -28,17 +28,17 @@ class CartService
         }
 
         Session::put('cart_coupon', [
-            'id'       => $coupon->id,
-            'code'     => $coupon->code,
+            'id' => $coupon->id,
+            'code' => $coupon->code,
             'discount' => (float) $coupon->discount,
-            'type'     => $coupon->type,
+            'type' => $coupon->type,
         ]);
 
         return [
-            'success'  => true,
-            'message'  => 'Coupon applied successfully!',
+            'success' => true,
+            'message' => 'Coupon applied successfully!',
             'discount' => $coupon->discount,
-            'type'     => $coupon->type,
+            'type' => $coupon->type,
         ];
     }
 
@@ -83,10 +83,10 @@ class CartService
         $total = max(0.0, round($subtotal - $discount + $shipping, 2));
 
         return [
-            'subtotal'        => round($subtotal, 2),
+            'subtotal' => round($subtotal, 2),
             'discount_amount' => $discount,
-            'shipping'        => round($shipping, 2),
-            'total'           => $total,
+            'shipping' => round($shipping, 2),
+            'total' => $total,
         ];
     }
 
@@ -96,6 +96,7 @@ class CartService
     public function getCartTotalWithDiscount(float $total): float
     {
         $discount = $this->calculateDiscount($total);
+
         return max(0.0, round($total - $discount, 2));
     }
 
@@ -189,15 +190,15 @@ class CartService
             }
 
             $hydrated[$key] = [
-                'product_id'   => $item['product_id'],
-                'variant_id'   => $variant?->id ?? ($item['variant_id'] ?? null),
+                'product_id' => $item['product_id'],
+                'variant_id' => $variant?->id ?? ($item['variant_id'] ?? null),
                 'display_name' => $variant?->name ?? $product?->name ?? 'Product',
-                'price'        => (float) $unitPrice,
-                'quantity'     => $quantity,
-                'subtotal'     => round($subtotal, 2),
-                'image_url'    => $imageUrl,
-                'sizes'        => $sizes,
-                'colors'       => $colors,
+                'price' => (float) $unitPrice,
+                'quantity' => $quantity,
+                'subtotal' => round($subtotal, 2),
+                'image_url' => $imageUrl,
+                'sizes' => $sizes,
+                'colors' => $colors,
             ];
         }
 

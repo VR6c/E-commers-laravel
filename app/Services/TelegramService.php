@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Log;
 class TelegramService
 {
     protected ?string $botToken;
+
     protected ?string $chatId;
+
     protected bool $enabled;
 
     public function __construct(?string $botToken = null, ?string $chatId = null)
@@ -78,14 +80,14 @@ class TelegramService
             if ($response->successful()) {
                 return [
                     'success' => true,
-                    'data'    => $response->json('result', []),
+                    'data' => $response->json('result', []),
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => $response->json('description', 'Failed to communicate with Telegram API.'),
-                'status'  => $response->status(),
+                'status' => $response->status(),
             ];
         } catch (\Throwable $e) {
             return [
@@ -111,6 +113,7 @@ class TelegramService
 
         if (empty($this->botToken) || empty($targetChatId)) {
             Log::warning('TelegramService: Cannot send message. Missing bot_token or chat_id.');
+
             return [
                 'success' => false,
                 'message' => 'Missing Telegram bot token or chat ID.',
@@ -121,9 +124,9 @@ class TelegramService
             $url = "https://api.telegram.org/bot{$this->botToken}/sendMessage";
 
             $payload = [
-                'chat_id'                  => $targetChatId,
-                'text'                     => $message,
-                'parse_mode'               => $parseMode,
+                'chat_id' => $targetChatId,
+                'text' => $message,
+                'parse_mode' => $parseMode,
                 'disable_web_page_preview' => true,
             ];
 
@@ -135,8 +138,9 @@ class TelegramService
 
             if ($response->successful()) {
                 Log::info("TelegramService: Alert sent successfully to chat {$targetChatId}.");
+
                 return [
-                    'success'  => true,
+                    'success' => true,
                     'response' => $response->json(),
                 ];
             }
@@ -151,7 +155,7 @@ class TelegramService
                 $retryResp = $http->post($url, $payload);
                 if ($retryResp->successful()) {
                     return [
-                        'success'  => true,
+                        'success' => true,
                         'response' => $retryResp->json(),
                     ];
                 }
@@ -160,13 +164,14 @@ class TelegramService
 
             // Fallback: If chat not found and ID starts with '-' but not '-100' (e.g. -5435329599 -> -1005435329599)
             if (str_starts_with((string) $targetChatId, '-') && ! str_starts_with((string) $targetChatId, '-100')) {
-                $supergroupId = '-100' . substr((string) $targetChatId, 1);
+                $supergroupId = '-100'.substr((string) $targetChatId, 1);
                 $payload['chat_id'] = $supergroupId;
                 $supergroupResp = $http->post($url, $payload);
                 if ($supergroupResp->successful()) {
                     Log::info("TelegramService: Alert sent successfully using supergroup ID {$supergroupId}.");
+
                     return [
-                        'success'  => true,
+                        'success' => true,
                         'response' => $supergroupResp->json(),
                     ];
                 }
@@ -178,10 +183,11 @@ class TelegramService
             return [
                 'success' => false,
                 'message' => $description,
-                'status'  => $response->status(),
+                'status' => $response->status(),
             ];
         } catch (\Throwable $e) {
-            Log::error('TelegramService Exception: ' . $e->getMessage());
+            Log::error('TelegramService Exception: '.$e->getMessage());
+
             return [
                 'success' => false,
                 'message' => $e->getMessage(),
@@ -202,6 +208,7 @@ class TelegramService
         $cacheKey = "telegram_order_notified_{$order->id}_{$event}";
         if (! Cache::add($cacheKey, now()->toIso8601String(), now()->addDays(7))) {
             Log::info("TelegramService: Notification for Order #{$order->id} ({$event}) was already sent. Skipping duplicate.");
+
             return true;
         }
 
@@ -215,13 +222,15 @@ class TelegramService
             if (! $result['success']) {
                 // Remove deduplication cache key on error so a retry can occur if needed
                 Cache::forget($cacheKey);
+
                 return false;
             }
 
             return true;
         } catch (\Throwable $e) {
             Cache::forget($cacheKey);
-            Log::error("TelegramService: Failed to send order notification for #{$order->id}: " . $e->getMessage());
+            Log::error("TelegramService: Failed to send order notification for #{$order->id}: ".$e->getMessage());
+
             return false;
         }
     }
@@ -238,23 +247,23 @@ class TelegramService
         // Payment method display label
         $methodKey = strtolower((string) ($order->payment_method ?? 'cod'));
         $paymentLabels = [
-            'cod'              => '💵 Cash on Delivery (COD)',
+            'cod' => '💵 Cash on Delivery (COD)',
             'cash_on_delivery' => '💵 Cash on Delivery (COD)',
-            'abapayway'        => '🇰🇭 ABA PayWay (KHQR)',
-            'aba_payway'       => '🇰🇭 ABA PayWay (KHQR)',
-            'paypal'           => '🅿️ PayPal',
-            'stripe'           => '💳 Stripe Card',
+            'abapayway' => '🇰🇭 ABA PayWay (KHQR)',
+            'aba_payway' => '🇰🇭 ABA PayWay (KHQR)',
+            'paypal' => '🅿️ PayPal',
+            'stripe' => '💳 Stripe Card',
         ];
-        $paymentLabel = $paymentLabels[$methodKey] ?? '💳 ' . strtoupper($methodKey);
+        $paymentLabel = $paymentLabels[$methodKey] ?? '💳 '.strtoupper($methodKey);
 
         // Status badge
         $status = ucfirst((string) $order->status);
         $statusEmoji = match (strtolower((string) $order->status)) {
-            'completed'  => '✅ Paid & Completed',
+            'completed' => '✅ Paid & Completed',
             'processing' => '🔄 Processing',
-            'pending'    => '⏳ Pending Confirmation',
-            'canceled'   => '❌ Canceled',
-            default      => '📦 ' . $status,
+            'pending' => '⏳ Pending Confirmation',
+            'canceled' => '❌ Canceled',
+            default => '📦 '.$status,
         };
 
         // Customer details

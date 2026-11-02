@@ -4,21 +4,18 @@ namespace App\Http\Controllers\Store;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Models\OrderDetail;
-use App\Models\ShippingAddress;
 use App\Models\Payment;
 use App\Models\PaymentGateway;
 use App\Models\User;
+use App\Services\PaymentGateway\PaymentManager;
 use App\Services\Store\CartService;
 use App\Services\Store\OrderService;
-use App\Services\PaymentGateway\PaymentManager;
 use App\Services\TelegramService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class CheckoutController extends Controller
 {
@@ -31,6 +28,7 @@ class CheckoutController extends Controller
     {
         return Cache::rememberForever('storefront_countries_data', function () {
             $json = file_get_contents(resource_path('data/countries.json'));
+
             return json_decode($json, true) ?: [];
         });
     }
@@ -107,7 +105,7 @@ class CheckoutController extends Controller
         if (empty($cart)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cart is empty!'
+                'message' => 'Cart is empty!',
             ], 400);
         }
 
@@ -122,14 +120,14 @@ class CheckoutController extends Controller
             if ($gatewayCode === 'cod') {
                 $shippingData = $request->validate([
                     'first_name' => 'required|string|max:100',
-                    'last_name'  => 'required|string|max:100',
-                    'address'    => 'required|string|max:255',
-                    'suite'      => 'nullable|string|max:100',
-                    'city'       => 'required|string|max:100',
-                    'state'      => 'nullable|string|max:100',
-                    'country'    => 'required|string|max:100',
-                    'email'      => 'required|email|max:50',
-                    'phone'      => 'required|string|max:20',
+                    'last_name' => 'required|string|max:100',
+                    'address' => 'required|string|max:255',
+                    'suite' => 'nullable|string|max:100',
+                    'city' => 'required|string|max:100',
+                    'state' => 'nullable|string|max:100',
+                    'country' => 'required|string|max:100',
+                    'email' => 'required|email|max:50',
+                    'phone' => 'required|string|max:20',
                 ]);
 
                 // Create order with line items and address in ACID transaction
@@ -153,8 +151,8 @@ class CheckoutController extends Controller
 
                 if ($request->ajax() || $request->wantsJson()) {
                     return response()->json([
-                        'success'      => true,
-                        'gateway'      => 'cod',
+                        'success' => true,
+                        'gateway' => 'cod',
                         'redirect_url' => route('thankyou'),
                     ]);
                 }
@@ -192,7 +190,7 @@ class CheckoutController extends Controller
 
                 // 4. Build PayWay fields
                 $reqTime = now()->utc()->format('YmdHis');
-                $tranId = 'ORD-' . $order->id . '-' . time();
+                $tranId = 'ORD-'.$order->id.'-'.time();
 
                 $itemsData = [];
                 foreach ($cart as $item) {
@@ -223,7 +221,7 @@ class CheckoutController extends Controller
                     'return_deeplink' => '',
                     'currency' => 'USD',
                     'custom_fields' => '',
-                    'return_params' => (string)$order->id,
+                    'return_params' => (string) $order->id,
                     'payout' => '',
                     'lifetime' => 45,
                     'additional_params' => '',
@@ -241,13 +239,13 @@ class CheckoutController extends Controller
                 $paywayData = $paymentService->purchase($paywayParams, $order);
 
                 return response()->json([
-                    'success'       => true,
-                    'gateway'       => 'abapayway',
+                    'success' => true,
+                    'gateway' => 'abapayway',
                     'response_type' => 'json',
-                    'amount'        => number_format($total, 2, '.', ''),
-                    'currency'      => 'USD',
-                    'tran_id'       => $tranId,
-                    'data'          => $paywayData,
+                    'amount' => number_format($total, 2, '.', ''),
+                    'currency' => 'USD',
+                    'tran_id' => $tranId,
+                    'data' => $paywayData,
                 ]);
             }
 
@@ -280,7 +278,7 @@ class CheckoutController extends Controller
         Log::info('ABA PayWay webhook callback received: ', $request->all());
 
         $receivedSignature = $request->header('X-Payway-Hmac-Sha512') ?? '';
-        
+
         try {
             $payway = new \App\Services\PaymentGateway\ABAPayWayService('sandbox');
             $data = $request->all();
@@ -293,8 +291,8 @@ class CheckoutController extends Controller
             }
 
             $tranId = $data['tran_id'] ?? null;
-            if (!$orderId && $tranId && preg_match('/^ORD-(\d+)-/', $tranId, $matches)) {
-                $orderId = (int)$matches[1];
+            if (! $orderId && $tranId && preg_match('/^ORD-(\d+)-/', $tranId, $matches)) {
+                $orderId = (int) $matches[1];
             }
 
             if ($orderId) {
@@ -306,10 +304,10 @@ class CheckoutController extends Controller
                     // Loose check: 0, '0', '00', 'APPROVED' are all success
                     $isApproved = ($statusCode === 0 || $statusCode === '0' || $statusCode === '00'
                         || (is_string($statusCode) && strtolower($statusCode) === 'approved')
-                        || (isset($data['payment_status']) && strtoupper((string)$data['payment_status']) === 'APPROVED')
-                        || (isset($data['payment_status_code']) && (int)$data['payment_status_code'] === 0));
+                        || (isset($data['payment_status']) && strtoupper((string) $data['payment_status']) === 'APPROVED')
+                        || (isset($data['payment_status_code']) && (int) $data['payment_status_code'] === 0));
 
-                    Log::info("PayWay webhook for order #{$orderId}: status=" . json_encode($status) . " isApproved=" . ($isApproved ? 'true' : 'false'));
+                    Log::info("PayWay webhook for order #{$orderId}: status=".json_encode($status).' isApproved='.($isApproved ? 'true' : 'false'));
 
                     if ($isApproved) {
                         $order->status = 'completed';
@@ -324,30 +322,31 @@ class CheckoutController extends Controller
                             Payment::firstOrCreate(
                                 ['transaction_id' => $tranId ?? ($data['tran_id'] ?? null)],
                                 [
-                                    'order_id'   => $order->id,
-                                    'user_id'    => $order->customer_id ?? 1,
+                                    'order_id' => $order->id,
+                                    'user_id' => $order->customer_id ?? 1,
                                     'gateway_id' => $gateway ? $gateway->id : 1,
-                                    'amount'     => $order->total_amount,
-                                    'currency'   => 'USD',
-                                    'status'     => 'completed',
-                                    'response'   => $data,
-                                    'meta'       => ['apv' => $data['apv'] ?? ''],
+                                    'amount' => $order->total_amount,
+                                    'currency' => 'USD',
+                                    'status' => 'completed',
+                                    'response' => $data,
+                                    'meta' => ['apv' => $data['apv'] ?? ''],
                                 ]
                             );
                         } catch (\Throwable $pe) {
-                            Log::warning('paywayCallback: Payment record save skipped: ' . $pe->getMessage());
+                            Log::warning('paywayCallback: Payment record save skipped: '.$pe->getMessage());
                         }
 
                         Log::info("Order #{$order->id} paid successfully via PayWay webhook.");
                     } else {
-                        Log::warning("Order #{$order->id} received unapproved status via PayWay webhook: " . json_encode($status));
+                        Log::warning("Order #{$order->id} received unapproved status via PayWay webhook: ".json_encode($status));
                     }
                 }
             }
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
-            Log::error('PayWay Webhook processing error: ' . $e->getMessage());
+            Log::error('PayWay Webhook processing error: '.$e->getMessage());
+
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -360,7 +359,7 @@ class CheckoutController extends Controller
         $orderId = Session::get('last_order_id');
         $tranId = Session::get('last_tran_id');
 
-        if (!$orderId || !$tranId) {
+        if (! $orderId || ! $tranId) {
             return redirect()->route('xylo.home');
         }
 
@@ -368,10 +367,10 @@ class CheckoutController extends Controller
             $payway = new \App\Services\PaymentGateway\ABAPayWayService('sandbox');
             $result = $payway->checkTransaction($tranId);
 
-            Log::info("PayWay check transaction result on success redirect: ", $result);
+            Log::info('PayWay check transaction result on success redirect: ', $result);
 
             $paymentStatus = $result['data']['payment_status'] ?? null;
-            
+
             if ($paymentStatus === 'APPROVED' || ($result['data']['payment_status_code'] ?? null) === 0) {
                 $order = Order::find($orderId);
                 if ($order) {
@@ -400,14 +399,16 @@ class CheckoutController extends Controller
 
                     // Clear cart
                     Session::forget('cart');
+
                     return redirect()->route('thankyou')->with('success', 'Payment successful!');
                 }
             }
 
             return redirect()->route('checkout.index')->with('error', 'Payment verification pending or failed.');
         } catch (\Exception $e) {
-            Log::error('PayWay user redirect success verification error: ' . $e->getMessage());
-            return redirect()->route('checkout.index')->with('error', 'Error verifying payment: ' . $e->getMessage());
+            Log::error('PayWay user redirect success verification error: '.$e->getMessage());
+
+            return redirect()->route('checkout.index')->with('error', 'Error verifying payment: '.$e->getMessage());
         }
     }
 
@@ -434,12 +435,12 @@ class CheckoutController extends Controller
     public function thankYou()
     {
         $orderId = Session::get('last_order_id');
-        if (!$orderId) {
+        if (! $orderId) {
             return redirect()->route('xylo.home');
         }
 
         $order = Order::with(['details.product.thumbnail', 'details.product.recipes'])->find($orderId);
-        if (!$order) {
+        if (! $order) {
             return redirect()->route('xylo.home');
         }
 
@@ -454,9 +455,10 @@ class CheckoutController extends Controller
     public function paywayHosted()
     {
         $html = Session::get('abapayway_html');
-        if (!$html) {
+        if (! $html) {
             return redirect()->route('checkout.index');
         }
+
         return response($html);
     }
 
@@ -468,7 +470,7 @@ class CheckoutController extends Controller
         try {
             $payway = new \App\Services\PaymentGateway\ABAPayWayService('sandbox');
             $result = $payway->checkTransaction($tranId);
-            
+
             $paymentStatus = $result['data']['payment_status'] ?? null;
             $approved = ($paymentStatus === 'APPROVED' || ($result['data']['payment_status_code'] ?? null) === 0);
 
@@ -506,7 +508,7 @@ class CheckoutController extends Controller
             return response()->json([
                 'success' => true,
                 'approved' => $approved,
-                'status' => $paymentStatus
+                'status' => $paymentStatus,
             ]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
@@ -577,7 +579,7 @@ class CheckoutController extends Controller
     public function paywayHostedMobile($orderId)
     {
         $order = Order::with('details.product')->findOrFail($orderId);
-        
+
         if ($order->status !== 'pending') {
             return response('Order is already paid or canceled.', 400);
         }
@@ -586,7 +588,7 @@ class CheckoutController extends Controller
 
         // Resolve name and contact info from shipping address
         $shipping = \App\Models\ShippingAddress::where('order_id', $order->id)->first();
-        
+
         $nameParts = explode(' ', $shipping ? $shipping->name : 'Customer Name', 2);
         $firstName = $nameParts[0] ?? 'Customer';
         $lastName = $nameParts[1] ?? 'Customer';
@@ -594,7 +596,7 @@ class CheckoutController extends Controller
         $email = $order->guest_email ?? ($order->customer ? $order->customer->email : 'customer@example.com');
 
         $reqTime = now()->utc()->format('YmdHis');
-        $tranId = 'ORD-' . $order->id . '-' . time();
+        $tranId = 'ORD-'.$order->id.'-'.time();
 
         // Build items data for ABA transaction
         $itemsData = [];
@@ -626,7 +628,7 @@ class CheckoutController extends Controller
             'return_deeplink' => '',
             'currency' => 'USD',
             'custom_fields' => '',
-            'return_params' => (string)$order->id,
+            'return_params' => (string) $order->id,
             'payout' => '',
             'lifetime' => 45,
             'additional_params' => '',
@@ -650,9 +652,9 @@ class CheckoutController extends Controller
             <title>Redirecting to PayWay...</title>
         </head>
         <body>
-            <form id="payway-form" action="' . $checkoutUrl . '" method="post">';
+            <form id="payway-form" action="'.$checkoutUrl.'" method="post">';
         foreach ($paywayParams as $key => $value) {
-            $html .= '<input type="hidden" name="' . htmlspecialchars($key) . '" value="' . htmlspecialchars($value) . '">';
+            $html .= '<input type="hidden" name="'.htmlspecialchars($key).'" value="'.htmlspecialchars($value).'">';
         }
         $html .= '
             </form>

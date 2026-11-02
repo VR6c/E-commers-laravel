@@ -35,7 +35,7 @@ class MobilePasswordResetTest extends TestCase
         $response = $this->postJson('/api/password/forgot', ['email' => 'notfound@example.com']);
         $response->assertStatus(404)
             ->assertJson([
-                'status'  => false,
+                'status' => false,
                 'message' => 'This Email Not Found',
             ]);
     }
@@ -45,10 +45,10 @@ class MobilePasswordResetTest extends TestCase
         Mail::fake();
 
         $customer = Customer::create([
-            'name'     => 'Alice Bob',
-            'email'    => 'alice@example.com',
+            'name' => 'Alice Bob',
+            'email' => 'alice@example.com',
             'password' => 'oldpassword123',
-            'status'   => 'active',
+            'status' => 'active',
         ]);
 
         $response = $this->postJson('/api/password/forgot', [
@@ -75,10 +75,10 @@ class MobilePasswordResetTest extends TestCase
         Mail::fake();
 
         Customer::create([
-            'name'     => 'Cooldown User',
-            'email'    => 'cooldown@example.com',
+            'name' => 'Cooldown User',
+            'email' => 'cooldown@example.com',
             'password' => 'password123',
-            'status'   => 'active',
+            'status' => 'active',
         ]);
 
         // 1st request succeeds
@@ -97,23 +97,23 @@ class MobilePasswordResetTest extends TestCase
     {
         $email = 'verify@example.com';
         Customer::create([
-            'name'     => 'Verify User',
-            'email'    => $email,
+            'name' => 'Verify User',
+            'email' => $email,
             'password' => 'password123',
-            'status'   => 'active',
+            'status' => 'active',
         ]);
 
         $otp = '456789';
         DB::table('password_resets')->insert([
-            'email'      => $email,
-            'token'      => Hash::make($otp),
+            'email' => $email,
+            'token' => Hash::make($otp),
             'created_at' => now(),
         ]);
 
         // Wrong OTP
         $wrongResponse = $this->postJson('/api/password/verify-otp', [
             'email' => $email,
-            'otp'   => '000000',
+            'otp' => '000000',
         ]);
         $wrongResponse->assertStatus(422)
             ->assertJson([
@@ -123,14 +123,14 @@ class MobilePasswordResetTest extends TestCase
         // Correct OTP
         $correctResponse = $this->postJson('/api/password/verify-otp', [
             'email' => $email,
-            'otp'   => $otp,
+            'otp' => $otp,
         ]);
         $correctResponse->assertStatus(200)
             ->assertJson([
                 'status' => true,
-                'data'   => [
+                'data' => [
                     'email' => $email,
-                    'otp'   => $otp,
+                    'otp' => $otp,
                 ],
             ]);
     }
@@ -139,22 +139,22 @@ class MobilePasswordResetTest extends TestCase
     {
         $email = 'expired@example.com';
         Customer::create([
-            'name'     => 'Expired User',
-            'email'    => $email,
+            'name' => 'Expired User',
+            'email' => $email,
             'password' => 'password123',
-            'status'   => 'active',
+            'status' => 'active',
         ]);
 
         $otp = '123456';
         DB::table('password_resets')->insert([
-            'email'      => $email,
-            'token'      => Hash::make($otp),
+            'email' => $email,
+            'token' => Hash::make($otp),
             'created_at' => Carbon::now()->subMinutes(20), // > 15 mins
         ]);
 
         $response = $this->postJson('/api/password/verify-otp', [
             'email' => $email,
-            'otp'   => $otp,
+            'otp' => $otp,
         ]);
 
         $response->assertStatus(422)
@@ -168,24 +168,24 @@ class MobilePasswordResetTest extends TestCase
     {
         $email = 'resetflow@example.com';
         $customer = Customer::create([
-            'name'     => 'Reset User',
-            'email'    => $email,
+            'name' => 'Reset User',
+            'email' => $email,
             'password' => 'initialPassword',
-            'status'   => 'active',
+            'status' => 'active',
         ]);
 
         $otp = '789123';
         DB::table('password_resets')->insert([
-            'email'      => $email,
-            'token'      => Hash::make($otp),
+            'email' => $email,
+            'token' => Hash::make($otp),
             'created_at' => now(),
         ]);
 
         // Reset password
         $resetResponse = $this->postJson('/api/password/reset', [
-            'email'                 => $email,
-            'otp'                   => $otp,
-            'password'              => 'brandNewPassword123',
+            'email' => $email,
+            'otp' => $otp,
+            'password' => 'brandNewPassword123',
             'password_confirmation' => 'brandNewPassword123',
         ]);
 
@@ -205,7 +205,7 @@ class MobilePasswordResetTest extends TestCase
 
         // Customer can log in with new password
         $loginResponse = $this->postJson('/api/customer/login', [
-            'email'    => $email,
+            'email' => $email,
             'password' => 'brandNewPassword123',
         ]);
 
@@ -220,10 +220,10 @@ class MobilePasswordResetTest extends TestCase
         Mail::fake();
 
         Customer::create([
-            'name'     => 'Alias User',
-            'email'    => 'alias@example.com',
+            'name' => 'Alias User',
+            'email' => 'alias@example.com',
             'password' => 'password123',
-            'status'   => 'active',
+            'status' => 'active',
         ]);
 
         $this->postJson('/api/customer/forgot-password', ['email' => 'alias@example.com'])

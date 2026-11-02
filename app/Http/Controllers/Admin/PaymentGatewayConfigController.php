@@ -26,12 +26,12 @@ class PaymentGatewayConfigController extends Controller
                 ->addColumn('environment', fn ($row) => ucfirst($row->environment))
                 ->addColumn('action', function ($row) {
                     return '
-                        <a href="' . route('admin.payment_gateway_configs.edit', $row->id) . '"
+                        <a href="'.route('admin.payment_gateway_configs.edit', $row->id).'"
                            class="btn btn-sm btn-primary me-1">
                             <i class="bi bi-pencil-fill"></i>
                         </a>
                         <span class="border border-danger dt-trash rounded-3 d-inline-block"
-                              onclick="deleteConfig(' . $row->id . ')">
+                              onclick="deleteConfig('.$row->id.')">
                             <i class="bi bi-trash-fill text-danger"></i>
                         </span>
                     ';
@@ -51,9 +51,9 @@ class PaymentGatewayConfigController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'gateway_id'  => 'required|exists:payment_gateways,id',
-            'key_name'    => 'required|string|max:100',
-            'key_value'   => 'required|string',
+            'gateway_id' => 'required|exists:payment_gateways,id',
+            'key_name' => 'required|string|max:100',
+            'key_value' => 'required|string',
             'environment' => 'required|in:sandbox,production',
         ]);
 
@@ -66,7 +66,7 @@ class PaymentGatewayConfigController extends Controller
 
     public function edit($id)
     {
-        $config   = PaymentGatewayConfig::findOrFail($id);
+        $config = PaymentGatewayConfig::findOrFail($id);
         $gateways = PaymentGateway::all();
 
         return view('admin.payment_gateway_configs.edit', compact('config', 'gateways'));
@@ -77,9 +77,9 @@ class PaymentGatewayConfigController extends Controller
         $config = PaymentGatewayConfig::findOrFail($id);
 
         $request->validate([
-            'gateway_id'  => 'required|exists:payment_gateways,id',
-            'key_name'    => 'required|string|max:100',
-            'key_value'   => 'required|string',
+            'gateway_id' => 'required|exists:payment_gateways,id',
+            'key_name' => 'required|string|max:100',
+            'key_value' => 'required|string',
             'environment' => 'required|in:sandbox,production',
         ]);
 
@@ -100,7 +100,7 @@ class PaymentGatewayConfigController extends Controller
                 'message' => 'Payment gateway config deleted successfully.',
             ]);
         } catch (\Exception $e) {
-            Log::error("Error deleting payment gateway config ID {$id}: " . $e->getMessage());
+            Log::error("Error deleting payment gateway config ID {$id}: ".$e->getMessage());
 
             return response()->json([
                 'success' => false,

@@ -39,6 +39,7 @@ class MigratePicsumToImgbbCommand extends Command
 
         if (empty($apiKey) && ! $dryRun) {
             $this->error('ImgBB API key is required. Set IMGBB_API_KEY in .env or pass --key=...');
+
             return Command::FAILURE;
         }
 
@@ -55,6 +56,7 @@ class MigratePicsumToImgbbCommand extends Command
 
         if ($total === 0) {
             $this->info('No picsum.photos URLs found. Nothing to do.');
+
             return Command::SUCCESS;
         }
 
@@ -71,36 +73,37 @@ class MigratePicsumToImgbbCommand extends Command
 
         foreach ($records as $record) {
             $url = $record->image_url;
-            $productName = $record->product->name ?? 'product-' . $record->product_id;
+            $productName = $record->product->name ?? 'product-'.$record->product_id;
             $slugName = Str::slug($productName);
 
             if ($dryRun) {
                 $ok++;
                 $bar->advance();
+
                 continue;
             }
 
             try {
                 $response = Http::asForm()->timeout(30)->post('https://api.imgbb.com/1/upload', [
-                    'key'   => $apiKey,
+                    'key' => $apiKey,
                     'image' => $url,
-                    'name'  => $slugName,
+                    'name' => $slugName,
                 ]);
 
                 $data = $response->json();
 
-                if ($response->successful() && !empty($data['data']['url'])) {
+                if ($response->successful() && ! empty($data['data']['url'])) {
                     $record->update(['image_url' => $data['data']['url']]);
                     $ok++;
                 } else {
                     $failed++;
                     $this->newLine();
-                    $this->warn("Failed on Image #{$record->id}: " . ($data['error']['message'] ?? 'Unknown error'));
+                    $this->warn("Failed on Image #{$record->id}: ".($data['error']['message'] ?? 'Unknown error'));
                 }
             } catch (\Throwable $e) {
                 $failed++;
                 $this->newLine();
-                $this->warn("Exception on Image #{$record->id}: " . $e->getMessage());
+                $this->warn("Exception on Image #{$record->id}: ".$e->getMessage());
             }
 
             usleep(300000); // 0.3s rate-limit protection

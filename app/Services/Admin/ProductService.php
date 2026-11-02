@@ -29,27 +29,38 @@ class ProductService
                 if ($image) {
                     $url = \Illuminate\Support\Str::startsWith($image->image_url, ['http://', 'https://'])
                         ? $image->image_url
-                        : asset('storage/' . $image->image_url);
-                    return '<img src="' . $url . '" alt="product" class="dt-product-thumb" onerror="this.onerror=null;this.src=\'/images/no-product.png\';">';
+                        : asset('storage/'.$image->image_url);
+
+                    return '<img src="'.$url.'" alt="product" class="dt-product-thumb" onerror="this.onerror=null;this.src=\'/images/no-product.png\';">';
                 }
+
                 return '<div class="dt-product-thumb dt-product-thumb--placeholder"><i class="bi bi-image"></i></div>';
             })
             ->addColumn('name', fn ($p) => $p->name ?? 'No name')
             ->addColumn('category', function ($product) {
                 $name = $product->category?->name ?? '—';
-                return '<span class="dt-category-badge">' . $name . '</span>';
+
+                return '<span class="dt-category-badge">'.$name.'</span>';
             })
             ->addColumn('price', function ($product) {
                 $pv = $product->primaryVariant;
-                return $pv ? '$' . number_format($pv->price, 2) : '<span class="text-muted">—</span>';
+
+                return $pv ? '$'.number_format($pv->price, 2) : '<span class="text-muted">—</span>';
             })
             ->addColumn('stock', function ($product) {
                 $pv = $product->primaryVariant;
-                if (!$pv) return '<span class="text-muted">—</span>';
+                if (! $pv) {
+                    return '<span class="text-muted">—</span>';
+                }
                 $stock = (int) $pv->stock;
-                if ($stock === 0) return '<span class="dt-stock-badge dt-stock-badge--out">Out of stock</span>';
-                if ($stock <= 10) return '<span class="dt-stock-badge dt-stock-badge--low">' . $stock . '</span>';
-                return '<span class="dt-stock-badge dt-stock-badge--in">' . $stock . '</span>';
+                if ($stock === 0) {
+                    return '<span class="dt-stock-badge dt-stock-badge--out">Out of stock</span>';
+                }
+                if ($stock <= 10) {
+                    return '<span class="dt-stock-badge dt-stock-badge--low">'.$stock.'</span>';
+                }
+
+                return '<span class="dt-stock-badge dt-stock-badge--in">'.$stock.'</span>';
             })
             ->addColumn('status', fn ($p) => $p->status)
             ->addColumn('action', fn () => '')
@@ -62,7 +73,8 @@ class ProductService
         try {
             return $this->productRepository->destroy($id);
         } catch (\Exception $e) {
-            Log::error("Error deleting product {$id}: " . $e->getMessage());
+            Log::error("Error deleting product {$id}: ".$e->getMessage());
+
             return false;
         }
     }

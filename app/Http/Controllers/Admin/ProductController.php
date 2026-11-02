@@ -26,12 +26,13 @@ class ProductController extends Controller
     use GeneratesUniqueSlug, SyncsProductVariants, UpdatesModelStatus;
 
     protected CategoryService $categoryService;
+
     protected ProductService $productService;
 
     public function __construct(CategoryService $categoryService, ProductService $productService)
     {
         $this->categoryService = $categoryService;
-        $this->productService  = $productService;
+        $this->productService = $productService;
     }
 
     public function index()
@@ -44,7 +45,7 @@ class ProductController extends Controller
         try {
             return $this->productService->getProductsForDataTable($request);
         } catch (\Exception $e) {
-            Log::error('Error fetching product data: ' . $e->getMessage());
+            Log::error('Error fetching product data: '.$e->getMessage());
 
             return response()->json(['error' => 'An error occurred while fetching product data.'], 500);
         }
@@ -52,16 +53,16 @@ class ProductController extends Controller
 
     public function create()
     {
-        $vendors  = Vendor::all();
+        $vendors = Vendor::all();
         $categories = Category::all();
-        $brands   = Brand::all();
+        $brands = Brand::all();
         $attributes = Attribute::with('values')->get();
-        $sizes    = Attribute::where('name', 'Size')->first()?->values ?? collect();
-        $colors   = Attribute::where('name', 'Color')->first()?->values ?? collect();
+        $sizes = Attribute::where('name', 'Size')->first()?->values ?? collect();
+        $colors = Attribute::where('name', 'Color')->first()?->values ?? collect();
         $attributeSizeMap = [
-            'small'  => AttributeValue::where('attribute_id', $sizes->firstWhere('name', 'Small')->id ?? 0)->pluck('id')->first(),
+            'small' => AttributeValue::where('attribute_id', $sizes->firstWhere('name', 'Small')->id ?? 0)->pluck('id')->first(),
             'medium' => AttributeValue::where('attribute_id', $sizes->firstWhere('name', 'Medium')->id ?? 0)->pluck('id')->first(),
-            'large'  => AttributeValue::where('attribute_id', $sizes->firstWhere('name', 'Large')->id ?? 0)->pluck('id')->first(),
+            'large' => AttributeValue::where('attribute_id', $sizes->firstWhere('name', 'Large')->id ?? 0)->pluck('id')->first(),
         ];
 
         return view('admin.products.create', compact('categories', 'brands', 'attributes', 'sizes', 'colors', 'attributeSizeMap', 'vendors'));
@@ -70,16 +71,16 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         DB::transaction(function () use ($request) {
-            $slug    = $this->generateUniqueSlug($request->input('name'));
+            $slug = $this->generateUniqueSlug($request->input('name'));
             $product = Product::create([
-                'vendor_id'         => $request->vendor_id,
-                'slug'              => $slug,
-                'name'              => $request->input('name'),
-                'description'       => $request->input('description'),
+                'vendor_id' => $request->vendor_id,
+                'slug' => $slug,
+                'name' => $request->input('name'),
+                'description' => $request->input('description'),
                 'short_description' => $request->input('short_description'),
-                'category_id'       => $request->category_id,
-                'brand_id'          => $request->brand_id,
-                'product_type'      => 'variable',
+                'category_id' => $request->category_id,
+                'brand_id' => $request->brand_id,
+                'product_type' => 'variable',
             ]);
 
             if ($request->hasFile('images')) {
@@ -97,18 +98,18 @@ class ProductController extends Controller
 
     public function edit($id)
     {
-        $product    = Product::with(['variants.attributeValues', 'images'])->findOrFail($id);
-        $vendors    = Vendor::all();
+        $product = Product::with(['variants.attributeValues', 'images'])->findOrFail($id);
+        $vendors = Vendor::all();
         $categories = Category::all();
-        $brands     = Brand::all();
+        $brands = Brand::all();
         $attributes = Attribute::with('values')->get();
-        $sizes      = Attribute::where('name', 'Size')->first()?->values ?? collect();
-        $colors     = Attribute::where('name', 'Color')->first()?->values ?? collect();
+        $sizes = Attribute::where('name', 'Size')->first()?->values ?? collect();
+        $colors = Attribute::where('name', 'Color')->first()?->values ?? collect();
 
         foreach ($product->variants as $variant) {
-            $size  = $variant->attributeValues->firstWhere('attribute_id', $sizes->first()?->attribute_id);
+            $size = $variant->attributeValues->firstWhere('attribute_id', $sizes->first()?->attribute_id);
             $color = $variant->attributeValues->firstWhere('attribute_id', $colors->first()?->attribute_id);
-            $variant->size_id  = $size?->id;
+            $variant->size_id = $size?->id;
             $variant->color_id = $color?->id;
         }
 
@@ -122,14 +123,13 @@ class ProductController extends Controller
         DB::transaction(function () use ($request, $product) {
             $en = $request->only(['name', 'description', 'short_description']);
             $product->update([
-                'category_id'       => $request->category_id,
-                'brand_id'          => $request->brand_id,
-                'vendor_id'         => $request->vendor_id,
-                'name'              => $en['name'] ?? $product->name,
-                'description'       => $en['description'] ?? $product->description,
+                'category_id' => $request->category_id,
+                'brand_id' => $request->brand_id,
+                'vendor_id' => $request->vendor_id,
+                'name' => $en['name'] ?? $product->name,
+                'description' => $en['description'] ?? $product->description,
                 'short_description' => $en['short_description'] ?? $product->short_description,
             ]);
-
 
             $newAttrValueIds = collect($request->variants)
                 ->flatMap(fn ($v) => array_filter([$v['size_id'] ?? null, $v['color_id'] ?? null]))
@@ -143,7 +143,7 @@ class ProductController extends Controller
                 foreach ($request->remove_images as $imageId) {
                     $image = $product->images()->find($imageId);
                     if ($image) {
-                        if (!\Illuminate\Support\Str::startsWith($image->image_url, ['http://', 'https://'])) {
+                        if (! \Illuminate\Support\Str::startsWith($image->image_url, ['http://', 'https://'])) {
                             Storage::disk('public')->delete($image->image_url);
                         }
                         $image->delete();
@@ -178,7 +178,7 @@ class ProductController extends Controller
 
             return response()->json(['success' => false, 'message' => 'Failed to delete product!']);
         } catch (\Exception $e) {
-            Log::error("Error deleting product with ID {$id}: " . $e->getMessage());
+            Log::error("Error deleting product with ID {$id}: ".$e->getMessage());
 
             return response()->json(['success' => false, 'message' => 'An error occurred while deleting the product.']);
         }
@@ -188,5 +188,4 @@ class ProductController extends Controller
     {
         return $this->performStatusUpdate(Product::class, $request);
     }
-
 }

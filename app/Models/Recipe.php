@@ -33,16 +33,16 @@ class Recipe extends Model
     ];
 
     protected $casts = [
-        'ingredients'      => 'array',
-        'instructions'     => 'array',
+        'ingredients' => 'array',
+        'instructions' => 'array',
         'nutritional_info' => 'array',
-        'is_active'        => 'boolean',
-        'is_featured'      => 'boolean',
-        'price'            => 'decimal:2',
-        'prep_time'        => 'integer',
-        'cook_time'        => 'integer',
-        'servings'         => 'integer',
-        'calories'         => 'integer',
+        'is_active' => 'boolean',
+        'is_featured' => 'boolean',
+        'price' => 'decimal:2',
+        'prep_time' => 'integer',
+        'cook_time' => 'integer',
+        'servings' => 'integer',
+        'calories' => 'integer',
     ];
 
     // ------------------------------------------------------------------
@@ -84,7 +84,8 @@ class Recipe extends Model
             if (Str::startsWith($this->image_url, ['http://', 'https://'])) {
                 return $this->image_url;
             }
-            return asset('storage/' . $this->image_url);
+
+            return asset('storage/'.$this->image_url);
         }
 
         return 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&auto=format&fit=crop&q=80';
@@ -93,10 +94,10 @@ class Recipe extends Model
     public function getDifficultyBadgeClassAttribute(): string
     {
         return match (strtolower($this->difficulty ?? 'medium')) {
-            'easy'   => 'badge-easy',
+            'easy' => 'badge-easy',
             'medium' => 'badge-medium',
-            'hard'   => 'badge-hard',
-            default  => 'badge-medium',
+            'hard' => 'badge-hard',
+            default => 'badge-medium',
         };
     }
 
@@ -141,11 +142,11 @@ class Recipe extends Model
         // 5. If customer is authenticated, check their historical completed orders
         if ($customer) {
             $linkedProductIds = $this->products()->pluck('products.id')->toArray();
-            if (!empty($linkedProductIds)) {
+            if (! empty($linkedProductIds)) {
                 $hasBought = OrderDetail::whereIn('product_id', $linkedProductIds)
                     ->whereHas('order', function ($q) use ($customer) {
                         $q->where('customer_id', $customer->id)
-                          ->whereIn('status', ['completed', 'processing']);
+                            ->whereIn('status', ['completed', 'processing']);
                     })
                     ->exists();
 

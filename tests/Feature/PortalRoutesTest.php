@@ -23,7 +23,7 @@ class PortalRoutesTest extends TestCase
         $user = (new User)->forceFill([
             'id' => 999991,
             'name' => 'Test Admin',
-            'email' => 'admin_test_' . uniqid() . '@example.com',
+            'email' => 'admin_test_'.uniqid().'@example.com',
             'password' => 'secret',
         ]);
 
@@ -45,7 +45,7 @@ class PortalRoutesTest extends TestCase
         $vendor = (new Vendor)->forceFill([
             'id' => 999992,
             'name' => 'Test Vendor',
-            'email' => 'vendor_test_' . uniqid() . '@example.com',
+            'email' => 'vendor_test_'.uniqid().'@example.com',
             'password' => 'secret',
             'status' => 'active',
         ]);
@@ -68,7 +68,7 @@ class PortalRoutesTest extends TestCase
         $customer = (new Customer)->forceFill([
             'id' => 999993,
             'name' => 'Test Customer',
-            'email' => 'customer_test_' . uniqid() . '@example.com',
+            'email' => 'customer_test_'.uniqid().'@example.com',
             'password' => 'secret',
         ]);
 
@@ -90,7 +90,7 @@ class PortalRoutesTest extends TestCase
         $vendor = (new Vendor)->forceFill([
             'id' => 999994,
             'name' => 'Test Vendor 2',
-            'email' => 'vendor_test2_' . uniqid() . '@example.com',
+            'email' => 'vendor_test2_'.uniqid().'@example.com',
             'password' => 'secret',
             'status' => 'active',
         ]);
@@ -104,7 +104,7 @@ class PortalRoutesTest extends TestCase
         $customer = (new Customer)->forceFill([
             'id' => 999995,
             'name' => 'Test Customer 2',
-            'email' => 'customer_test2_' . uniqid() . '@example.com',
+            'email' => 'customer_test2_'.uniqid().'@example.com',
             'password' => 'secret',
         ]);
 

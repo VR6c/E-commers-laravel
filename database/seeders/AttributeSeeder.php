@@ -11,8 +11,8 @@ class AttributeSeeder extends Seeder
     public function run(): void
     {
         $attributes = [
-            'Size'     => ['XS', 'Small', 'Medium', 'Large', 'XL', 'XXL'],
-            'Color'    => ['Red', 'Green', 'Blue', 'Black', 'White', 'Yellow', 'Navy', 'Grey'],
+            'Size' => ['XS', 'Small', 'Medium', 'Large', 'XL', 'XXL'],
+            'Color' => ['Red', 'Green', 'Blue', 'Black', 'White', 'Yellow', 'Navy', 'Grey'],
             'Material' => ['Cotton', 'Polyester', 'Leather', 'Denim', 'Linen', 'Wool'],
         ];
 
@@ -22,7 +22,7 @@ class AttributeSeeder extends Seeder
             foreach ($values as $val) {
                 AttributeValue::firstOrCreate([
                     'attribute_id' => $attribute->id,
-                    'value'        => $val,
+                    'value' => $val,
                 ]);
             }
         }

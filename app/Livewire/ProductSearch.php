@@ -17,24 +17,30 @@ final class ProductSearch extends Component
     use WithPagination;
 
     public string $search = '';
+
     public ?int $category_id = null;
+
     public ?int $brand_id = null;
+
     public ?float $min_price = null;
+
     public ?float $max_price = null;
+
     public string $sort_by = 'newest';
+
     public int $per_page = 12;
 
     /**
      * Bind component parameters to URL query string.
      */
     protected array $queryString = [
-        'search'      => ['except' => ''],
+        'search' => ['except' => ''],
         'category_id' => ['except' => null, 'as' => 'category'],
-        'brand_id'    => ['except' => null, 'as' => 'brand'],
-        'min_price'   => ['except' => null, 'as' => 'min'],
-        'max_price'   => ['except' => null, 'as' => 'max'],
-        'sort_by'     => ['except' => 'newest', 'as' => 'sort'],
-        'per_page'    => ['except' => 12, 'as' => 'per_page'],
+        'brand_id' => ['except' => null, 'as' => 'brand'],
+        'min_price' => ['except' => null, 'as' => 'min'],
+        'max_price' => ['except' => null, 'as' => 'max'],
+        'sort_by' => ['except' => 'newest', 'as' => 'sort'],
+        'per_page' => ['except' => 12, 'as' => 'per_page'],
     ];
 
     /**
@@ -93,24 +99,24 @@ final class ProductSearch extends Component
         if (in_array($filter, ['search', 'category_id', 'brand_id', 'min_price', 'max_price'], true)) {
             $this->reset($filter);
             $this->resetPage();
-            $this->dispatch('toast', type: 'info', message: ucfirst(str_replace('_', ' ', $filter)) . ' filter removed.');
+            $this->dispatch('toast', type: 'info', message: ucfirst(str_replace('_', ' ', $filter)).' filter removed.');
         }
     }
 
     public function render(): View
     {
         $query = Product::query()
-            ->with(['category', 'brand', 'images', 'primaryVariant', 'variants']);
+            ->with(['category', 'brand', 'images', 'primaryVariant', 'variants', 'thumbnail']);
 
         // Search filter (matches product name, description, short_description, tags, or variant SKU)
-        if (!empty(trim($this->search))) {
-            $searchTerm = '%' . trim($this->search) . '%';
+        if (! empty(trim($this->search))) {
+            $searchTerm = '%'.trim($this->search).'%';
             $query->where(function (Builder $q) use ($searchTerm): void {
                 $q->where('name', 'like', $searchTerm)
-                  ->orWhere('description', 'like', $searchTerm)
-                  ->orWhere('short_description', 'like', $searchTerm)
-                  ->orWhere('tags', 'like', $searchTerm)
-                  ->orWhereHas('variants', fn (Builder $v) => $v->where('SKU', 'like', $searchTerm));
+                    ->orWhere('description', 'like', $searchTerm)
+                    ->orWhere('short_description', 'like', $searchTerm)
+                    ->orWhere('tags', 'like', $searchTerm)
+                    ->orWhereHas('variants', fn (Builder $v) => $v->where('SKU', 'like', $searchTerm));
             });
         }
 
@@ -139,26 +145,26 @@ final class ProductSearch extends Component
 
         // Sorting options
         match ($this->sort_by) {
-            'price_asc'  => $query->select('products.*')
-                                  ->join('product_variants', 'products.id', '=', 'product_variants.product_id')
-                                  ->where('product_variants.is_primary', true)
-                                  ->orderBy('product_variants.price', 'asc'),
+            'price_asc' => $query->select('products.*')
+                ->join('product_variants', 'products.id', '=', 'product_variants.product_id')
+                ->where('product_variants.is_primary', true)
+                ->orderBy('product_variants.price', 'asc'),
             'price_desc' => $query->select('products.*')
-                                  ->join('product_variants', 'products.id', '=', 'product_variants.product_id')
-                                  ->where('product_variants.is_primary', true)
-                                  ->orderBy('product_variants.price', 'desc'),
-            'name_asc'   => $query->orderBy('name', 'asc'),
-            default      => $query->latest('products.created_at'),
+                ->join('product_variants', 'products.id', '=', 'product_variants.product_id')
+                ->where('product_variants.is_primary', true)
+                ->orderBy('product_variants.price', 'desc'),
+            'name_asc' => $query->orderBy('name', 'asc'),
+            default => $query->latest('products.created_at'),
         };
 
-        $products   = $query->paginate($this->per_page);
+        $products = $query->paginate($this->per_page);
         $categories = \Illuminate\Support\Facades\Cache::remember('search_categories', 3600, fn () => Category::query()->select(['id', 'name', 'slug'])->orderBy('name')->get());
-        $brands     = \Illuminate\Support\Facades\Cache::remember('search_brands', 3600, fn () => Brand::query()->select(['id', 'name', 'slug'])->orderBy('name')->get());
+        $brands = \Illuminate\Support\Facades\Cache::remember('search_brands', 3600, fn () => Brand::query()->select(['id', 'name', 'slug'])->orderBy('name')->get());
 
         return view('livewire.product-search', [
-            'products'   => $products,
+            'products' => $products,
             'categories' => $categories,
-            'brands'     => $brands,
+            'brands' => $brands,
         ]);
     }
 }

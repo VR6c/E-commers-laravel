@@ -14,6 +14,7 @@ Route::prefix('vendor')->group(function () {
         if (auth('vendor')->check()) {
             return redirect()->route('vendor.dashboard');
         }
+
         return redirect()->route('vendor.login');
     })->name('vendor.index');
 

@@ -11,49 +11,49 @@ class CurrencySeeder extends Seeder
     {
         $currencies = [
             [
-                'name'          => 'US Dollar',
-                'code'          => 'USD',
-                'symbol'        => '$',
+                'name' => 'US Dollar',
+                'code' => 'USD',
+                'symbol' => '$',
                 'exchange_rate' => 1.0000,
-                'created_at'    => now(),
-                'updated_at'    => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
-                'name'          => 'Cambodian Riel',
-                'code'          => 'KHR',
-                'symbol'        => '៛',
+                'name' => 'Cambodian Riel',
+                'code' => 'KHR',
+                'symbol' => '៛',
                 'exchange_rate' => 4100.0000,
-                'created_at'    => now(),
-                'updated_at'    => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
-                'name'          => 'Euro',
-                'code'          => 'EUR',
-                'symbol'        => '€',
+                'name' => 'Euro',
+                'code' => 'EUR',
+                'symbol' => '€',
                 'exchange_rate' => 0.9200,
-                'created_at'    => now(),
-                'updated_at'    => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
-                'name'          => 'British Pound',
-                'code'          => 'GBP',
-                'symbol'        => '£',
+                'name' => 'British Pound',
+                'code' => 'GBP',
+                'symbol' => '£',
                 'exchange_rate' => 0.7900,
-                'created_at'    => now(),
-                'updated_at'    => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
-                'name'          => 'Thai Baht',
-                'code'          => 'THB',
-                'symbol'        => '฿',
+                'name' => 'Thai Baht',
+                'code' => 'THB',
+                'symbol' => '฿',
                 'exchange_rate' => 36.5000,
-                'created_at'    => now(),
-                'updated_at'    => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ];
 
         DB::table('currencies')->insertOrIgnore($currencies);
 
-        $this->command->info('CurrencySeeder: ' . count($currencies) . ' currencies seeded.');
+        $this->command->info('CurrencySeeder: '.count($currencies).' currencies seeded.');
     }
 }

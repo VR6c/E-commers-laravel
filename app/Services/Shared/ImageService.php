@@ -47,9 +47,9 @@ class ImageService
         $mime = $info['mime'] ?? '';
         $image = match ($mime) {
             'image/jpeg' => @imagecreatefromjpeg($sourcePath),
-            'image/png'  => @imagecreatefrompng($sourcePath),
+            'image/png' => @imagecreatefrompng($sourcePath),
             'image/webp' => @imagecreatefromwebp($sourcePath),
-            default      => null,
+            default => null,
         };
 
         if (! $image) {

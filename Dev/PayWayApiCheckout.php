@@ -1,4 +1,5 @@
 <?php
+
 /*
 |--------------------------------------------------------------------------
 | ABA PayWay API URL
@@ -26,23 +27,23 @@ define('ABA_PAYWAY_API_KEY', 'fde4f7ade6a1eab1c6fdb05c7823db3804ab702d');
 */
 define('ABA_PAYWAY_MERCHANT_ID', 'ec476922');
 
-
-class PayWayApiCheckout {
-
+class PayWayApiCheckout
+{
     /**
      * Returns the getHash
      * For PayWay security, you must follow the way of encryption for hash.
      *
-     * @param string $transactionId
-     * @param string $amount
-     *
+     * @param  string  $transactionId
+     * @param  string  $amount
      * @return string getHash
      */
-    public static function getHash($str) {
+    public static function getHash($str)
+    {
 
-      //  echo 'before hash: '.$str.'<br><br>';
+        //  echo 'before hash: '.$str.'<br><br>';
 
         $hash = base64_encode(hash_hmac('sha512', $str, ABA_PAYWAY_API_KEY, true));
+
         return $hash;
     }
 
@@ -51,7 +52,8 @@ class PayWayApiCheckout {
      *
      * @return string getApiUrl
      */
-    public static function getApiUrl() {
+    public static function getApiUrl()
+    {
         return ABA_PAYWAY_API_URL;
     }
 }

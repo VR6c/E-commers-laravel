@@ -15,10 +15,12 @@ class Kernel extends ConsoleKernel
         DataImport::class,
         FixDuplicateProductImages::class,
     ];
+
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
     }
+
     protected function commands(): void
     {
         $this->load(__DIR__.'/Commands');

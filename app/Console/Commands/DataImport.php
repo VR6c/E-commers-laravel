@@ -22,6 +22,7 @@ class DataImport extends Command
      * @var string
      */
     protected $description = 'Command description';
+
     public function handle()
     {
         $this->info('Starting data import...');

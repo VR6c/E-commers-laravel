@@ -85,19 +85,19 @@ Route::post('/checkout/verify-payment', [CheckoutApiController::class, 'verifyPa
 Route::match(['get', 'post'], '/orders/{id}/sync-payment', function (Request $request, $id) {
     try {
         $order = \App\Models\Order::find($id);
-        if (!$order) {
+        if (! $order) {
             return response()->json(['status' => false, 'message' => 'Order not found'], 404);
         }
 
         $tranId = $request->input('tran_id');
-        if (!$tranId) {
+        if (! $tranId) {
             $payment = \App\Models\Payment::where('order_id', $order->id)->latest()->first();
             $tranId = $payment?->transaction_id;
         }
-        if (!$tranId && (int)$id === 92) {
+        if (! $tranId && (int) $id === 92) {
             $tranId = 'ORD-92-1790931849';
         }
-        if (!$tranId) {
+        if (! $tranId) {
             return response()->json(['status' => false, 'message' => 'tran_id required'], 422);
         }
 
@@ -122,36 +122,36 @@ Route::match(['get', 'post'], '/orders/{id}/sync-payment', function (Request $re
                 \App\Models\Payment::updateOrCreate(
                     ['transaction_id' => $tranId],
                     [
-                        'order_id'   => $order->id,
-                        'user_id'    => $userId,
+                        'order_id' => $order->id,
+                        'user_id' => $userId,
                         'gateway_id' => $gateway ? $gateway->id : 1,
-                        'amount'     => $order->total_amount,
-                        'currency'   => 'USD',
-                        'status'     => 'completed',
-                        'response'   => $result,
-                        'meta'       => ['apv' => $result['apv'] ?? ($result['data']['apv'] ?? '')],
+                        'amount' => $order->total_amount,
+                        'currency' => 'USD',
+                        'status' => 'completed',
+                        'response' => $result,
+                        'meta' => ['apv' => $result['apv'] ?? ($result['data']['apv'] ?? '')],
                     ]
                 );
             } catch (\Throwable $pe) {
-                \Illuminate\Support\Facades\Log::warning('Payment record insert skipped: ' . $pe->getMessage());
+                \Illuminate\Support\Facades\Log::warning('Payment record insert skipped: '.$pe->getMessage());
             }
         }
 
         return response()->json([
-            'status'         => true,
-            'order_id'       => $order->id,
-            'order_status'   => $order->status,
-            'approved'       => $isApproved,
+            'status' => true,
+            'order_id' => $order->id,
+            'order_status' => $order->status,
+            'approved' => $isApproved,
             'payment_status' => $paymentStatus,
-            'tran_id'        => $tranId,
-            'result'         => $result,
+            'tran_id' => $tranId,
+            'result' => $result,
         ]);
     } catch (\Throwable $e) {
         return response()->json([
-            'status'  => false,
+            'status' => false,
             'message' => $e->getMessage(),
-            'file'    => $e->getFile(),
-            'line'    => $e->getLine(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
         ], 500);
     }
 });

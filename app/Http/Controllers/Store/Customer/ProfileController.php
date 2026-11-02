@@ -25,7 +25,7 @@ class ProfileController extends Controller
 
         // Handle profile image upload
         if ($request->hasFile('profile_image')) {
-            if ($customer->profile_image && !\Illuminate\Support\Str::startsWith($customer->profile_image, ['http://', 'https://']) && Storage::disk('public')->exists($customer->profile_image)) {
+            if ($customer->profile_image && ! \Illuminate\Support\Str::startsWith($customer->profile_image, ['http://', 'https://']) && Storage::disk('public')->exists($customer->profile_image)) {
                 Storage::disk('public')->delete($customer->profile_image);
             }
 
@@ -48,7 +48,7 @@ class ProfileController extends Controller
         $customer = Auth::guard('customer')->user();
 
         // Handle profile image deletion
-        if ($customer->profile_image && !Str::startsWith($customer->profile_image, ['http://', 'https://']) && Storage::disk('public')->exists($customer->profile_image)) {
+        if ($customer->profile_image && ! Str::startsWith($customer->profile_image, ['http://', 'https://']) && Storage::disk('public')->exists($customer->profile_image)) {
             Storage::disk('public')->delete($customer->profile_image);
         }
 

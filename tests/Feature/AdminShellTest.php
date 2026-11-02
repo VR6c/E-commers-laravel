@@ -2,10 +2,13 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class AdminShellTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_admin_login_page_renders_with_auth_card(): void
     {
         $response = $this->get('/login');
@@ -19,7 +22,7 @@ class AdminShellTest extends TestCase
     public function test_admin_dashboard_requires_authentication(): void
     {
         $response = $this->get(route('admin.dashboard'));
-        $response->assertRedirect(route('login'));
+        $response->assertRedirect(route('admin.login'));
     }
 
     public function test_admin_dashboard_renders_for_authenticated_user(): void

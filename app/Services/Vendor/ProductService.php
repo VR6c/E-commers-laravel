@@ -24,26 +24,25 @@ class ProductService
             ->where('vendor_id', $vendorId);
 
         return DataTables::of($products)
-            ->filterColumn('name', fn ($query, $keyword) =>
-                $query->where('products.name', 'like', "%{$keyword}%")
+            ->filterColumn('name', fn ($query, $keyword) => $query->where('products.name', 'like', "%{$keyword}%")
             )
             ->addColumn('name', fn ($p) => $p->name ?? 'No name')
             ->addColumn('price', function ($p) {
                 $pv = $p->variants->firstWhere('is_primary', true) ?? $p->variants->first();
 
-                return $pv ? '$' . number_format((float) $pv->price, 2) : '—';
+                return $pv ? '$'.number_format((float) $pv->price, 2) : '—';
             })
             ->addColumn('status', fn ($p) => $p->status)
             ->addColumn('action', function ($p) {
                 return '
                     <div class="dt-actions">
-                        <a href="' . route('vendor.products.edit', $p->id) . '"
+                        <a href="'.route('vendor.products.edit', $p->id).'"
                            class="btn-action btn-action-edit" title="Edit">
                             <i class="bi bi-pencil-fill"></i>
                         </a>
                         <button type="button"
                                 class="btn-action btn-action-delete"
-                                onclick="deleteProduct(' . $p->id . ')" title="Delete">
+                                onclick="deleteProduct('.$p->id.')" title="Delete">
                             <i class="bi bi-trash-fill"></i>
                         </button>
                     </div>';
@@ -57,7 +56,8 @@ class ProductService
         try {
             return $this->productRepository->destroy($id);
         } catch (\Exception $e) {
-            Log::error("Error deleting product {$id}: " . $e->getMessage());
+            Log::error("Error deleting product {$id}: ".$e->getMessage());
+
             return false;
         }
     }

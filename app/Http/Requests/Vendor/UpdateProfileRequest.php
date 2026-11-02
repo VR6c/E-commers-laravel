@@ -55,6 +55,7 @@ class UpdateProfileRequest extends FormRequest
 
                 if (! $this->filled('current_password')) {
                     $validator->errors()->add('current_password', 'The current password field is required to change your password.');
+
                     return;
                 }
 

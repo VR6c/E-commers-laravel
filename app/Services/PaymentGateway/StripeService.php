@@ -53,6 +53,6 @@ class StripeService implements PaymentGatewayInterface
 
     public function isConfigured(): bool
     {
-        return !empty($this->client);
+        return ! empty($this->client);
     }
 }

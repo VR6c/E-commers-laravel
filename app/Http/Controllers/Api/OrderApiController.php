@@ -30,7 +30,7 @@ class OrderApiController extends Controller
 
         return response()->json([
             'status' => true,
-            'data'   => OrderResource::collection($orders),
+            'data' => OrderResource::collection($orders),
         ]);
     }
 
@@ -52,7 +52,7 @@ class OrderApiController extends Controller
 
         return response()->json([
             'status' => true,
-            'data'   => new OrderDetailResource($order),
+            'data' => new OrderDetailResource($order),
         ]);
     }
 

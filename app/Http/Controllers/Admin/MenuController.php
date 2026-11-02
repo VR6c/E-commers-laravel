@@ -94,7 +94,7 @@ class MenuController extends Controller
                 'message' => 'Menu deleted successfully.',
             ]);
         } catch (\Exception $e) {
-            Log::error('Error deleting menu: ' . $e->getMessage());
+            Log::error('Error deleting menu: '.$e->getMessage());
 
             return response()->json([
                 'success' => false,

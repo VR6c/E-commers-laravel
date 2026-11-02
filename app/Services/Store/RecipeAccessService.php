@@ -6,9 +6,8 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Recipe;
-use Illuminate\Support\Facades\URL;
-use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\URL;
 
 class RecipeAccessService
 {
@@ -27,7 +26,7 @@ class RecipeAccessService
             $order = Order::with('details')->find($orderId);
             if ($order && in_array(strtolower($order->status), ['completed', 'processing'])) {
                 // If token is provided, verify it
-                if ($token && !$this->verifyOrderToken($order, $token)) {
+                if ($token && ! $this->verifyOrderToken($order, $token)) {
                     return false;
                 }
 
@@ -56,11 +55,11 @@ class RecipeAccessService
         // 4. Check customer history
         if ($customer) {
             $linkedProductIds = $recipe->products()->pluck('products.id')->toArray();
-            if (!empty($linkedProductIds)) {
+            if (! empty($linkedProductIds)) {
                 return OrderDetail::whereIn('product_id', $linkedProductIds)
                     ->whereHas('order', function ($q) use ($customer) {
                         $q->where('customer_id', $customer->id)
-                          ->whereIn('status', ['completed', 'processing']);
+                            ->whereIn('status', ['completed', 'processing']);
                     })
                     ->exists();
             }
@@ -76,7 +75,7 @@ class RecipeAccessService
     {
         $purchasedProductIds = OrderDetail::whereHas('order', function ($q) use ($customer) {
             $q->where('customer_id', $customer->id)
-              ->whereIn('status', ['completed', 'processing']);
+                ->whereIn('status', ['completed', 'processing']);
         })->pluck('product_id')->unique()->toArray();
 
         if (empty($purchasedProductIds)) {
@@ -93,7 +92,7 @@ class RecipeAccessService
      */
     public function generateOrderToken(Order $order): string
     {
-        return hash_hmac('sha256', 'order-' . $order->id . '-' . $order->created_at, config('app.key'));
+        return hash_hmac('sha256', 'order-'.$order->id.'-'.$order->created_at, config('app.key'));
     }
 
     /**
@@ -113,14 +112,14 @@ class RecipeAccessService
         $params = ['slug' => $recipe->slug];
         if ($order) {
             $params['order_id'] = $order->id;
-            $params['token']    = $this->generateOrderToken($order);
+            $params['token'] = $this->generateOrderToken($order);
         }
 
         try {
             return route('recipes.download-pdf', $params);
         } catch (\Symfony\Component\Routing\Exception\RouteNotFoundException $e) {
             // Fallback: return a plain URL if the named route is not registered
-            return url('/recipes/' . $recipe->slug . '/download?' . http_build_query(
+            return url('/recipes/'.$recipe->slug.'/download?'.http_build_query(
                 array_filter($params, fn ($v, $k) => $k !== 'slug'),
                 '',
                 '&',

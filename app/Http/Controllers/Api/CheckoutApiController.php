@@ -18,7 +18,6 @@ use App\Services\Store\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class CheckoutApiController extends Controller
@@ -86,11 +85,11 @@ class CheckoutApiController extends Controller
 
                 $subtotal += $price * $quantity;
                 $itemsWithDetails[] = [
-                    'product'    => $product,
-                    'variant'    => $variant,
+                    'product' => $product,
+                    'variant' => $variant,
                     'product_id' => $product->id,
-                    'price'      => $price,
-                    'quantity'   => $quantity,
+                    'price' => $price,
+                    'quantity' => $quantity,
                 ];
             }
 
@@ -126,7 +125,7 @@ class CheckoutApiController extends Controller
                 $paymentService = PaymentManager::make('abapayway', 'sandbox');
 
                 $reqTime = now()->utc()->format('YmdHis');
-                $tranId = 'ORD-' . $order->id . '-' . time();
+                $tranId = 'ORD-'.$order->id.'-'.time();
 
                 // Build items payload
                 $itemsData = [];
@@ -134,36 +133,36 @@ class CheckoutApiController extends Controller
                     $name = $detail['product']->name ?? 'Product';
                     $variantName = $detail['variant']->name ?? null;
                     if ($variantName && ! in_array(strtolower($variantName), ['default', 'standard'])) {
-                        $name .= ' (' . $variantName . ')';
+                        $name .= ' ('.$variantName.')';
                     }
                     $itemsData[] = [
-                        'name'     => $name,
+                        'name' => $name,
                         'quantity' => $detail['quantity'],
-                        'price'    => number_format($detail['price'], 2, '.', ''),
+                        'price' => number_format($detail['price'], 2, '.', ''),
                     ];
                 }
                 $itemsBase64 = base64_encode(json_encode($itemsData));
 
                 $paywayParams = [
-                    'req_time'             => $reqTime,
-                    'merchant_id'          => $paymentService->getMerchantId(),
-                    'tran_id'              => $tranId,
-                    'amount'               => number_format($total, 2, '.', ''),
-                    'items'                => $itemsBase64,
-                    'shipping'             => '0.00',
-                    'firstname'            => $request->input('first_name'),
-                    'lastname'             => $request->input('last_name'),
-                    'email'                => $request->input('email'),
-                    'phone'                => $request->input('phone'),
-                    'type'                 => 'purchase',
-                    'payment_option'       => 'abapay_khqr',
-                    'return_url'           => base64_encode(route('payway.callback')),
-                    'cancel_url'           => route('payway.cancel'),
+                    'req_time' => $reqTime,
+                    'merchant_id' => $paymentService->getMerchantId(),
+                    'tran_id' => $tranId,
+                    'amount' => number_format($total, 2, '.', ''),
+                    'items' => $itemsBase64,
+                    'shipping' => '0.00',
+                    'firstname' => $request->input('first_name'),
+                    'lastname' => $request->input('last_name'),
+                    'email' => $request->input('email'),
+                    'phone' => $request->input('phone'),
+                    'type' => 'purchase',
+                    'payment_option' => 'abapay_khqr',
+                    'return_url' => base64_encode(route('payway.callback')),
+                    'cancel_url' => route('payway.cancel'),
                     'continue_success_url' => route('payway.success'),
-                    'return_deeplink'      => 'flutterecommerce://',
-                    'currency'             => 'USD',
-                    'custom_fields'        => '',
-                    'return_params'        => (string) $order->id,
+                    'return_deeplink' => 'flutterecommerce://',
+                    'currency' => 'USD',
+                    'custom_fields' => '',
+                    'return_params' => (string) $order->id,
                 ];
 
                 $paywayParams['hash'] = $paymentService->generateHash($paywayParams);
@@ -173,16 +172,16 @@ class CheckoutApiController extends Controller
 
                 if (isset($paywayJson['qrString']) || isset($paywayJson['abapay_deeplink'])) {
                     return response()->json([
-                        'status'  => true,
+                        'status' => true,
                         'message' => 'Order created successfully',
-                        'data'    => [
-                            'order_id'         => $order->id,
-                            'total_amount'     => number_format($total, 2, '.', ''),
-                            'gateway'          => $gateway,
-                            'abapay_deeplink'  => $paywayJson['abapay_deeplink'] ?? null,
-                            'qrString'         => $paywayJson['qrString'] ?? null,
-                            'qrImage'          => $paywayJson['qrImage'] ?? null,
-                            'tran_id'          => $tranId,
+                        'data' => [
+                            'order_id' => $order->id,
+                            'total_amount' => number_format($total, 2, '.', ''),
+                            'gateway' => $gateway,
+                            'abapay_deeplink' => $paywayJson['abapay_deeplink'] ?? null,
+                            'qrString' => $paywayJson['qrString'] ?? null,
+                            'qrImage' => $paywayJson['qrImage'] ?? null,
+                            'tran_id' => $tranId,
                             'check_status_url' => route('payway.status', ['tran_id' => $tranId]),
                         ],
                     ]);
@@ -190,8 +189,8 @@ class CheckoutApiController extends Controller
                     Log::error('PayWay API call failed or did not return QR info', ['response' => $paywayJson]);
 
                     return response()->json([
-                        'status'  => false,
-                        'message' => 'Failed to generate ABA PayWay payment: ' . ($paywayJson['description'] ?? 'Invalid response'),
+                        'status' => false,
+                        'message' => 'Failed to generate ABA PayWay payment: '.($paywayJson['description'] ?? 'Invalid response'),
                     ], 500);
                 }
             } else {
@@ -203,16 +202,16 @@ class CheckoutApiController extends Controller
                 app(\App\Services\TelegramService::class)->sendOrderNotification($order, 'checkout_success');
 
                 return response()->json([
-                    'status'  => true,
+                    'status' => true,
                     'message' => 'Order created successfully',
-                    'data'    => [
-                        'order_id'        => $order->id,
-                        'total_amount'    => number_format($total, 2, '.', ''),
-                        'gateway'         => $gateway,
+                    'data' => [
+                        'order_id' => $order->id,
+                        'total_amount' => number_format($total, 2, '.', ''),
+                        'gateway' => $gateway,
                         'abapay_deeplink' => null,
-                        'qrString'        => null,
-                        'qrImage'         => null,
-                        'tran_id'         => null,
+                        'qrString' => null,
+                        'qrImage' => null,
+                        'tran_id' => null,
                     ],
                 ]);
             }
@@ -221,14 +220,14 @@ class CheckoutApiController extends Controller
             if (DB::transactionLevel() > 0) {
                 DB::rollBack();
             }
-            Log::error('API Checkout creation failed: ' . $e->getMessage(), [
+            Log::error('API Checkout creation failed: '.$e->getMessage(), [
                 'exception' => $e,
             ]);
 
             $statusCode = ($e->getCode() === 504 || $e instanceof \Illuminate\Http\Client\ConnectionException) ? 504 : 500;
 
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => $e->getMessage(),
             ], $statusCode);
         }
@@ -240,7 +239,7 @@ class CheckoutApiController extends Controller
      */
     public function checkPaymentStatus(Request $request): JsonResponse
     {
-        $tranId  = $request->input('tran_id');
+        $tranId = $request->input('tran_id');
         $orderId = $request->input('order_id');
 
         if (! $tranId || ! $orderId) {
@@ -260,7 +259,6 @@ class CheckoutApiController extends Controller
             $statusCode = $result['payment_status_code'] ?? ($result['data']['payment_status_code'] ?? null);
             $approved = ($paymentStatus === 'APPROVED');
 
-
             if ($approved) {
                 if ($order->status !== 'completed') {
                     $order->status = 'completed';
@@ -276,25 +274,25 @@ class CheckoutApiController extends Controller
                         Payment::firstOrCreate(
                             ['transaction_id' => $tranId],
                             [
-                                'order_id'   => $order->id,
-                                'user_id'    => $order->customer_id ?? 1,
+                                'order_id' => $order->id,
+                                'user_id' => $order->customer_id ?? 1,
                                 'gateway_id' => $gateway ? $gateway->id : 1,
-                                'amount'     => $order->total_amount,
-                                'currency'   => 'USD',
-                                'status'     => 'completed',
-                                'response'   => $result,
-                                'meta'       => ['apv' => $result['apv'] ?? ($result['data']['apv'] ?? '')],
+                                'amount' => $order->total_amount,
+                                'currency' => 'USD',
+                                'status' => 'completed',
+                                'response' => $result,
+                                'meta' => ['apv' => $result['apv'] ?? ($result['data']['apv'] ?? '')],
                             ]
                         );
                     } catch (\Throwable $pe) {
-                        Log::warning('checkPaymentStatus: Payment record save skipped: ' . $pe->getMessage());
+                        Log::warning('checkPaymentStatus: Payment record save skipped: '.$pe->getMessage());
                     }
                 }
             }
 
             return response()->json([
-                'status'         => true,
-                'approved'       => $approved,
+                'status' => true,
+                'approved' => $approved,
                 'payment_status' => $paymentStatus,
             ]);
         } catch (\Exception $e) {
@@ -308,6 +306,7 @@ class CheckoutApiController extends Controller
     public function verifyPayment(Request $request): JsonResponse
     {
         $request->merge(['verify' => true]);
+
         return $this->checkPaymentStatus($request);
     }
 }

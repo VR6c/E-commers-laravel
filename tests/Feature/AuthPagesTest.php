@@ -12,7 +12,7 @@ class AuthPagesTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('auth-card--split', false);
-        $response->assertSee('action="' . route('customer.login') . '"', false);
+        $response->assertSee('action="'.route('customer.login').'"', false);
     }
 
     public function test_customer_register_renders_split_auth_card(): void

@@ -54,10 +54,10 @@ class SocialMediaLinkController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'type'     => 'required|in:facebook,instagram,tiktok,youtube,x',
+            'type' => 'required|in:facebook,instagram,tiktok,youtube,x',
             'platform' => 'required|string|max:255',
-            'link'     => 'required|url',
-            'name'     => 'required|string|max:255',
+            'link' => 'required|url',
+            'name' => 'required|string|max:255',
         ]);
 
         $this->socialMediaLinkService->createSocialMediaLink($request->all());
@@ -75,10 +75,10 @@ class SocialMediaLinkController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'type'     => 'required|in:facebook,instagram,tiktok,youtube,x',
+            'type' => 'required|in:facebook,instagram,tiktok,youtube,x',
             'platform' => 'required|string|max:255',
-            'link'     => 'required|url',
-            'name'     => 'required|string|max:255',
+            'link' => 'required|url',
+            'name' => 'required|string|max:255',
         ]);
 
         $this->socialMediaLinkService->updateSocialMediaLink($id, $request->all());
@@ -101,7 +101,7 @@ class SocialMediaLinkController extends Controller
 
             return redirect()->route('admin.social-media-links.index')->with('success', 'Social media link deleted successfully.');
         } catch (\Exception $e) {
-            Log::error("Error deleting social media link with ID {$id}: " . $e->getMessage());
+            Log::error("Error deleting social media link with ID {$id}: ".$e->getMessage());
 
             if (request()->wantsJson() || request()->ajax()) {
                 return response()->json([

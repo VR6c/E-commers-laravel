@@ -10,6 +10,7 @@ use Tests\TestCase;
 class StorefrontListingTest extends TestCase
 {
     use RefreshDatabase;
+
     public function test_shop_index_renders_listing(): void
     {
         $response = $this->get(route('shop.index'));

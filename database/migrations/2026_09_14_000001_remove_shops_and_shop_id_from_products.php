@@ -34,7 +34,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if (!Schema::hasTable('shops')) {
+        if (! Schema::hasTable('shops')) {
             Schema::create('shops', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('vendor_id')->default(1)->constrained('vendors')->onDelete('cascade');
@@ -47,7 +47,7 @@ return new class extends Migration
             });
         }
 
-        if (Schema::hasTable('products') && !Schema::hasColumn('products', 'shop_id')) {
+        if (Schema::hasTable('products') && ! Schema::hasColumn('products', 'shop_id')) {
             Schema::table('products', function (Blueprint $table) {
                 $table->foreignId('shop_id')->nullable()->constrained('shops')->nullOnDelete();
             });

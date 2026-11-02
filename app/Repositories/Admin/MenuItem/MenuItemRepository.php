@@ -30,15 +30,15 @@ class MenuItemRepository implements MenuItemRepositoryInterface
             $slug = Str::slug($title);
             $slugCount = MenuItem::where('slug', 'like', "{$slug}%")->count();
             if ($slugCount > 0) {
-                $slug .= '-' . ($slugCount + 1);
+                $slug .= '-'.($slugCount + 1);
             }
 
             return MenuItem::create([
-                'menu_id'      => $menuId,
-                'title'        => $title,
-                'slug'         => $slug,
+                'menu_id' => $menuId,
+                'title' => $title,
+                'slug' => $slug,
                 'order_number' => $request->order_number,
-                'parent_id'    => $request->parent_id ?? null,
+                'parent_id' => $request->parent_id ?? null,
             ]);
         });
     }
@@ -52,11 +52,11 @@ class MenuItemRepository implements MenuItemRepositoryInterface
             : $request->title;
 
         $menuItem->update([
-            'menu_id'      => $request->menu_id,
-            'parent_id'    => $request->parent_id,
+            'menu_id' => $request->menu_id,
+            'parent_id' => $request->parent_id,
             'order_number' => $request->order_number,
-            'slug'         => Str::slug($title),
-            'title'        => $title,
+            'slug' => Str::slug($title),
+            'title' => $title,
         ]);
 
         return $menuItem;

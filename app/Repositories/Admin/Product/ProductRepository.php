@@ -5,8 +5,6 @@ namespace App\Repositories\Admin\Product;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Services\Shared\ImageService;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class ProductRepository implements ProductRepositoryInterface
 {

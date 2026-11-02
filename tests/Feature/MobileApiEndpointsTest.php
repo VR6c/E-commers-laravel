@@ -55,7 +55,7 @@ class MobileApiEndpointsTest extends TestCase
             ]);
 
         // 3. Get Profile with Sanctum Bearer Token
-        $profileResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $profileResponse = $this->withHeader('Authorization', 'Bearer '.$token)
             ->getJson('/api/customer/profile');
 
         $profileResponse->assertStatus(200)
@@ -79,7 +79,7 @@ class MobileApiEndpointsTest extends TestCase
         $originalToken = $customer->createToken('CustomerToken')->plainTextToken;
 
         // 1. Refresh using Bearer header
-        $refreshResponse = $this->withHeader('Authorization', 'Bearer ' . $originalToken)
+        $refreshResponse = $this->withHeader('Authorization', 'Bearer '.$originalToken)
             ->postJson('/api/customer/refresh');
 
         $refreshResponse->assertStatus(200)
@@ -99,14 +99,14 @@ class MobileApiEndpointsTest extends TestCase
         $this->assertNotEquals($originalToken, $newToken);
 
         // 2. Verify new token works on authenticated profile endpoint
-        $this->withHeader('Authorization', 'Bearer ' . $newToken)
+        $this->withHeader('Authorization', 'Bearer '.$newToken)
             ->getJson('/api/customer/profile')
             ->assertStatus(200)
             ->assertJsonPath('data.email', 'refresh.test@example.com');
 
         // 3. Verify old token was revoked (rotation)
         app('auth')->forgetGuards();
-        $this->withHeader('Authorization', 'Bearer ' . $originalToken)
+        $this->withHeader('Authorization', 'Bearer '.$originalToken)
             ->getJson('/api/customer/profile')
             ->assertStatus(401);
 
@@ -123,7 +123,7 @@ class MobileApiEndpointsTest extends TestCase
         // 5. Test refresh-token alias route
         app('auth')->forgetGuards();
         $this->flushHeaders();
-        $aliasResponse = $this->withHeader('Authorization', 'Bearer ' . $bodyRefreshResponse->json('data.token'))
+        $aliasResponse = $this->withHeader('Authorization', 'Bearer '.$bodyRefreshResponse->json('data.token'))
             ->postJson('/api/customer/refresh-token');
 
         $aliasResponse->assertStatus(200)
@@ -152,7 +152,6 @@ class MobileApiEndpointsTest extends TestCase
             'name' => 'Vendor User',
             'email' => 'vendor@example.com',
             'password' => bcrypt('password'),
-            'role' => 'vendor',
         ]);
 
         $vendor = Vendor::create([
@@ -246,16 +245,16 @@ class MobileApiEndpointsTest extends TestCase
         $token = $customer->createToken('mobile_app')->plainTextToken;
 
         // Canonical singular routes
-        $this->withHeader('Authorization', 'Bearer ' . $token)
+        $this->withHeader('Authorization', 'Bearer '.$token)
             ->getJson('/api/wishlist')
             ->assertStatus(200);
 
-        $this->withHeader('Authorization', 'Bearer ' . $token)
+        $this->withHeader('Authorization', 'Bearer '.$token)
             ->getJson('/api/wishlist/ids')
             ->assertStatus(200);
 
         // Plural alias routes
-        $this->withHeader('Authorization', 'Bearer ' . $token)
+        $this->withHeader('Authorization', 'Bearer '.$token)
             ->getJson('/api/wishlists')
             ->assertStatus(200);
     }

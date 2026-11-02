@@ -1,5 +1,7 @@
 @extends('themes.xylo.layouts.master')
 
+@section('css')
+<style>
 /* Place Order button */
 #place-order.btn-primary {
     background: linear-gradient(135deg, #5289AD 0%, #243C4C 100%);

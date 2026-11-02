@@ -12,32 +12,32 @@ class CategorySeeder extends Seeder
     {
         $categories = [
             [
-                'slug'        => 'electronics',
+                'slug' => 'electronics',
                 'parent_slug' => null,
-                'name'        => 'Electronics',
+                'name' => 'Electronics',
                 'description' => 'Electronic devices',
-                'image'       => 'https://i.postimg.cc/mgTTQWtW/07-300x300-1-1-removebg-preview.png',
+                'image' => 'https://i.postimg.cc/mgTTQWtW/07-300x300-1-1-removebg-preview.png',
             ],
             [
-                'slug'        => 'fashion',
+                'slug' => 'fashion',
                 'parent_slug' => null,
-                'name'        => 'Fashion',
+                'name' => 'Fashion',
                 'description' => 'Clothing and accessories',
-                'image'       => 'https://i.postimg.cc/QM9NMkFF/cat7-removebg-preview.png',
+                'image' => 'https://i.postimg.cc/QM9NMkFF/cat7-removebg-preview.png',
             ],
             [
-                'slug'        => 'smartphones',
+                'slug' => 'smartphones',
                 'parent_slug' => 'electronics',
-                'name'        => 'Smartphones',
+                'name' => 'Smartphones',
                 'description' => 'Latest mobile phones',
-                'image'       => 'https://i.postimg.cc/ZKwJFD39/cat1-removebg-preview.png',
+                'image' => 'https://i.postimg.cc/ZKwJFD39/cat1-removebg-preview.png',
             ],
             [
-                'slug'        => 't-shirts',
+                'slug' => 't-shirts',
                 'parent_slug' => 'fashion',
-                'name'        => 'T-Shirts',
+                'name' => 'T-Shirts',
                 'description' => 'Casual wear t-shirts',
-                'image'       => 'https://i.postimg.cc/VkSP9smT/cat2-removebg-preview.png',
+                'image' => 'https://i.postimg.cc/VkSP9smT/cat2-removebg-preview.png',
             ],
         ];
 
@@ -48,7 +48,7 @@ class CategorySeeder extends Seeder
 
             $imageName = basename($data['image']);
             try {
-                $localPath = 'categories/' . $imageName;
+                $localPath = 'categories/'.$imageName;
                 Storage::disk('public')->put($localPath, file_get_contents($data['image']));
             } catch (\Exception $e) {
                 $localPath = $data['image'];
@@ -57,11 +57,11 @@ class CategorySeeder extends Seeder
             Category::firstOrCreate(
                 ['slug' => $data['slug']],
                 [
-                    'name'               => $data['name'],
-                    'description'        => $data['description'],
-                    'image_url'          => $localPath,
+                    'name' => $data['name'],
+                    'description' => $data['description'],
+                    'image_url' => $localPath,
                     'parent_category_id' => $parentId,
-                    'status'             => true,
+                    'status' => true,
                 ]
             );
         }

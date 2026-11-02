@@ -11,7 +11,7 @@ $storageDirs = [
 ];
 
 foreach ($storageDirs as $dir) {
-    if (!is_dir($dir)) {
+    if (! is_dir($dir)) {
         mkdir($dir, 0755, true);
     }
 }
@@ -24,7 +24,7 @@ putenv('VIEW_COMPILED_PATH=/tmp/storage/framework/views');
 
 // Prevent Symfony Request from stripping '/api' prefix as script base path on Vercel
 $_SERVER['SCRIPT_NAME'] = '/index.php';
-$_SERVER['SCRIPT_FILENAME'] = __DIR__ . '/../public/index.php';
+$_SERVER['SCRIPT_FILENAME'] = __DIR__.'/../public/index.php';
 
 // Forward Vercel request to public/index.php
-require __DIR__ . '/../public/index.php';
+require __DIR__.'/../public/index.php';

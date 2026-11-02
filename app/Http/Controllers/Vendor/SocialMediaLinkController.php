@@ -34,13 +34,13 @@ class SocialMediaLinkController extends Controller
             ->addColumn('action', function ($link) {
                 return '
                     <div class="dt-actions">
-                        <a href="' . route('vendor.social-media-links.edit', $link->id) . '"
+                        <a href="'.route('vendor.social-media-links.edit', $link->id).'"
                            class="btn-action btn-action-edit" title="Edit">
                             <i class="bi bi-pencil-fill"></i>
                         </a>
                         <button type="button"
                                 class="btn-action btn-action-delete"
-                                onclick="deleteLink(' . $link->id . ')" title="Delete">
+                                onclick="deleteLink('.$link->id.')" title="Delete">
                             <i class="bi bi-trash-fill"></i>
                         </button>
                     </div>';
@@ -57,10 +57,10 @@ class SocialMediaLinkController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'type'     => 'required|in:facebook,instagram,tiktok,youtube,x',
+            'type' => 'required|in:facebook,instagram,tiktok,youtube,x',
             'platform' => 'required|string|max:255',
-            'link'     => 'required|url',
-            'name'     => 'required|string|max:255',
+            'link' => 'required|url',
+            'name' => 'required|string|max:255',
         ]);
 
         $this->socialMediaLinkService->createSocialMediaLink($request->all());
@@ -80,10 +80,10 @@ class SocialMediaLinkController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'type'     => 'required|in:facebook,instagram,tiktok,youtube,x',
+            'type' => 'required|in:facebook,instagram,tiktok,youtube,x',
             'platform' => 'required|string|max:255',
-            'link'     => 'required|url',
-            'name'     => 'required|string|max:255',
+            'link' => 'required|url',
+            'name' => 'required|string|max:255',
         ]);
 
         $this->socialMediaLinkService->updateSocialMediaLink($id, $request->all());
@@ -103,7 +103,7 @@ class SocialMediaLinkController extends Controller
                 'message' => 'Social media link deleted successfully.',
             ]);
         } catch (\Exception $e) {
-            Log::error("Vendor: error deleting social media link ID {$id}: " . $e->getMessage());
+            Log::error("Vendor: error deleting social media link ID {$id}: ".$e->getMessage());
 
             return response()->json([
                 'success' => false,

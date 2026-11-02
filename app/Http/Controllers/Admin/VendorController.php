@@ -73,6 +73,7 @@ class VendorController extends Controller
     public function edit($id)
     {
         $vendor = Vendor::findOrFail($id);
+
         return view('admin.vendors.edit', compact('vendor'));
     }
 
@@ -81,9 +82,9 @@ class VendorController extends Controller
         $vendor = Vendor::findOrFail($id);
 
         $rules = [
-            'name'   => ['required', 'string', 'max:255'],
-            'email'  => ['required', 'email', 'max:255', 'unique:vendors,email,' . $id],
-            'phone'  => ['nullable', 'string', 'max:20', 'regex:/^\+?[0-9\s\-]+$/'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:vendors,email,'.$id],
+            'phone' => ['nullable', 'string', 'max:20', 'regex:/^\+?[0-9\s\-]+$/'],
             'status' => ['required', 'in:active,inactive,banned'],
         ];
 
@@ -94,9 +95,9 @@ class VendorController extends Controller
 
         $validated = $request->validate($rules);
 
-        $vendor->name   = trim($validated['name']);
-        $vendor->email  = strtolower(trim($validated['email']));
-        $vendor->phone  = $validated['phone'] ?? null;
+        $vendor->name = trim($validated['name']);
+        $vendor->email = strtolower(trim($validated['email']));
+        $vendor->phone = $validated['phone'] ?? null;
         $vendor->status = $validated['status'];
 
         if ($request->filled('password')) {

@@ -8,6 +8,7 @@ use Tests\TestCase;
 class StorefrontShellTest extends TestCase
 {
     use RefreshDatabase;
+
     public function test_home_renders_with_new_header_shell(): void
     {
         $response = $this->get('/');

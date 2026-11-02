@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Store;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\WithWishlistIds;
+use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;

@@ -26,6 +26,7 @@ class ProductResource extends JsonResource
     public function withFullDetails(bool $full = true): self
     {
         $this->full = $full;
+
         return $this;
     }
 
@@ -51,19 +52,19 @@ class ProductResource extends JsonResource
         }
 
         $data = [
-            'id'                => $this->id,
-            'slug'              => $this->slug,
-            'name'              => $this->name,
+            'id' => $this->id,
+            'slug' => $this->slug,
+            'name' => $this->name,
             'short_description' => $this->short_description,
-            'price'             => $this->getConvertedPriceAttribute(),
-            'thumbnail'         => $thumbnailUrl,
-            'category'          => $this->category?->name ?? '',
-            'category_id'       => $this->category_id,
-            'brand'             => $this->brand?->name ?? null,
-            'brand_id'          => $this->brand_id,
-            'rating'            => round((float) ($this->reviews_avg_rating ?? 0), 1),
-            'reviews_count'     => (int) ($this->reviews_count ?? 0),
-            'variants'          => $variants,
+            'price' => $this->getConvertedPriceAttribute(),
+            'thumbnail' => $thumbnailUrl,
+            'category' => $this->category?->name ?? '',
+            'category_id' => $this->category_id,
+            'brand' => $this->brand?->name ?? null,
+            'brand_id' => $this->brand_id,
+            'rating' => round((float) ($this->reviews_avg_rating ?? 0), 1),
+            'reviews_count' => (int) ($this->reviews_count ?? 0),
+            'variants' => $variants,
         ];
 
         if ($this->full) {
@@ -77,10 +78,10 @@ class ProductResource extends JsonResource
             }
 
             $data['description'] = $this->description;
-            $data['gallery']     = $gallery;
-            $data['tags']        = $this->tags;
-            $data['weight']      = $this->weight;
-            $data['sku']         = $this->SKU;
+            $data['gallery'] = $gallery;
+            $data['tags'] = $this->tags;
+            $data['weight'] = $this->weight;
+            $data['sku'] = $this->SKU;
         }
 
         return $data;

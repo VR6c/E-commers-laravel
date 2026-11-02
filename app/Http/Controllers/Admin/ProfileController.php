@@ -24,7 +24,7 @@ class ProfileController extends Controller
 
         // Handle profile image upload
         if ($request->hasFile('profile_image')) {
-            if ($admin->profile_image && !\Illuminate\Support\Str::startsWith($admin->profile_image, ['http://', 'https://']) && Storage::exists('public/'.$admin->profile_image)) {
+            if ($admin->profile_image && ! \Illuminate\Support\Str::startsWith($admin->profile_image, ['http://', 'https://']) && Storage::exists('public/'.$admin->profile_image)) {
                 Storage::delete('public/'.$admin->profile_image);
             }
             $path = \App\Services\ImageUploadService::upload($request->file('profile_image'), 'admin_profiles');
@@ -49,8 +49,8 @@ class ProfileController extends Controller
         $admin = auth()->user();
 
         // Handle profile image deletion
-        if ($admin->profile_image && !Str::startsWith($admin->profile_image, ['http://', 'https://']) && Storage::exists('public/' . $admin->profile_image)) {
-            Storage::delete('public/' . $admin->profile_image);
+        if ($admin->profile_image && ! Str::startsWith($admin->profile_image, ['http://', 'https://']) && Storage::exists('public/'.$admin->profile_image)) {
+            Storage::delete('public/'.$admin->profile_image);
         }
 
         $admin->delete();

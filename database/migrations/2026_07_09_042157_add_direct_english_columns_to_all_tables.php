@@ -55,12 +55,12 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('brands',          fn ($t) => $t->dropColumn(['name', 'description']));
-        Schema::table('banners',         fn ($t) => $t->dropColumn(['description', 'image_url']));
-        Schema::table('pages',           fn ($t) => $t->dropColumn(['title', 'content', 'image_url']));
-        Schema::table('menu_items',      fn ($t) => $t->dropColumn('title'));
+        Schema::table('brands', fn ($t) => $t->dropColumn(['name', 'description']));
+        Schema::table('banners', fn ($t) => $t->dropColumn(['description', 'image_url']));
+        Schema::table('pages', fn ($t) => $t->dropColumn(['title', 'content', 'image_url']));
+        Schema::table('menu_items', fn ($t) => $t->dropColumn('title'));
         Schema::table('social_media_links', fn ($t) => $t->dropColumn('name'));
-        Schema::table('products',        fn ($t) => $t->dropColumn(['name', 'description', 'short_description', 'tags']));
+        Schema::table('products', fn ($t) => $t->dropColumn(['name', 'description', 'short_description', 'tags']));
         Schema::table('product_variants', fn ($t) => $t->dropColumn('name'));
     }
 };

@@ -26,20 +26,20 @@ class CheckoutProcessRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name'        => 'required|string|max:100',
-            'last_name'         => 'required|string|max:100',
-            'address'           => 'required|string|max:255',
-            'suite'             => 'nullable|string|max:100',
-            'city'              => 'required|string|max:100',
-            'state'             => 'nullable|string|max:100',
-            'country'           => 'required|string|max:100',
-            'email'             => 'required|email|max:50',
-            'phone'             => 'required|string|max:20',
-            'gateway'           => 'required|string|in:abapayway,cod',
-            'cart'              => 'required|array|min:1',
+            'first_name' => 'required|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'address' => 'required|string|max:255',
+            'suite' => 'nullable|string|max:100',
+            'city' => 'required|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'country' => 'required|string|max:100',
+            'email' => 'required|email|max:50',
+            'phone' => 'required|string|max:20',
+            'gateway' => 'required|string|in:abapayway,cod',
+            'cart' => 'required|array|min:1',
             'cart.*.product_id' => 'required|integer|exists:products,id',
-            'cart.*.quantity'   => 'required|integer|min:1',
-            'cart.*.variant_id'  => 'nullable|integer',
+            'cart.*.quantity' => 'required|integer|min:1',
+            'cart.*.variant_id' => 'nullable|integer',
         ];
     }
 
@@ -49,9 +49,9 @@ class CheckoutProcessRequest extends FormRequest
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
-            'status'  => false,
+            'status' => false,
             'message' => 'Validation error',
-            'errors'  => $validator->errors(),
+            'errors' => $validator->errors(),
         ], 422));
     }
 }

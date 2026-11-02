@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -52,18 +51,20 @@ class FixDuplicateProductImages extends Command
             DB::reconnect('pgsql');
             $this->info('Connected to PRODUCTION database (Neon PostgreSQL).');
         } else {
-            $this->info('Connected to default database (' . config('database.default') . ').');
+            $this->info('Connected to default database ('.config('database.default').').');
         }
 
         $mapFile = database_path('seeders/unique_photos_map.json');
-        if (!file_exists($mapFile)) {
+        if (! file_exists($mapFile)) {
             $this->error("Unique photos map file not found: {$mapFile}");
+
             return Command::FAILURE;
         }
 
         $photoMap = json_decode(file_get_contents($mapFile), true);
         if (empty($photoMap)) {
             $this->error('The photo map is empty or invalid JSON.');
+
             return Command::FAILURE;
         }
 
@@ -76,6 +77,7 @@ class FixDuplicateProductImages extends Command
 
         if ($images->isEmpty()) {
             $this->warn('No product thumbnails found in database.');
+
             return Command::SUCCESS;
         }
 
@@ -92,7 +94,7 @@ class FixDuplicateProductImages extends Command
 
         foreach ($images as $img) {
             $product = $img->product;
-            if (!$product) {
+            if (! $product) {
                 continue;
             }
 
@@ -105,7 +107,7 @@ class FixDuplicateProductImages extends Command
                 // Lookup mapped photo ID
                 $photoId = $photoMap[$productName] ?? null;
 
-                if (!$photoId) {
+                if (! $photoId) {
                     // Fuzzy match if name has minor differences
                     foreach ($photoMap as $mapName => $id) {
                         if (strcasecmp($mapName, $productName) === 0 || Str::slug($mapName) === Str::slug($productName)) {
@@ -119,36 +121,38 @@ class FixDuplicateProductImages extends Command
                     $newUrl = "https://images.unsplash.com/photo-{$photoId}?w=600&h=600&fit=crop&auto=format&q=75";
 
                     // If URL is already distinct and not duplicated, don't needlessly touch unless --all
-                    if (!$allMode && $currentUrl === $newUrl && !isset($usedAssignedUrls[$newUrl])) {
+                    if (! $allMode && $currentUrl === $newUrl && ! isset($usedAssignedUrls[$newUrl])) {
                         $usedAssignedUrls[$newUrl] = true;
+
                         continue;
                     }
 
                     $usedAssignedUrls[$newUrl] = true;
 
                     $toUpdate[] = [
-                        'image_id'     => $img->id,
-                        'product_id'   => $product->id,
+                        'image_id' => $img->id,
+                        'product_id' => $product->id,
                         'product_name' => $productName,
-                        'old_url'      => $currentUrl,
-                        'new_url'      => $newUrl,
-                        'new_name'     => Str::slug($productName) . '.jpg',
+                        'old_url' => $currentUrl,
+                        'new_url' => $newUrl,
+                        'new_name' => Str::slug($productName).'.jpg',
                     ];
                 }
             }
         }
 
-        $this->info('Candidate records to update: ' . count($toUpdate));
+        $this->info('Candidate records to update: '.count($toUpdate));
 
         if (empty($toUpdate)) {
             $this->info('All product thumbnails are already unique! Nothing to update.');
+
             return Command::SUCCESS;
         }
 
         // Show sample table
         $sampleRows = array_map(function ($item) {
             return [
-                'ID'      => $item['product_id'],
+                'ID' => $item['product_id'],
                 'Product' => Str::limit($item['product_name'], 30),
                 'Old URL' => Str::limit($item['old_url'], 45),
                 'New URL' => Str::limit($item['new_url'], 45),
@@ -158,18 +162,20 @@ class FixDuplicateProductImages extends Command
         $this->newLine();
         $this->table(['ID', 'Product', 'Old Image URL', 'New Image URL'], $sampleRows);
         if (count($toUpdate) > 15) {
-            $this->comment('... and ' . (count($toUpdate) - 15) . ' more products.');
+            $this->comment('... and '.(count($toUpdate) - 15).' more products.');
         }
 
         if ($dryRun) {
             $this->newLine();
             $this->warn('[DRY RUN] No database changes were committed. Run without --dry-run to apply.');
+
             return Command::SUCCESS;
         }
 
         $this->newLine();
-        if (!$this->confirm('Proceed with updating ' . count($toUpdate) . ' product images in the database?', true)) {
+        if (! $this->confirm('Proceed with updating '.count($toUpdate).' product images in the database?', true)) {
             $this->warn('Operation cancelled by user.');
+
             return Command::SUCCESS;
         }
 
@@ -189,14 +195,14 @@ class FixDuplicateProductImages extends Command
                 if ($uploadImgbb) {
                     try {
                         $res = Http::asForm()->timeout(15)->post('https://api.imgbb.com/1/upload', [
-                            'key'   => '3cd2fcb26177aa50d6e37f81dec037d3',
+                            'key' => '3cd2fcb26177aa50d6e37f81dec037d3',
                             'image' => $item['new_url'],
-                            'name'  => Str::slug($item['product_name']),
+                            'name' => Str::slug($item['product_name']),
                         ]);
 
                         if ($res->successful()) {
                             $data = $res->json();
-                            if (!empty($data['data']['url'])) {
+                            if (! empty($data['data']['url'])) {
                                 $finalUrl = $data['data']['url'];
                             }
                         }
@@ -208,7 +214,7 @@ class FixDuplicateProductImages extends Command
 
                 ProductImage::where('id', $item['image_id'])->update([
                     'image_url' => $finalUrl,
-                    'name'      => $item['new_name'],
+                    'name' => $item['new_name'],
                 ]);
                 $bar->advance();
             }
@@ -216,13 +222,14 @@ class FixDuplicateProductImages extends Command
             DB::commit();
             $bar->finish();
             $this->newLine(2);
-            $this->info('Successfully updated ' . count($toUpdate) . ' product images!');
+            $this->info('Successfully updated '.count($toUpdate).' product images!');
 
             return Command::SUCCESS;
         } catch (\Throwable $e) {
             DB::rollBack();
             $this->newLine();
-            $this->error('Failed to update images: ' . $e->getMessage());
+            $this->error('Failed to update images: '.$e->getMessage());
+
             return Command::FAILURE;
         }
     }

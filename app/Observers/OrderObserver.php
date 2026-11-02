@@ -36,7 +36,7 @@ class OrderObserver
                 $this->telegramService->sendOrderNotification($order, 'checkout_success');
             }
         } catch (\Throwable $e) {
-            Log::error('OrderObserver created error: ' . $e->getMessage());
+            Log::error('OrderObserver created error: '.$e->getMessage());
         }
     }
 
@@ -51,7 +51,7 @@ class OrderObserver
                 $this->telegramService->sendOrderNotification($order, 'checkout_success');
             }
         } catch (\Throwable $e) {
-            Log::error('OrderObserver updated error: ' . $e->getMessage());
+            Log::error('OrderObserver updated error: '.$e->getMessage());
         }
     }
 }

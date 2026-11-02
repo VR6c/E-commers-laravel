@@ -66,18 +66,18 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:vendors,email',
-            'phone'    => 'nullable|string|max:30',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:vendors,email',
+            'phone' => 'nullable|string|max:30',
             'password' => 'required|string|confirmed|min:8',
         ]);
 
         $vendor = Vendor::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'phone'    => $request->phone,
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'status'   => 'pending',
+            'status' => 'pending',
         ]);
 
         return redirect()->route('vendor.login')

@@ -21,12 +21,12 @@ class ProductController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = Product::with([
-                'category',
-                'brand',
-                'thumbnail',
-                'primaryVariant',
-                'variants.attributeValues.attribute',
-            ])
+            'category',
+            'brand',
+            'thumbnail',
+            'primaryVariant',
+            'variants.attributeValues.attribute',
+        ])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
             ->where('status', 1);
@@ -35,8 +35,8 @@ class ProductController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('short_description', 'like', "%{$search}%")
-                  ->orWhere('tags', 'like', "%{$search}%");
+                    ->orWhere('short_description', 'like', "%{$search}%")
+                    ->orWhere('tags', 'like', "%{$search}%");
             });
         }
 
@@ -54,31 +54,31 @@ class ProductController extends Controller
         if ($minPrice = $request->input('min_price')) {
             $query->where(function ($q) use ($minPrice) {
                 $q->whereHas('primaryVariant', fn ($sub) => $sub->where('price', '>=', $minPrice))
-                  ->orWhereHas('variants', fn ($sub) => $sub->where('price', '>=', $minPrice));
+                    ->orWhereHas('variants', fn ($sub) => $sub->where('price', '>=', $minPrice));
             });
         }
 
         if ($maxPrice = $request->input('max_price')) {
             $query->where(function ($q) use ($maxPrice) {
                 $q->whereHas('primaryVariant', fn ($sub) => $sub->where('price', '<=', $maxPrice))
-                  ->orWhereHas('variants', fn ($sub) => $sub->where('price', '<=', $maxPrice));
+                    ->orWhereHas('variants', fn ($sub) => $sub->where('price', '<=', $maxPrice));
             });
         }
 
         // Sorting (database-agnostic boolean check)
         $sort = $request->input('sort', 'latest');
         match ($sort) {
-            'price_asc'  => $query->join('product_variants as pv_sort', function ($join) {
-                                $join->on('pv_sort.product_id', '=', 'products.id')
-                                     ->where('pv_sort.is_primary', true);
-                            })->orderBy('pv_sort.price', 'asc')->select('products.*'),
+            'price_asc' => $query->join('product_variants as pv_sort', function ($join) {
+                $join->on('pv_sort.product_id', '=', 'products.id')
+                    ->where('pv_sort.is_primary', true);
+            })->orderBy('pv_sort.price', 'asc')->select('products.*'),
             'price_desc' => $query->join('product_variants as pv_sort', function ($join) {
-                                $join->on('pv_sort.product_id', '=', 'products.id')
-                                     ->where('pv_sort.is_primary', true);
-                            })->orderBy('pv_sort.price', 'desc')->select('products.*'),
-            'name_asc'   => $query->orderBy('name', 'asc'),
-            'name_desc'  => $query->orderBy('name', 'desc'),
-            default      => $query->latest(),
+                $join->on('pv_sort.product_id', '=', 'products.id')
+                    ->where('pv_sort.is_primary', true);
+            })->orderBy('pv_sort.price', 'desc')->select('products.*'),
+            'name_asc' => $query->orderBy('name', 'asc'),
+            'name_desc' => $query->orderBy('name', 'desc'),
+            default => $query->latest(),
         };
 
         // Pagination (default 20 per page)
@@ -87,12 +87,12 @@ class ProductController extends Controller
 
         return response()->json([
             'status' => true,
-            'data'   => ProductResource::collection($paginated->getCollection()),
-            'meta'   => [
+            'data' => ProductResource::collection($paginated->getCollection()),
+            'meta' => [
                 'current_page' => $paginated->currentPage(),
-                'last_page'    => $paginated->lastPage(),
-                'per_page'     => $paginated->perPage(),
-                'total'        => $paginated->total(),
+                'last_page' => $paginated->lastPage(),
+                'per_page' => $paginated->perPage(),
+                'total' => $paginated->total(),
             ],
         ])->header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
     }
@@ -111,12 +111,12 @@ class ProductController extends Controller
         $limit = min(max((int) $request->input('limit', 10), 1), 50);
 
         $query = Product::with([
-                'category',
-                'brand',
-                'thumbnail',
-                'primaryVariant',
-                'variants',
-            ])
+            'category',
+            'brand',
+            'thumbnail',
+            'primaryVariant',
+            'variants',
+        ])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
             ->where('status', 1);
@@ -139,8 +139,8 @@ class ProductController extends Controller
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('short_description', 'like', "%{$search}%")
-                  ->orWhere('tags', 'like', "%{$search}%");
+                    ->orWhere('short_description', 'like', "%{$search}%")
+                    ->orWhere('tags', 'like', "%{$search}%");
             });
 
             // Extract matching categories for search pill navigation
@@ -149,7 +149,7 @@ class ProductController extends Controller
                 ->limit(5)
                 ->get(['id', 'name', 'slug'])
                 ->map(fn ($cat) => [
-                    'id'   => $cat->id,
+                    'id' => $cat->id,
                     'name' => $cat->name,
                     'slug' => $cat->slug,
                 ])
@@ -190,9 +190,9 @@ class ProductController extends Controller
         }
 
         return response()->json([
-            'status'     => true,
-            'data'       => ProductSuggestionResource::collection($products),
-            'keywords'   => $keywords,
+            'status' => true,
+            'data' => ProductSuggestionResource::collection($products),
+            'keywords' => $keywords,
             'categories' => $matchingCategories,
         ])->header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
     }
@@ -215,12 +215,12 @@ class ProductController extends Controller
 
         // Fetch related products prioritizing same category, then same brand
         $relatedQuery = Product::with([
-                'category',
-                'brand',
-                'thumbnail',
-                'primaryVariant',
-                'variants',
-            ])
+            'category',
+            'brand',
+            'thumbnail',
+            'primaryVariant',
+            'variants',
+        ])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
             ->where('status', 1)
@@ -240,12 +240,12 @@ class ProductController extends Controller
             $fillCount = $limit - $relatedProducts->count();
 
             $fallback = Product::with([
-                    'category',
-                    'brand',
-                    'thumbnail',
-                    'primaryVariant',
-                    'variants',
-                ])
+                'category',
+                'brand',
+                'thumbnail',
+                'primaryVariant',
+                'variants',
+            ])
                 ->withCount('reviews')
                 ->withAvg('reviews', 'rating')
                 ->where('status', 1)
@@ -258,13 +258,13 @@ class ProductController extends Controller
         }
 
         return response()->json([
-            'status'  => true,
+            'status' => true,
             'product' => [
-                'id'   => $product->id,
+                'id' => $product->id,
                 'name' => $product->name,
                 'slug' => $product->slug,
             ],
-            'data'    => ProductSuggestionResource::collection($relatedProducts),
+            'data' => ProductSuggestionResource::collection($relatedProducts),
         ])->header('Cache-Control', 'public, max-age=120, s-maxage=600, stale-while-revalidate=1200');
     }
 
@@ -275,13 +275,13 @@ class ProductController extends Controller
     public function show(string $slug): JsonResponse
     {
         $product = Product::with([
-                'category',
-                'brand',
-                'images',
-                'thumbnail',
-                'primaryVariant',
-                'variants.attributeValues.attribute',
-            ])
+            'category',
+            'brand',
+            'images',
+            'thumbnail',
+            'primaryVariant',
+            'variants.attributeValues.attribute',
+        ])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
             ->where('slug', $slug)
@@ -294,7 +294,7 @@ class ProductController extends Controller
 
         return response()->json([
             'status' => true,
-            'data'   => new ProductResource($product, true),
+            'data' => new ProductResource($product, true),
         ])->header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
     }
 }

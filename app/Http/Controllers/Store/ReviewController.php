@@ -14,12 +14,12 @@ class ReviewController extends Controller
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'rating'     => 'required|integer|min:1|max:5',
-            'review'     => 'nullable|string|max:500',
+            'rating' => 'required|integer|min:1|max:5',
+            'review' => 'nullable|string|max:500',
         ]);
 
         $customerId = Auth::guard('customer')->id();
-        $productId  = $request->product_id;
+        $productId = $request->product_id;
 
         // Guard: customer must have a completed-payment order containing this product
         $hasPurchased = Order::where('customer_id', $customerId)
@@ -42,9 +42,9 @@ class ReviewController extends Controller
 
         ProductReview::create([
             'customer_id' => $customerId,
-            'product_id'  => $productId,
-            'rating'      => $request->rating,
-            'review'      => $request->review,
+            'product_id' => $productId,
+            'rating' => $request->rating,
+            'review' => $request->review,
             'is_approved' => true,
         ]);
 

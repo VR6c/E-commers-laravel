@@ -56,6 +56,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
         if (auth('customer')->check()) {
             return redirect()->route('customer.profile.edit');
         }
+
         return redirect()->route('customer.login');
     })->name('index');
 
@@ -107,4 +108,3 @@ Route::get('/{slug}', [StoreController::class, 'showPage'])
     ->where('slug', '^(?!api|admin|checkout|vendor|customer|recipes|orders).*$')
     ->middleware('optimize.response')
     ->name('store.page');
-

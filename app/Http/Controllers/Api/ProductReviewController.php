@@ -30,10 +30,10 @@ class ProductReviewController extends Controller
         $avgRating = $reviews->avg('rating') ?? 0;
 
         return response()->json([
-            'status'     => true,
+            'status' => true,
             'avg_rating' => round((float) $avgRating, 1),
-            'total'      => $reviews->count(),
-            'data'       => \App\Http\Resources\ProductReviewResource::collection($reviews),
+            'total' => $reviews->count(),
+            'data' => \App\Http\Resources\ProductReviewResource::collection($reviews),
         ]);
     }
 
@@ -63,26 +63,26 @@ class ProductReviewController extends Controller
 
         if ($existing) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'You have already reviewed this product.',
             ], 422);
         }
 
         $review = ProductReview::create([
             'customer_id' => $customer->id,
-            'product_id'  => $product->id,
-            'rating'      => $request->rating,
-            'review'      => $request->review,
+            'product_id' => $product->id,
+            'rating' => $request->rating,
+            'review' => $request->review,
             'is_approved' => false, // pending admin approval
         ]);
 
         return response()->json([
-            'status'  => true,
+            'status' => true,
             'message' => 'Review submitted and pending approval.',
-            'data'    => [
-                'id'         => $review->id,
-                'rating'     => (int) $review->rating,
-                'review'     => $review->review,
+            'data' => [
+                'id' => $review->id,
+                'rating' => (int) $review->rating,
+                'review' => $review->review,
                 'created_at' => $review->created_at?->toISOString(),
             ],
         ], 201);

@@ -39,9 +39,9 @@ class PasswordResetController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Please provide a valid email address.',
-                'errors'  => $validator->errors(),
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -51,7 +51,7 @@ class PasswordResetController extends Controller
 
         if (! $customer) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'This Email Not Found',
             ], 404);
         }
@@ -64,9 +64,9 @@ class PasswordResetController extends Controller
                 $wait = self::RESEND_COOLDOWN_SECONDS - $secondsSinceLast;
 
                 return response()->json([
-                    'status'  => false,
+                    'status' => false,
                     'message' => "Please wait {$wait} seconds before requesting a new code.",
-                    'data'    => [
+                    'data' => [
                         'retry_after' => $wait,
                     ],
                 ], 429);
@@ -81,7 +81,7 @@ class PasswordResetController extends Controller
         DB::table('password_resets')->updateOrInsert(
             ['email' => $email],
             [
-                'token'      => $token,
+                'token' => $token,
                 'created_at' => now(),
             ]
         );
@@ -95,23 +95,23 @@ class PasswordResetController extends Controller
             $mailSent = true;
         } catch (\Throwable $e) {
             $smtpError = $e->getMessage();
-            Log::error("Failed to send OTP to {$email}: " . $smtpError);
+            Log::error("Failed to send OTP to {$email}: ".$smtpError);
         }
 
         // If mail failed and in production, return 500 error
         if (! $mailSent && ! config('app.debug')) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Unable to send verification email. Please check your email configuration or try again later.',
-                'error'   => $smtpError,
+                'error' => $smtpError,
             ], 500);
         }
 
         $response = [
-            'status'  => true,
+            'status' => true,
             'message' => "A 6-digit verification code has been sent to {$email}.",
-            'data'    => [
-                'email'              => $email,
+            'data' => [
+                'email' => $email,
                 'expires_in_minutes' => self::OTP_EXPIRY_MINUTES,
             ],
         ];
@@ -137,14 +137,14 @@ class PasswordResetController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
-            'otp'   => 'required|string|size:6',
+            'otp' => 'required|string|size:6',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Please provide a valid email and 6-digit code.',
-                'errors'  => $validator->errors(),
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -153,7 +153,7 @@ class PasswordResetController extends Controller
 
         if (! $record) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Invalid or expired verification code.',
             ], 422);
         }
@@ -164,7 +164,7 @@ class PasswordResetController extends Controller
             DB::table('password_resets')->where('email', $email)->delete();
 
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Verification code has expired. Please request a new one.',
             ], 422);
         }
@@ -172,17 +172,17 @@ class PasswordResetController extends Controller
         // Check OTP match
         if (! Hash::check($request->otp, $record->token)) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Incorrect verification code. Please check and try again.',
             ], 422);
         }
 
         return response()->json([
-            'status'  => true,
+            'status' => true,
             'message' => 'Verification code confirmed successfully.',
-            'data'    => [
+            'data' => [
                 'email' => $email,
-                'otp'   => $request->otp,
+                'otp' => $request->otp,
             ],
         ]);
     }
@@ -207,16 +207,16 @@ class PasswordResetController extends Controller
     public function reset(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email'    => 'required|email',
-            'otp'      => 'required|string|size:6',
+            'email' => 'required|email',
+            'otp' => 'required|string|size:6',
             'password' => 'required|string|min:6|confirmed',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Validation error.',
-                'errors'  => $validator->errors(),
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -225,7 +225,7 @@ class PasswordResetController extends Controller
 
         if (! $record) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Invalid or expired verification code.',
             ], 422);
         }
@@ -236,7 +236,7 @@ class PasswordResetController extends Controller
             DB::table('password_resets')->where('email', $email)->delete();
 
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Verification code has expired. Please request a new one.',
             ], 422);
         }
@@ -244,7 +244,7 @@ class PasswordResetController extends Controller
         // Verify OTP
         if (! Hash::check($request->otp, $record->token)) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Incorrect verification code.',
             ], 422);
         }
@@ -253,7 +253,7 @@ class PasswordResetController extends Controller
             ?? \App\Models\User::where('email', $email)->first();
         if (! $customer) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'This Email Not Found',
             ], 404);
         }
@@ -272,10 +272,10 @@ class PasswordResetController extends Controller
         $token = $customer->createToken('CustomerToken')->plainTextToken;
 
         return response()->json([
-            'status'  => true,
+            'status' => true,
             'message' => 'Password has been reset successfully.',
-            'data'    => [
-                'token'    => $token,
+            'data' => [
+                'token' => $token,
                 'customer' => $customer,
             ],
         ]);

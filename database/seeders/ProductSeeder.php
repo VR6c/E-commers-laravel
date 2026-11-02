@@ -27,14 +27,14 @@ class ProductSeeder extends Seeder
 
         try {
             $response = Http::asForm()->timeout(15)->post('https://api.imgbb.com/1/upload', [
-                'key'   => $this->imgbbKey,
+                'key' => $this->imgbbKey,
                 'image' => $unsplashUrl,
-                'name'  => Str::slug($productName),
+                'name' => Str::slug($productName),
             ]);
 
             if ($response->successful()) {
                 $data = $response->json();
-                if (!empty($data['data']['url'])) {
+                if (! empty($data['data']['url'])) {
                     return $data['data']['url'];
                 }
             }
@@ -48,7 +48,7 @@ class ProductSeeder extends Seeder
 
     public function run(): void
     {
-        $sizeAttr  = Attribute::firstOrCreate(['name' => 'Size']);
+        $sizeAttr = Attribute::firstOrCreate(['name' => 'Size']);
         $colorAttr = Attribute::firstOrCreate(['name' => 'Color']);
 
         foreach (['Small', 'Medium', 'Large', 'XL'] as $size) {
@@ -59,19 +59,19 @@ class ProductSeeder extends Seeder
         }
 
         $vendor = Vendor::first() ?? Vendor::create([
-            'name'     => 'Default Vendor',
-            'email'    => 'vendor@example.com',
+            'name' => 'Default Vendor',
+            'email' => 'vendor@example.com',
             'password' => bcrypt('password'),
-            'status'   => 'active',
+            'status' => 'active',
         ]);
 
         $fashion = Category::firstOrCreate(['slug' => 'fashion'], ['name' => 'Fashion & Apparel', 'status' => 1]);
-        $shoes   = Category::firstOrCreate(['slug' => 'shoes'], ['name' => 'Shoes & Footwear', 'status' => 1]);
-        $beauty  = Category::firstOrCreate(['slug' => 'beauty'], ['name' => 'Beauty & Skincare', 'status' => 1]);
+        $shoes = Category::firstOrCreate(['slug' => 'shoes'], ['name' => 'Shoes & Footwear', 'status' => 1]);
+        $beauty = Category::firstOrCreate(['slug' => 'beauty'], ['name' => 'Beauty & Skincare', 'status' => 1]);
 
         $brand = Brand::first();
 
-        $sizeValues  = AttributeValue::where('attribute_id', $sizeAttr->id)->get();
+        $sizeValues = AttributeValue::where('attribute_id', $sizeAttr->id)->get();
         $colorValues = AttributeValue::where('attribute_id', $colorAttr->id)->get();
 
         $products = [
@@ -397,65 +397,66 @@ class ProductSeeder extends Seeder
             $product = Product::firstOrCreate(
                 ['slug' => $slug],
                 [
-                    'vendor_id'         => $vendor->id,
-                    'name'              => $item['name'],
-                    'description'       => $item['short'],
+                    'vendor_id' => $vendor->id,
+                    'name' => $item['name'],
+                    'description' => $item['short'],
                     'short_description' => $item['short'],
-                    'tags'              => $item['tags'],
-                    'category_id'       => $item['category']->id,
-                    'brand_id'          => $brand?->id,
-                    'product_type'      => 'variable',
-                    'status'            => 1,
+                    'tags' => $item['tags'],
+                    'category_id' => $item['category']->id,
+                    'brand_id' => $brand?->id,
+                    'product_type' => 'variable',
+                    'status' => 1,
                 ]
             );
 
-            if (!$product->wasRecentlyCreated) {
+            if (! $product->wasRecentlyCreated) {
                 $product->images()->updateOrCreate(
                     ['type' => 'thumb'],
-                    ['name' => $slug . '.jpg', 'image_url' => $hostedUrl]
+                    ['name' => $slug.'.jpg', 'image_url' => $hostedUrl]
                 );
+
                 continue;
             }
 
             $product->images()->create([
-                'name'      => $slug . '.jpg',
+                'name' => $slug.'.jpg',
                 'image_url' => $hostedUrl,
-                'type'      => 'thumb',
+                'type' => 'thumb',
             ]);
 
-            $sizeSample  = $sizeValues->count() > 0 ? $sizeValues->random(min(2, $sizeValues->count())) : collect();
+            $sizeSample = $sizeValues->count() > 0 ? $sizeValues->random(min(2, $sizeValues->count())) : collect();
             $colorSample = $colorValues->count() > 0 ? $colorValues->random(min(2, $colorValues->count())) : collect();
-            $isPrimary   = true;
+            $isPrimary = true;
 
             foreach ($sizeSample as $size) {
                 foreach ($colorSample as $color) {
-                    $vPrice    = rand($item['min'], $item['max']);
+                    $vPrice = rand($item['min'], $item['max']);
                     $vDiscount = round($vPrice * rand(60, 90) / 100);
 
                     $variant = $product->variants()->create([
-                        'variant_slug'   => Str::slug("{$item['name']} {$size->value}-{$color->value}") . '-' . Str::random(5),
-                        'name'           => "{$size->value} / {$color->value}",
-                        'price'          => $vPrice,
+                        'variant_slug' => Str::slug("{$item['name']} {$size->value}-{$color->value}").'-'.Str::random(5),
+                        'name' => "{$size->value} / {$color->value}",
+                        'price' => $vPrice,
                         'discount_price' => $vDiscount,
-                        'stock'          => rand(10, 200),
-                        'SKU'            => strtoupper(Str::random(2)) . strtoupper(substr($size->value, 0, 1)) . strtoupper(substr($color->value, 0, 2)) . rand(100, 999),
-                        'weight'         => round(rand(1, 20) / 10, 1),
-                        'dimensions'     => rand(5, 30) . 'x' . rand(5, 30) . 'x' . rand(1, 10) . ' cm',
-                        'is_primary'     => $isPrimary ? 1 : 0,
+                        'stock' => rand(10, 200),
+                        'SKU' => strtoupper(Str::random(2)).strtoupper(substr($size->value, 0, 1)).strtoupper(substr($color->value, 0, 2)).rand(100, 999),
+                        'weight' => round(rand(1, 20) / 10, 1),
+                        'dimensions' => rand(5, 30).'x'.rand(5, 30).'x'.rand(1, 10).' cm',
+                        'is_primary' => $isPrimary ? 1 : 0,
                     ]);
 
                     $isPrimary = false;
 
                     foreach ([$size->id, $color->id] as $attrValueId) {
                         DB::table('product_variant_attribute_values')->insert([
-                            'product_id'         => $product->id,
+                            'product_id' => $product->id,
                             'product_variant_id' => $variant->id,
                             'attribute_value_id' => $attrValueId,
-                            'created_at'         => now(),
-                            'updated_at'         => now(),
+                            'created_at' => now(),
+                            'updated_at' => now(),
                         ]);
                         ProductAttributeValue::firstOrCreate([
-                            'product_id'         => $product->id,
+                            'product_id' => $product->id,
                             'attribute_value_id' => $attrValueId,
                         ]);
                     }

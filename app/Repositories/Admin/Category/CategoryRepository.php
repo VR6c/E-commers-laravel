@@ -27,11 +27,11 @@ class CategoryRepository implements CategoryRepositoryInterface
         }
 
         return Category::create([
-            'slug'        => $slug,
-            'name'        => $data['name'],
+            'slug' => $slug,
+            'name' => $data['name'],
             'description' => $data['description'] ?? null,
-            'image_url'   => $imagePath,
-            'status'      => $data['status'] ?? true,
+            'image_url' => $imagePath,
+            'status' => $data['status'] ?? true,
         ]);
     }
 
@@ -41,17 +41,17 @@ class CategoryRepository implements CategoryRepositoryInterface
 
         $imagePath = $category->image_url;
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
-            if ($imagePath && !\Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://'])) {
+            if ($imagePath && ! \Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://'])) {
                 \Storage::disk('public')->delete($imagePath);
             }
             $imagePath = \App\Services\ImageUploadService::upload($data['image'], 'categories');
         }
 
         $category->update([
-            'name'        => $data['name'] ?? $category->name,
+            'name' => $data['name'] ?? $category->name,
             'description' => $data['description'] ?? $category->description,
-            'image_url'   => $imagePath,
-            'status'      => $data['status'] ?? $category->status,
+            'image_url' => $imagePath,
+            'status' => $data['status'] ?? $category->status,
         ]);
 
         return $category;
@@ -61,7 +61,7 @@ class CategoryRepository implements CategoryRepositoryInterface
     {
         $category = $this->find($id);
 
-        if ($category->image_url && !\Illuminate\Support\Str::startsWith($category->image_url, ['http://', 'https://'])) {
+        if ($category->image_url && ! \Illuminate\Support\Str::startsWith($category->image_url, ['http://', 'https://'])) {
             \Storage::disk('public')->delete($category->image_url);
         }
 
@@ -80,10 +80,10 @@ class CategoryRepository implements CategoryRepositoryInterface
         }
 
         return Category::create([
-            'slug'        => $slug,
-            'name'        => $en['name'],
+            'slug' => $slug,
+            'name' => $en['name'],
             'description' => $en['description'] ?? null,
-            'image_url'   => $imagePath,
+            'image_url' => $imagePath,
         ]);
     }
 
@@ -97,16 +97,16 @@ class CategoryRepository implements CategoryRepositoryInterface
 
         $imagePath = $category->image_url;
         if (isset($en['image']) && $en['image'] instanceof \Illuminate\Http\UploadedFile) {
-            if ($imagePath && !\Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://'])) {
+            if ($imagePath && ! \Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://'])) {
                 \Storage::disk('public')->delete($imagePath);
             }
             $imagePath = \App\Services\ImageUploadService::upload($en['image'], 'categories');
         }
 
         $category->update([
-            'name'        => $en['name'],
+            'name' => $en['name'],
             'description' => $en['description'] ?? null,
-            'image_url'   => $imagePath,
+            'image_url' => $imagePath,
         ]);
 
         return $category;

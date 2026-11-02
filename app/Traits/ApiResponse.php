@@ -2,8 +2,8 @@
 
 namespace App\Traits;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\JsonResponse;
 
 trait ApiResponse
 {
@@ -13,7 +13,7 @@ trait ApiResponse
     protected function successResponse(mixed $data = null, string $message = 'Success', int $statusCode = 200, array $meta = []): JsonResponse
     {
         $payload = [
-            'status'  => true,
+            'status' => true,
             'message' => $message,
         ];
 
@@ -34,14 +34,14 @@ trait ApiResponse
     protected function paginatedResponse(LengthAwarePaginator $paginator, mixed $transformedData = null, string $message = 'Success'): JsonResponse
     {
         return response()->json([
-            'status'  => true,
+            'status' => true,
             'message' => $message,
-            'data'    => $transformedData ?? $paginator->items(),
-            'meta'    => [
+            'data' => $transformedData ?? $paginator->items(),
+            'meta' => [
                 'current_page' => $paginator->currentPage(),
-                'last_page'    => $paginator->lastPage(),
-                'per_page'     => $paginator->perPage(),
-                'total'        => $paginator->total(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
             ],
         ], 200);
     }
@@ -58,8 +58,8 @@ trait ApiResponse
         array $errors = []
     ): JsonResponse {
         $payload = [
-            'type'   => $type,
-            'title'  => $title,
+            'type' => $type,
+            'title' => $title,
             'status' => $status,
             'detail' => $detail,
         ];

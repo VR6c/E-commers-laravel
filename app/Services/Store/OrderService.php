@@ -48,44 +48,44 @@ class OrderService
 
             // 1. Create order
             $order = Order::create([
-                'vendor_id'       => $vendorId,
-                'customer_id'     => $customerId,
-                'guest_email'     => $guestEmail,
-                'total_amount'    => $totalAmount,
+                'vendor_id' => $vendorId,
+                'customer_id' => $customerId,
+                'guest_email' => $guestEmail,
+                'total_amount' => $totalAmount,
                 'discount_amount' => $discountAmount,
-                'coupon_code'     => $couponCode,
-                'status'          => $status,
-                'payment_method'  => $gatewayCode,
+                'coupon_code' => $couponCode,
+                'status' => $status,
+                'payment_method' => $gatewayCode,
             ]);
 
             // 2. Save order line items
             foreach ($cartItems as $productId => $item) {
                 $actualProductId = $item['product_id'] ?? $productId;
                 OrderDetail::create([
-                    'order_id'   => $order->id,
+                    'order_id' => $order->id,
                     'product_id' => $actualProductId,
-                    'quantity'   => (int) ($item['quantity'] ?? 1),
-                    'price'      => (float) ($item['price'] ?? 0),
+                    'quantity' => (int) ($item['quantity'] ?? 1),
+                    'price' => (float) ($item['price'] ?? 0),
                 ]);
             }
 
             // 3. Save shipping address
-            $recipientName = trim(($shippingData['first_name'] ?? '') . ' ' . ($shippingData['last_name'] ?? ''));
+            $recipientName = trim(($shippingData['first_name'] ?? '').' '.($shippingData['last_name'] ?? ''));
             if (empty($recipientName)) {
                 $recipientName = $shippingData['name'] ?? 'Customer';
             }
 
             ShippingAddress::create([
-                'order_id'    => $order->id,
+                'order_id' => $order->id,
                 'customer_id' => $customerId,
-                'name'        => $recipientName,
-                'phone'       => $shippingData['phone'] ?? '',
-                'address'     => $shippingData['address'] ?? '',
-                'suite'       => $shippingData['suite'] ?? null,
-                'city'        => $shippingData['city'] ?? '',
-                'state'       => $shippingData['state'] ?? null,
+                'name' => $recipientName,
+                'phone' => $shippingData['phone'] ?? '',
+                'address' => $shippingData['address'] ?? '',
+                'suite' => $shippingData['suite'] ?? null,
+                'city' => $shippingData['city'] ?? '',
+                'state' => $shippingData['state'] ?? null,
                 'postal_code' => $shippingData['postal_code'] ?? null,
-                'country'     => $shippingData['country'] ?? '',
+                'country' => $shippingData['country'] ?? '',
             ]);
 
             return $order->load(['details.product', 'shippingAddress']);
@@ -108,12 +108,12 @@ class OrderService
         $order = $this->createOrder(
             cartItems: $cart,
             shippingData: [
-                'name'        => $shippingData['name'] ?? trim(($payer['name']['given_name'] ?? '') . ' ' . ($payer['name']['surname'] ?? '')),
-                'phone'       => $shippingData['phone'] ?? '',
-                'address'     => $shippingData['address'] ?? ($purchaseUnit['shipping']['address']['address_line_1'] ?? ''),
-                'city'        => $shippingData['city'] ?? ($purchaseUnit['shipping']['address']['admin_area_2'] ?? ''),
+                'name' => $shippingData['name'] ?? trim(($payer['name']['given_name'] ?? '').' '.($payer['name']['surname'] ?? '')),
+                'phone' => $shippingData['phone'] ?? '',
+                'address' => $shippingData['address'] ?? ($purchaseUnit['shipping']['address']['address_line_1'] ?? ''),
+                'city' => $shippingData['city'] ?? ($purchaseUnit['shipping']['address']['admin_area_2'] ?? ''),
                 'postal_code' => $shippingData['postal_code'] ?? ($purchaseUnit['shipping']['address']['postal_code'] ?? null),
-                'country'     => $shippingData['country'] ?? ($purchaseUnit['shipping']['address']['country_code'] ?? ''),
+                'country' => $shippingData['country'] ?? ($purchaseUnit['shipping']['address']['country_code'] ?? ''),
             ],
             totalAmount: $amount,
             gatewayCode: 'paypal',
