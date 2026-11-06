@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Store;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\ProductReview;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -40,13 +41,18 @@ class ReviewController extends Controller
             return back()->with('error', 'You have already submitted a review for this product.');
         }
 
-        ProductReview::create([
-            'customer_id' => $customerId,
-            'product_id' => $productId,
-            'rating' => $request->rating,
-            'review' => $request->review,
-            'is_approved' => true,
-        ]);
+        try {
+            ProductReview::create([
+                'customer_id' => $customerId,
+                'product_id' => $productId,
+                'rating' => $request->rating,
+                'review' => $request->review,
+                'is_approved' => true,
+            ]);
+        } catch (UniqueConstraintViolationException) {
+            // A concurrent submit already saved this customer's review
+            return back()->with('error', 'You have already submitted a review for this product.');
+        }
 
         return back()->with('success', 'Review submitted successfully.');
     }

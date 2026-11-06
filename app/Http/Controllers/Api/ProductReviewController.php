@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductReview;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
 
 class ProductReviewController extends Controller
@@ -68,23 +69,32 @@ class ProductReviewController extends Controller
             ], 422);
         }
 
-        $review = ProductReview::create([
-            'customer_id' => $customer->id,
-            'product_id' => $product->id,
-            'rating' => $request->rating,
-            'review' => $request->review,
-            'is_approved' => false, // pending admin approval
-        ]);
+        try {
+            $review = ProductReview::create([
+                'customer_id' => $customer->id,
+                'product_id' => $product->id,
+                'rating' => $request->rating,
+                'review' => $request->review,
+                'is_approved' => true, // published immediately, no admin approval needed
+            ]);
+        } catch (UniqueConstraintViolationException) {
+            // A concurrent request (e.g. double-tap) already saved this customer's review
+            return response()->json([
+                'status' => false,
+                'message' => 'You have already reviewed this product.',
+            ], 422);
+        }
+
+        $review->load('customer:id,name,profile_image');
+
+        $approved = ProductReview::where('product_id', $product->id)->approved();
 
         return response()->json([
             'status' => true,
-            'message' => 'Review submitted and pending approval.',
-            'data' => [
-                'id' => $review->id,
-                'rating' => (int) $review->rating,
-                'review' => $review->review,
-                'created_at' => $review->created_at?->toISOString(),
-            ],
+            'message' => 'Review submitted successfully.',
+            'avg_rating' => round((float) $approved->avg('rating'), 1),
+            'total' => $approved->count(),
+            'data' => new \App\Http\Resources\ProductReviewResource($review),
         ], 201);
     }
 }
