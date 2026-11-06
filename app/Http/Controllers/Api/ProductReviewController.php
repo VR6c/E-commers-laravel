@@ -7,12 +7,17 @@ use App\Models\Product;
 use App\Models\ProductReview;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProductReviewController extends Controller
 {
     /**
      * GET /api/products/{slug}/reviews
      * List all approved reviews for a product.
+     *
+     * Public, but when a customer's Bearer token is sent, `has_reviewed` tells
+     * whether that customer already reviewed the product (including reviews
+     * not yet approved), so clients can hide the review form up front.
      */
     public function index(string $slug)
     {
@@ -30,10 +35,16 @@ class ProductReviewController extends Controller
 
         $avgRating = $reviews->avg('rating') ?? 0;
 
+        $customer = Auth::guard('sanctum')->user();
+        $hasReviewed = $customer !== null && ProductReview::where('customer_id', $customer->id)
+            ->where('product_id', $product->id)
+            ->exists();
+
         return response()->json([
             'status' => true,
             'avg_rating' => round((float) $avgRating, 1),
             'total' => $reviews->count(),
+            'has_reviewed' => $hasReviewed,
             'data' => \App\Http\Resources\ProductReviewResource::collection($reviews),
         ]);
     }
