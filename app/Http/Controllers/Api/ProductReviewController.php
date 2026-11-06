@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductReview;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -15,9 +16,11 @@ class ProductReviewController extends Controller
      * GET /api/products/{slug}/reviews
      * List all approved reviews for a product.
      *
-     * Public, but when a customer's Bearer token is sent, `has_reviewed` tells
-     * whether that customer already reviewed the product (including reviews
-     * not yet approved), so clients can hide the review form up front.
+     * Public, but when a customer's Bearer token is sent:
+     *  - `has_reviewed`: the customer already reviewed the product (including
+     *    reviews not yet approved);
+     *  - `can_review`: the customer bought and paid for it and hasn't reviewed
+     *    it yet, so clients can show or hide the review form up front.
      */
     public function index(string $slug)
     {
@@ -39,12 +42,15 @@ class ProductReviewController extends Controller
         $hasReviewed = $customer !== null && ProductReview::where('customer_id', $customer->id)
             ->where('product_id', $product->id)
             ->exists();
+        $canReview = $customer !== null && ! $hasReviewed
+            && $this->hasPaidFor($customer->id, $product->id);
 
         return response()->json([
             'status' => true,
             'avg_rating' => round((float) $avgRating, 1),
             'total' => $reviews->count(),
             'has_reviewed' => $hasReviewed,
+            'can_review' => $canReview,
             'data' => \App\Http\Resources\ProductReviewResource::collection($reviews),
         ]);
     }
@@ -52,7 +58,8 @@ class ProductReviewController extends Controller
     /**
      * POST /api/products/{slug}/reviews
      * Submit a review for a product. Requires authentication.
-     * A customer may only leave one review per product.
+     * A customer may only leave one review per product, and only for a product
+     * they have bought and paid for.
      */
     public function store(Request $request, string $slug)
     {
@@ -78,6 +85,13 @@ class ProductReviewController extends Controller
                 'status' => false,
                 'message' => 'You have already reviewed this product.',
             ], 422);
+        }
+
+        if (! $this->hasPaidFor($customer->id, $product->id)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'You can only review products you have purchased and paid for.',
+            ], 403);
         }
 
         try {
@@ -107,5 +121,20 @@ class ProductReviewController extends Controller
             'total' => $approved->count(),
             'data' => new \App\Http\Resources\ProductReviewResource($review),
         ], 201);
+    }
+
+    /**
+     * Whether the customer has a paid order containing the product: either a
+     * completed order (ABA PayWay approved, or cash collected and marked
+     * completed by the vendor) or an order with a successful payment record.
+     */
+    private function hasPaidFor(int $customerId, int $productId): bool
+    {
+        return Order::where('customer_id', $customerId)
+            ->whereHas('details', fn ($q) => $q->where('product_id', $productId))
+            ->where(fn ($q) => $q
+                ->where('status', 'completed')
+                ->orWhereHas('payments', fn ($p) => $p->where('status', 'completed')))
+            ->exists();
     }
 }
