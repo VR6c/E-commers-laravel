@@ -1,73 +1,106 @@
 @props([
-    'title' => 'Scan to Pay with KHQR',
+    'merchantName' => '',
 ])
 
-<!-- ABA PayWay KHQR Modal Component -->
-<div class="modal fade" id="paywayQRModal" tabindex="-1" aria-labelledby="paywayQRModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content khqr-modal-content">
-            <!-- KHQR card header -->
-            <div class="khqr-header">
-                <span class="khqr-badge">KHQR</span>
-                <h2 class="khqr-title" id="paywayQRModalLabel">ABA PayWay</h2>
-                <button type="button" class="btn-close btn-close-white khqr-close" id="payway-modal-close-btn" aria-label="{{ __('Close') }}" data-bs-dismiss="modal"></button>
-            </div>
+<!-- ABA PayWay KHQR Modal Component (layout follows the Bakong KHQR display guideline v4.0) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,700;0,800;1,400&display=swap">
 
-            <div class="modal-body khqr-body">
-                <!-- Amount -->
-                <div class="khqr-amount">
-                    <span class="khqr-amount__label">{{ __('Amount to Pay') }}</span>
-                    <div class="khqr-amount__value">
-                        <span id="khqr-currency-symbol" class="khqr-amount__symbol">$</span>
-                        <span id="khqr-amount-display">0.00</span>
-                    </div>
-                    <span class="khqr-amount__currency" id="khqr-currency-label">{{ __('KHQR: US Dollar') }}</span>
+<div class="modal fade" id="paywayQRModal" tabindex="-1" aria-labelledby="paywayQRModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content khqr-modal-content">
+            <button type="button" class="btn-close khqr-close" id="payway-modal-close-btn" aria-label="{{ __('Close') }}" data-bs-dismiss="modal"></button>
+
+            <h2 class="visually-hidden" id="paywayQRModalLabel">{{ __('Scan to pay with KHQR') }}</h2>
+
+            {{-- KHQR card — matches Bakong KHQR UI Guideline:
+                 · Red header with speech-bubble tail (bottom-left), official SVG logo
+                 · Merchant name + currency-prefixed amount, left-aligned
+                 · Dashed divider
+                 · QR image with centred red Bakong-rosette badge --}}
+            <div class="khqr-card">
+
+                {{-- ── Header ── --}}
+                <div class="khqr-card__header">
+                    {{-- Official KHQR brand mark — exact paths from the Bakong KHQR UI Guideline SVG.
+                         viewBox covers K + H + QR-icon region (x=84–132, y=83–100) --}}
+                    <svg class="khqr-card__logo"
+                         viewBox="82 83 54 17"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg"
+                         aria-label="KHQR"
+                         role="img">
+                        {{-- K --}}
+                        <path d="M94.477 96.9999H91.9996L86.8682 91.8492V96.9999H84.8336V86H86.8682V90.8888L91.823 86H94.2113L88.9034 91.2381L94.477 96.9999Z" fill="white"/>
+                        {{-- H --}}
+                        <path d="M103.766 86H105.712V96.9999H103.766V92.1984H98.1035V96.9999H96.0689V86H98.1035V90.6269H103.766V86Z" fill="white"/>
+                        {{-- QR icon: outer bracket frame --}}
+                        <path d="M115.975 95.2539H110.667C110.048 95.2539 109.517 94.7301 109.517 94.119V88.8809C109.517 88.2698 110.048 87.746 110.667 87.746H115.975C116.595 87.746 117.125 88.2698 117.125 88.8809V94.119L118.895 95.865V87.6587C118.895 86.6984 118.098 86 117.214 86H109.517C108.544 86 107.836 86.7857 107.836 87.6587V95.2539C107.836 96.2142 108.632 96.9126 109.517 96.9126H117.745L115.975 95.2539Z" fill="white"/>
+                        {{-- QR icon: inner square --}}
+                        <path d="M115.356 90.1027V93.5948H111.818C111.464 93.5948 111.198 93.3329 111.198 92.9836V90.1027C111.198 89.7535 111.464 89.4916 111.818 89.4916H114.649C115.091 89.4043 115.356 89.7535 115.356 90.1027Z" fill="white"/>
+                        {{-- QR icon: curved arm --}}
+                        <path d="M131.812 91.5H130.042C130.042 89.4047 128.361 87.746 126.238 87.746C124.557 87.746 123.142 88.7936 122.611 90.365C122.523 90.7143 122.434 91.1507 122.434 91.5V96.9999H122.345C121.372 96.9999 120.665 96.2142 120.665 95.3412V91.5C120.665 90.0159 121.284 88.5317 122.434 87.4841C123.496 86.5238 124.823 86 126.238 86C129.334 86 131.812 88.4444 131.812 91.5Z" fill="white"/>
+                        {{-- QR icon: arrow tip --}}
+                        <path d="M131.812 97H129.335L128.715 96.3889L127.389 95.0794L125.531 93.2461H128.008L131.812 97Z" fill="white"/>
+                    </svg>
                 </div>
 
-                <!-- Ticket divider -->
-                <div class="khqr-divider" aria-hidden="true"></div>
+                {{-- ── Merchant info ── --}}
+                <div class="khqr-card__info">
+                    <div class="khqr-card__merchant" id="khqr-merchant-name">{{ $merchantName }}</div>
+                    <div class="khqr-card__amount">
+                        {{-- Currency symbol prefix (updated by JS) --}}
+                        <span class="khqr-card__currency-prefix" id="khqr-currency-prefix">$</span>
+                        <span id="khqr-amount-display">0.00</span>
+                        <span class="khqr-card__currency-code" id="khqr-currency-code">USD</span>
+                    </div>
+                </div>
 
-                <!-- QR Code -->
-                <div class="khqr-qr-box">
-                    <span class="khqr-qr-box__corner khqr-qr-box__corner--tl" aria-hidden="true"></span>
-                    <span class="khqr-qr-box__corner khqr-qr-box__corner--tr" aria-hidden="true"></span>
-                    <span class="khqr-qr-box__corner khqr-qr-box__corner--bl" aria-hidden="true"></span>
-                    <span class="khqr-qr-box__corner khqr-qr-box__corner--br" aria-hidden="true"></span>
+                {{-- ── Dashed divider ── --}}
+                <div class="khqr-card__divider" aria-hidden="true"></div>
+
+                {{-- ── QR area ── --}}
+                <div class="khqr-card__qr">
                     <div id="khqr-loading-skeleton" class="spinner-border khqr-spinner" role="status">
                         <span class="visually-hidden">{{ __('Loading QR...') }}</span>
                     </div>
-                    <img id="payway-qr-image" src="" alt="{{ __('KHQR payment code') }}" class="img-fluid d-none" width="220" height="220" />
-                </div>
+                    <img id="payway-qr-image" src="" alt="{{ __('KHQR payment code') }}" class="d-none" width="220" height="220" />
 
-                <p class="khqr-hint">
-                    <i class="fa-solid fa-camera-retro" aria-hidden="true"></i>
-                    {{ __('Scan with any mobile banking app supporting KHQR (Bakong, ABA, Wing, etc.)') }}
-                </p>
-
-                <!-- Mobile deep link (shown on mobile only) -->
-                <div id="payway-deeplink-container" class="khqr-deeplink d-none">
-                    <a id="payway-deeplink-btn" href="#" class="btn btn-primary w-100 fw-semibold d-flex align-items-center justify-content-center gap-2">
-                        <i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i>
-                        {{ __('Open in ABA Mobile') }}
-                    </a>
-                    <div class="khqr-deeplink__stores">
-                        <a id="payway-app-store-btn" href="#" target="_blank" rel="noopener">App Store</a>
-                        <a id="payway-play-store-btn" href="#" target="_blank" rel="noopener">Google Play</a>
-                    </div>
-                </div>
-
-                <!-- Polling status -->
-                <div class="khqr-status" role="status" aria-live="polite">
-                    <span class="khqr-status__dot" aria-hidden="true"></span>
-                    <span>{{ __('Waiting for payment confirmation...') }}</span>
+                    {{-- Red Bakong-rosette centre badge — exact paths from the Bakong KHQR UI Guideline --}}
+                    <span class="khqr-card__qr-badge d-none" id="khqr-currency-icon" aria-hidden="true">
+                        {{-- viewBox covers the badge rect (90.1175, 257.25, 37.5, 37.5) + the white icon path --}}
+                        <svg viewBox="88 255 42 42" fill="none" xmlns="http://www.w3.org/2000/svg" class="khqr-card__rosette">
+                            {{-- Red circle with white border --}}
+                            <rect x="90.1175" y="257.25" width="37.5" height="37.5" rx="18.75" fill="#E21A1A"/>
+                            <rect x="90.1175" y="257.25" width="37.5" height="37.5" rx="18.75" stroke="white" stroke-width="3.5"/>
+                            {{-- Bakong NBC rosette icon (official guideline white path) --}}
+                            <path d="M98.7645 276.053C98.9944 276.277 99.2242 276.487 99.4473 276.71C100.231 277.503 101.009 278.31 101.793 279.103C101.867 279.184 101.901 279.292 101.888 279.394V280.668C101.888 281.624 101.888 282.579 101.888 283.535C101.888 283.664 101.922 283.698 102.05 283.698C103.429 283.691 104.808 283.691 106.187 283.691C106.261 283.698 106.329 283.738 106.376 283.792C106.782 284.199 107.194 284.619 107.593 285.033C108.181 285.636 108.769 286.246 109.371 286.863C109.52 286.713 109.648 286.585 109.777 286.456C110.642 285.568 111.507 284.673 112.386 283.792C112.461 283.731 112.555 283.691 112.65 283.691C114.009 283.684 115.367 283.684 116.726 283.691C116.855 283.691 116.875 283.65 116.875 283.528C116.875 282.146 116.875 280.756 116.868 279.374C116.861 279.252 116.909 279.137 116.997 279.055C117.632 278.411 118.267 277.768 118.903 277.124C118.95 277.076 119.018 277.042 119.085 277.036C119.721 277.029 120.356 277.036 120.992 277.036C121.019 277.036 121.046 277.042 121.073 277.049C121.053 277.076 121.039 277.103 121.012 277.13C120.167 277.991 119.329 278.852 118.484 279.713C118.409 279.787 118.362 279.889 118.369 279.997C118.369 281.664 118.369 283.325 118.369 284.992C118.369 285.229 118.369 285.229 118.132 285.229C116.496 285.229 114.86 285.229 113.224 285.229C113.143 285.229 113.069 285.263 113.008 285.317C112.204 286.137 111.406 286.957 110.601 287.777C110.223 288.17 109.838 288.557 109.459 288.95C109.385 289.024 109.337 289.011 109.27 288.943C108.864 288.523 108.459 288.116 108.053 287.696C107.269 286.896 106.485 286.09 105.7 285.29C105.653 285.25 105.599 285.229 105.538 285.229C103.889 285.229 102.232 285.229 100.583 285.229C100.36 285.229 100.36 285.229 100.36 285.006V279.984C100.367 279.889 100.326 279.794 100.259 279.726C99.5149 278.967 98.7713 278.208 98.0277 277.449C97.5883 276.995 97.1421 276.541 96.7027 276.087C96.6824 276.066 96.6689 276.046 96.6486 276.026C96.7027 275.965 96.75 275.904 96.7973 275.85C97.5748 275.057 98.3454 274.264 99.1228 273.471C99.5014 273.085 99.88 272.698 100.252 272.305C100.313 272.237 100.346 272.156 100.346 272.061C100.353 270.38 100.353 268.693 100.353 267.012C100.353 266.816 100.353 266.816 100.556 266.816H105.464C105.572 266.822 105.673 266.775 105.741 266.7C106.863 265.548 107.992 264.396 109.121 263.251C109.195 263.176 109.263 263.095 109.344 263C109.581 263.237 109.804 263.461 110.02 263.685C111.014 264.701 112.001 265.711 112.995 266.721C113.055 266.775 113.137 266.809 113.218 266.816C114.867 266.822 116.51 266.822 118.159 266.822C118.362 266.822 118.362 266.822 118.362 267.033C118.362 268.706 118.362 270.38 118.362 272.054C118.355 272.156 118.396 272.258 118.47 272.325C119.295 273.159 120.12 273.999 120.938 274.84C120.992 274.894 121.039 274.955 121.086 275.009L121.073 275.05H120.606C120.12 275.05 119.64 275.05 119.153 275.043C119.058 275.036 118.97 275.002 118.903 274.941C118.254 274.284 117.605 273.627 116.963 272.963C116.902 272.895 116.861 272.813 116.861 272.725C116.855 271.329 116.855 269.933 116.861 268.537C116.861 268.395 116.821 268.354 116.686 268.354C115.327 268.354 113.961 268.354 112.596 268.354C112.515 268.347 112.433 268.313 112.373 268.259C111.406 267.277 110.439 266.294 109.479 265.311C109.398 265.223 109.344 265.209 109.249 265.304C108.668 265.908 108.073 266.511 107.485 267.107C107.107 267.493 106.735 267.886 106.349 268.266C106.282 268.327 106.201 268.354 106.113 268.361C104.768 268.368 103.422 268.361 102.077 268.361H101.881C101.881 268.442 101.867 268.51 101.867 268.578C101.867 269.926 101.867 271.282 101.867 272.63C101.874 272.773 101.82 272.915 101.712 273.017C100.752 273.993 99.7921 274.969 98.8389 275.951C98.8389 275.965 98.8186 275.992 98.7645 276.053Z" fill="white"/>
+                            <path d="M114.621 277.061C114.499 277.427 114.384 277.773 114.269 278.125C114.228 278.247 114.201 278.376 114.195 278.511C114.188 279.277 114.188 280.043 114.195 280.809C114.195 280.951 114.141 280.971 114.026 280.971C113.282 280.965 112.532 280.971 111.788 280.965C111.565 280.985 111.349 281.053 111.146 281.154C110.166 281.514 109.104 281.568 108.097 281.31C107.82 281.242 107.549 281.12 107.272 281.026C107.184 280.992 107.09 280.971 106.995 280.971C106.238 280.965 105.481 280.965 104.724 280.971C104.575 280.971 104.541 280.931 104.541 280.782C104.548 280.009 104.548 279.236 104.541 278.464C104.541 278.369 104.521 278.274 104.487 278.186C104.021 277.088 103.926 275.868 104.217 274.716C104.284 274.452 104.392 274.201 104.474 273.937C104.514 273.821 104.534 273.706 104.548 273.584C104.555 272.818 104.548 272.059 104.548 271.287C104.548 271.097 104.548 271.097 104.737 271.097C105.494 271.097 106.252 271.097 107.002 271.097C107.103 271.097 107.198 271.077 107.293 271.036C108.523 270.487 109.922 270.453 111.18 270.941C111.464 271.056 111.761 271.111 112.065 271.104C112.721 271.083 113.363 271.097 114.019 271.09C114.147 271.09 114.195 271.131 114.188 271.266C114.181 272.032 114.181 272.798 114.188 273.564C114.195 273.693 114.215 273.821 114.262 273.95C114.357 274.276 114.465 274.601 114.566 274.926C114.6 275.028 114.566 275.068 114.458 275.068C114.026 275.068 113.586 275.068 113.154 275.068C113.1 275.055 113.052 275.021 113.025 274.967C112.917 274.716 112.816 274.465 112.721 274.208C112.694 274.113 112.674 274.018 112.68 273.923C112.674 273.55 112.674 273.178 112.68 272.812C112.68 272.696 112.647 272.656 112.532 272.663C112.16 272.669 111.788 272.676 111.409 272.663C111.268 272.649 111.132 272.608 111.004 272.547C109.916 272.012 108.645 272.039 107.577 272.615C107.495 272.649 107.408 272.669 107.313 272.669C106.934 272.676 106.556 272.676 106.177 272.669C106.062 272.669 106.028 272.703 106.028 272.818C106.035 273.198 106.035 273.571 106.028 273.95C106.028 274.072 105.995 274.201 105.947 274.316C105.4 275.414 105.4 276.702 105.941 277.793C105.995 277.922 106.028 278.064 106.035 278.199C106.049 278.565 106.042 278.938 106.035 279.297C106.035 279.413 106.062 279.46 106.184 279.46C106.569 279.453 106.961 279.453 107.347 279.46C107.428 279.46 107.509 279.48 107.577 279.514C108.658 280.097 109.949 280.111 111.044 279.555C111.166 279.494 111.301 279.467 111.437 279.46C111.802 279.446 112.167 279.453 112.525 279.46C112.633 279.46 112.667 279.419 112.667 279.318C112.66 278.925 112.66 278.532 112.667 278.145C112.68 278.037 112.707 277.928 112.748 277.827C112.822 277.617 112.903 277.407 112.991 277.203C113.012 277.156 113.072 277.088 113.12 277.081C113.573 277.074 114.032 277.074 114.485 277.081C114.519 277.088 114.553 277.095 114.587 277.108" fill="white"/>
+                        </svg>
+                    </span>
                 </div>
             </div>
 
-            <div class="khqr-footer">
-                <button type="button" class="btn btn-link khqr-cancel" id="payway-cancel-btn">
-                    {{ __('Cancel Payment') }}
-                </button>
+            <p class="khqr-hint">{{ __('Scan with ABA Mobile or any banking app that supports KHQR') }}</p>
+
+            {{-- Mobile deep-link button (JS shows on mobile) --}}
+            <div id="payway-deeplink-container" class="khqr-deeplink d-none">
+                <a id="payway-deeplink-btn" href="#" class="btn khqr-deeplink__btn w-100">
+                    {{ __('Pay with ABA Mobile') }}
+                </a>
+                <div class="khqr-deeplink__stores">
+                    <a id="payway-app-store-btn" href="#" target="_blank" rel="noopener">App Store</a>
+                    <a id="payway-play-store-btn" href="#" target="_blank" rel="noopener">Google Play</a>
+                </div>
             </div>
+
+            <div class="khqr-status" role="status" aria-live="polite">
+                <span class="khqr-status__dot" aria-hidden="true"></span>
+                <span>{{ __('Waiting for payment confirmation...') }}</span>
+            </div>
+
+            <button type="button" class="btn btn-link khqr-cancel" id="payway-cancel-btn">
+                {{ __('Cancel Payment') }}
+            </button>
         </div>
     </div>
 </div>

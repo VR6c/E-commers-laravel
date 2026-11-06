@@ -77,6 +77,11 @@ class ABAPayWayService implements PaymentGatewayInterface
         return $this->merchantId;
     }
 
+    public function getMerchantName(): string
+    {
+        return $this->merchantName;
+    }
+
     public function getCheckoutUrl(): string
     {
         return $this->checkoutUrl;

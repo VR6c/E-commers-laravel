@@ -243,6 +243,7 @@ class CheckoutController extends Controller
                     'response_type' => 'json',
                     'amount' => number_format($total, 2, '.', ''),
                     'currency' => 'USD',
+                    'merchant_name' => $paymentService->getMerchantName(),
                     'tran_id' => $tranId,
                     'data' => $paywayData,
                 ]);

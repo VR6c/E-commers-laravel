@@ -351,11 +351,15 @@ document.addEventListener("DOMContentLoaded", function () {
                         const amount   = result.amount   ?? paywayData.amount   ?? '0.00';
                         const currency = result.currency ?? paywayData.currency ?? 'USD';
                         const symbol   = currency === 'KHR' ? '៛' : '$';
-                        const currencyLabel = currency === 'KHR' ? 'KHQR: Khmer Riel' : 'KHQR: US Dollar';
 
                         document.getElementById('khqr-amount-display').textContent  = Number(amount).toLocaleString('en-US', currency === 'KHR' ? { maximumFractionDigits: 0 } : { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                        document.getElementById('khqr-currency-symbol').textContent = symbol;
-                        document.getElementById('khqr-currency-label').textContent  = currencyLabel;
+                        document.getElementById('khqr-currency-code').textContent   = currency;
+                        // Update currency prefix symbol ($ or ៛) in the amount line
+                        const prefixEl = document.getElementById('khqr-currency-prefix');
+                        if (prefixEl) prefixEl.textContent = symbol;
+                        if (result.merchant_name) {
+                            document.getElementById('khqr-merchant-name').textContent = result.merchant_name;
+                        }
 
                         // ── Set QR image (prefer qrImage base64, else build from qrString) ──
                         const qrImg = document.getElementById('payway-qr-image');
@@ -363,6 +367,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         const showQr = () => {
                             qrImg.classList.remove('d-none');
                             qrSkeleton.classList.add('d-none');
+                            // Show the red Bakong-rosette badge in the centre of the QR
+                            const badge = document.getElementById('khqr-currency-icon');
+                            if (badge) badge.classList.remove('d-none');
                         };
                         qrImg.onload = showQr;
                         if (paywayData.qrImage) {
